@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { GlassCard } from "./components/GlassCard";
 import { usePortfolio } from "./hooks/usePortfolio";
 import type { Portfolio } from "./types/portfolio";
 import { fadeUp, stagger } from "./components/motion";
@@ -17,6 +18,13 @@ const toolColors: Record<string, string> = {
   "Adobe XD": "#ff61f6",
   Figma: "#a259ff",
   Dreamweaver: "#ff61f6",
+};
+
+const postAccentClass: Record<string, string> = {
+  purple: "cv-post--purple",
+  pink: "cv-post--pink",
+  gold: "cv-post--gold",
+  teal: "cv-post--teal",
 };
 
 function Header({ profile }: { profile: Portfolio["profile"] }) {
@@ -53,12 +61,12 @@ function TopRow({ data }: { data: Portfolio }) {
       viewport={{ once: true, margin: "-20px" }}
       variants={stagger}
     >
-      <motion.article className="glass-card cv-top__objective" variants={fadeUp}>
+      <GlassCard className="cv-top__objective" variants={fadeUp}>
         <h2>{data.objective.title}</h2>
         <p>{data.objective.body}</p>
-      </motion.article>
+      </GlassCard>
 
-      <motion.article className="glass-card cv-top__card" variants={fadeUp}>
+      <GlassCard className="cv-top__card" variants={fadeUp}>
         <h2>Soft Skills</h2>
         <motion.div className="cv-top__pills" variants={stagger}>
           {data.softSkills.map((skill) => (
@@ -67,9 +75,9 @@ function TopRow({ data }: { data: Portfolio }) {
             </motion.span>
           ))}
         </motion.div>
-      </motion.article>
+      </GlassCard>
 
-      <motion.article className="glass-card cv-top__card" variants={fadeUp}>
+      <GlassCard className="cv-top__card" variants={fadeUp}>
         <h2>Interests</h2>
         <motion.div className="cv-top__pills" variants={stagger}>
           {data.interests.map((item) => (
@@ -78,12 +86,9 @@ function TopRow({ data }: { data: Portfolio }) {
             </motion.span>
           ))}
         </motion.div>
-      </motion.article>
+      </GlassCard>
 
-      <motion.article
-        className="glass-card cv-portfolio cv-top__portfolio"
-        variants={fadeUp}
-      >
+      <GlassCard className="cv-portfolio cv-top__portfolio" variants={fadeUp}>
         <span className="cv-portfolio__label">Portfolio</span>
         <a
           href={data.profile.portfolioUrl}
@@ -94,18 +99,43 @@ function TopRow({ data }: { data: Portfolio }) {
         >
           <img src={qrUrl} alt="Portfolio QR code" width={99} height={99} />
         </a>
-      </motion.article>
+      </GlassCard>
     </motion.section>
+  );
+}
+
+function ChaosStudio({ data }: { data: Portfolio["chaosStudio"] }) {
+  return (
+    <section>
+      <div className="cv-section-head">
+        <h2 className="section-title">{data.title}</h2>
+        <p className="section-subtitle">{data.tagline}</p>
+      </div>
+      <GlassCard className="cv-chaos" variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+        <p className="cv-chaos__desc">{data.description}</p>
+        <ul className="cv-chaos__list">
+          {data.highlights.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      </GlassCard>
+    </section>
   );
 }
 
 function Experience({ data }: { data: Portfolio["experience"] }) {
   return (
     <section>
-      <div className="cv-section-head">
+      <motion.div
+        className="cv-section-head"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={fadeUp}
+      >
         <h2 className="section-title">Experience</h2>
         <p className="section-subtitle">{data.subtitle}</p>
-      </div>
+      </motion.div>
       <motion.div
         className="cv-experience"
         initial="hidden"
@@ -114,13 +144,14 @@ function Experience({ data }: { data: Portfolio["experience"] }) {
         variants={stagger}
       >
         {data.items.map((job) => (
-          <motion.article
+          <GlassCard
             key={job.id}
-            className={`glass-card cv-exp-card ${job.featured ? "glass-card--featured" : ""}`}
+            className="cv-exp-card"
+            featured={job.featured}
             variants={fadeUp}
             whileHover={{ y: -4 }}
           >
-            <motion.div className="cv-exp-card__head">
+            <div className="cv-exp-card__head">
               <div className="cv-exp-card__logo">{job.logo}</div>
               <div className="cv-exp-card__title">
                 <p className="cv-exp-card__company">{job.company}</p>
@@ -129,9 +160,84 @@ function Experience({ data }: { data: Portfolio["experience"] }) {
               <span className={job.featured ? "date-pill" : "date-pill date-pill--muted"}>
                 {job.period}
               </span>
-            </motion.div>
+            </div>
             {job.description && <p className="cv-exp-card__desc">{job.description}</p>}
-          </motion.article>
+          </GlassCard>
+        ))}
+      </motion.div>
+
+      <motion.div
+        className="cv-exp-details"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-20px" }}
+        variants={stagger}
+      >
+        {data.items.map((job) => (
+          <GlassCard key={`${job.id}-detail`} className="cv-exp-detail" variants={fadeUp}>
+            <div className="cv-exp-detail__head">
+              <span className="cv-exp-detail__logo">{job.logo}</span>
+              <div>
+                <h3>{job.company}</h3>
+                <p>{job.role}</p>
+              </div>
+              <span className="date-pill date-pill--muted">{job.period}</span>
+            </div>
+            {job.description && <p className="cv-exp-detail__summary">{job.description}</p>}
+            {job.bullets && (
+              <ul className="cv-exp-detail__bullets">
+                {job.bullets.map((bullet) => (
+                  <li key={bullet}>{bullet}</li>
+                ))}
+              </ul>
+            )}
+          </GlassCard>
+        ))}
+      </motion.div>
+    </section>
+  );
+}
+
+function SocialPosts({ data }: { data: Portfolio["socialPosts"] }) {
+  return (
+    <section>
+      <motion.div
+        className="cv-section-head"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={fadeUp}
+      >
+        <h2 className="section-title">Selected Posts</h2>
+        <p className="section-subtitle">{data.subtitle}</p>
+      </motion.div>
+      <motion.div
+        className="cv-posts"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-20px" }}
+        variants={stagger}
+      >
+        {data.items.map((post) => (
+          <GlassCard
+            key={post.id}
+            className={`cv-post ${postAccentClass[post.accent] ?? "cv-post--purple"}`}
+            variants={fadeUp}
+          >
+            <div className="cv-post__meta">
+              <span className="cv-post__platform">{post.platform}</span>
+              <span className="cv-post__client">{post.client}</span>
+            </div>
+            <h3 className="cv-post__title">{post.title}</h3>
+            <p className="cv-post__desc">{post.description}</p>
+            <div className="cv-post__tags">
+              {post.tags.map((tag) => (
+                <span key={tag} className="pill pill--outline">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </GlassCard>
         ))}
       </motion.div>
     </section>
@@ -180,10 +286,16 @@ function FeaturedWork({ data }: { data: Portfolio["featuredWork"] }) {
 
   return (
     <section>
-      <div className="cv-section-head">
+      <motion.div
+        className="cv-section-head"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={fadeUp}
+      >
         <h2 className="section-title">Featured Work</h2>
         <p className="section-subtitle">{data.subtitle}</p>
-      </div>
+      </motion.div>
       <motion.div
         className="cv-projects"
         initial="hidden"
@@ -192,9 +304,9 @@ function FeaturedWork({ data }: { data: Portfolio["featuredWork"] }) {
         variants={stagger}
       >
         {data.projects.map((project) => (
-          <motion.article
+          <GlassCard
             key={project.id}
-            className={`glass-card cv-project cv-project--${project.id}`}
+            className={`cv-project cv-project--${project.id}`}
             variants={fadeUp}
             whileHover={{ y: -4, scale: 1.01 }}
           >
@@ -225,7 +337,39 @@ function FeaturedWork({ data }: { data: Portfolio["featuredWork"] }) {
                 {project.cta}
               </a>
             </div>
-          </motion.article>
+          </GlassCard>
+        ))}
+      </motion.div>
+
+      <motion.div
+        className="cv-project-details"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-20px" }}
+        variants={stagger}
+      >
+        {data.projects.map((project) => (
+          <GlassCard key={`${project.id}-detail`} className="cv-project-detail" variants={fadeUp}>
+            <div className="cv-project-detail__head">
+              <h3>{project.name}</h3>
+              <a
+                href={project.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`btn-cta ${project.accent === "pink" ? "btn-cta--pink" : "btn-cta--white"}`}
+              >
+                {project.cta}
+              </a>
+            </div>
+            {project.description && <p className="cv-project-detail__desc">{project.description}</p>}
+            {project.highlights && (
+              <ul className="cv-project-detail__list">
+                {project.highlights.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            )}
+          </GlassCard>
         ))}
       </motion.div>
     </section>
@@ -260,9 +404,10 @@ function SkillsEducation({
           variants={stagger}
         >
           {skills.categories.map((cat) => (
-            <motion.article
+            <GlassCard
               key={cat.title}
-              className={`glass-card cv-skill-card cv-skill-card--${cat.variant}`}
+              className={`cv-skill-card cv-skill-card--${cat.variant}`}
+              featured={cat.variant === "primary"}
               variants={fadeUp}
               whileHover={{ y: -3 }}
             >
@@ -280,7 +425,7 @@ function SkillsEducation({
                   </span>
                 ))}
               </div>
-            </motion.article>
+            </GlassCard>
           ))}
         </motion.div>
       </section>
@@ -303,12 +448,12 @@ function SkillsEducation({
           variants={stagger}
         >
           {education.map((item) => (
-            <motion.article key={item.degree} className="glass-card cv-edu-item" variants={fadeUp}>
+            <GlassCard key={item.degree} className="cv-edu-item" variants={fadeUp}>
               <h3>{item.degree}</h3>
               <p className="school">{item.school}</p>
               {item.detail && <p className="detail">{item.detail}</p>}
               <span className="period">{item.period}</span>
-            </motion.article>
+            </GlassCard>
           ))}
         </motion.div>
       </section>
@@ -334,11 +479,7 @@ function ContactBar({ contact }: { contact: Portfolio["contact"] }) {
         <circle cx="22" cy="22" r="2" fill="#2d2d2d" />
       </svg>
 
-      <motion.a
-        variants={fadeUp}
-        className="cv-contact__chip"
-        href={`mailto:${contact.email}`}
-      >
+      <motion.a variants={fadeUp} className="cv-contact__chip" href={`mailto:${contact.email}`}>
         <span className="cv-contact__icon" aria-hidden>
           ✉
         </span>
@@ -400,17 +541,20 @@ export default function App() {
   const { data, loading, error } = usePortfolio();
 
   if (loading) return <div className="loading">Loading portfolio…</div>;
-  if (!data) return <div className="error">{error ?? "Something went wrong"}</div>;
+  if (!data) return <div className="error">{error ?? "Something went wrong"}</div>
 
   return (
     <motion.div className="page">
       <motion.div className="page__glow" aria-hidden />
       <motion.div className="page__glow page__glow--left" aria-hidden />
+      <motion.div className="page__glow page__glow--center" aria-hidden />
       <div className="cv-viewport">
         <main className="page__inner cv-grid">
           <Header profile={data.profile} />
           <TopRow data={data} />
+          <ChaosStudio data={data.chaosStudio} />
           <Experience data={data.experience} />
+          <SocialPosts data={data.socialPosts} />
           <FeaturedWork data={data.featuredWork} />
           <SkillsEducation skills={data.skills} education={data.education} />
           <ContactBar contact={data.contact} />
@@ -424,4 +568,3 @@ export default function App() {
     </motion.div>
   );
 }
-

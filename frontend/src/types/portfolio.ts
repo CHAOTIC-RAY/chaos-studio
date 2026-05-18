@@ -9,6 +9,12 @@ export interface Portfolio {
   objective: { title: string; body: string };
   softSkills: string[];
   interests: { label: string; emoji: string }[];
+  chaosStudio: {
+    title: string;
+    tagline: string;
+    description: string;
+    highlights: string[];
+  };
   experience: {
     subtitle: string;
     items: {
@@ -18,7 +24,20 @@ export interface Portfolio {
       period: string;
       featured?: boolean;
       description?: string;
+      bullets?: string[];
       logo: string;
+    }[];
+  };
+  socialPosts: {
+    subtitle: string;
+    items: {
+      id: string;
+      platform: string;
+      client: string;
+      title: string;
+      description: string;
+      tags: string[];
+      accent: string;
     }[];
   };
   featuredWork: {
@@ -27,6 +46,8 @@ export interface Portfolio {
       id: string;
       name: string;
       tagline: string;
+      description?: string;
+      highlights?: string[];
       href: string;
       cta: string;
       accent: string;
