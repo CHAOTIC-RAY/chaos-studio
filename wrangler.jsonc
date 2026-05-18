@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "portfolio",
+  "main": "worker/index.ts",
+  "compatibility_date": "2025-01-01",
+  "assets": {
+    "directory": "./frontend/dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  }
+}
