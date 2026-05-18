@@ -27,10 +27,16 @@ function Header({ profile }: { profile: Portfolio["profile"] }) {
       animate="visible"
       variants={fadeUp}
     >
-      <h1 className="cv-header__name">{profile.name}</h1>
+      <motion.div className="cv-header__left" variants={fadeUp}>
+        <h1 className="cv-header__name">{profile.name}</h1>
+      </motion.div>
       <motion.div className="cv-header__meta" variants={stagger}>
-        <motion.span variants={fadeUp}>{profile.tagline}</motion.span>
-        <motion.span variants={fadeUp}>{profile.role}</motion.span>
+        <motion.p className="cv-header__line" variants={fadeUp}>
+          {profile.tagline}
+        </motion.p>
+        <motion.p className="cv-header__line cv-header__line--role" variants={fadeUp}>
+          {profile.role}
+        </motion.p>
       </motion.div>
     </motion.header>
   );
@@ -44,7 +50,7 @@ function TopRow({ data }: { data: Portfolio }) {
       className="cv-top"
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-40px" }}
+      viewport={{ once: true, margin: "-20px" }}
       variants={stagger}
     >
       <motion.article className="glass-card cv-top__objective" variants={fadeUp}>
@@ -397,22 +403,25 @@ export default function App() {
   if (!data) return <div className="error">{error ?? "Something went wrong"}</div>;
 
   return (
-    <div className="page">
-      <div className="page__glow" aria-hidden />
-      <main className="page__inner cv-grid">
-        <Header profile={data.profile} />
-        <TopRow data={data} />
-        <Experience data={data.experience} />
-        <FeaturedWork data={data.featuredWork} />
-        <SkillsEducation skills={data.skills} education={data.education} />
-        <ContactBar contact={data.contact} />
-        {error && (
-          <p className="error" style={{ fontSize: "0.75rem", textAlign: "center", margin: 0 }}>
-            Using cached content ({error})
-          </p>
-        )}
-      </main>
-    </div>
+    <motion.div className="page">
+      <motion.div className="page__glow" aria-hidden />
+      <motion.div className="page__glow page__glow--left" aria-hidden />
+      <div className="cv-viewport">
+        <main className="page__inner cv-grid">
+          <Header profile={data.profile} />
+          <TopRow data={data} />
+          <Experience data={data.experience} />
+          <FeaturedWork data={data.featuredWork} />
+          <SkillsEducation skills={data.skills} education={data.education} />
+          <ContactBar contact={data.contact} />
+          {error && (
+            <p className="error" style={{ fontSize: "0.75rem", textAlign: "center", margin: 0 }}>
+              Using cached content ({error})
+            </p>
+          )}
+        </main>
+      </div>
+    </motion.div>
   );
 }
 
