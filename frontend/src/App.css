@@ -647,9 +647,86 @@
   font-size: 10px;
 }
 
+@media (max-width: 900px) {
+  .cv-top {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+  }
+
+  .cv-top__objective {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    min-height: auto;
+  }
+
+  .cv-top__portfolio {
+    grid-column: 2;
+    grid-row: auto;
+    min-height: 140px;
+  }
+
+  .cv-experience {
+    grid-template-columns: 1fr;
+  }
+
+  .cv-posts {
+    grid-template-columns: 1fr;
+  }
+
+  .cv-projects {
+    grid-template-columns: 1fr;
+  }
+
+  .cv-skills-edu {
+    grid-template-columns: 1fr;
+  }
+
+  .cv-skills__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cv-exp-details,
+  .cv-project-details {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 619px) {
+  .cv-top {
+    grid-template-columns: 1fr;
+  }
+
+  .cv-top__portfolio {
+    grid-column: 1;
+  }
+
+  .cv-contact {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .cv-contact__chip {
     font-size: 8px;
     padding: 4px 8px;
+  }
+}
+
+@media (min-width: 901px) {
+  .cv-top__objective p,
+  .cv-exp-card__desc,
+  .cv-chaos__desc {
+    font-size: 11px;
+  }
+
+  .cv-top {
+    gap: var(--section-gap-lg);
+  }
+
+  .cv-experience,
+  .cv-posts,
+  .cv-projects,
+  .cv-exp-details,
+  .cv-project-details {
+    gap: var(--section-gap-lg);
   }
 }

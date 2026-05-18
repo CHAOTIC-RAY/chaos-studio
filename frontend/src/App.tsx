@@ -1,5 +1,9 @@
 import { motion } from "framer-motion";
 import { GlassCard } from "./components/GlassCard";
+import { SiteHero } from "./components/SiteHero";
+import { SITE_SECTION_IDS, SiteNav } from "./components/SiteNav";
+import { SiteSection } from "./components/SiteSection";
+import { useActiveSection } from "./hooks/useActiveSection";
 import { usePortfolio } from "./hooks/usePortfolio";
 import type { Portfolio } from "./types/portfolio";
 import { fadeUp, stagger } from "./components/motion";
@@ -26,29 +30,6 @@ const postAccentClass: Record<string, string> = {
   gold: "cv-post--gold",
   teal: "cv-post--teal",
 };
-
-function Header({ profile }: { profile: Portfolio["profile"] }) {
-  return (
-    <motion.header
-      className="cv-header"
-      initial="hidden"
-      animate="visible"
-      variants={fadeUp}
-    >
-      <motion.div className="cv-header__left" variants={fadeUp}>
-        <h1 className="cv-header__name">{profile.name}</h1>
-      </motion.div>
-      <motion.div className="cv-header__meta" variants={stagger}>
-        <motion.p className="cv-header__line" variants={fadeUp}>
-          {profile.tagline}
-        </motion.p>
-        <motion.p className="cv-header__line cv-header__line--role" variants={fadeUp}>
-          {profile.role}
-        </motion.p>
-      </motion.div>
-    </motion.header>
-  );
-}
 
 function TopRow({ data }: { data: Portfolio }) {
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(data.profile.portfolioUrl)}`;
@@ -106,36 +87,20 @@ function TopRow({ data }: { data: Portfolio }) {
 
 function ChaosStudio({ data }: { data: Portfolio["chaosStudio"] }) {
   return (
-    <section>
-      <div className="cv-section-head">
-        <h2 className="section-title">{data.title}</h2>
-        <p className="section-subtitle">{data.tagline}</p>
-      </div>
-      <GlassCard className="cv-chaos" variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-        <p className="cv-chaos__desc">{data.description}</p>
-        <ul className="cv-chaos__list">
-          {data.highlights.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      </GlassCard>
-    </section>
+    <GlassCard className="cv-chaos" variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+      <p className="cv-chaos__desc">{data.description}</p>
+      <ul className="cv-chaos__list">
+        {data.highlights.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+    </GlassCard>
   );
 }
 
 function Experience({ data }: { data: Portfolio["experience"] }) {
   return (
-    <section>
-      <motion.div
-        className="cv-section-head"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={fadeUp}
-      >
-        <h2 className="section-title">Experience</h2>
-        <p className="section-subtitle">{data.subtitle}</p>
-      </motion.div>
+    <>
       <motion.div
         className="cv-experience"
         initial="hidden"
@@ -194,24 +159,13 @@ function Experience({ data }: { data: Portfolio["experience"] }) {
           </GlassCard>
         ))}
       </motion.div>
-    </section>
+    </>
   );
 }
 
 function SocialPosts({ data }: { data: Portfolio["socialPosts"] }) {
   return (
-    <section>
-      <motion.div
-        className="cv-section-head"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={fadeUp}
-      >
-        <h2 className="section-title">Selected Posts</h2>
-        <p className="section-subtitle">{data.subtitle}</p>
-      </motion.div>
-      <motion.div
+    <motion.div
         className="cv-posts"
         initial="hidden"
         whileInView="visible"
@@ -239,8 +193,7 @@ function SocialPosts({ data }: { data: Portfolio["socialPosts"] }) {
             </div>
           </GlassCard>
         ))}
-      </motion.div>
-    </section>
+    </motion.div>
   );
 }
 
@@ -285,17 +238,7 @@ function FeaturedWork({ data }: { data: Portfolio["featuredWork"] }) {
   const tagClasses = ["tag--pink", "tag--gold", "tag--blue", "tag--teal", "tag--orange", "tag--red"];
 
   return (
-    <section>
-      <motion.div
-        className="cv-section-head"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={fadeUp}
-      >
-        <h2 className="section-title">Featured Work</h2>
-        <p className="section-subtitle">{data.subtitle}</p>
-      </motion.div>
+    <>
       <motion.div
         className="cv-projects"
         initial="hidden"
@@ -372,7 +315,7 @@ function FeaturedWork({ data }: { data: Portfolio["featuredWork"] }) {
           </GlassCard>
         ))}
       </motion.div>
-    </section>
+    </>
   );
 }
 
@@ -385,17 +328,7 @@ function SkillsEducation({
 }) {
   return (
     <div className="cv-skills-edu">
-      <section>
-        <motion.div
-          className="cv-section-head"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeUp}
-        >
-          <h2 className="section-title">Skills</h2>
-          <p className="section-subtitle">{skills.subtitle}</p>
-        </motion.div>
+      <div className="cv-skills-edu__col">
         <motion.div
           className="cv-skills__grid"
           initial="hidden"
@@ -428,18 +361,10 @@ function SkillsEducation({
             </GlassCard>
           ))}
         </motion.div>
-      </section>
+      </div>
 
-      <section>
-        <motion.div
-          className="cv-section-head"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeUp}
-        >
-          <h2 className="section-title">Education</h2>
-        </motion.div>
+      <div className="cv-skills-edu__col">
+        <h3 className="cv-skills-edu__subhead">Education</h3>
         <motion.div
           className="cv-edu-list"
           initial="hidden"
@@ -456,7 +381,7 @@ function SkillsEducation({
             </GlassCard>
           ))}
         </motion.div>
-      </section>
+      </div>
     </div>
   );
 }
@@ -539,32 +464,63 @@ function ContactBar({ contact }: { contact: Portfolio["contact"] }) {
 
 export default function App() {
   const { data, loading, error } = usePortfolio();
+  const activeId = useActiveSection([...SITE_SECTION_IDS]);
 
   if (loading) return <div className="loading">Loading portfolio…</div>;
-  if (!data) return <div className="error">{error ?? "Something went wrong"}</div>
+  if (!data) return <div className="error">{error ?? "Something went wrong"}</div>;
 
   return (
-    <motion.div className="page">
-      <motion.div className="page__glow" aria-hidden />
-      <motion.div className="page__glow page__glow--left" aria-hidden />
-      <motion.div className="page__glow page__glow--center" aria-hidden />
-      <div className="cv-viewport">
-        <main className="page__inner cv-grid">
-          <Header profile={data.profile} />
-          <TopRow data={data} />
-          <ChaosStudio data={data.chaosStudio} />
-          <Experience data={data.experience} />
-          <SocialPosts data={data.socialPosts} />
-          <FeaturedWork data={data.featuredWork} />
-          <SkillsEducation skills={data.skills} education={data.education} />
-          <ContactBar contact={data.contact} />
-          {error && (
-            <p className="error" style={{ fontSize: "0.75rem", textAlign: "center", margin: 0 }}>
-              Using cached content ({error})
-            </p>
-          )}
-        </main>
-      </div>
-    </motion.div>
+    <div className="page">
+      <div className="page__glow" aria-hidden />
+      <div className="page__glow page__glow--left" aria-hidden />
+      <div className="page__glow page__glow--center" aria-hidden />
+
+      <SiteNav profile={data.profile} activeId={activeId} />
+
+      <main className="site-main">
+        <SiteHero profile={data.profile} objective={data.objective} />
+
+        <div className="site-main__content">
+          <SiteSection id="about" title="About" subtitle="Objective, skills and interests">
+            <TopRow data={data} />
+          </SiteSection>
+
+          <SiteSection id="studio" title={data.chaosStudio.title} subtitle={data.chaosStudio.tagline}>
+            <ChaosStudio data={data.chaosStudio} />
+          </SiteSection>
+
+          <SiteSection id="experience" title="Experience" subtitle={data.experience.subtitle}>
+            <Experience data={data.experience} />
+          </SiteSection>
+
+          <SiteSection id="posts" title="Selected Posts" subtitle={data.socialPosts.subtitle}>
+            <SocialPosts data={data.socialPosts} />
+          </SiteSection>
+
+          <SiteSection id="work" title="Featured Work" subtitle={data.featuredWork.subtitle}>
+            <FeaturedWork data={data.featuredWork} />
+          </SiteSection>
+
+          <SiteSection id="skills" title="Skills and Education" subtitle={data.skills.subtitle}>
+            <SkillsEducation skills={data.skills} education={data.education} />
+          </SiteSection>
+
+          <SiteSection id="contact" title="Contact" subtitle="Let's work together">
+            <ContactBar contact={data.contact} />
+          </SiteSection>
+
+          {error && <p className="site-banner-error">Using cached content ({error})</p>}
+        </div>
+
+        <footer className="site-footer">
+          <p>
+            © {new Date().getFullYear()} {data.profile.name} · {data.profile.role}
+          </p>
+          <a href={data.profile.portfolioUrl} target="_blank" rel="noopener noreferrer">
+            chaosstudio.mv
+          </a>
+        </footer>
+      </main>
+    </div>
   );
 }
