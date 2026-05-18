@@ -3,6 +3,9 @@
   "name": "portfolio",
   "main": "worker/index.ts",
   "compatibility_date": "2025-01-01",
+  "build": {
+    "command": "npm ci --prefix frontend --progress=false && npm run build:cloudflare"
+  },
   "assets": {
     "directory": "./frontend/dist",
     "binding": "ASSETS",
