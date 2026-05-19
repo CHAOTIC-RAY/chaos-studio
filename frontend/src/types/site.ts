@@ -21,6 +21,7 @@ export interface SocialLinks {
   github: string;
   behance: string;
   dribbble: string;
+  instagram?: string;
 }
 
 export interface WorkProject {

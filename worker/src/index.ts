@@ -35,13 +35,15 @@ async function handleApi(request: Request): Promise<Response> {
 
   if (url.pathname === "/api/profile" && request.method === "GET") {
     return json({
-      name: "CHAOTIC-RAY",
-      title: "Graphic Designer",
-      tagline: "Brand identity, editorial layout, and visual systems.",
+      name: "Ibrahim Wafig",
+      title: "Graphic Designer · ChaosStudio.mv",
+      tagline: "Brand identity, campaigns, and product design.",
       links: {
         github: "https://github.com/CHAOTIC-RAY",
         behance: "https://www.behance.net/",
         dribbble: "https://dribbble.com/",
+        instagram: "https://instagram.com/xx_chaos",
+        portfolio: "https://chaosstudio.mv",
       },
     });
   }

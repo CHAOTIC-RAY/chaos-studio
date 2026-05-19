@@ -74,7 +74,7 @@ function renderShell(config: SiteConfig): string {
       <section class="hero" aria-labelledby="hero-title">
         <p class="hero-eyebrow eyebrow">Graphic Design</p>
         <h1 id="hero-title" class="hero-title">
-          <span class="hero-line"><span id="profile-name">CHAOTIC-RAY</span></span>
+          <span class="hero-line"><span id="profile-name">Ibrahim Wafig</span></span>
           <span class="hero-line hero-line--accent">Visual stories</span>
         </h1>
         <p id="profile-tagline" class="hero-tagline">Loading…</p>
@@ -129,6 +129,7 @@ function renderShell(config: SiteConfig): string {
               ${about.skills.map((s) => `<li>${esc(s)}</li>`).join("")}
             </ul>
             <div class="social-row">
+              ${social.instagram ? `<a href="${esc(social.instagram)}" target="_blank" rel="noopener noreferrer">Instagram</a>` : ""}
               <a href="${esc(social.behance)}" target="_blank" rel="noopener noreferrer">Behance</a>
               <a href="${esc(social.dribbble)}" target="_blank" rel="noopener noreferrer">Dribbble</a>
               <a href="${esc(social.github)}" target="_blank" rel="noopener noreferrer">GitHub</a>
