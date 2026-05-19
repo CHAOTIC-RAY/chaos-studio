@@ -41,6 +41,7 @@ export function renderPage(p: Portfolio): string {
       <canvas id="bg-canvas"></canvas>
       <div class="bg-blobs"></div>
       <div class="bg-grain"></div>
+      <div class="hero-orb" data-parallax="24" aria-hidden="true"></div>
     </div>
     <div class="scroll-progress" aria-hidden="true"></div>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -51,20 +52,20 @@ export function renderPage(p: Portfolio): string {
         <span class="logo-text">${esc(p.profile.name)}</span>
       </a>
       <nav class="nav" aria-label="Primary">
-        ${nav.map((l) => `<a href="#${l.id}">${l.label}</a>`).join("")}
+        ${nav.map((l) => `<a class="nav__link" href="#${l.id}">${l.label}</a>`).join("")}
       </nav>
       <a class="nav-cta" href="${esc(p.profile.portfolioUrl)}" target="_blank" rel="noopener noreferrer">chaosstudio.mv</a>
     </header>
 
     <main id="main">
       <section id="top" class="hero">
-        <p class="hero-eyebrow eyebrow">${esc(p.profile.tagline)}</p>
-        <h1 class="hero-title">
+        <p class="hero-eyebrow eyebrow" data-parallax="6">${esc(p.profile.tagline)}</p>
+        <h1 class="hero-title" data-parallax="10">
           <span class="hero-line">${esc(p.profile.name)}</span>
           <span class="hero-line hero-line--dim">Visual stories</span>
         </h1>
         <p class="hero-sub">${esc(p.profile.role)} · ${esc(p.objective.body.slice(0, 120))}…</p>
-        <div class="hero-actions">
+        <div class="hero-actions" data-parallax="8">
           <a class="btn btn-primary" href="#work" data-magnetic>View featured work</a>
           <a class="btn btn-ghost" href="#contact" data-magnetic>Get in touch</a>
         </div>
@@ -77,10 +78,10 @@ export function renderPage(p: Portfolio): string {
           <h2>${esc(p.objective.title)}</h2>
         </div>
         <div class="grid-2" data-reveal>
-          <div class="glass-card">
+          <div class="glass-card" data-tilt>
             <p class="lead">${esc(p.objective.body)}</p>
           </div>
-          <div class="glass-card glass-card--compact">
+          <div class="glass-card glass-card--compact" data-tilt>
             <h3>Soft skills</h3>
             <div class="pills">${p.softSkills.map((s) => `<span class="pill">${esc(s)}</span>`).join("")}</div>
             <h3>Interests</h3>
@@ -94,7 +95,7 @@ export function renderPage(p: Portfolio): string {
           <p class="eyebrow">${esc(p.chaosStudio.tagline)}</p>
           <h2>${esc(p.chaosStudio.title)}</h2>
         </div>
-        <div class="glass-card" data-reveal>
+        <div class="glass-card" data-reveal data-tilt>
           <p class="lead">${esc(p.chaosStudio.description)}</p>
           <ul class="bullet-list">${p.chaosStudio.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul>
         </div>
@@ -109,7 +110,7 @@ export function renderPage(p: Portfolio): string {
           ${p.experience.items
             .map(
               (job) => `
-            <article class="glass-card exp-card ${job.featured ? "exp-card--featured" : ""}" data-reveal>
+            <article class="glass-card exp-card ${job.featured ? "exp-card--featured" : ""}" data-reveal data-tilt>
               <div class="exp-head">
                 <span class="exp-logo">${esc(job.logo)}</span>
                 <div>
@@ -129,24 +130,14 @@ export function renderPage(p: Portfolio): string {
 
       <section id="posts" class="section section--posts">
         <div class="section-head" data-reveal>
-          <p class="eyebrow">Selected posts</p>
+          <p class="eyebrow">Campaign & feed</p>
           <h2>${esc(p.socialPosts.subtitle)}</h2>
+          <p class="section-hint">Replace images in <code>public/images/posts/</code> (filename = post id).</p>
         </div>
+        <p class="posts-drag-hint" data-reveal>Drag to browse · hover to pause</p>
         <div class="posts-viewport" data-reveal>
           <div class="posts-track">
-            ${[...p.socialPosts.items, ...p.socialPosts.items]
-              .map(
-                (post) => `
-              <article class="post-card ${POST_ACCENTS[post.accent] ?? "post-card--purple"}">
-                <span class="post-platform">${esc(post.platform)}</span>
-                <h3>${esc(post.title)}</h3>
-                <p class="post-client">${esc(post.client)}</p>
-                <p>${esc(post.description)}</p>
-                <div class="post-tags">${post.tags.map((t) => `<span>${esc(t)}</span>`).join("")}</div>
-              </article>
-            `,
-              )
-              .join("")}
+            ${[...p.socialPosts.items, ...p.socialPosts.items].map((post) => renderPostCard(post)).join("")}
           </div>
         </div>
       </section>
@@ -226,6 +217,33 @@ export function renderPage(p: Portfolio): string {
   `;
 }
 
+function renderPostCard(post: Portfolio["socialPosts"]["items"][0]): string {
+  const accent = POST_ACCENTS[post.accent] ?? "post-card--purple";
+  return `
+    <article class="post-card ${accent}" data-tilt>
+      <div class="post-card__media">
+        <img
+          class="post-card__img"
+          data-post-id="${esc(post.id)}"
+          src="/images/posts/${esc(post.id)}.webp"
+          alt="${esc(post.title)} — ${esc(post.client)}"
+          width="400"
+          height="500"
+          loading="lazy"
+        />
+        <div class="post-card__shine" aria-hidden="true"></div>
+      </div>
+      <div class="post-card__body">
+        <span class="post-platform">${esc(post.platform)}</span>
+        <h3>${esc(post.title)}</h3>
+        <p class="post-client">${esc(post.client)}</p>
+        <p class="post-desc">${esc(post.description)}</p>
+        <div class="post-tags">${post.tags.map((t) => `<span>${esc(t)}</span>`).join("")}</div>
+      </div>
+    </article>
+  `;
+}
+
 function renderProject(proj: Portfolio["featuredWork"]["projects"][0]): string {
   const imgs = PROJECT_IMAGES[proj.id] ?? {};
   const preview = imgs.desktop
@@ -238,7 +256,7 @@ function renderProject(proj: Portfolio["featuredWork"]["projects"][0]): string {
       : `<div class="work-preview work-preview--placeholder"><span>${esc(proj.name)}</span></div>`;
 
   return `
-    <article class="work-card glass-card" data-reveal id="project-${esc(proj.id)}">
+    <article class="work-card glass-card" data-reveal data-tilt id="project-${esc(proj.id)}">
       <span class="work-badge">Recent work</span>
       ${preview}
       <div class="work-body">

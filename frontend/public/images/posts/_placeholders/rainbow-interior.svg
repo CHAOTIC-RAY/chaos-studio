@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1350">
+  <rect width="1080" height="1350" fill="#1f1528"/>
+  <rect x="80" y="120" width="920" height="900" fill="#2d2040" rx="12"/>
+  <text x="80" y="1100" fill="#d577ed" font-family="system-ui,sans-serif" font-size="42" font-weight="700">Interior Styling</text>
+</svg>

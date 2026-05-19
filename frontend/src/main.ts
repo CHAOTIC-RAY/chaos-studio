@@ -2,6 +2,7 @@ import "./styles/index.css";
 import { fetchPortfolio, submitContact } from "./api";
 import { initCanvasBackground } from "./background/canvas-bg";
 import { initInteractions } from "./interactions";
+import { initMouseEffects } from "./mouse/mouse-effects";
 import { initHeaderScroll, initScrollAnimations } from "./motion/scroll";
 import { renderPage } from "./render";
 
@@ -16,6 +17,7 @@ async function init(): Promise<void> {
     app.classList.remove("loading-screen");
 
     const cleanups: (() => void)[] = [];
+    cleanups.push(initMouseEffects());
     cleanups.push(initCanvasBackground());
     cleanups.push(initScrollAnimations());
     cleanups.push(initHeaderScroll());

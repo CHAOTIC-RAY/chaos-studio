@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1350">
+  <defs>
+    <linearGradient id="o" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0072ff"/>
+      <stop offset="100%" stop-color="#00c6ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1350" fill="#0a1520"/>
+  <ellipse cx="540" cy="400" rx="400" ry="120" fill="url(#o)" opacity="0.4"/>
+  <text x="80" y="1100" fill="#00c6ff" font-family="system-ui,sans-serif" font-size="44" font-weight="700">Ayha Stories</text>
+</svg>

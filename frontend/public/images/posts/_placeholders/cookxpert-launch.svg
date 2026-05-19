@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1350">
+  <defs>
+    <linearGradient id="p" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ff6b9d"/>
+      <stop offset="100%" stop-color="#a848c6"/>
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1350" fill="url(#p)" opacity="0.35"/>
+  <rect width="1080" height="1350" fill="#120a18"/>
+  <text x="80" y="680" fill="#fff" font-family="system-ui,sans-serif" font-size="56" font-weight="800">CookXpert</text>
+</svg>

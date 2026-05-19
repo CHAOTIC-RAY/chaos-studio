@@ -1,4 +1,5 @@
 import { prefersReducedMotion } from "../motion/reduced-motion";
+import { getSmoothMouse } from "../mouse/mouse-state";
 
 export function initCanvasBackground(): () => void {
   const canvas = document.getElementById("bg-canvas") as HTMLCanvasElement | null;
@@ -8,9 +9,9 @@ export function initCanvasBackground(): () => void {
   if (!ctx) return () => {};
 
   const blobs = [
-    { x: 0.15, y: 0.25, r: 0.38, vx: 0.00007, vy: 0.00005, color: "rgba(213, 119, 237, 0.28)" },
-    { x: 0.8, y: 0.15, r: 0.3, vx: -0.00005, vy: 0.00008, color: "rgba(168, 72, 198, 0.18)" },
-    { x: 0.55, y: 0.75, r: 0.32, vx: 0.00004, vy: -0.00006, color: "rgba(120, 60, 180, 0.15)" },
+    { x: 0.15, y: 0.25, r: 0.38, vx: 0, vy: 0, color: "rgba(213, 119, 237, 0.32)" },
+    { x: 0.8, y: 0.15, r: 0.3, vx: 0, vy: 0, color: "rgba(168, 72, 198, 0.2)" },
+    { x: 0.55, y: 0.75, r: 0.32, vx: 0, vy: 0, color: "rgba(120, 60, 180, 0.18)" },
   ];
 
   let w = 0;
@@ -29,12 +30,17 @@ export function initCanvasBackground(): () => void {
   };
 
   const draw = () => {
+    const { x: mx, y: my } = getSmoothMouse();
     ctx.clearRect(0, 0, w, h);
-    for (const b of blobs) {
-      b.x += b.vx;
-      b.y += b.vy;
-      if (b.x < 0.08 || b.x > 0.92) b.vx *= -1;
-      if (b.y < 0.08 || b.y > 0.92) b.vy *= -1;
+
+    for (let i = 0; i < blobs.length; i++) {
+      const b = blobs[i];
+      const attract = i === 0 ? 0.018 : 0.01;
+      b.x += (mx - b.x) * attract + b.vx;
+      b.y += (my - b.y) * attract + b.vy;
+      b.vx *= 0.98;
+      b.vy *= 0.98;
+
       const cx = b.x * w;
       const cy = b.y * h;
       const radius = b.r * Math.min(w, h);
@@ -46,6 +52,7 @@ export function initCanvasBackground(): () => void {
       ctx.arc(cx, cy, radius, 0, Math.PI * 2);
       ctx.fill();
     }
+
     raf = requestAnimationFrame(draw);
   };
 

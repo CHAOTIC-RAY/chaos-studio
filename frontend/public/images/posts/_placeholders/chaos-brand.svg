@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1350">
+  <rect width="1080" height="1350" fill="#0f0c14"/>
+  <circle cx="540" cy="500" r="200" fill="#d577ed" opacity="0.25"/>
+  <text x="540" y="900" text-anchor="middle" fill="#e8a0f5" font-family="system-ui,sans-serif" font-size="48" font-weight="700">ChaosStudio</text>
+</svg>
