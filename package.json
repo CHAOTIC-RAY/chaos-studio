@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
     "dev:worker": "wrangler dev",
-    "build": "npm run build --prefix frontend && npm run build --prefix backend",
+    "build": "npm ci --prefix frontend --progress=false && npm run build --prefix frontend",
     "build:cloudflare": "npm ci --prefix frontend --progress=false && npm run build --prefix frontend",
+    "build:local": "npm run build --prefix frontend && npm run build --prefix backend",
     "deploy": "wrangler deploy",
     "start": "npm run start --prefix backend"
   },
