@@ -40,6 +40,7 @@ export function renderPage(p: Portfolio): string {
     <div class="bg-layers" aria-hidden="true">
       <canvas id="bg-canvas"></canvas>
       <div class="bg-blobs"></div>
+      <div class="bg-dither" aria-hidden="true"></div>
       <div class="bg-grain"></div>
       <div class="hero-orb" data-parallax="24" aria-hidden="true"></div>
     </div>
