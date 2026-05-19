@@ -1,7 +1,10 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "portfolio",
-  "main": "worker/dist/index.js",
+  "main": "worker/src/index.ts",
+  "build": {
+    "command": "npm run build"
+  },
   "compatibility_date": "2026-05-18",
   "compatibility_flags": ["nodejs_compat"],
   "observability": {

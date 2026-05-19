@@ -39,6 +39,21 @@ Requires `wrangler login` locally, or GitHub Actions secrets:
 
 Pushes to `main` deploy via `.github/workflows/deploy.yml`.
 
+### Cloudflare Workers Builds (dashboard)
+
+If deploy fails with `worker/dist/index.js was not found`, your **deploy command** ran without a build.
+
+In **Workers & Pages → your Worker → Settings → Builds**, set:
+
+| Setting | Value |
+|---------|--------|
+| **Build command** | `npm run build` |
+| **Deploy command** | `npm run deploy` |
+
+Or leave build empty and use only **Deploy command**: `npm run deploy` (builds then deploys).
+
+Do **not** use `npx wrangler deploy` alone — it skips the frontend and worker build unless `build.command` in `wrangler.jsonc` runs (this repo sets it to `npm run build`).
+
 ## Project structure
 
 | Path | Purpose |
