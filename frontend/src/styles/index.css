@@ -59,11 +59,27 @@ h2 { font-size: clamp(2rem, 4vw, 3rem); }
 .bg-layers { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 #bg-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 .bg-blobs::before, .bg-blobs::after {
-  content: ""; position: absolute; border-radius: 50%; filter: blur(90px);
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px) contrast(1.08);
   animation: drift 20s ease-in-out infinite alternate;
 }
 .bg-blobs::before { width: 55vmax; height: 55vmax; top: -15%; left: -10%; background: rgba(213, 119, 237, 0.14); }
 .bg-blobs::after { width: 45vmax; height: 45vmax; bottom: 0; right: -10%; background: rgba(78, 19, 112, 0.25); animation-delay: -8s; }
+
+/* Ordered dither overlay — matches canvas blob grain */
+.bg-dither {
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='1' height='1' fill='%23fff' opacity='0.12'/%3E%3Crect x='4' y='0' width='1' height='1' fill='%23fff' opacity='0.45'/%3E%3Crect x='2' y='2' width='1' height='1' fill='%23fff' opacity='0.2'/%3E%3Crect x='6' y='2' width='1' height='1' fill='%23fff' opacity='0.55'/%3E%3Crect x='0' y='4' width='1' height='1' fill='%23fff' opacity='0.5'/%3E%3Crect x='4' y='4' width='1' height='1' fill='%23fff' opacity='0.15'/%3E%3Crect x='2' y='6' width='1' height='1' fill='%23fff' opacity='0.6'/%3E%3Crect x='6' y='6' width='1' height='1' fill='%23fff' opacity='0.25'/%3E%3C/svg%3E");
+  background-size: 4px 4px;
+  image-rendering: pixelated;
+}
+
 .bg-grain {
   position: absolute; inset: 0; opacity: 0.05;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -498,7 +514,7 @@ main { position: relative; z-index: 1; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .bg-blobs::before, .bg-blobs::after, .scroll-line { animation: none; }
-  #bg-canvas, .mouse-spotlight, .cursor-dot, .cursor-ring, .hero-orb { display: none; }
+  #bg-canvas, .bg-dither, .mouse-spotlight, .cursor-dot, .cursor-ring, .hero-orb { display: none; }
   body.has-pointer-fx { cursor: auto; }
   .posts-track { transform: none !important; flex-wrap: wrap; width: auto; }
   .posts-viewport { mask-image: none; cursor: default; }
