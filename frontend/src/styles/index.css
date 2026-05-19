@@ -158,9 +158,13 @@ main { padding-top: var(--header-h); }
 
 .hero {
   min-height: calc(100vh - var(--header-h));
-  display: flex; flex-direction: column; justify-content: center;
-  padding: var(--section-pad) clamp(1rem, 4vw, 2.5rem);
-  max-width: var(--max-w); margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  padding: clamp(2.5rem, 10vh, 5rem) clamp(1rem, 4vw, 2.5rem) var(--section-pad);
+  max-width: var(--max-w);
+  margin: 0 auto;
   position: relative;
   transform: translate(
     calc(var(--hero-mx, 0) * 1px),
@@ -732,6 +736,29 @@ main { padding-top: var(--header-h); }
   padding: 4rem 0;
   margin: 2rem 0 0;
   border-block: 1px solid rgba(255, 255, 255, 0.05);
+}
+.work-marquee--hero {
+  width: 100vw;
+  max-width: 100vw;
+  margin: 1.25rem calc(50% - 50vw) 0;
+  padding: 1.5rem 0 0.5rem;
+  border-block: none;
+}
+.work-marquee--hero .work-marquee__inner {
+  font-size: clamp(1.65rem, 4.5vw, 3.75rem);
+}
+.work-marquee--hero .work-marquee__row {
+  padding: 1.35rem 0;
+}
+.work-marquee--hero .work-marquee__row--b,
+.work-marquee--hero .work-marquee__row--c {
+  margin-top: 0.65rem;
+}
+@media (min-width: 768px) {
+  .work-marquee--hero .work-marquee__row--b,
+  .work-marquee--hero .work-marquee__row--c {
+    margin-top: -1.25rem;
+  }
 }
 .work-marquee__row {
   position: relative;

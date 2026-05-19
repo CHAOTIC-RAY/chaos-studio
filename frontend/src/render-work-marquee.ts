@@ -14,7 +14,9 @@ function marqueeRow(content: string, velocity: number, mod: string): string {
 
 export function renderWorkMarquee(): string {
   const row1 = `
-    <span class="work-marquee__grad">Reach MV</span>
+    <span class="work-marquee__grad">Rainbow Enterprise</span>
+    <span class="work-marquee__sep" aria-hidden="true">•</span>
+    <span class="work-marquee__grad work-marquee__grad--alt">Reach MV</span>
     <span class="work-marquee__sep" aria-hidden="true">•</span>
     <span class="work-marquee__muted">Branding</span>
     <span class="work-marquee__sep" aria-hidden="true">•</span>
@@ -49,10 +51,10 @@ export function renderWorkMarquee(): string {
   `;
 
   return `
-    <section class="work-marquee" aria-label="Selected clients and services">
+    <div class="work-marquee work-marquee--hero" role="region" aria-label="Selected clients and services">
       ${marqueeRow(row1, -2, "a")}
       ${marqueeRow(row2, 2, "b")}
       ${marqueeRow(row3, -1.5, "c")}
-    </section>
+    </div>
   `;
 }

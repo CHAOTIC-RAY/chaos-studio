@@ -79,6 +79,7 @@ export function renderPage(p: Portfolio): string {
           <a class="btn btn-primary" href="#work" data-magnetic>View featured work</a>
           <a class="btn btn-ghost" href="#contact" data-magnetic>Get in touch</a>
         </div>
+        ${renderWorkMarquee()}
         <div class="scroll-cue" aria-hidden="true"><span>Scroll</span><span class="scroll-line"></span></div>
       </section>
 
@@ -148,8 +149,6 @@ export function renderPage(p: Portfolio): string {
           ${p.featuredWork.projects.map((proj, i) => renderProject(proj, i)).join("")}
         </div>
       </section>
-
-      ${renderWorkMarquee()}
 
       <section id="skills" class="section">
         <div class="section-head" data-reveal>
