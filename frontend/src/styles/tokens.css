@@ -1,0 +1,22 @@
+:root {
+  --bg: #0f0c14;
+  --bg-deep: #0a0810;
+  --card: rgba(55, 34, 60, 0.75);
+  --purple: #d577ed;
+  --purple-bright: #e8a0f5;
+  --purple-glow: #4e1370;
+  --text: #f0ecf4;
+  --muted: #a8a0b0;
+  --border: rgba(213, 119, 237, 0.15);
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+
+  --font-display: "Syne", system-ui, sans-serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+
+  --header-h: 4rem;
+  --section-pad: clamp(3.5rem, 8vw, 6rem);
+  --max-w: 72rem;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+}

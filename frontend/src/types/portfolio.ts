@@ -47,10 +47,10 @@ export interface Portfolio {
       name: string;
       tagline: string;
       description?: string;
-      highlights?: string[];
       href: string;
       cta: string;
       accent: string;
+      highlights?: string[];
       tags?: string[];
     }[];
   };
