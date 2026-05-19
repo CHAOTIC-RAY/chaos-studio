@@ -35,11 +35,11 @@ function esc(s: string): string {
 export function renderPage(p: Portfolio): string {
   const nav = [
     { id: "about", label: "About" },
-    { id: "studio", label: "Studio" },
     { id: "experience", label: "Experience" },
     { id: "posts", label: "Posts" },
     { id: "work", label: "Work" },
     { id: "skills", label: "Skills" },
+    { id: "studio", label: "Studio" },
     { id: "contact", label: "Contact" },
   ];
 
@@ -95,17 +95,6 @@ export function renderPage(p: Portfolio): string {
             <h3>Interests</h3>
             <div class="pills">${p.interests.map((i) => `<span class="pill pill--outline">${esc(i.emoji)} ${esc(i.label)}</span>`).join("")}</div>
           </div>
-        </div>
-      </section>
-
-      <section id="studio" class="section">
-        <div class="section-head" data-reveal>
-          <p class="eyebrow">${esc(p.chaosStudio.tagline)}</p>
-          <h2>${esc(p.chaosStudio.title)}</h2>
-        </div>
-        <div class="glass-card" data-reveal>
-          <p class="lead">${esc(p.chaosStudio.description)}</p>
-          <ul class="bullet-list">${p.chaosStudio.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul>
         </div>
       </section>
 
@@ -189,6 +178,17 @@ export function renderPage(p: Portfolio): string {
           `,
             )
             .join("")}
+        </div>
+      </section>
+
+      <section id="studio" class="section">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">${esc(p.chaosStudio.tagline)}</p>
+          <h2>${esc(p.chaosStudio.title)}</h2>
+        </div>
+        <div class="glass-card" data-reveal>
+          <p class="lead">${esc(p.chaosStudio.description)}</p>
+          <ul class="bullet-list">${p.chaosStudio.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul>
         </div>
       </section>
 
