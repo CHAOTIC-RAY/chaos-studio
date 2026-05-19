@@ -13,9 +13,9 @@ const PROJECT_IMAGES: Record<string, { desktop?: string; mobile?: string }> = {
 };
 
 const PROJECT_LIVE_URL: Record<string, string> = {
-  cookxpert: "cookxpert.app",
-  forge: "forge.app",
-  faisa: "Mobile concept",
+  cookxpert: "cookxpert.chaoticstudio.workers.dev",
+  forge: "forge.chaoticstudio.workers.dev",
+  faisa: "Adobe XD prototype",
 };
 
 const POST_ACCENTS: Record<string, string> = {
@@ -251,12 +251,12 @@ function renderPostCard(post: Portfolio["socialPosts"]["items"][0]): string {
   `;
 }
 
-function renderBrowserFrame(desktopSrc: string, label: string, liveUrl: string): string {
+function renderBrowserFrame(desktopSrc: string, label: string, liveUrl: string, siteHref: string): string {
   return `
     <div class="device device--browser" aria-label="${esc(label)} desktop preview">
       <div class="device__chrome">
         <span class="device__dots" aria-hidden="true"><i></i><i></i><i></i></span>
-        <span class="device__url">${esc(liveUrl)}</span>
+        <a class="device__url" href="${esc(siteHref)}" target="_blank" rel="noopener noreferrer">${esc(liveUrl)}</a>
       </div>
       <div class="device__screen">
         <img src="${desktopSrc}" alt="${esc(label)} — desktop app in use" loading="lazy" width="1200" height="750" />
@@ -284,7 +284,7 @@ function renderProject(proj: Portfolio["featuredWork"]["projects"][0], index: nu
   const featured = index === 0;
 
   const devices: string[] = [];
-  if (imgs.desktop) devices.push(renderBrowserFrame(imgs.desktop, proj.name, liveUrl));
+  if (imgs.desktop) devices.push(renderBrowserFrame(imgs.desktop, proj.name, liveUrl, proj.href));
   if (imgs.mobile) devices.push(renderPhoneFrame(imgs.mobile, proj.name));
 
   const deviceBlock =

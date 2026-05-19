@@ -151,7 +151,7 @@ export const portfolio = {
         tagline: "AI-powered recipe manager & cooking companion",
         description:
           "End-to-end product design for a cooking companion: onboarding, recipe discovery, fridge tracking, shared DB, themes, and Android packaging.",
-        href: "https://cookxpert.app",
+        href: "https://cookxpert.chaoticstudio.workers.dev/",
         cta: "Open App",
         accent: "pink",
         highlights: [
@@ -176,7 +176,7 @@ export const portfolio = {
         tagline: "Content Scheduler & Idea Creator",
         description:
           "UI for planning posts, generating content ideas, and scheduling across channels with a dark productivity-focused interface.",
-        href: "https://forge.app",
+        href: "https://forge.chaoticstudio.workers.dev/",
         cta: "Try Scheduler",
         accent: "neutral",
         highlights: [
@@ -191,8 +191,8 @@ export const portfolio = {
         tagline: "MIB App Design Concept",
         description:
           "Mobile banking concept with green accent system, card dashboards, and transfer flows designed for clarity on small screens.",
-        href: "#",
-        cta: "View",
+        href: "https://xd.adobe.com/view/b36c0490-3f96-4e44-b508-e7eec72ac2f4-e63f/screen/ff1f537b-4355-4368-a948-171625c7b7dc/?fullscreen&hints=off",
+        cta: "View prototype",
         accent: "green",
         highlights: [
           "Dashboard & card overview screens",
