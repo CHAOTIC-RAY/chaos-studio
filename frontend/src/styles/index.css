@@ -224,19 +224,6 @@ main { padding-top: var(--header-h); }
   transform: translateY(-3px);
 }
 
-.section-hint {
-  font-size: 0.85rem;
-  color: var(--muted);
-  margin: 0.5rem 0 0;
-  max-width: 42ch;
-}
-.section-hint code {
-  font-size: 0.8em;
-  color: var(--purple-bright);
-  background: rgba(213, 119, 237, 0.1);
-  padding: 0.1em 0.35em;
-  border-radius: 4px;
-}
 .glass-card--compact h3 {
   font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em;
   color: var(--purple); margin: 1rem 0 0.5rem;
@@ -273,13 +260,6 @@ main { padding-top: var(--header-h); }
 
 /* Posts carousel */
 .section--posts { overflow: hidden; }
-.posts-drag-hint {
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin: -1rem 0 1rem;
-}
 .posts-viewport {
   overflow: hidden;
   margin: 0 -1rem;

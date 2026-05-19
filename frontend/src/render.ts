@@ -139,9 +139,7 @@ export function renderPage(p: Portfolio): string {
         <div class="section-head" data-reveal>
           <p class="eyebrow">Campaign & feed</p>
           <h2>${esc(p.socialPosts.subtitle)}</h2>
-          <p class="section-hint">Replace images in <code>public/images/posts/</code> (filename = post id).</p>
         </div>
-        <p class="posts-drag-hint" data-reveal>Drag to browse · hover to pause</p>
         <div class="posts-viewport" data-reveal>
           <div class="posts-track">
             ${[...p.socialPosts.items, ...p.socialPosts.items].map((post) => renderPostCard(post)).join("")}
