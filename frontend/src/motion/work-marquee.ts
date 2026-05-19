@@ -1,50 +1,83 @@
 import { prefersReducedMotion } from "./reduced-motion";
 
-/** Seamless CSS marquee with scroll-speed boost (replaces jumpy % wrap). */
+function initMarqueeRow(inner: HTMLElement, velocity: number): () => void {
+  inner.style.animation = "none";
+
+  const group = inner.querySelector<HTMLElement>(".work-marquee__group");
+  if (!group) return () => {};
+
+  const direction = Math.sign(velocity) || 1;
+  const baseSpeed = Math.abs(velocity) * 28;
+
+  let offset = 0;
+  let loopWidth = group.offsetWidth;
+  let smoothScrollVel = 0;
+  let lastScrollY = window.scrollY;
+  let lastTime = performance.now();
+  let raf = 0;
+
+  const measure = () => {
+    loopWidth = group.offsetWidth || inner.scrollWidth / 2;
+    if (loopWidth < 1) loopWidth = 1;
+  };
+
+  measure();
+  const onResize = () => measure();
+  window.addEventListener("resize", onResize);
+
+  const tick = (now: number) => {
+    const dt = Math.min((now - lastTime) / 1000, 0.05);
+    lastTime = now;
+
+    const scrollY = window.scrollY;
+    const instantScrollVel = dt > 0 ? (scrollY - lastScrollY) / dt : 0;
+    lastScrollY = scrollY;
+    smoothScrollVel += (instantScrollVel - smoothScrollVel) * 0.08;
+
+    const scrollBoost = Math.max(-80, Math.min(80, smoothScrollVel * 0.12));
+    const pxPerSec = direction * baseSpeed + scrollBoost;
+
+    offset += pxPerSec * dt;
+
+    if (offset <= -loopWidth) offset += loopWidth;
+    if (offset > 0) offset -= loopWidth;
+
+    inner.style.transform = `translate3d(${offset.toFixed(2)}px, 0, 0)`;
+    raf = requestAnimationFrame(tick);
+  };
+
+  raf = requestAnimationFrame(tick);
+
+  return () => {
+    cancelAnimationFrame(raf);
+    window.removeEventListener("resize", onResize);
+    inner.style.transform = "";
+    inner.style.animation = "";
+  };
+}
+
+/** Pixel-based seamless marquee — avoids glitchy animation-duration changes on scroll. */
 export function initWorkMarquee(): () => void {
   const section = document.querySelector(".work-marquee");
   if (!section) return () => {};
 
-  const rows = section.querySelectorAll<HTMLElement>(".work-marquee__row");
   if (prefersReducedMotion()) {
     section.classList.add("work-marquee--static");
     return () => {};
   }
 
-  const cleanups: (() => void)[] = [];
+  section.classList.add("work-marquee--enhanced");
 
-  rows.forEach((row) => {
+  const cleanups: (() => void)[] = [];
+  section.querySelectorAll<HTMLElement>(".work-marquee__row").forEach((row) => {
     const inner = row.querySelector<HTMLElement>(".work-marquee__inner");
     if (!inner) return;
-
-    const reverse = Number(row.dataset.marqueeVelocity) < 0;
-    const baseDuration = 32;
-    inner.style.setProperty("--marquee-duration", `${baseDuration}s`);
-    if (reverse) inner.classList.add("work-marquee__inner--reverse");
-
-    let smoothVel = 0;
-    let lastY = window.scrollY;
-    let lastT = performance.now();
-    let raf = 0;
-
-    const tick = (now: number) => {
-      const dt = Math.max(now - lastT, 1);
-      lastT = now;
-      const y = window.scrollY;
-      const instant = ((y - lastY) / dt) * 1000;
-      lastY = y;
-      smoothVel += (instant - smoothVel) * 0.1;
-
-      const boost = Math.min(Math.abs(smoothVel) / 120, 4);
-      const duration = Math.max(8, baseDuration - boost * 6);
-      inner.style.setProperty("--marquee-duration", `${duration.toFixed(2)}s`);
-
-      raf = requestAnimationFrame(tick);
-    };
-
-    raf = requestAnimationFrame(tick);
-    cleanups.push(() => cancelAnimationFrame(raf));
+    const velocity = Number(row.dataset.marqueeVelocity) || 1;
+    cleanups.push(initMarqueeRow(inner, velocity));
   });
 
-  return () => cleanups.forEach((fn) => fn());
+  return () => {
+    section.classList.remove("work-marquee--enhanced");
+    cleanups.forEach((fn) => fn());
+  };
 }

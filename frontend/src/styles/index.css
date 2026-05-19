@@ -765,6 +765,7 @@ main { padding-top: var(--header-h); }
   position: relative;
   padding: 2.25rem 0;
   transition: transform 0.7s ease-out;
+  transform: translateZ(0);
 }
 .work-marquee__row--a {
   transform: rotate(-3deg);
@@ -799,8 +800,12 @@ main { padding-top: var(--header-h); }
   flex-wrap: nowrap;
   align-items: center;
   width: max-content;
-  animation: work-marquee-scroll var(--marquee-duration, 32s) linear infinite;
+  animation: work-marquee-scroll 40s linear infinite;
   will-change: transform;
+  backface-visibility: hidden;
+}
+.work-marquee--enhanced .work-marquee__inner {
+  animation: none;
 }
 .work-marquee__inner--reverse {
   animation-direction: reverse;
