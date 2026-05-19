@@ -1,69 +1,28 @@
-# Portfolio
+# Ibrahim Wafig — Portfolio
 
-Graphic design portfolio built with **Vite** (frontend), **Cloudflare Workers** (API + static hosting), and editable assets in `frontend/public/assets/`.
-
-## Edit images & logos
-
-See **[frontend/public/assets/README.md](frontend/public/assets/README.md)**.
-
-1. Replace files under `frontend/public/assets/` (keep filenames or update `site.config.json`).
-2. Edit **`frontend/public/assets/site.config.json`** for project titles, links, and alt text.
+Graphic design portfolio (ChaosStudio.mv) on **Cloudflare Workers**: React frontend, `/api/portfolio` data, static assets.
 
 ## Local development
 
 ```bash
 npm install
-npm run build:frontend
 npm run dev
 ```
 
-Open the URL Wrangler prints (API + static assets together).
+Opens Wrangler dev with the Worker API and Vite-built frontend.
 
-Frontend-only hot reload:
-
-```bash
-npm run dev --workspace=frontend
-```
-
-## Build & deploy
+## Deploy
 
 ```bash
-npm run build
 npm run deploy
 ```
 
-Requires `wrangler login` locally, or GitHub Actions secrets:
+**Cloudflare Workers Builds** — set **Deploy command** to `npm run deploy` (not `npx wrangler deploy` alone).
 
-- `CLOUDFLARE_API_TOKEN` — **Edit Cloudflare Workers** permission
-- `CLOUDFLARE_ACCOUNT_ID` — your account ID
+Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
 
-Pushes to `main` deploy via `.github/workflows/deploy.yml`.
+## Content
 
-### Cloudflare Workers Builds (dashboard)
-
-If deploy fails with `worker/dist/index.js was not found`, your **deploy command** ran without a build.
-
-In **Workers & Pages → your Worker → Settings → Builds**, set:
-
-| Setting | Value |
-|---------|--------|
-| **Build command** | `npm run build` |
-| **Deploy command** | `npm run deploy` |
-
-Or leave build empty and use only **Deploy command**: `npm run deploy` (builds then deploys).
-
-Do **not** use `npx wrangler deploy` alone — it skips the frontend and worker build unless `build.command` in `wrangler.jsonc` runs (this repo sets it to `npm run build`).
-
-## Project structure
-
-| Path | Purpose |
-|------|---------|
-| `frontend/` | Vite site, styles, motion, `public/assets/` |
-| `worker/` | Worker API (`/api/health`, `/api/profile`, `/api/contact`) |
-| `wrangler.jsonc` | Worker name, static assets, observability |
-
-## API
-
-- `GET /api/health` — health check
-- `GET /api/profile` — name, title, tagline, social links
-- `POST /api/contact` — `{ name, email, message }`
+- Portfolio data: `worker/src/data/portfolio.ts`
+- Project screenshots: `frontend/public/images/projects/`
+- Styles: purple glass CV theme in `frontend/src/App.css` and `frontend/src/styles/global.css`
