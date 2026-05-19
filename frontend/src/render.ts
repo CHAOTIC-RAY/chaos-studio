@@ -3,16 +3,29 @@ import { CHAOS_LOGO_SVG } from "./brand/logo";
 import { renderToolTag } from "./skill-icons";
 import { renderWorkMarquee } from "./render-work-marquee";
 
-const PROJECT_IMAGES: Record<string, { desktop?: string; mobile?: string }> = {
+type DeviceMedia = { image: string; video?: string };
+
+const PROJECT_MEDIA: Record<string, { desktop?: DeviceMedia; mobile?: DeviceMedia }> = {
   cookxpert: {
-    desktop: "/images/projects/cookxpert_desktop.png",
-    mobile: "/images/projects/cookxpert_mobile.png",
+    desktop: {
+      image: "/images/projects/cookxpert_desktop.png",
+      video: "/images/projects/videos/cookxpert_desktop.webm",
+    },
+    mobile: {
+      image: "/images/projects/cookxpert_mobile.png",
+      video: "/images/projects/videos/cookxpert_mobile.webm",
+    },
   },
   forge: {
-    desktop: "/images/projects/forge_desktop.png",
-    mobile: "/images/projects/forge_mobile.png",
+    desktop: { image: "/images/projects/forge_desktop.png" },
+    mobile: { image: "/images/projects/forge_mobile.png" },
   },
-  faisa: { mobile: "/images/projects/faisa_mobile.png" },
+  faisa: {
+    mobile: {
+      image: "/images/projects/faisa_mobile.png",
+      video: "/images/projects/videos/faisa_mobile.webm",
+    },
+  },
 };
 
 const PROJECT_LIVE_URL: Record<string, string> = {
@@ -259,7 +272,15 @@ function renderPostCard(post: Portfolio["socialPosts"]["items"][0]): string {
   `;
 }
 
-function renderBrowserFrame(desktopSrc: string, label: string, liveUrl: string, siteHref: string): string {
+function renderScreenMedia(media: DeviceMedia, label: string, kind: "desktop" | "mobile"): string {
+  const alt = `${esc(label)} — ${kind} app in use`;
+  if (media.video) {
+    return `<video class="device__media" src="${media.video}" poster="${media.image}" autoplay muted loop playsinline preload="metadata" aria-label="${alt}"></video>`;
+  }
+  return `<img class="device__media" src="${media.image}" alt="${alt}" loading="lazy" width="${kind === "desktop" ? 1200 : 390}" height="${kind === "desktop" ? 750 : 844}" />`;
+}
+
+function renderBrowserFrame(media: DeviceMedia, label: string, liveUrl: string, siteHref: string): string {
   return `
     <div class="device device--browser" aria-label="${esc(label)} desktop preview">
       <div class="device__chrome">
@@ -267,19 +288,19 @@ function renderBrowserFrame(desktopSrc: string, label: string, liveUrl: string, 
         <a class="device__url" href="${esc(siteHref)}" target="_blank" rel="noopener noreferrer">${esc(liveUrl)}</a>
       </div>
       <div class="device__screen">
-        <img src="${desktopSrc}" alt="${esc(label)} — desktop app in use" loading="lazy" width="1200" height="750" />
+        ${renderScreenMedia(media, label, "desktop")}
       </div>
     </div>
   `;
 }
 
-function renderPhoneFrame(mobileSrc: string, label: string): string {
+function renderPhoneFrame(media: DeviceMedia, label: string): string {
   return `
     <div class="device device--phone" aria-label="${esc(label)} mobile preview">
       <div class="device__bezel">
         <span class="device__notch" aria-hidden="true"></span>
         <div class="device__screen">
-          <img src="${mobileSrc}" alt="${esc(label)} — mobile app in use" loading="lazy" width="390" height="844" />
+          ${renderScreenMedia(media, label, "mobile")}
         </div>
       </div>
     </div>
@@ -287,13 +308,13 @@ function renderPhoneFrame(mobileSrc: string, label: string): string {
 }
 
 function renderProject(proj: Portfolio["featuredWork"]["projects"][0], index: number): string {
-  const imgs = PROJECT_IMAGES[proj.id] ?? {};
+  const media = PROJECT_MEDIA[proj.id] ?? {};
   const liveUrl = PROJECT_LIVE_URL[proj.id] ?? proj.name;
   const featured = index === 0;
 
   const devices: string[] = [];
-  if (imgs.desktop) devices.push(renderBrowserFrame(imgs.desktop, proj.name, liveUrl, proj.href));
-  if (imgs.mobile) devices.push(renderPhoneFrame(imgs.mobile, proj.name));
+  if (media.desktop) devices.push(renderBrowserFrame(media.desktop, proj.name, liveUrl, proj.href));
+  if (media.mobile) devices.push(renderPhoneFrame(media.mobile, proj.name));
 
   const deviceBlock =
     devices.length > 0
