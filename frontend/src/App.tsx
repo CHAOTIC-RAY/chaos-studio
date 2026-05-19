@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { GlassCard } from "./components/GlassCard";
 import { SiteHero } from "./components/SiteHero";
