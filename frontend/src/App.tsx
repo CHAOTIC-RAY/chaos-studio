@@ -10,20 +10,6 @@ import type { Portfolio } from "./types/portfolio";
 import { fadeUp, stagger } from "./components/motion";
 import "./App.css";
 
-const toolColors: Record<string, string> = {
-  Photoshop: "#31a8ff",
-  Illustrator: "#ff9a00",
-  Lightroom: "#31a8ff",
-  InDesign: "#ff3366",
-  "Premiere Pro": "#9999ff",
-  "After Effects": "#9999ff",
-  PowerPoint: "#d35230",
-  Word: "#2b579a",
-  Excel: "#217346",
-  "Adobe XD": "#ff61f6",
-  Figma: "#a259ff",
-  Dreamweaver: "#ff61f6",
-};
 
 const postAccentClass: Record<string, string> = {
   purple: "cv-post--purple",
