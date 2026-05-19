@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { GlassCard } from "./components/GlassCard";
 import { SiteHero } from "./components/SiteHero";
@@ -198,39 +199,65 @@ function SocialPosts({ data }: { data: Portfolio["socialPosts"] }) {
 }
 
 function ProjectMock({ id }: { id: string }) {
-  if (id === "cookxpert") {
-    return (
-      <motion.div
-        className="cv-project__mock"
-        animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
-        transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
-        style={{
-          background:
-            "radial-gradient(circle at 30% 40%, rgba(255,150,210,0.35), transparent 50%), radial-gradient(circle at 70% 60%, rgba(213,119,237,0.25), transparent 45%)",
-        }}
-      />
-    );
-  }
-  if (id === "forge") {
-    return (
-      <div
-        className="cv-project__mock"
-        style={{
-          background:
-            "linear-gradient(90deg, transparent 48%, rgba(255,255,255,0.06) 50%, transparent 52%), linear-gradient(180deg, #2a1f30, #151515)",
-          backgroundSize: "24px 100%, 100% 100%",
-        }}
-      />
-    );
-  }
-  return (
-    <div
-      className="cv-project__mock"
-      style={{
+  const [hasDesktop, setHasDesktop] = useState(true);
+  const [hasMobile, setHasMobile] = useState(true);
+
+  const getFallbackStyle = () => {
+    if (id === "cookxpert") {
+      return {
         background:
-          "linear-gradient(160deg, rgba(189,244,79,0.15), transparent 40%), repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 12px)",
-      }}
-    />
+          "radial-gradient(circle at 30% 40%, rgba(255,150,210,0.35), transparent 50%), radial-gradient(circle at 70% 60%, rgba(213,119,237,0.25), transparent 45%)",
+      };
+    }
+    if (id === "forge") {
+      return {
+        background:
+          "linear-gradient(90deg, transparent 48%, rgba(255,255,255,0.06) 50%, transparent 52%), linear-gradient(180deg, #2a1f30, #151515)",
+        backgroundSize: "24px 100%, 100% 100%",
+      };
+    }
+    return {
+      background:
+        "linear-gradient(160deg, rgba(189,244,79,0.15), transparent 40%), repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 12px)",
+    };
+  };
+
+  const isOnlyMobile = id === "faisa" || id === "faisamobile";
+
+  return (
+    <div className="cv-project__mock-container" style={getFallbackStyle()}>
+      <div className="cv-project__mock-grid-overlay" />
+      {isOnlyMobile ? (
+        <div className="cv-project__mock-single-mobile">
+          {hasMobile && (
+            <img
+              src={`/images/projects/${id}_mobile.png`}
+              alt={`${id} Mobile interface`}
+              onError={() => setHasMobile(false)}
+            />
+          )}
+        </div>
+      ) : (
+        <div className="cv-project__mock-split">
+          {hasDesktop && (
+            <img
+              className="cv-project__mock-desktop-img"
+              src={`/images/projects/${id}_desktop.png`}
+              alt={`${id} Desktop UI`}
+              onError={() => setHasDesktop(false)}
+            />
+          )}
+          {hasMobile && (
+            <img
+              className="cv-project__mock-mobile-img"
+              src={`/images/projects/${id}_mobile.png`}
+              alt={`${id} Mobile UI`}
+              onError={() => setHasMobile(false)}
+            />
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -319,6 +346,71 @@ function FeaturedWork({ data }: { data: Portfolio["featuredWork"] }) {
   );
 }
 
+function ToolIcon({ tool }: { tool: string }) {
+  if (tool === "Figma") {
+    return (
+      <span className="cv-tool-icon cv-tool-icon--figma" title="Figma" style={{ background: "transparent", border: "none", boxShadow: "none" }}>
+        <svg viewBox="0 0 38 57" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19 0C8.5 0 0 8.5 0 19c0 5.4 2.2 10.2 5.8 13.7C2.2 36.2 0 41 0 46.5c0 5.8 4.7 10.5 10.5 10.5h8.5c5.8 0 10.5-4.7 10.5-10.5V38h8.5c5.8 0 10.5-4.7 10.5-10.5 0-5.4-2.2-10.2-5.8-13.7C42.2 10.2 40 5.4 34.5 2.1c-4.4-2.6-10-2.6-15.5-2.1z" fill="#0acf83"/>
+          <path d="M0 19c0-10.5 8.5-19 19-19h9.5v19H19C13.5 19 9 14.5 9 9z" fill="#f24e1e"/>
+          <path d="M0 28.5c0-10.5 8.5-19 19-19v38H19c-10.5 0-19-8.5-19-19z" fill="#a259ff"/>
+          <path d="M19 28.5c10.5 0 19 8.5 19 19s-8.5 19-19 19c-10.5 0-19-8.5-19-19z" fill="#1abc9c"/>
+          <path d="M38 19c0 10.5-8.5 19-19 19v-38c10.5 0 19 8.5 19 19z" fill="#ff7262"/>
+        </svg>
+      </span>
+    );
+  }
+
+  const adobeConfigs: Record<string, { bg: string; border: string; text: string; label: string }> = {
+    Photoshop: { bg: "#001c3a", border: "#00c8ff", text: "#00c8ff", label: "Ps" },
+    Illustrator: { bg: "#331c00", border: "#ff9a00", text: "#ff9a00", label: "Ai" },
+    Lightroom: { bg: "#001f2b", border: "#31a8ff", text: "#31a8ff", label: "Lr" },
+    InDesign: { bg: "#2e0014", border: "#ff3366", text: "#ff3366", label: "Id" },
+    "Premiere Pro": { bg: "#110022", border: "#9999ff", text: "#9999ff", label: "Pr" },
+    "After Effects": { bg: "#16002e", border: "#9999ff", text: "#9999ff", label: "Ae" },
+    "Adobe XD": { bg: "#2e0027", border: "#ff61f6", text: "#ff61f6", label: "Xd" },
+    Dreamweaver: { bg: "#212100", border: "#ff61f6", text: "#ff61f6", label: "Dw" },
+  };
+
+  const msConfigs: Record<string, { bg: string; border: string; text: string; label: string }> = {
+    PowerPoint: { bg: "#3d1308", border: "#d35230", text: "#d35230", label: "Pp" },
+    Word: { bg: "#0a1c3a", border: "#2b579a", text: "#2b579a", label: "Wd" },
+    Excel: { bg: "#092815", border: "#217346", text: "#217346", label: "Xl" },
+  };
+
+  const conf = adobeConfigs[tool] || msConfigs[tool];
+
+  if (conf) {
+    return (
+      <span
+        className="cv-tool-icon"
+        title={tool}
+        style={{
+          background: conf.bg,
+          border: `1.5px solid ${conf.border}`,
+          boxShadow: `0 0 10px ${conf.border}66`,
+          display: "grid",
+          placeItems: "center",
+        }}
+      >
+        <span style={{ color: conf.text, fontSize: "9px", fontWeight: "800", fontFamily: "sans-serif" }}>
+          {conf.label}
+        </span>
+      </span>
+    );
+  }
+
+  return (
+    <span
+      className="cv-tool-icon"
+      title={tool}
+      style={{ background: "#555", border: "1px solid #777" }}
+    >
+      {tool.slice(0, 2)}
+    </span>
+  );
+}
+
 function SkillsEducation({
   skills,
   education,
@@ -348,14 +440,7 @@ function SkillsEducation({
               {cat.description && <p>{cat.description}</p>}
               <div className="cv-skill-card__tools">
                 {cat.tools.map((tool) => (
-                  <span
-                    key={tool}
-                    className="cv-tool-icon"
-                    title={tool}
-                    style={{ background: toolColors[tool] ?? "#555" }}
-                  >
-                    {tool.slice(0, 2)}
-                  </span>
+                  <ToolIcon key={tool} tool={tool} />
                 ))}
               </div>
             </GlassCard>

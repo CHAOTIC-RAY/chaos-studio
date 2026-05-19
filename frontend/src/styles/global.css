@@ -24,7 +24,7 @@
   --radius-pill: 7px;
   --shadow-card: 4px 4px 7px rgba(0, 0, 0, 0.63);
   --shadow-glow: 0 0 42px rgba(213, 119, 237, 0.18);
-  --font: "Inter", system-ui, -apple-system, sans-serif;
+  --font: "Poppins", system-ui, -apple-system, sans-serif;
   --cv-width: 595px;
   --site-max: 1120px;
   --nav-height: 64px;
@@ -195,17 +195,17 @@ img {
   border-radius: var(--radius-lg);
   background: linear-gradient(
     145deg,
-    rgba(213, 119, 237, 0.28) 0%,
-    rgba(55, 34, 60, 0.82) 42%,
-    rgba(31, 31, 31, 0.88) 100%
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(35, 18, 45, 0.35) 45%,
+    rgba(15, 15, 15, 0.75) 100%
   );
   box-shadow:
     var(--shadow-card),
-    inset 0 1px 0 rgba(255, 255, 255, 0.14),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(19px) saturate(1.35);
-  -webkit-backdrop-filter: blur(19px) saturate(1.35);
-  border: 1px solid rgba(213, 119, 237, 0.22);
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid rgba(213, 119, 237, 0.18);
   transition:
     transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.35s ease,
