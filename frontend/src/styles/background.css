@@ -1,0 +1,69 @@
+.bg-layers {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+#bg-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.bg-blobs::before,
+.bg-blobs::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: blob-drift 18s ease-in-out infinite alternate;
+}
+
+.bg-blobs::before {
+  width: 50vmax;
+  height: 50vmax;
+  top: -10%;
+  left: -10%;
+  background: rgba(200, 245, 66, 0.12);
+}
+
+.bg-blobs::after {
+  width: 40vmax;
+  height: 40vmax;
+  bottom: -5%;
+  right: -5%;
+  background: rgba(255, 107, 74, 0.08);
+  animation-delay: -6s;
+}
+
+.bg-grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  background-image: url("/assets/background/grain.svg");
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+}
+
+@keyframes blob-drift {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(5%, 8%) scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-blobs::before,
+  .bg-blobs::after {
+    animation: none;
+  }
+
+  #bg-canvas {
+    display: none;
+  }
+}

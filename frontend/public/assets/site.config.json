@@ -1,0 +1,68 @@
+{
+  "brand": {
+    "logo": "/assets/brand/logo.svg",
+    "logoMark": "/assets/brand/logo-mark.svg",
+    "logoAlt": "CHAOTIC-RAY"
+  },
+  "about": {
+    "portrait": "/assets/about/portrait.svg",
+    "portraitAlt": "CHAOTIC-RAY — graphic designer",
+    "bio": "I craft visual identities, editorial layouts, and digital experiences with a focus on bold typography and intentional color.",
+    "skills": ["Brand Identity", "Typography", "Print", "UI Design", "Art Direction", "Motion"]
+  },
+  "meta": {
+    "ogImage": "/assets/meta/og-image.svg",
+    "title": "CHAOTIC-RAY — Graphic Design Portfolio",
+    "description": "Brand identity, editorial design, and visual systems."
+  },
+  "social": {
+    "github": "https://github.com/CHAOTIC-RAY",
+    "behance": "https://www.behance.net/",
+    "dribbble": "https://dribbble.com/"
+  },
+  "work": [
+    {
+      "slug": "neon-pulse",
+      "title": "Neon Pulse",
+      "category": "Brand Identity",
+      "year": "2025",
+      "cover": "/assets/work/neon-pulse/cover.svg",
+      "coverHover": "/assets/work/neon-pulse/cover-hover.svg",
+      "coverAlt": "Neon Pulse brand identity — electric lime on deep black",
+      "href": "https://github.com/CHAOTIC-RAY/portfolio",
+      "featured": true
+    },
+    {
+      "slug": "editorial-noir",
+      "title": "Editorial Noir",
+      "category": "Editorial",
+      "year": "2024",
+      "cover": "/assets/work/editorial-noir/cover.svg",
+      "coverAlt": "Editorial Noir magazine spread — high contrast typography",
+      "href": "https://github.com/CHAOTIC-RAY/portfolio"
+    },
+    {
+      "slug": "terra-form",
+      "title": "Terra Form",
+      "category": "Packaging",
+      "year": "2024",
+      "cover": "/assets/work/terra-form/cover.svg",
+      "coverAlt": "Terra Form sustainable packaging system",
+      "href": "https://github.com/CHAOTIC-RAY/portfolio"
+    },
+    {
+      "slug": "signal-ui",
+      "title": "Signal UI",
+      "category": "Digital",
+      "year": "2023",
+      "cover": "/assets/work/signal-ui/cover.svg",
+      "coverAlt": "Signal UI design system — components and patterns",
+      "href": "https://github.com/CHAOTIC-RAY/portfolio"
+    }
+  ],
+  "clients": [
+    { "name": "Studio A", "logo": "/assets/clients/studio-a.svg", "logoAlt": "Studio A" },
+    { "name": "Form Co", "logo": "/assets/clients/form-co.svg", "logoAlt": "Form Co" },
+    { "name": "North", "logo": "/assets/clients/north.svg", "logoAlt": "North" }
+  ]
+}

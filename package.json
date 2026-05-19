@@ -1,0 +1,28 @@
+{
+  "name": "portfolio",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Portfolio site on Cloudflare Workers",
+  "scripts": {
+    "build": "npm run build --workspace=frontend && npm run build --workspace=worker",
+    "build:frontend": "npm run build --workspace=frontend",
+    "build:worker": "npm run build --workspace=worker",
+    "dev": "npm run build:frontend && wrangler dev",
+    "deploy": "npm run build && wrangler deploy",
+    "check": "wrangler check",
+    "types": "wrangler types",
+    "assets:check": "node scripts/check-assets.mjs",
+    "prebuild": "npm run assets:check"
+  },
+  "workspaces": [
+    "frontend",
+    "worker"
+  ],
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "wrangler": "^4.34.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

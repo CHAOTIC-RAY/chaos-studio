@@ -1,0 +1,14 @@
+{
+  "name": "worker",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --format=esm --outfile=dist/index.js --platform=browser --target=es2022",
+    "dev": "esbuild src/index.ts --bundle --format=esm --outfile=dist/index.js --platform=browser --target=es2022 --watch"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250528.0",
+    "esbuild": "^0.25.5"
+  }
+}

@@ -1,0 +1,26 @@
+[data-reveal] {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .scroll-cue-line {
+    animation: none;
+  }
+
+  .project-cover {
+    transition: none;
+  }
+
+  .project-overlay {
+    opacity: 1;
+  }
+}
