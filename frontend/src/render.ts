@@ -280,7 +280,7 @@ function renderScreenMedia(media: DeviceMedia, label: string, kind: "desktop" | 
           `<img class="device__slide" src="${src}" alt="${alt}" loading="${i === 0 ? "eager" : "lazy"}" style="--slide-i:${i};--slide-count:${count}" />`,
       )
       .join("");
-    return `<motion div class="device__carousel device__carousel--${count}" aria-label="${alt}">${slides}</div>`;
+    return `<motion div class="device__carousel device__carousel--${count}" aria-label="${alt}">${slides}</motion>`;
   }
   return `<img class="device__media" src="${media.image}" alt="${alt}" loading="lazy" width="${kind === "desktop" ? 1200 : 390}" height="${kind === "desktop" ? 750 : 844}" />`;
 }
