@@ -435,51 +435,39 @@
   overflow: hidden;
 }
 
-.cv-project__mock-container {
+.cv-project__mock-wrapper {
   position: absolute;
   inset: 0;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.3s ease;
 }
 
-.cv-project__mock-grid-overlay {
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  background-size: 16px 16px;
-  pointer-events: none;
-}
-
-.cv-project__mock-split {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cv-project__mock-desktop-img {
+.cv-project__mock-desktop {
   position: absolute;
   width: 80%;
-  height: auto;
+  height: 80%;
   left: 5%;
   top: 15%;
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
   border-radius: 6px;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
   transform: perspective(1000px) rotateY(15deg) rotateX(5deg) scale(0.95);
   transition: transform 0.4s ease;
 }
 
-.cv-project__mock-mobile-img {
+.cv-project__mock-mobile {
   position: absolute;
   width: 28%;
-  height: auto;
+  height: 75%;
   right: 6%;
   bottom: 8%;
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
   z-index: 2;
   border-radius: 8px;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.12);
@@ -487,33 +475,40 @@
   transition: transform 0.4s ease;
 }
 
-.cv-project:hover .cv-project__mock-desktop-img {
-  transform: perspective(1000px) rotateY(8deg) rotateX(3deg) scale(0.98) translateY(-4px);
-}
-
-.cv-project:hover .cv-project__mock-mobile-img {
-  transform: perspective(1000px) rotateY(-5deg) rotateX(3deg) translateY(0);
-}
-
-.cv-project__mock-single-mobile {
+.cv-project__mock-mobile-only {
+  width: 32%;
   height: 90%;
-  width: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cv-project__mock-single-mobile img {
-  height: 100%;
-  width: auto;
-  object-fit: contain;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
   border-radius: 12px;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.15);
   transform: translateY(4px);
   transition: transform 0.4s ease;
 }
 
-.cv-project:hover .cv-project__mock-single-mobile img {
+.cookxpert-mock {
+  background: radial-gradient(circle at 30% 40%, rgba(255, 150, 210, 0.35), transparent 50%), radial-gradient(circle at 70% 60%, rgba(213, 119, 237, 0.25), transparent 45%);
+}
+
+.forge-mock {
+  background: linear-gradient(90deg, transparent 48%, rgba(255, 255, 255, 0.06) 50%, transparent 52%), linear-gradient(180deg, #2a1f30, #151515);
+  background-size: 24px 100%, 100% 100%;
+}
+
+.faisa-mock {
+  background: linear-gradient(160deg, rgba(189, 244, 79, 0.15), transparent 40%), repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 12px);
+}
+
+.cv-project:hover .cv-project__mock-desktop {
+  transform: perspective(1000px) rotateY(8deg) rotateX(3deg) scale(0.98) translateY(-4px);
+}
+
+.cv-project:hover .cv-project__mock-mobile {
+  transform: perspective(1000px) rotateY(-5deg) rotateX(3deg) translateY(0);
+}
+
+.cv-project:hover .cv-project__mock-mobile-only {
   transform: translateY(0) scale(1.03);
 }
 
@@ -602,15 +597,105 @@
 }
 
 .cv-tool-icon {
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
   display: grid;
   place-items: center;
-  font-size: 7px;
-  font-weight: 700;
+  font-size: 10px;
+  font-weight: 800;
   color: #fff;
-  box-shadow: 3px 2px 7px rgba(0, 0, 0, 0.29);
+  background: #333;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cv-tool-icon:hover {
+  transform: translateY(-2px) scale(1.05);
+}
+
+/* Figma branding */
+.tool-figma {
+  background: linear-gradient(135deg, #1abc9c, #a259ff, #f24e1e, #ff7262);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 12px rgba(162, 89, 255, 0.4);
+}
+
+/* Adobe Brand colors with clean modern gradients */
+.tool-photoshop {
+  background: #001c3a;
+  color: #00c8ff;
+  border-color: #00c8ff;
+  box-shadow: 0 0 10px rgba(0, 200, 255, 0.3);
+}
+
+.tool-illustrator {
+  background: #331c00;
+  color: #ff9a00;
+  border-color: #ff9a00;
+  box-shadow: 0 0 10px rgba(255, 154, 0, 0.3);
+}
+
+.tool-lightroom {
+  background: #001f2b;
+  color: #31a8ff;
+  border-color: #31a8ff;
+  box-shadow: 0 0 10px rgba(49, 168, 255, 0.3);
+}
+
+.tool-indesign {
+  background: #2e0014;
+  color: #ff3366;
+  border-color: #ff3366;
+  box-shadow: 0 0 10px rgba(255, 51, 102, 0.3);
+}
+
+.tool-premiere-pro {
+  background: #110022;
+  color: #9999ff;
+  border-color: #9999ff;
+  box-shadow: 0 0 10px rgba(153, 153, 255, 0.3);
+}
+
+.tool-after-effects {
+  background: #16002e;
+  color: #9999ff;
+  border-color: #9999ff;
+  box-shadow: 0 0 10px rgba(153, 153, 255, 0.3);
+}
+
+.tool-adobe-xd {
+  background: #2e0027;
+  color: #ff61f6;
+  border-color: #ff61f6;
+  box-shadow: 0 0 10px rgba(255, 97, 246, 0.3);
+}
+
+.tool-dreamweaver {
+  background: #212100;
+  color: #ff61f6;
+  border-color: #ff61f6;
+  box-shadow: 0 0 10px rgba(255, 97, 246, 0.3);
+}
+
+/* Microsoft Brand colors */
+.tool-powerpoint {
+  background: #3d1308;
+  color: #d35230;
+  border-color: #d35230;
+}
+
+.tool-word {
+  background: #0a1c3a;
+  color: #2b579a;
+  border-color: #2b579a;
+}
+
+.tool-excel {
+  background: #092815;
+  color: #217346;
+  border-color: #217346;
 }
 
 .cv-skill-card--primary {
