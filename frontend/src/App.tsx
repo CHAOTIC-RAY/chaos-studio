@@ -28,32 +28,36 @@ function TopRow({ data }: { data: Portfolio }) {
       viewport={{ once: true, margin: "-20px" }}
       variants={stagger}
     >
-      <GlassCard className="cv-top__objective" variants={fadeUp}>
-        <h2>{data.objective.title}</h2>
-        <p>{data.objective.body}</p>
-      </GlassCard>
+      <div className="cv-top__left">
+        <GlassCard className="cv-top__objective" variants={fadeUp}>
+          <h2>{data.objective.title}</h2>
+          <p>{data.objective.body}</p>
+        </GlassCard>
 
-      <GlassCard className="cv-top__card" variants={fadeUp}>
-        <h2>Soft Skills</h2>
-        <motion.div className="cv-top__pills" variants={stagger}>
-          {data.softSkills.map((skill) => (
-            <motion.span key={skill} className="pill" variants={fadeUp}>
-              {skill}
-            </motion.span>
-          ))}
-        </motion.div>
-      </GlassCard>
+        <div className="cv-top__skills-interests">
+          <GlassCard className="cv-top__card" variants={fadeUp}>
+            <h2>Soft Skills</h2>
+            <motion.div className="cv-top__pills" variants={stagger}>
+              {data.softSkills.map((skill) => (
+                <motion.span key={skill} className="pill" variants={fadeUp}>
+                  {skill}
+                </motion.span>
+              ))}
+            </motion.div>
+          </GlassCard>
 
-      <GlassCard className="cv-top__card" variants={fadeUp}>
-        <h2>Interests</h2>
-        <motion.div className="cv-top__pills" variants={stagger}>
-          {data.interests.map((item) => (
-            <motion.span key={item.label} className="pill pill--outline" variants={fadeUp}>
-              <span aria-hidden>{item.emoji}</span> {item.label}
-            </motion.span>
-          ))}
-        </motion.div>
-      </GlassCard>
+          <GlassCard className="cv-top__card" variants={fadeUp}>
+            <h2>Interests</h2>
+            <motion.div className="cv-top__pills" variants={stagger}>
+              {data.interests.map((item) => (
+                <motion.span key={item.label} className="pill pill--outline" variants={fadeUp}>
+                  <span aria-hidden>{item.emoji}</span> {item.label}
+                </motion.span>
+              ))}
+            </motion.div>
+          </GlassCard>
+        </div>
+      </div>
 
       <GlassCard className="cv-portfolio cv-top__portfolio" variants={fadeUp}>
         <span className="cv-portfolio__label">Portfolio</span>
@@ -84,125 +88,170 @@ function ChaosStudio({ data }: { data: Portfolio["chaosStudio"] }) {
   );
 }
 
+const businessLogos: Record<string, React.ReactNode> = {
+  rainbow: (
+    <svg viewBox="0 0 40 40" className="biz-logo biz-logo--rainbow" width="32" height="32" style={{ overflow: "visible" }}>
+      <defs>
+        <linearGradient id="rainbow-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#d577ed" />
+          <stop offset="100%" stopColor="#a848c6" />
+        </linearGradient>
+      </defs>
+      <path d="M8 26 A 12 12 0 0 1 32 26" fill="none" stroke="url(#rainbow-grad)" strokeWidth="3.5" strokeLinecap="round" />
+      <path d="M13 26 A 7 7 0 0 1 27 26" fill="none" stroke="url(#rainbow-grad)" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M14 26 H26 V31 H14 Z" fill="rgba(213, 119, 237, 0.15)" stroke="url(#rainbow-grad)" strokeWidth="1" />
+    </svg>
+  ),
+  polytechnic: (
+    <svg viewBox="0 0 40 40" className="biz-logo biz-logo--poly" width="32" height="32" style={{ overflow: "visible" }}>
+      <defs>
+        <linearGradient id="poly-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ffd700" />
+          <stop offset="100%" stopColor="#d5a007" />
+        </linearGradient>
+      </defs>
+      <path d="M20 5 L34 12 V24 C34 31 28 35 20 37 C12 35 6 31 6 24 V12 Z" fill="rgba(255,215,0,0.06)" stroke="url(#poly-grad)" strokeWidth="1.8" />
+      <path d="M12 21 C15 19 20 21 20 21 C20 21 25 19 28 21 V15 C25 13 20 15 20 15 C20 15 15 13 12 15 Z" fill="none" stroke="url(#poly-grad)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <line x1="20" y1="15" x2="20" y2="21" stroke="url(#poly-grad)" strokeWidth="1.5" />
+    </svg>
+  ),
+  ayha: (
+    <svg viewBox="0 0 40 40" className="biz-logo biz-logo--ayha" width="32" height="32" style={{ overflow: "visible" }}>
+      <defs>
+        <linearGradient id="ayha-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#00c6ff" />
+          <stop offset="100%" stopColor="#0072ff" />
+        </linearGradient>
+      </defs>
+      <circle cx="20" cy="20" r="15" fill="rgba(0,198,255,0.04)" stroke="url(#ayha-grad)" strokeWidth="1.8" />
+      <path d="M11 23 C14 19 16 25 20 21 C24 17 26 23 29 19" fill="none" stroke="url(#ayha-grad)" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M13 18 C16 14 18 20 22 16 C26 12 28 18 29 14" fill="none" stroke="url(#ayha-grad)" strokeWidth="1.2" strokeOpacity="0.5" strokeLinecap="round" />
+    </svg>
+  ),
+};
+
 function Experience({ data }: { data: Portfolio["experience"] }) {
   return (
-    <>
-      <motion.div
-        className="cv-experience"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-40px" }}
-        variants={stagger}
-      >
-        {data.items.map((job) => (
-          <GlassCard
-            key={job.id}
-            className="cv-exp-card"
-            featured={job.featured}
-            variants={fadeUp}
-            whileHover={{ y: -4 }}
-          >
-            <div className="cv-exp-card__head">
-              <div className="cv-exp-card__logo">{job.logo}</div>
-              <div className="cv-exp-card__title">
-                <p className="cv-exp-card__company">{job.company}</p>
-                <p className="cv-exp-card__role">{job.role}</p>
-              </div>
-              <span className={job.featured ? "date-pill" : "date-pill date-pill--muted"}>
-                {job.period}
-              </span>
-            </div>
-            {job.description && <p className="cv-exp-card__desc">{job.description}</p>}
-          </GlassCard>
-        ))}
-      </motion.div>
-
-      <motion.div
-        className="cv-exp-details"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-20px" }}
-        variants={stagger}
-      >
-        {data.items.map((job) => (
-          <GlassCard key={`${job.id}-detail`} className="cv-exp-detail" variants={fadeUp}>
-            <div className="cv-exp-detail__head">
-              <span className="cv-exp-detail__logo">{job.logo}</span>
-              <div>
-                <h3>{job.company}</h3>
-                <p>{job.role}</p>
-              </div>
-              <span className="date-pill date-pill--muted">{job.period}</span>
-            </div>
-            {job.description && <p className="cv-exp-detail__summary">{job.description}</p>}
-            {job.bullets && (
-              <ul className="cv-exp-detail__bullets">
-                {job.bullets.map((bullet) => (
-                  <li key={bullet}>{bullet}</li>
-                ))}
-              </ul>
-            )}
-          </GlassCard>
-        ))}
-      </motion.div>
-    </>
-  );
-}
-
-function SocialPosts({ data }: { data: Portfolio["socialPosts"] }) {
-  return (
     <motion.div
-        className="cv-posts"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-20px" }}
-        variants={stagger}
-      >
-        {data.items.map((post) => (
-          <GlassCard
-            key={post.id}
-            className={`cv-post ${postAccentClass[post.accent] ?? "cv-post--purple"}`}
-            variants={fadeUp}
-          >
-            <div className="cv-post__meta">
-              <span className="cv-post__platform">{post.platform}</span>
-              <span className="cv-post__client">{post.client}</span>
+      className="cv-experience"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-40px" }}
+      variants={stagger}
+    >
+      {data.items.map((job) => (
+        <GlassCard
+          key={job.id}
+          className={`cv-exp-card ${job.featured ? "cv-exp-card--featured" : ""}`}
+          variants={fadeUp}
+          whileHover={{ y: -4 }}
+        >
+          <div className="cv-exp-card__head">
+            <div className="cv-exp-card__logo-container">
+              {businessLogos[job.id] || <span className="cv-exp-card__logo-fallback">{job.logo}</span>}
             </div>
-            <h3 className="cv-post__title">{post.title}</h3>
-            <p className="cv-post__desc">{post.description}</p>
-            <div className="cv-post__tags">
-              {post.tags.map((tag) => (
-                <span key={tag} className="pill pill--outline">
-                  {tag}
-                </span>
+            <div className="cv-exp-card__title">
+              <h3 className="cv-exp-card__company">{job.company}</h3>
+              <p className="cv-exp-card__role">{job.role}</p>
+            </div>
+            <span className={job.featured ? "date-pill" : "date-pill date-pill--muted"}>
+              {job.period}
+            </span>
+          </div>
+          {job.description && <p className="cv-exp-card__desc">{job.description}</p>}
+          {job.bullets && (
+            <ul className="cv-exp-card__bullets">
+              {job.bullets.map((bullet) => (
+                <li key={bullet}>{bullet}</li>
               ))}
-            </div>
-          </GlassCard>
-        ))}
+            </ul>
+          )}
+        </GlassCard>
+      ))}
     </motion.div>
   );
 }
 
+function SocialPosts({ data }: { data: Portfolio["socialPosts"] }) {
+  // Duplicate list to ensure seamless infinite looping scroll
+  const doubleItems = [...data.items, ...data.items];
+
+  return (
+    <div className="cv-posts-carousel-viewport">
+      <div className="cv-posts-carousel-track">
+        {doubleItems.map((post, idx) => (
+          <GlassCard
+            key={`${post.id}-${idx}`}
+            className={`cv-post-card ${postAccentClass[post.accent] ?? "cv-post-card--purple"}`}
+          >
+            <div 
+              className={`cv-post-card__img-box cv-post-card__img-box--${post.accent}`}
+              style={{ backgroundImage: `url(/images/posts/${post.id}.png)` }}
+            >
+              <div className="cv-post-card__img-overlay">
+                <span className="cv-post-card__img-platform">{post.platform}</span>
+                <div className="cv-post-card__img-body">
+                  <p className="cv-post-card__img-client">{post.client}</p>
+                  <p className="cv-post-card__img-title">{post.title}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="cv-post-card__content">
+              <div className="cv-post-card__meta">
+                <span className="cv-post-card__platform">{post.platform}</span>
+                <span className="cv-post-card__client">{post.client}</span>
+              </div>
+              <h3 className="cv-post-card__title">{post.title}</h3>
+              <p className="cv-post-card__desc">{post.description}</p>
+              <div className="cv-post-card__tags">
+                {post.tags.map((tag) => (
+                  <span key={tag} className="pill pill--outline">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </GlassCard>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ProjectMock({ id }: { id: string }) {
+  const desktopVideo = `/videos/projects/${id}_desktop.mp4`;
+  const mobileVideo = `/videos/projects/${id}_mobile.mp4`;
+
   if (id === "cookxpert") {
     return (
       <div className="cv-project__mock-wrapper cookxpert-mock">
-        <div className="cv-project__mock-desktop" style={{ backgroundImage: "url(/images/projects/cookxpert_desktop.png)" }} />
-        <div className="cv-project__mock-mobile" style={{ backgroundImage: "url(/images/projects/cookxpert_mobile.png)" }} />
+        <div className="cv-project__mock-desktop" style={{ backgroundImage: "url(/images/projects/cookxpert_desktop.png)" }}>
+          <video src={desktopVideo} autoPlay loop muted playsInline onError={(e) => { e.currentTarget.style.display = "none"; }} />
+        </div>
+        <div className="cv-project__mock-mobile" style={{ backgroundImage: "url(/images/projects/cookxpert_mobile.png)" }}>
+          <video src={mobileVideo} autoPlay loop muted playsInline onError={(e) => { e.currentTarget.style.display = "none"; }} />
+        </div>
       </div>
     );
   }
   if (id === "forge") {
     return (
       <div className="cv-project__mock-wrapper forge-mock">
-        <div className="cv-project__mock-desktop" style={{ backgroundImage: "url(/images/projects/forge_desktop.png)" }} />
-        <div className="cv-project__mock-mobile" style={{ backgroundImage: "url(/images/projects/forge_mobile.png)" }} />
+        <div className="cv-project__mock-desktop" style={{ backgroundImage: "url(/images/projects/forge_desktop.png)" }}>
+          <video src={desktopVideo} autoPlay loop muted playsInline onError={(e) => { e.currentTarget.style.display = "none"; }} />
+        </div>
+        <div className="cv-project__mock-mobile" style={{ backgroundImage: "url(/images/projects/forge_mobile.png)" }}>
+          <video src={mobileVideo} autoPlay loop muted playsInline onError={(e) => { e.currentTarget.style.display = "none"; }} />
+        </div>
       </div>
     );
   }
   return (
     <div className="cv-project__mock-wrapper faisa-mock">
-      <div className="cv-project__mock-mobile-only" style={{ backgroundImage: "url(/images/projects/faisa_mobile.png)" }} />
+      <div className="cv-project__mock-mobile-only" style={{ backgroundImage: "url(/images/projects/faisa_mobile.png)" }}>
+        <video src={mobileVideo} autoPlay loop muted playsInline onError={(e) => { e.currentTarget.style.display = "none"; }} />
+      </div>
     </div>
   );
 }
@@ -211,38 +260,30 @@ function FeaturedWork({ data }: { data: Portfolio["featuredWork"] }) {
   const tagClasses = ["tag--pink", "tag--gold", "tag--blue", "tag--teal", "tag--orange", "tag--red"];
 
   return (
-    <>
-      <motion.div
-        className="cv-projects"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-40px" }}
-        variants={stagger}
-      >
-        {data.projects.map((project) => (
-          <GlassCard
-            key={project.id}
-            className={`cv-project cv-project--${project.id}`}
-            variants={fadeUp}
-            whileHover={{ y: -4, scale: 1.01 }}
-          >
-            <span className="cv-project__badge">Recent Work</span>
-            <div className="cv-project__preview">
-              <ProjectMock id={project.id} />
-            </div>
-            {project.tags && (
-              <div className="cv-project__tags">
-                {project.tags.map((tag, i) => (
-                  <span key={tag} className={`tag ${tagClasses[i % tagClasses.length]}`}>
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-            <div className="cv-project__footer">
-              <div className="cv-project__info">
+    <motion.div
+      className="cv-projects"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-40px" }}
+      variants={stagger}
+    >
+      {data.projects.map((project) => (
+        <GlassCard
+          key={project.id}
+          className={`cv-project cv-project--${project.id}`}
+          variants={fadeUp}
+          whileHover={{ y: -4, scale: 1.01 }}
+        >
+          <span className="cv-project__badge">Recent Work</span>
+          <div className="cv-project__preview">
+            <ProjectMock id={project.id} />
+          </div>
+          
+          <div className="cv-project__body">
+            <div className="cv-project__meta-row">
+              <div className="cv-project__title-grp">
                 <h3>{project.name}</h3>
-                <p>{project.tagline}</p>
+                <p className="cv-project__tagline">{project.tagline}</p>
               </div>
               <a
                 href={project.href}
@@ -253,42 +294,30 @@ function FeaturedWork({ data }: { data: Portfolio["featuredWork"] }) {
                 {project.cta}
               </a>
             </div>
-          </GlassCard>
-        ))}
-      </motion.div>
-
-      <motion.div
-        className="cv-project-details"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-20px" }}
-        variants={stagger}
-      >
-        {data.projects.map((project) => (
-          <GlassCard key={`${project.id}-detail`} className="cv-project-detail" variants={fadeUp}>
-            <div className="cv-project-detail__head">
-              <h3>{project.name}</h3>
-              <a
-                href={project.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`btn-cta ${project.accent === "pink" ? "btn-cta--pink" : "btn-cta--white"}`}
-              >
-                {project.cta}
-              </a>
-            </div>
-            {project.description && <p className="cv-project-detail__desc">{project.description}</p>}
+            
+            {project.description && <p className="cv-project__desc">{project.description}</p>}
+            
             {project.highlights && (
-              <ul className="cv-project-detail__list">
+              <ul className="cv-project__highlights">
                 {project.highlights.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
               </ul>
             )}
-          </GlassCard>
-        ))}
-      </motion.div>
-    </>
+          </div>
+          
+          {project.tags && (
+            <div className="cv-project__tags">
+              {project.tags.map((tag, i) => (
+                <span key={tag} className={`tag ${tagClasses[i % tagClasses.length]}`}>
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </GlassCard>
+      ))}
+    </motion.div>
   );
 }
 
