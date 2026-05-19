@@ -646,8 +646,30 @@ main { padding-top: var(--header-h); }
   margin-bottom: 1.5rem;
 }
 .skill-card--primary { border-color: rgba(213, 119, 237, 0.35); }
-.tools { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.75rem; }
-.tools span { font-size: 0.75rem; padding: 0.2rem 0.5rem; background: rgba(0,0,0,0.25); border-radius: 4px; }
+.tools { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+.tool-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.65rem 0.35rem 0.5rem;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+}
+.tool-tag__icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  background-color: var(--tool-color, var(--purple-bright));
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+.tool-tag__label { line-height: 1; color: var(--text); }
 
 .edu-grid {
   display: grid; gap: 1rem;

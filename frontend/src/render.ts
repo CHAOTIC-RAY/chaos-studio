@@ -1,4 +1,5 @@
 import type { Portfolio } from "./types/portfolio";
+import { renderToolTag } from "./skill-icons";
 
 const PROJECT_IMAGES: Record<string, { desktop?: string; mobile?: string }> = {
   cookxpert: {
@@ -169,7 +170,7 @@ export function renderPage(p: Portfolio): string {
             <div class="glass-card skill-card ${cat.variant === "primary" ? "skill-card--primary" : ""}">
               <h3>${esc(cat.title)}</h3>
               ${cat.description ? `<p>${esc(cat.description)}</p>` : ""}
-              <div class="tools">${cat.tools.map((t) => `<span>${esc(t)}</span>`).join("")}</div>
+              <div class="tools">${cat.tools.map((t) => renderToolTag(t)).join("")}</div>
             </div>
           `,
             )
