@@ -798,15 +798,30 @@ main { padding-top: var(--header-h); }
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
+  width: max-content;
+  animation: work-marquee-scroll var(--marquee-duration, 32s) linear infinite;
+  will-change: transform;
+}
+.work-marquee__inner--reverse {
+  animation-direction: reverse;
+}
+.work-marquee__group {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
   white-space: nowrap;
   font-family: var(--font-display);
   font-weight: 700;
   text-transform: uppercase;
   font-size: clamp(2.25rem, 7vw, 5.5rem);
   line-height: 1;
-  will-change: transform;
+  padding-right: 3rem;
 }
-.work-marquee__inner > span { flex-shrink: 0; margin-right: 3rem; }
+.work-marquee__group > span { flex-shrink: 0; margin-right: 3rem; }
+@keyframes work-marquee-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
 .work-marquee__sep { color: rgba(255, 255, 255, 0.15); font-weight: 400; }
 .work-marquee__grad {
   background: linear-gradient(90deg, #a855f7, #e879f9);
@@ -829,11 +844,37 @@ main { padding-top: var(--header-h); }
 .work-marquee__accent { color: rgba(168, 72, 198, 0.55); }
 .work-marquee__fuchsia { color: #e879f9; }
 .work-marquee--static .work-marquee__inner {
-  animation: work-marquee-drift 36s linear infinite;
+  animation: work-marquee-scroll 40s linear infinite;
 }
-@keyframes work-marquee-drift {
-  from { transform: translateX(0); }
-  to { transform: translateX(-25%); }
+
+/* Device screen carousel (CookXpert frames) */
+.device__carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #0a0a0e;
+}
+.device__slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: top center;
+  opacity: 0;
+  animation: device-slide-fade calc(var(--slide-count, 4) * 2.8s) infinite;
+  animation-delay: calc(var(--slide-i, 0) * 2.8s);
+}
+@keyframes device-slide-fade {
+  0% { opacity: 0; }
+  4% { opacity: 1; }
+  22% { opacity: 1; }
+  26% { opacity: 0; }
+  100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .device__slide { animation: none; opacity: 0; }
+  .device__slide:first-child { opacity: 1; }
 }
 
 .site-footer {

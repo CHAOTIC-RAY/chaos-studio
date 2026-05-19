@@ -1,63 +1,49 @@
 import { prefersReducedMotion } from "./reduced-motion";
 
-function wrap(min: number, max: number, v: number): number {
-  const range = max - min;
-  return ((((v - min) % range) + range) % range) + min;
-}
-
-function initParallaxTrack(track: HTMLElement, baseVelocity: number): () => void {
-  const inner = track.querySelector<HTMLElement>(".work-marquee__inner");
-  if (!inner) return () => {};
-
-  let baseX = 0;
-  let direction = Math.sign(baseVelocity) || 1;
-  let smoothScrollVel = 0;
-  let lastScrollY = window.scrollY;
-  let raf = 0;
-  let lastTime = performance.now();
-
-  const frame = (now: number) => {
-    const delta = Math.min(now - lastTime, 64);
-    lastTime = now;
-
-    const scrollY = window.scrollY;
-    const instantVel = ((scrollY - lastScrollY) / delta) * 1000;
-    lastScrollY = scrollY;
-    smoothScrollVel += (instantVel - smoothScrollVel) * 0.12;
-
-    const velocityFactor = Math.max(-5, Math.min(5, smoothScrollVel / 200));
-
-    if (velocityFactor < 0) direction = -1;
-    else if (velocityFactor > 0) direction = 1;
-
-    let moveBy = direction * baseVelocity * (delta / 1000);
-    moveBy += direction * moveBy * Math.abs(velocityFactor);
-
-    baseX += moveBy;
-    inner.style.transform = `translate3d(${wrap(-20, -45, baseX)}%, 0, 0)`;
-
-    raf = requestAnimationFrame(frame);
-  };
-
-  raf = requestAnimationFrame(frame);
-  return () => cancelAnimationFrame(raf);
-}
-
-/** Scroll-accelerated client marquee (ported from WorkMarquee / ParallaxText). */
+/** Seamless CSS marquee with scroll-speed boost (replaces jumpy % wrap). */
 export function initWorkMarquee(): () => void {
   const section = document.querySelector(".work-marquee");
   if (!section) return () => {};
 
+  const rows = section.querySelectorAll<HTMLElement>(".work-marquee__row");
   if (prefersReducedMotion()) {
     section.classList.add("work-marquee--static");
     return () => {};
   }
 
   const cleanups: (() => void)[] = [];
-  section.querySelectorAll<HTMLElement>("[data-marquee-velocity]").forEach((row) => {
-    const v = Number(row.dataset.marqueeVelocity) || 1;
-    const track = row.querySelector<HTMLElement>(".work-marquee__track");
-    if (track) cleanups.push(initParallaxTrack(track, v));
+
+  rows.forEach((row) => {
+    const inner = row.querySelector<HTMLElement>(".work-marquee__inner");
+    if (!inner) return;
+
+    const reverse = Number(row.dataset.marqueeVelocity) < 0;
+    const baseDuration = 32;
+    inner.style.setProperty("--marquee-duration", `${baseDuration}s`);
+    if (reverse) inner.classList.add("work-marquee__inner--reverse");
+
+    let smoothVel = 0;
+    let lastY = window.scrollY;
+    let lastT = performance.now();
+    let raf = 0;
+
+    const tick = (now: number) => {
+      const dt = Math.max(now - lastT, 1);
+      lastT = now;
+      const y = window.scrollY;
+      const instant = ((y - lastY) / dt) * 1000;
+      lastY = y;
+      smoothVel += (instant - smoothVel) * 0.1;
+
+      const boost = Math.min(Math.abs(smoothVel) / 120, 4);
+      const duration = Math.max(8, baseDuration - boost * 6);
+      inner.style.setProperty("--marquee-duration", `${duration.toFixed(2)}s`);
+
+      raf = requestAnimationFrame(tick);
+    };
+
+    raf = requestAnimationFrame(tick);
+    cleanups.push(() => cancelAnimationFrame(raf));
   });
 
   return () => cleanups.forEach((fn) => fn());

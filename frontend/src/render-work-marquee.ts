@@ -1,12 +1,13 @@
-function repeatContent(html: string, times = 4): string {
-  return Array.from({ length: times }, () => html).join("");
+function marqueeGroup(content: string): string {
+  return `<span class="work-marquee__group">${content}</span>`;
 }
 
 function marqueeRow(content: string, velocity: number, mod: string): string {
+  const duplicated = marqueeGroup(content) + marqueeGroup(content);
   return `
     <div class="work-marquee__row work-marquee__row--${mod}" data-marquee-velocity="${velocity}">
       <div class="work-marquee__track">
-        <div class="work-marquee__inner">${repeatContent(content)}</div>
+        <div class="work-marquee__inner">${duplicated}</div>
       </div>
     </div>
   `;

@@ -3,28 +3,26 @@ import { CHAOS_LOGO_SVG } from "./brand/logo";
 import { renderToolTag } from "./skill-icons";
 import { renderWorkMarquee } from "./render-work-marquee";
 
-type DeviceMedia = { image: string; video?: string };
+type DeviceMedia = { image: string; frames?: string[] };
+
+const COOKXPERT_FRAMES = [
+  "/images/projects/frames/cookxpert/01-discover.png",
+  "/images/projects/frames/cookxpert/02-library.png",
+  "/images/projects/frames/cookxpert/02-fridge.png",
+  "/images/projects/frames/cookxpert/02-home.png",
+];
 
 const PROJECT_MEDIA: Record<string, { desktop?: DeviceMedia; mobile?: DeviceMedia }> = {
   cookxpert: {
-    desktop: {
-      image: "/images/projects/cookxpert_desktop.png",
-      video: "/images/projects/videos/cookxpert_desktop.webm",
-    },
-    mobile: {
-      image: "/images/projects/cookxpert_mobile.png",
-      video: "/images/projects/videos/cookxpert_mobile.webm",
-    },
+    desktop: { image: "/images/projects/cookxpert_desktop.png", frames: COOKXPERT_FRAMES },
+    mobile: { image: "/images/projects/cookxpert_mobile.png", frames: COOKXPERT_FRAMES },
   },
   forge: {
     desktop: { image: "/images/projects/forge_desktop.png" },
     mobile: { image: "/images/projects/forge_mobile.png" },
   },
   faisa: {
-    mobile: {
-      image: "/images/projects/faisa_mobile.png",
-      video: "/images/projects/videos/faisa_mobile.webm",
-    },
+    mobile: { image: "/images/projects/faisa_mobile.png" },
   },
 };
 
@@ -274,8 +272,15 @@ function renderPostCard(post: Portfolio["socialPosts"]["items"][0]): string {
 
 function renderScreenMedia(media: DeviceMedia, label: string, kind: "desktop" | "mobile"): string {
   const alt = `${esc(label)} — ${kind} app in use`;
-  if (media.video) {
-    return `<video class="device__media" src="${media.video}" poster="${media.image}" autoplay muted loop playsinline preload="metadata" aria-label="${alt}"></video>`;
+  if (media.frames && media.frames.length > 1) {
+    const count = media.frames.length;
+    const slides = media.frames
+      .map(
+        (src, i) =>
+          `<img class="device__slide" src="${src}" alt="${alt}" loading="${i === 0 ? "eager" : "lazy"}" style="--slide-i:${i};--slide-count:${count}" />`,
+      )
+      .join("");
+    return `<motion div class="device__carousel device__carousel--${count}" aria-label="${alt}">${slides}</div>`;
   }
   return `<img class="device__media" src="${media.image}" alt="${alt}" loading="lazy" width="${kind === "desktop" ? 1200 : 390}" height="${kind === "desktop" ? 750 : 844}" />`;
 }
