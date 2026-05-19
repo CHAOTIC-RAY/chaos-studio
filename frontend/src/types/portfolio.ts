@@ -38,6 +38,7 @@ export interface Portfolio {
       description: string;
       tags: string[];
       accent: string;
+      image?: string;
     }[];
   };
   featuredWork: {

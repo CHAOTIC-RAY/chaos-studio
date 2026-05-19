@@ -223,15 +223,21 @@ export function renderPage(p: Portfolio): string {
   `;
 }
 
+function postImageBase(post: Portfolio["socialPosts"]["items"][0]): string {
+  return post.image?.trim() || post.id;
+}
+
 function renderPostCard(post: Portfolio["socialPosts"]["items"][0]): string {
   const accent = POST_ACCENTS[post.accent] ?? "post-card--purple";
+  const imageBase = postImageBase(post);
   return `
     <article class="post-card ${accent}">
       <div class="post-card__media">
         <img
           class="post-card__img"
           data-post-id="${esc(post.id)}"
-          src="/images/posts/${esc(post.id)}.webp"
+          data-image-base="${esc(imageBase)}"
+          src="/images/posts/${esc(imageBase)}.webp"
           alt="${esc(post.title)} — ${esc(post.client)}"
           width="400"
           height="500"

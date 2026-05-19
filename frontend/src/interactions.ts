@@ -138,9 +138,10 @@ function initPostImageFallback(): () => void {
   const imgs = document.querySelectorAll<HTMLImageElement>(".post-card__img[data-post-id]");
   imgs.forEach((img) => {
     const id = img.dataset.postId;
-    if (!id) return;
+    const imageBase = img.dataset.imageBase || id;
+    if (!id || !imageBase) return;
     const placeholder = `/images/posts/_placeholders/${id}.svg`;
-    const sources = [".webp", ".jpg", ".png"].map((ext) => `/images/posts/${id}${ext}`);
+    const sources = [".webp", ".jpg", ".png"].map((ext) => `/images/posts/${imageBase}${ext}`);
     let i = 0;
     img.onerror = () => {
       i += 1;

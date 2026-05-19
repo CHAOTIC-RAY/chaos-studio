@@ -1,3 +1,5 @@
+import { getSocialPosts } from "./campaign-posts";
+
 export const portfolio = {
   profile: {
     name: "Ibrahim Wafig",
@@ -77,71 +79,7 @@ export const portfolio = {
       },
     ],
   },
-  socialPosts: {
-    subtitle: "Campaign & feed highlights",
-    items: [
-      {
-        id: "rainbow-sale",
-        platform: "Instagram",
-        client: "Rainbow Enterprise",
-        title: "Seasonal furniture sale carousel",
-        description:
-          "Multi-slide promo with price overlays, product cutouts, and bold typography tuned for mobile feed readability.",
-        tags: ["Carousel", "Price overlay", "Furniture"],
-        accent: "purple",
-      },
-      {
-        id: "rainbow-interior",
-        platform: "Facebook",
-        client: "Rainbow Enterprise",
-        title: "Interior styling feature post",
-        description:
-          "Lifestyle-led layout pairing room sets with brand gradients and soft shadows for a premium homeware feel.",
-        tags: ["Lifestyle", "Interior", "Brand"],
-        accent: "pink",
-      },
-      {
-        id: "cookxpert-launch",
-        platform: "Product",
-        client: "CookXpert",
-        title: "App launch announcement graphic",
-        description:
-          "Pink–purple gradient hero with feature callouts for Chef AI, meal guides, and Android APK availability.",
-        tags: ["Product", "UI promo", "AI"],
-        accent: "pink",
-      },
-      {
-        id: "chaos-brand",
-        platform: "Portfolio",
-        client: "ChaosStudio.mv",
-        title: "Studio identity system",
-        description:
-          "Logo lockups, purple glass card language, and social templates reused across client decks and CV layouts.",
-        tags: ["Branding", "Identity", "Glass UI"],
-        accent: "purple",
-      },
-      {
-        id: "polytechnic-class",
-        platform: "Education",
-        client: "Maldives Polytechnic",
-        title: "C3 class showcase poster",
-        description:
-          "Print-ready poster compiling student work with grid-based typography and high-contrast section labels.",
-        tags: ["Teaching", "Print", "Layout"],
-        accent: "gold",
-      },
-      {
-        id: "ayha-tourism",
-        platform: "Instagram",
-        client: "Ayha Maldives",
-        title: "Resort offer story set",
-        description:
-          "Vertical story frames with offer badges, ocean tones, and clear CTA buttons for limited-time packages.",
-        tags: ["Stories", "Tourism", "CTA"],
-        accent: "teal",
-      },
-    ],
-  },
+  socialPosts: getSocialPosts(),
   featuredWork: {
     subtitle: "Product Design & Web Apps",
     projects: [
