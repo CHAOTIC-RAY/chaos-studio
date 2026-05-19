@@ -61,7 +61,7 @@ export function renderPage(p: Portfolio): string {
       <nav class="nav" aria-label="Primary">
         ${nav.map((l) => `<a class="nav__link" href="#${l.id}">${l.label}</a>`).join("")}
       </nav>
-      <a class="nav-cta" href="${esc(p.profile.portfolioUrl)}" target="_blank" rel="noopener noreferrer">chaosstudio.mv</a>
+      <a class="nav-cta" href="${esc(p.contact.telegramUrl)}" target="_blank" rel="noopener noreferrer">Contact</a>
     </header>
 
     <main id="main">
@@ -217,7 +217,7 @@ export function renderPage(p: Portfolio): string {
 
     <footer class="site-footer">
       <p>© ${new Date().getFullYear()} ${esc(p.profile.name)} · ${esc(p.profile.role)}</p>
-      <a href="${esc(p.profile.portfolioUrl)}" target="_blank" rel="noopener noreferrer">chaosstudio.mv</a>
+      <a href="${esc(p.contact.telegramUrl)}" target="_blank" rel="noopener noreferrer">Contact on Telegram</a>
     </footer>
   `;
 }
