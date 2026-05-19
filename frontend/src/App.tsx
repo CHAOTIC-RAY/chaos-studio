@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { GlassCard } from "./components/GlassCard";
 import { SiteHero } from "./components/SiteHero";
@@ -88,7 +89,7 @@ function ChaosStudio({ data }: { data: Portfolio["chaosStudio"] }) {
   );
 }
 
-const businessLogos: Record<string, React.ReactNode> = {
+const businessLogos: Record<string, ReactNode> = {
   rainbow: (
     <svg viewBox="0 0 40 40" className="biz-logo biz-logo--rainbow" width="32" height="32" style={{ overflow: "visible" }}>
       <defs>
@@ -143,6 +144,7 @@ function Experience({ data }: { data: Portfolio["experience"] }) {
         <GlassCard
           key={job.id}
           className={`cv-exp-card ${job.featured ? "cv-exp-card--featured" : ""}`}
+          featured={job.featured}
           variants={fadeUp}
           whileHover={{ y: -4 }}
         >
