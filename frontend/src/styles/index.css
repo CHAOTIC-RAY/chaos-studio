@@ -862,15 +862,31 @@ main { padding-top: var(--header-h); }
   object-fit: contain;
   object-position: top center;
   opacity: 0;
-  animation: device-slide-fade calc(var(--slide-count, 4) * 2.8s) infinite;
-  animation-delay: calc(var(--slide-i, 0) * 2.8s);
+  animation-name: device-slide-fade;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-duration: calc(var(--slide-count, 4) * 2.6s);
+  animation-delay: calc(var(--slide-i, 0) * -2.6s);
+}
+.device__carousel--4 .device__slide {
+  animation-name: device-slide-fade-4;
+}
+.device__carousel--5 .device__slide,
+.device__carousel--6 .device__slide,
+.device__carousel--7 .device__slide {
+  animation-name: device-slide-fade-7;
+}
+@keyframes device-slide-fade-4 {
+  0%, 22% { opacity: 1; }
+  26%, 100% { opacity: 0; }
+}
+@keyframes device-slide-fade-7 {
+  0%, 13% { opacity: 1; }
+  16%, 100% { opacity: 0; }
 }
 @keyframes device-slide-fade {
-  0% { opacity: 0; }
-  4% { opacity: 1; }
-  22% { opacity: 1; }
-  26% { opacity: 0; }
-  100% { opacity: 0; }
+  0%, 22% { opacity: 1; }
+  26%, 100% { opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .device__slide { animation: none; opacity: 0; }

@@ -12,6 +12,16 @@ const COOKXPERT_FRAMES = [
   "/images/projects/frames/cookxpert/02-home.png",
 ];
 
+const FAISA_FRAMES = [
+  "/images/projects/frames/faisa/01-dashboard.png",
+  "/images/projects/frames/faisa/02-overview.png",
+  "/images/projects/frames/faisa/03-cards.png",
+  "/images/projects/frames/faisa/04-transfer.png",
+  "/images/projects/frames/faisa/05-bills.png",
+  "/images/projects/frames/faisa/06-detail.png",
+  "/images/projects/frames/faisa/07-profile.png",
+];
+
 const PROJECT_MEDIA: Record<string, { desktop?: DeviceMedia; mobile?: DeviceMedia }> = {
   cookxpert: {
     desktop: { image: "/images/projects/cookxpert_desktop.png", frames: COOKXPERT_FRAMES },
@@ -22,7 +32,7 @@ const PROJECT_MEDIA: Record<string, { desktop?: DeviceMedia; mobile?: DeviceMedi
     mobile: { image: "/images/projects/forge_mobile.png" },
   },
   faisa: {
-    mobile: { image: "/images/projects/faisa_mobile.png" },
+    mobile: { image: "/images/projects/frames/faisa/01-dashboard.png", frames: FAISA_FRAMES },
   },
 };
 
@@ -280,7 +290,7 @@ function renderScreenMedia(media: DeviceMedia, label: string, kind: "desktop" | 
           `<img class="device__slide" src="${src}" alt="${alt}" loading="${i === 0 ? "eager" : "lazy"}" style="--slide-i:${i};--slide-count:${count}" />`,
       )
       .join("");
-    return `<motion div class="device__carousel device__carousel--${count}" aria-label="${alt}">${slides}</motion>`;
+    return `<div class="device__carousel device__carousel--${count}" aria-label="${alt}">${slides}</div>`;
   }
   return `<img class="device__media" src="${media.image}" alt="${alt}" loading="lazy" width="${kind === "desktop" ? 1200 : 390}" height="${kind === "desktop" ? 750 : 844}" />`;
 }
