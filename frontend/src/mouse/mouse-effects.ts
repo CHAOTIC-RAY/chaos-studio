@@ -13,7 +13,7 @@ export function initMouseEffects(): () => void {
     initCursor(),
     initSpotlight(),
     initParallax(),
-    initTiltCards(),
+    initShowcaseTilt(),
     initHeroParallax(),
   ];
 
@@ -117,28 +117,89 @@ function initHeroParallax(): () => void {
   return () => cancelAnimationFrame(raf);
 }
 
-function initTiltCards(): () => void {
-  const cards = document.querySelectorAll<HTMLElement>("[data-tilt]");
-  const handlers: Array<{ el: HTMLElement; move: (e: MouseEvent) => void; leave: () => void }> = [];
+/** Subtle tilt on featured-work device previews only — smoothed via rAF lerp. */
+function initShowcaseTilt(): () => void {
+  const zones = document.querySelectorAll<HTMLElement>("[data-tilt-showcase]");
+  const cleanups: (() => void)[] = [];
 
-  cards.forEach((el) => {
-    const move = (e: MouseEvent) => {
+  zones.forEach((el) => {
+    let targetRx = 0;
+    let targetRy = 0;
+    let currentRx = 0;
+    let currentRy = 0;
+    let raf = 0;
+    let hovering = false;
+
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+    const apply = () => {
+      el.style.setProperty("--rx", `${currentRx.toFixed(3)}deg`);
+      el.style.setProperty("--ry", `${currentRy.toFixed(3)}deg`);
+    };
+
+    const loop = () => {
+      if (!hovering) {
+        targetRx = 0;
+        targetRy = 0;
+      }
+      currentRx = lerp(currentRx, targetRx, hovering ? 0.14 : 0.1);
+      currentRy = lerp(currentRy, targetRy, hovering ? 0.14 : 0.1);
+      apply();
+
+      const settled =
+        !hovering &&
+        Math.abs(currentRx) < 0.05 &&
+        Math.abs(currentRy) < 0.05 &&
+        Math.abs(targetRx) < 0.05 &&
+        Math.abs(targetRy) < 0.05;
+
+      if (settled) {
+        currentRx = 0;
+        currentRy = 0;
+        el.style.removeProperty("--rx");
+        el.style.removeProperty("--ry");
+        raf = 0;
+        return;
+      }
+      raf = requestAnimationFrame(loop);
+    };
+
+    const startLoop = () => {
+      if (!raf) raf = requestAnimationFrame(loop);
+    };
+
+    const onMove = (e: MouseEvent) => {
       const r = el.getBoundingClientRect();
       const px = (e.clientX - r.left) / r.width - 0.5;
       const py = (e.clientY - r.top) / r.height - 0.5;
-      el.style.transform = `perspective(900px) rotateX(${-py * 10}deg) rotateY(${px * 10}deg) translateZ(8px)`;
+      targetRx = -py * 5;
+      targetRy = px * 5;
+      startLoop();
     };
-    const leave = () => {
-      el.style.transform = "";
+
+    const onEnter = () => {
+      hovering = true;
+      startLoop();
     };
-    el.addEventListener("mousemove", move);
-    el.addEventListener("mouseleave", leave);
-    handlers.push({ el, move, leave });
+
+    const onLeave = () => {
+      hovering = false;
+      startLoop();
+    };
+
+    el.addEventListener("mouseenter", onEnter);
+    el.addEventListener("mousemove", onMove);
+    el.addEventListener("mouseleave", onLeave);
+
+    cleanups.push(() => {
+      cancelAnimationFrame(raf);
+      el.removeEventListener("mouseenter", onEnter);
+      el.removeEventListener("mousemove", onMove);
+      el.removeEventListener("mouseleave", onLeave);
+      el.style.removeProperty("--rx");
+      el.style.removeProperty("--ry");
+    });
   });
 
-  return () =>
-    handlers.forEach(({ el, move, leave }) => {
-      el.removeEventListener("mousemove", move);
-      el.removeEventListener("mouseleave", leave);
-    });
+  return () => cleanups.forEach((fn) => fn());
 }

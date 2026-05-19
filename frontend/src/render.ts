@@ -12,6 +12,12 @@ const PROJECT_IMAGES: Record<string, { desktop?: string; mobile?: string }> = {
   faisa: { mobile: "/images/projects/faisa_mobile.png" },
 };
 
+const PROJECT_LIVE_URL: Record<string, string> = {
+  cookxpert: "cookxpert.app",
+  forge: "forge.app",
+  faisa: "Mobile concept",
+};
+
 const POST_ACCENTS: Record<string, string> = {
   purple: "post-card--purple",
   pink: "post-card--pink",
@@ -79,10 +85,10 @@ export function renderPage(p: Portfolio): string {
           <h2>${esc(p.objective.title)}</h2>
         </div>
         <div class="grid-2" data-reveal>
-          <div class="glass-card" data-tilt>
+          <div class="glass-card">
             <p class="lead">${esc(p.objective.body)}</p>
           </div>
-          <div class="glass-card glass-card--compact" data-tilt>
+          <div class="glass-card glass-card--compact">
             <h3>Soft skills</h3>
             <div class="pills">${p.softSkills.map((s) => `<span class="pill">${esc(s)}</span>`).join("")}</div>
             <h3>Interests</h3>
@@ -96,7 +102,7 @@ export function renderPage(p: Portfolio): string {
           <p class="eyebrow">${esc(p.chaosStudio.tagline)}</p>
           <h2>${esc(p.chaosStudio.title)}</h2>
         </div>
-        <div class="glass-card" data-reveal data-tilt>
+        <div class="glass-card" data-reveal>
           <p class="lead">${esc(p.chaosStudio.description)}</p>
           <ul class="bullet-list">${p.chaosStudio.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul>
         </div>
@@ -111,7 +117,7 @@ export function renderPage(p: Portfolio): string {
           ${p.experience.items
             .map(
               (job) => `
-            <article class="glass-card exp-card ${job.featured ? "exp-card--featured" : ""}" data-reveal data-tilt>
+            <article class="glass-card exp-card ${job.featured ? "exp-card--featured" : ""}" data-reveal>
               <div class="exp-head">
                 <span class="exp-logo">${esc(job.logo)}</span>
                 <div>
@@ -149,7 +155,7 @@ export function renderPage(p: Portfolio): string {
           <h2>${esc(p.featuredWork.subtitle)}</h2>
         </div>
         <div class="work-stack">
-          ${p.featuredWork.projects.map((proj) => renderProject(proj)).join("")}
+          ${p.featuredWork.projects.map((proj, i) => renderProject(proj, i)).join("")}
         </div>
       </section>
 
@@ -221,7 +227,7 @@ export function renderPage(p: Portfolio): string {
 function renderPostCard(post: Portfolio["socialPosts"]["items"][0]): string {
   const accent = POST_ACCENTS[post.accent] ?? "post-card--purple";
   return `
-    <article class="post-card ${accent}" data-tilt>
+    <article class="post-card ${accent}">
       <div class="post-card__media">
         <img
           class="post-card__img"
@@ -245,32 +251,71 @@ function renderPostCard(post: Portfolio["socialPosts"]["items"][0]): string {
   `;
 }
 
-function renderProject(proj: Portfolio["featuredWork"]["projects"][0]): string {
+function renderBrowserFrame(desktopSrc: string, label: string, liveUrl: string): string {
+  return `
+    <div class="device device--browser" aria-label="${esc(label)} desktop preview">
+      <div class="device__chrome">
+        <span class="device__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="device__url">${esc(liveUrl)}</span>
+      </div>
+      <div class="device__screen">
+        <img src="${desktopSrc}" alt="${esc(label)} — desktop app in use" loading="lazy" width="1200" height="750" />
+      </div>
+    </div>
+  `;
+}
+
+function renderPhoneFrame(mobileSrc: string, label: string): string {
+  return `
+    <div class="device device--phone" aria-label="${esc(label)} mobile preview">
+      <div class="device__bezel">
+        <span class="device__notch" aria-hidden="true"></span>
+        <div class="device__screen">
+          <img src="${mobileSrc}" alt="${esc(label)} — mobile app in use" loading="lazy" width="390" height="844" />
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderProject(proj: Portfolio["featuredWork"]["projects"][0], index: number): string {
   const imgs = PROJECT_IMAGES[proj.id] ?? {};
-  const preview = imgs.desktop
-    ? `<div class="work-preview work-preview--dual">
-        <div class="work-mock work-mock--desktop" style="background-image:url('${imgs.desktop}')"></div>
-        ${imgs.mobile ? `<div class="work-mock work-mock--mobile" style="background-image:url('${imgs.mobile}')"></div>` : ""}
-      </div>`
-    : imgs.mobile
-      ? `<div class="work-preview"><div class="work-mock work-mock--mobile-only" style="background-image:url('${imgs.mobile}')"></div></div>`
-      : `<div class="work-preview work-preview--placeholder"><span>${esc(proj.name)}</span></div>`;
+  const liveUrl = PROJECT_LIVE_URL[proj.id] ?? proj.name;
+  const featured = index === 0;
+
+  const devices: string[] = [];
+  if (imgs.desktop) devices.push(renderBrowserFrame(imgs.desktop, proj.name, liveUrl));
+  if (imgs.mobile) devices.push(renderPhoneFrame(imgs.mobile, proj.name));
+
+  const deviceBlock =
+    devices.length > 0
+      ? `<div class="work-showcase__devices ${devices.length > 1 ? "work-showcase__devices--dual" : "work-showcase__devices--solo"}" data-tilt-showcase>
+          ${devices.join("")}
+        </div>`
+      : `<div class="work-showcase__devices work-showcase__devices--placeholder"><span>${esc(proj.name)}</span></div>`;
+
+  const highlights = proj.highlights
+    ? `<ul class="work-showcase__highlights">${proj.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul>`
+    : "";
+
+  const tags = proj.tags
+    ? `<div class="work-showcase__tags">${proj.tags.slice(0, 6).map((t) => `<span>${esc(t)}</span>`).join("")}</div>`
+    : "";
 
   return `
-    <article class="work-card glass-card" data-reveal data-tilt id="project-${esc(proj.id)}">
-      <span class="work-badge">Recent work</span>
-      ${preview}
-      <div class="work-body">
-        <div class="work-meta">
-          <div>
-            <h3>${esc(proj.name)}</h3>
-            <p class="work-tagline">${esc(proj.tagline)}</p>
-          </div>
-          <a class="btn btn-primary btn-sm" href="${esc(proj.href)}" target="_blank" rel="noopener noreferrer">${esc(proj.cta)}</a>
+    <article class="work-showcase work-showcase--${esc(proj.id)} ${featured ? "work-showcase--featured" : ""}" data-reveal id="project-${esc(proj.id)}">
+      <div class="work-showcase__glow" aria-hidden="true"></div>
+      <div class="work-showcase__stage">
+        ${deviceBlock}
+        <div class="work-showcase__panel">
+          <span class="work-showcase__label">${featured ? "Featured product" : "Web & mobile"}</span>
+          <h3>${esc(proj.name)}</h3>
+          <p class="work-showcase__tagline">${esc(proj.tagline)}</p>
+          ${proj.description ? `<p class="work-showcase__desc">${esc(proj.description)}</p>` : ""}
+          ${highlights}
+          ${tags}
+          <a class="btn btn-primary btn-sm work-showcase__cta" href="${esc(proj.href)}" target="_blank" rel="noopener noreferrer">${esc(proj.cta)}</a>
         </div>
-        ${proj.description ? `<p>${esc(proj.description)}</p>` : ""}
-        ${proj.highlights ? `<ul class="bullet-list">${proj.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul>` : ""}
-        ${proj.tags ? `<div class="tag-row">${proj.tags.slice(0, 6).map((t) => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}
       </div>
     </article>
   `;
