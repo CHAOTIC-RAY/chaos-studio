@@ -1,5 +1,7 @@
 import type { Portfolio } from "./types/portfolio";
+import { CHAOS_LOGO_SVG } from "./brand/logo";
 import { renderToolTag } from "./skill-icons";
+import { renderWorkMarquee } from "./render-work-marquee";
 
 const PROJECT_IMAGES: Record<string, { desktop?: string; mobile?: string }> = {
   cookxpert: {
@@ -56,7 +58,7 @@ export function renderPage(p: Portfolio): string {
 
     <header class="site-header">
       <a class="logo" href="#top">
-        <span class="logo-mark" aria-hidden="true"></span>
+        ${CHAOS_LOGO_SVG}
         <span class="logo-text">${esc(p.profile.name)}</span>
       </a>
       <nav class="nav" aria-label="Primary">
@@ -146,6 +148,8 @@ export function renderPage(p: Portfolio): string {
           ${p.featuredWork.projects.map((proj, i) => renderProject(proj, i)).join("")}
         </div>
       </section>
+
+      ${renderWorkMarquee()}
 
       <section id="skills" class="section">
         <div class="section-head" data-reveal>

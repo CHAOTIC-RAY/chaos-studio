@@ -4,6 +4,7 @@ import { initCanvasBackground } from "./background/canvas-bg";
 import { initInteractions } from "./interactions";
 import { initMouseEffects } from "./mouse/mouse-effects";
 import { initHeaderScroll, initScrollAnimations } from "./motion/scroll";
+import { initWorkMarquee } from "./motion/work-marquee";
 import { renderPage } from "./render";
 
 async function init(): Promise<void> {
@@ -20,6 +21,7 @@ async function init(): Promise<void> {
     cleanups.push(initMouseEffects());
     cleanups.push(initCanvasBackground());
     cleanups.push(initScrollAnimations());
+    cleanups.push(initWorkMarquee());
     cleanups.push(initHeaderScroll());
     cleanups.push(initInteractions());
     cleanups.push(bindNav());
