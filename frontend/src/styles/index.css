@@ -1,4 +1,5 @@
 @import "./tokens.css";
+@import "./print-pdf.css";
 
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -131,8 +132,14 @@ h2 { font-size: clamp(2rem, 4vw, 3rem); }
   text-shadow: 0 0 20px rgba(213, 119, 237, 0.5);
 }
 
-.nav-cta {
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   margin-left: auto;
+}
+
+.nav-cta {
   padding: 0.45rem 1rem;
   font-size: 0.8rem;
   border-radius: 999px;
@@ -140,11 +147,38 @@ h2 { font-size: clamp(2rem, 4vw, 3rem); }
   border: 1px solid rgba(213, 119, 237, 0.45);
   color: var(--purple-bright);
   box-shadow: 0 0 24px rgba(213, 119, 237, 0.2);
+  white-space: nowrap;
+}
+
+.btn-pdf-download {
+  padding: 0.45rem 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: inherit;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.btn-pdf-download:hover:not(:disabled) {
+  border-color: rgba(213, 119, 237, 0.5);
+  color: var(--purple-bright);
+  background: rgba(213, 119, 237, 0.12);
+}
+.btn-pdf-download:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+body.has-pointer-fx .btn-pdf-download {
+  cursor: pointer;
 }
 
 @media (min-width: 900px) {
   .nav { display: flex; }
-  .nav-cta { margin-left: 0; }
+  .header-actions { margin-left: 0; }
 }
 
 /* Layout */

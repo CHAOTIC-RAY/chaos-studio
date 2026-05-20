@@ -5,6 +5,7 @@ import { initInteractions } from "./interactions";
 import { initMouseEffects } from "./mouse/mouse-effects";
 import { initHeaderScroll, initScrollAnimations } from "./motion/scroll";
 import { initWorkMarquee } from "./motion/work-marquee";
+import { downloadPortfolioPdf } from "./pdf-export";
 import { renderPage } from "./render";
 
 async function init(): Promise<void> {
@@ -26,6 +27,7 @@ async function init(): Promise<void> {
     cleanups.push(initInteractions());
     cleanups.push(bindNav());
     cleanups.push(bindContactForm());
+    cleanups.push(bindPdfDownload(portfolio.profile.name));
 
     window.addEventListener("beforeunload", () => cleanups.forEach((fn) => fn()));
   } catch (err) {
@@ -94,6 +96,30 @@ function bindContactForm(): () => void {
 
   form.addEventListener("submit", handler);
   return () => form.removeEventListener("submit", handler);
+}
+
+function bindPdfDownload(profileName: string): () => void {
+  const btn = document.getElementById("download-pdf") as HTMLButtonElement | null;
+  if (!btn) return () => {};
+
+  const handler = async () => {
+    if (btn.disabled) return;
+    const label = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "Preparing PDF…";
+    try {
+      await downloadPortfolioPdf(profileName);
+    } catch (err) {
+      console.error(err);
+      alert("Could not create PDF. Try again or use your browser Print → Save as PDF.");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = label;
+    }
+  };
+
+  btn.addEventListener("click", handler);
+  return () => btn.removeEventListener("click", handler);
 }
 
 init();

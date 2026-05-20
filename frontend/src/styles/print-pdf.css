@@ -1,0 +1,164 @@
+/* PDF export & print — light paper layout, no motion UI */
+body.is-pdf-export {
+  background: #fff !important;
+  color: #1a1520 !important;
+  overflow: visible !important;
+  cursor: auto !important;
+}
+
+body.is-pdf-export .bg-layers,
+body.is-pdf-export .scroll-progress,
+body.is-pdf-export .mouse-spotlight,
+body.is-pdf-export .cursor-dot,
+body.is-pdf-export .cursor-ring,
+body.is-pdf-export .scroll-cue,
+body.is-pdf-export .hero-actions,
+body.is-pdf-export .site-header,
+body.is-pdf-export .contact-form,
+body.is-pdf-export .posts-drag-hint,
+body.is-pdf-export .hero-orb,
+body.is-pdf-export #bg-canvas {
+  display: none !important;
+}
+
+body.is-pdf-export main {
+  padding-top: 0 !important;
+}
+
+body.is-pdf-export .hero {
+  min-height: auto !important;
+  transform: none !important;
+  padding-top: 1rem !important;
+}
+
+body.is-pdf-export .hero-line {
+  color: #4e1370 !important;
+  text-shadow: none !important;
+}
+
+body.is-pdf-export .hero-line--dim {
+  color: #333 !important;
+  opacity: 0.7 !important;
+}
+
+body.is-pdf-export .eyebrow {
+  color: #7b3fa0 !important;
+}
+
+body.is-pdf-export .glass-card,
+body.is-pdf-export .work-showcase,
+body.is-pdf-export .post-card,
+body.is-pdf-export .exp-card {
+  background: #f8f6fa !important;
+  border: 1px solid #e0d8e8 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+body.is-pdf-export .work-marquee {
+  padding: 1rem 0 !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+body.is-pdf-export .work-marquee__row {
+  transform: none !important;
+  margin-top: 0.5rem !important;
+  padding: 0.75rem 0 !important;
+  background: #f0eaf5 !important;
+}
+
+body.is-pdf-export .work-marquee__inner {
+  animation: none !important;
+  transform: none !important;
+}
+
+body.is-pdf-export .work-marquee__grad,
+body.is-pdf-export .work-marquee__grad--alt,
+body.is-pdf-export .work-marquee__grad--gray {
+  color: #7b3fa0 !important;
+  background: none !important;
+  -webkit-text-fill-color: #7b3fa0 !important;
+}
+
+body.is-pdf-export .work-showcase__glow {
+  display: none !important;
+}
+
+body.is-pdf-export .work-showcase__stage {
+  grid-template-columns: 1fr !important;
+}
+
+body.is-pdf-export .work-showcase__devices {
+  transform: none !important;
+}
+
+body.is-pdf-export .posts-viewport {
+  overflow: visible !important;
+  mask-image: none !important;
+  cursor: default !important;
+}
+
+body.is-pdf-export .posts-track {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 1rem !important;
+  width: 100% !important;
+  transform: none !important;
+}
+
+body.is-pdf-export .post-card {
+  width: calc(50% - 0.5rem) !important;
+  flex-shrink: 0 !important;
+}
+
+body.is-pdf-export .section {
+  max-width: 100% !important;
+  padding: 1.25rem 1rem !important;
+}
+
+body.is-pdf-export .btn,
+body.is-pdf-export .nav-cta,
+body.is-pdf-export .work-showcase__cta {
+  border: 1px solid #7b3fa0 !important;
+  color: #4e1370 !important;
+  box-shadow: none !important;
+}
+
+body.is-pdf-export .site-footer {
+  border-top: 1px solid #e0d8e8 !important;
+  color: #555 !important;
+}
+
+@media print {
+  .bg-layers,
+  .scroll-progress,
+  .mouse-spotlight,
+  .cursor-dot,
+  .cursor-ring,
+  .scroll-cue,
+  .site-header,
+  .contact-form,
+  .btn-pdf-download,
+  #bg-canvas {
+    display: none !important;
+  }
+
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  main {
+    padding-top: 0 !important;
+  }
+
+  .section,
+  .glass-card,
+  .work-showcase {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
