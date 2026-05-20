@@ -40,15 +40,34 @@ function dedupePostCards(): void {
   });
 }
 
+function closeMobileNav(): void {
+  const drawer = document.getElementById("nav-drawer");
+  const toggle = document.getElementById("nav-toggle");
+  if (!drawer || !toggle) return;
+  drawer.classList.remove("is-open");
+  drawer.setAttribute("hidden", "");
+  toggle.setAttribute("aria-expanded", "false");
+  document.body.classList.remove("nav-open");
+}
+
 function freezeMotionForPdf(): void {
+  closeMobileNav();
+  document.documentElement.classList.add("is-pdf-export");
   document.body.classList.add("is-pdf-export");
+
+  document.querySelectorAll<HTMLElement>("[data-parallax], [data-reveal], [data-tilt-showcase]").forEach(
+    (el) => {
+      el.style.transform = "none";
+      el.style.opacity = "1";
+    },
+  );
 
   document.querySelectorAll<HTMLElement>(".work-marquee__inner").forEach((el) => {
     el.style.transform = "none";
     el.style.animation = "none";
   });
 
-  document.querySelectorAll<HTMLElement>("[data-tilt-showcase]").forEach((el) => {
+  document.querySelectorAll<HTMLElement>(".work-marquee__row").forEach((el) => {
     el.style.transform = "none";
   });
 
@@ -76,10 +95,11 @@ function freezeMotionForPdf(): void {
 }
 
 function restoreAfterPdf(): void {
+  document.documentElement.classList.remove("is-pdf-export");
   document.body.classList.remove("is-pdf-export");
 
   const selectors =
-    ".work-marquee__inner, .post-card, [data-tilt-showcase], .device__slide, .posts-track, video.device__media";
+    ".work-marquee__inner, .work-marquee__row, .post-card, [data-parallax], [data-reveal], [data-tilt-showcase], .device__slide, .posts-track, video.device__media";
   document.querySelectorAll<HTMLElement>(selectors).forEach((el) => el.removeAttribute("style"));
 }
 
@@ -97,8 +117,9 @@ async function captureBlock(el: HTMLElement, html2canvas: Html2CanvasFn): Promis
     height: rect.height,
     x: rect.left,
     y: rect.top + window.scrollY,
-    onclone: (_doc: Document, clonedEl: HTMLElement) => {
-      clonedEl.classList.add("is-pdf-export");
+    onclone: (doc: Document) => {
+      doc.documentElement.classList.add("is-pdf-export");
+      doc.body.classList.add("is-pdf-export");
     },
   });
 }
@@ -129,7 +150,7 @@ export async function downloadPortfolioPdf(profileName: string): Promise<void> {
 
   freezeMotionForPdf();
   window.scrollTo(0, 0);
-  await new Promise((r) => setTimeout(r, 400));
+  await new Promise((r) => setTimeout(r, 500));
 
   try {
     const [html2canvasModule, jspdfModule] = await Promise.all([
@@ -145,7 +166,7 @@ export async function downloadPortfolioPdf(profileName: string): Promise<void> {
     const blocks = collectBlocks(main);
     for (const { el } of blocks) {
       el.scrollIntoView({ block: "start" });
-      await new Promise((r) => setTimeout(r, 120));
+      await new Promise((r) => setTimeout(r, 150));
       const canvas = await captureBlock(el, html2canvas);
       y = addCanvasToPdf(pdf, canvas, y);
       if (y > A4_H - 40) {
