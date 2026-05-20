@@ -22,6 +22,19 @@ function currentTheme(): Theme {
   return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
 }
 
+/** Touch / coarse pointer: no mouse tracking, so blobs drift on their own. */
+function usesAutoBackgroundMotion(): boolean {
+  return window.matchMedia("(hover: none), (pointer: coarse)").matches;
+}
+
+function autoMotionTarget(t: number): { x: number; y: number } {
+  const s = t * 0.00055;
+  return {
+    x: 0.5 + Math.sin(s) * 0.26 + Math.sin(s * 1.65 + 1.2) * 0.1,
+    y: 0.5 + Math.cos(s * 0.85) * 0.22 + Math.cos(s * 1.35 + 0.6) * 0.09,
+  };
+}
+
 export function initCanvasBackground(): () => void {
   const canvas = document.getElementById("bg-canvas") as HTMLCanvasElement | null;
   if (!canvas || prefersReducedMotion()) return () => {};
@@ -33,10 +46,12 @@ export function initCanvasBackground(): () => void {
   const bctx = buffer.getContext("2d", { alpha: true });
   if (!bctx) return () => {};
 
+  const autoAnimate = usesAutoBackgroundMotion();
+
   const blobs = [
-    { x: 0.15, y: 0.25, r: 0.38, vx: 0, vy: 0, color: "" },
-    { x: 0.8, y: 0.15, r: 0.3, vx: 0, vy: 0, color: "" },
-    { x: 0.55, y: 0.75, r: 0.32, vx: 0, vy: 0, color: "" },
+    { x: 0.15, y: 0.25, r: 0.38, vx: 0, vy: 0, phase: 0, color: "" },
+    { x: 0.8, y: 0.15, r: 0.3, vx: 0, vy: 0, phase: 2.1, color: "" },
+    { x: 0.55, y: 0.75, r: 0.32, vx: 0, vy: 0, phase: 4.2, color: "" },
   ];
 
   const syncPalette = () => {
@@ -69,17 +84,32 @@ export function initCanvasBackground(): () => void {
     buffer.height = bh;
   };
 
-  const drawBlobs = (target: CanvasRenderingContext2D, tw: number, th: number) => {
-    const { x: mx, y: my } = getSmoothMouse();
+  const drawBlobs = (target: CanvasRenderingContext2D, tw: number, th: number, time: number) => {
+    const attractTarget = autoAnimate ? autoMotionTarget(time) : getSmoothMouse();
+    const mx = attractTarget.x;
+    const my = attractTarget.y;
     target.clearRect(0, 0, tw, th);
+
+    const driftT = time * 0.001;
 
     for (let i = 0; i < blobs.length; i++) {
       const b = blobs[i];
-      const attract = i === 0 ? 0.018 : 0.01;
+      const attract = autoAnimate ? (i === 0 ? 0.012 : 0.008) : i === 0 ? 0.018 : 0.01;
+
+      if (autoAnimate) {
+        b.vx += Math.sin(driftT * 0.9 + b.phase) * 0.00012;
+        b.vy += Math.cos(driftT * 0.75 + b.phase) * 0.00012;
+        b.x += Math.sin(driftT * 0.35 + b.phase) * 0.00025;
+        b.y += Math.cos(driftT * 0.4 + b.phase) * 0.00025;
+      }
+
       b.x += (mx - b.x) * attract + b.vx;
       b.y += (my - b.y) * attract + b.vy;
-      b.vx *= 0.98;
-      b.vy *= 0.98;
+      b.vx *= autoAnimate ? 0.992 : 0.98;
+      b.vy *= autoAnimate ? 0.992 : 0.98;
+
+      b.x = Math.max(0.05, Math.min(0.95, b.x));
+      b.y = Math.max(0.05, Math.min(0.95, b.y));
 
       const cx = b.x * tw;
       const cy = b.y * th;
@@ -94,8 +124,8 @@ export function initCanvasBackground(): () => void {
     }
   };
 
-  const draw = () => {
-    drawBlobs(bctx, bw, bh);
+  const draw = (time: number) => {
+    drawBlobs(bctx, bw, bh, time);
     applyBayerDither(bctx, bw, bh, currentTheme() === "light" ? 0.18 : 0.28);
 
     ctx.clearRect(0, 0, w, h);
