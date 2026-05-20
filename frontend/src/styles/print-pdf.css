@@ -141,7 +141,10 @@ body.is-pdf-export .site-footer {
   .scroll-cue,
   .site-header,
   .contact-form,
-  .btn-pdf-download,
+  .btn-print,
+  .btn-icon,
+  .theme-toggle,
+  .nav-toggle,
   #bg-canvas {
     display: none !important;
   }

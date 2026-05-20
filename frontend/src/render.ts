@@ -1,5 +1,6 @@
 import type { Portfolio } from "./types/portfolio";
 import { CHAOS_LOGO_SVG } from "./brand/logo";
+import { ICON_CLOSE, ICON_MENU, ICON_MOON, ICON_PRINT, ICON_SUN } from "./icons";
 import { renderToolTag } from "./skill-icons";
 import { renderWorkMarquee } from "./render-work-marquee";
 
@@ -82,16 +83,31 @@ export function renderPage(p: Portfolio): string {
         ${CHAOS_LOGO_SVG}
         <span class="logo-text">${esc(p.profile.name)}</span>
       </a>
-      <nav class="nav" aria-label="Primary">
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-drawer" aria-label="Open menu">
+        <span class="nav-toggle__open">${ICON_MENU}</span>
+        <span class="nav-toggle__close">${ICON_CLOSE}</span>
+      </button>
+      <nav class="nav nav--desktop" aria-label="Primary">
         ${nav.map((l) => `<a class="nav__link" href="#${l.id}">${l.label}</a>`).join("")}
       </nav>
       <div class="header-actions">
-        <button type="button" class="btn-pdf-download" id="download-pdf" aria-label="Download portfolio as PDF">
-          Download PDF
+        <button type="button" class="btn-icon theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Switch to dark mode">
+          <span class="theme-toggle__sun">${ICON_SUN}</span>
+          <span class="theme-toggle__moon">${ICON_MOON}</span>
+        </button>
+        <button type="button" class="btn-icon btn-print" id="print-portfolio" aria-label="Print or save portfolio as PDF">
+          ${ICON_PRINT}
         </button>
         <a class="nav-cta" href="${esc(p.contact.telegramUrl)}" target="_blank" rel="noopener noreferrer">Contact</a>
       </div>
     </header>
+    <div class="nav-drawer" id="nav-drawer" hidden>
+      <div class="nav-drawer__backdrop" data-nav-close tabindex="-1" aria-hidden="true"></div>
+      <nav class="nav nav--mobile" aria-label="Mobile">
+        ${nav.map((l) => `<a class="nav__link" href="#${l.id}">${l.label}</a>`).join("")}
+        <a class="nav-cta nav-cta--block" href="${esc(p.contact.telegramUrl)}" target="_blank" rel="noopener noreferrer">Contact</a>
+      </nav>
+    </div>
 
     <main id="main">
       <section id="top" class="hero">

@@ -1,8 +1,26 @@
 import { prefersReducedMotion } from "../motion/reduced-motion";
 import { getSmoothMouse } from "../mouse/mouse-state";
+import type { Theme } from "../theme";
 import { applyBayerDither } from "./dither";
 
 const DITHER_SCALE = 0.4;
+
+const BLOB_PALETTES: Record<Theme, [string, string, string]> = {
+  light: [
+    "rgba(213, 119, 237, 0.22)",
+    "rgba(168, 72, 198, 0.14)",
+    "rgba(139, 61, 173, 0.12)",
+  ],
+  dark: [
+    "rgba(213, 119, 237, 0.32)",
+    "rgba(168, 72, 198, 0.2)",
+    "rgba(120, 60, 180, 0.18)",
+  ],
+};
+
+function currentTheme(): Theme {
+  return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+}
 
 export function initCanvasBackground(): () => void {
   const canvas = document.getElementById("bg-canvas") as HTMLCanvasElement | null;
@@ -16,10 +34,18 @@ export function initCanvasBackground(): () => void {
   if (!bctx) return () => {};
 
   const blobs = [
-    { x: 0.15, y: 0.25, r: 0.38, vx: 0, vy: 0, color: "rgba(213, 119, 237, 0.32)" },
-    { x: 0.8, y: 0.15, r: 0.3, vx: 0, vy: 0, color: "rgba(168, 72, 198, 0.2)" },
-    { x: 0.55, y: 0.75, r: 0.32, vx: 0, vy: 0, color: "rgba(120, 60, 180, 0.18)" },
+    { x: 0.15, y: 0.25, r: 0.38, vx: 0, vy: 0, color: "" },
+    { x: 0.8, y: 0.15, r: 0.3, vx: 0, vy: 0, color: "" },
+    { x: 0.55, y: 0.75, r: 0.32, vx: 0, vy: 0, color: "" },
   ];
+
+  const syncPalette = () => {
+    const palette = BLOB_PALETTES[currentTheme()];
+    blobs.forEach((b, i) => {
+      b.color = palette[i];
+    });
+  };
+  syncPalette();
 
   let w = 0;
   let h = 0;
@@ -70,7 +96,7 @@ export function initCanvasBackground(): () => void {
 
   const draw = () => {
     drawBlobs(bctx, bw, bh);
-    applyBayerDither(bctx, bw, bh, 0.28);
+    applyBayerDither(bctx, bw, bh, currentTheme() === "light" ? 0.18 : 0.28);
 
     ctx.clearRect(0, 0, w, h);
     ctx.imageSmoothingEnabled = false;
@@ -80,6 +106,9 @@ export function initCanvasBackground(): () => void {
     raf = requestAnimationFrame(draw);
   };
 
+  const onTheme = () => syncPalette();
+  window.addEventListener("themechange", onTheme);
+
   resize();
   window.addEventListener("resize", resize);
   raf = requestAnimationFrame(draw);
@@ -87,5 +116,6 @@ export function initCanvasBackground(): () => void {
   return () => {
     cancelAnimationFrame(raf);
     window.removeEventListener("resize", resize);
+    window.removeEventListener("themechange", onTheme);
   };
 }

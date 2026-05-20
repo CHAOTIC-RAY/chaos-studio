@@ -15,6 +15,17 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Syne:wght@600;700;800&display=swap"
       rel="stylesheet"
     />
+    <script>
+      (function () {
+        var k = "portfolio-theme";
+        var t;
+        try {
+          t = localStorage.getItem(k);
+        } catch (e) {}
+        if (t !== "light" && t !== "dark") t = "light";
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
   </head>
   <body>
     <div id="app" class="loading-screen">Loading portfolio…</div>

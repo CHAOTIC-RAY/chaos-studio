@@ -7,6 +7,7 @@ import { initHeaderScroll, initScrollAnimations } from "./motion/scroll";
 import { initWorkMarquee } from "./motion/work-marquee";
 import { downloadPortfolioPdf } from "./pdf-export";
 import { renderPage } from "./render";
+import { initTheme } from "./theme";
 
 async function init(): Promise<void> {
   const app = document.getElementById("app");
@@ -19,6 +20,7 @@ async function init(): Promise<void> {
     app.classList.remove("loading-screen");
 
     const cleanups: (() => void)[] = [];
+    cleanups.push(initTheme());
     cleanups.push(initMouseEffects());
     cleanups.push(initCanvasBackground());
     cleanups.push(initScrollAnimations());
@@ -26,8 +28,9 @@ async function init(): Promise<void> {
     cleanups.push(initHeaderScroll());
     cleanups.push(initInteractions());
     cleanups.push(bindNav());
+    cleanups.push(bindMobileNav());
     cleanups.push(bindContactForm());
-    cleanups.push(bindPdfDownload(portfolio.profile.name));
+    cleanups.push(bindPrintPortfolio(portfolio.profile.name));
 
     window.addEventListener("beforeunload", () => cleanups.forEach((fn) => fn()));
   } catch (err) {
@@ -38,27 +41,73 @@ async function init(): Promise<void> {
 }
 
 function bindNav(): () => void {
-  document.querySelectorAll('.nav a[href^="#"]').forEach((link) => {
-    link.addEventListener("click", (e) => {
-      const href = (link as HTMLAnchorElement).getAttribute("href");
-      if (!href || href === "#") return;
-      const target = document.querySelector(href);
-      if (target) {
-        e.preventDefault();
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    });
+  const links = document.querySelectorAll('.nav a[href^="#"], .nav-drawer a[href^="#"]');
+  const handler = (e: Event) => {
+    const link = e.currentTarget as HTMLAnchorElement;
+    const href = link.getAttribute("href");
+    if (!href || href === "#") return;
+    const target = document.querySelector(href);
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      closeMobileNav();
+    }
+  };
+  links.forEach((link) => link.addEventListener("click", handler));
+  return () => links.forEach((link) => link.removeEventListener("click", handler));
+}
+
+function closeMobileNav(): void {
+  const drawer = document.getElementById("nav-drawer");
+  const toggle = document.getElementById("nav-toggle");
+  if (!drawer || !toggle) return;
+  drawer.classList.remove("is-open");
+  drawer.setAttribute("hidden", "");
+  toggle.setAttribute("aria-expanded", "false");
+  toggle.setAttribute("aria-label", "Open menu");
+  document.body.classList.remove("nav-open");
+}
+
+function bindMobileNav(): () => void {
+  const toggle = document.getElementById("nav-toggle");
+  const drawer = document.getElementById("nav-drawer");
+  if (!toggle || !drawer) return () => {};
+
+  const open = () => {
+    drawer.classList.add("is-open");
+    drawer.removeAttribute("hidden");
+    toggle.setAttribute("aria-expanded", "true");
+    toggle.setAttribute("aria-label", "Close menu");
+    document.body.classList.add("nav-open");
+  };
+
+  const onToggle = () => {
+    if (drawer.classList.contains("is-open")) closeMobileNav();
+    else open();
+  };
+
+  toggle.addEventListener("click", onToggle);
+  drawer.querySelectorAll("[data-nav-close]").forEach((el) => {
+    el.addEventListener("click", closeMobileNav);
   });
 
-  const progress = document.querySelector(".scroll-progress") as HTMLElement | null;
-  if (!progress) return () => {};
-  const onScroll = () => {
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    progress.style.width = max > 0 ? `${(window.scrollY / max) * 100}%` : "0%";
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key === "Escape") closeMobileNav();
   };
-  window.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
-  return () => window.removeEventListener("scroll", onScroll);
+  window.addEventListener("keydown", onKey);
+
+  const mq = window.matchMedia("(min-width: 900px)");
+  const onMq = () => {
+    if (mq.matches) closeMobileNav();
+  };
+  mq.addEventListener("change", onMq);
+
+  return () => {
+    toggle.removeEventListener("click", onToggle);
+    window.removeEventListener("keydown", onKey);
+    mq.removeEventListener("change", onMq);
+    document.body.classList.remove("nav-open");
+  };
 }
 
 function bindContactForm(): () => void {
@@ -98,15 +147,15 @@ function bindContactForm(): () => void {
   return () => form.removeEventListener("submit", handler);
 }
 
-function bindPdfDownload(profileName: string): () => void {
-  const btn = document.getElementById("download-pdf") as HTMLButtonElement | null;
+function bindPrintPortfolio(profileName: string): () => void {
+  const btn = document.getElementById("print-portfolio") as HTMLButtonElement | null;
   if (!btn) return () => {};
 
   const handler = async () => {
     if (btn.disabled) return;
-    const label = btn.textContent;
     btn.disabled = true;
-    btn.textContent = "Preparing PDF…";
+    btn.setAttribute("aria-busy", "true");
+    btn.classList.add("is-loading");
     try {
       await downloadPortfolioPdf(profileName);
     } catch (err) {
@@ -114,7 +163,8 @@ function bindPdfDownload(profileName: string): () => void {
       alert("Could not create PDF. Try again or use your browser Print → Save as PDF.");
     } finally {
       btn.disabled = false;
-      btn.textContent = label;
+      btn.removeAttribute("aria-busy");
+      btn.classList.remove("is-loading");
     }
   };
 
