@@ -121,6 +121,10 @@ export function renderPage(p: Portfolio): string {
           <a class="btn btn-primary" href="#work" data-magnetic>View featured work</a>
           <a class="btn btn-ghost" href="#contact" data-magnetic>Get in touch</a>
         </div>
+        <div class="print-clients" hidden>
+          <p class="eyebrow">Clients &amp; services</p>
+          <p class="print-clients__text">Rainbow Enterprise · Reach MV · Haus of Paws · Islanders · Nutrition · Digital Dive · Motion Graphics · Unicare · Logo Design · Strategy · Marketing · Content</p>
+        </div>
         ${renderWorkMarquee()}
         <div class="scroll-cue" aria-hidden="true"><span>Scroll</span><span class="scroll-line"></span></div>
       </section>
