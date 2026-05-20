@@ -83,10 +83,6 @@ export function renderPage(p: Portfolio): string {
         ${CHAOS_LOGO_SVG}
         <span class="logo-text">${esc(p.profile.name)}</span>
       </a>
-      <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-drawer" aria-label="Open menu">
-        <span class="nav-toggle__open">${ICON_MENU}</span>
-        <span class="nav-toggle__close">${ICON_CLOSE}</span>
-      </button>
       <nav class="nav nav--desktop" aria-label="Primary">
         ${nav.map((l) => `<a class="nav__link" href="#${l.id}">${l.label}</a>`).join("")}
       </nav>
@@ -101,6 +97,10 @@ export function renderPage(p: Portfolio): string {
         <a class="nav-cta" href="${esc(p.contact.telegramUrl)}" target="_blank" rel="noopener noreferrer">Contact</a>
       </div>
     </header>
+    <button type="button" class="nav-toggle nav-toggle--fab" id="nav-toggle" aria-expanded="false" aria-controls="nav-drawer" aria-label="Open menu">
+      <span class="nav-toggle__open">${ICON_MENU}</span>
+      <span class="nav-toggle__close">${ICON_CLOSE}</span>
+    </button>
     <div class="nav-drawer" id="nav-drawer" hidden>
       <div class="nav-drawer__backdrop" data-nav-close tabindex="-1" aria-hidden="true"></div>
       <nav class="nav nav--mobile" aria-label="Mobile">
