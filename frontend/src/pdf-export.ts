@@ -38,6 +38,13 @@ function collectBlocks(main: HTMLElement): CaptureBlock[] {
       });
       return;
     }
+    if (id === "posts") {
+      const head = section.querySelector(".section-head");
+      const viewport = section.querySelector(".posts-viewport");
+      if (head) blocks.push({ el: head as HTMLElement, label: "posts-head" });
+      if (viewport) blocks.push({ el: viewport as HTMLElement, label: "posts-grid" });
+      return;
+    }
     blocks.push({ el: section as HTMLElement, label: id || "section" });
   });
 
@@ -131,10 +138,6 @@ function freezeMotionForPdf(): void {
   document.documentElement.classList.add("is-pdf-export");
   document.body.classList.add("is-pdf-export");
 
-  document.querySelectorAll<HTMLElement>(".print-clients").forEach((el) => {
-    el.removeAttribute("hidden");
-  });
-
   document.querySelectorAll<HTMLElement>("[data-parallax], [data-reveal], [data-tilt-showcase]").forEach(
     (el) => {
       el.style.transform = "none";
@@ -175,10 +178,6 @@ function restoreAfterPdf(): void {
   document.documentElement.classList.remove("is-pdf-export");
   document.body.classList.remove("is-pdf-export");
   restoreA4Shell();
-
-  document.querySelectorAll<HTMLElement>(".print-clients").forEach((el) => {
-    el.setAttribute("hidden", "");
-  });
 
   const selectors =
     ".work-marquee__inner, .work-marquee__row, .work-marquee__group, .post-card, [data-parallax], [data-reveal], [data-tilt-showcase], .device__slide, .posts-track, .work-showcase, video.device__media";

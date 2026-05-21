@@ -36,8 +36,7 @@ body.is-pdf-export .work-showcase__cta,
 body.is-pdf-export .work-showcase__glow,
 body.is-pdf-export .device__chrome,
 body.is-pdf-export .device__notch,
-body.is-pdf-export .post-card__shine,
-body.is-pdf-export .work-marquee--hero {
+body.is-pdf-export .post-card__shine {
   display: none !important;
 }
 
@@ -109,19 +108,72 @@ body.is-pdf-export .hero-sub {
 }
 
 body.is-pdf-export .print-clients {
-  display: block !important;
-  margin-top: 1rem !important;
-  padding: 0.75rem 1rem !important;
-  background: #f0eaf5 !important;
-  border: 1px solid #e0d8e8 !important;
-  border-radius: 8px !important;
+  display: none !important;
 }
 
-body.is-pdf-export .print-clients__text {
-  margin: 0.35rem 0 0 !important;
-  font-size: 0.85rem !important;
-  line-height: 1.5 !important;
-  color: #333 !important;
+/* Client marquee — compact stacked bands for print */
+body.is-pdf-export .work-marquee--hero {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0.75rem 0 0 !important;
+  padding: 0.35rem 0 0.5rem !important;
+  overflow: visible !important;
+  border: none !important;
+}
+
+body.is-pdf-export .work-marquee--hero .work-marquee__track {
+  overflow: visible !important;
+}
+
+body.is-pdf-export .work-marquee--hero .work-marquee__row {
+  transform: none !important;
+  margin-top: 0.3rem !important;
+  padding: 0.45rem 0.35rem !important;
+  overflow: visible !important;
+  border-block: 1px solid #e0d8e8 !important;
+  background: #f0eaf5 !important;
+}
+
+body.is-pdf-export .work-marquee--hero .work-marquee__row--b,
+body.is-pdf-export .work-marquee--hero .work-marquee__row--c {
+  margin-top: 0.3rem !important;
+}
+
+body.is-pdf-export .work-marquee--hero .work-marquee__inner {
+  font-size: 0.95rem !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  gap: 0.2rem 0.5rem !important;
+  width: 100% !important;
+  white-space: normal !important;
+}
+
+body.is-pdf-export .work-marquee--hero .work-marquee__group:nth-child(2) {
+  display: none !important;
+}
+
+body.is-pdf-export .work-marquee--hero .work-marquee__group > span {
+  margin-right: 0.5rem !important;
+}
+
+body.is-pdf-export .work-marquee__grad,
+body.is-pdf-export .work-marquee__grad--alt,
+body.is-pdf-export .work-marquee__grad--gray {
+  color: #7b3fa0 !important;
+  background: none !important;
+  -webkit-text-fill-color: #7b3fa0 !important;
+}
+
+body.is-pdf-export .work-marquee__solid {
+  color: #1a1520 !important;
+}
+
+body.is-pdf-export .work-marquee__muted,
+body.is-pdf-export .work-marquee__sep,
+body.is-pdf-export .work-marquee__accent,
+body.is-pdf-export .work-marquee__fuchsia {
+  color: #666 !important;
 }
 
 body.is-pdf-export .eyebrow {
@@ -238,7 +290,20 @@ body.is-pdf-export .work-showcase__highlights {
   color: #444 !important;
 }
 
-/* ─── Posts grid for A4 ─── */
+/* ─── Campaign posts — compact highlight grid ─── */
+body.is-pdf-export .section--posts {
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
+body.is-pdf-export .section--posts .section-head {
+  margin-bottom: 0.5rem !important;
+}
+
+body.is-pdf-export .section--posts .section-head h2 {
+  font-size: 1.15rem !important;
+}
+
 body.is-pdf-export .posts-viewport {
   overflow: visible !important;
   mask-image: none !important;
@@ -248,8 +313,8 @@ body.is-pdf-export .posts-viewport {
 
 body.is-pdf-export .posts-track {
   display: grid !important;
-  grid-template-columns: repeat(2, 1fr) !important;
-  gap: 0.65rem !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 0.4rem !important;
   width: 100% !important;
   transform: none !important;
   padding: 0 !important;
@@ -259,14 +324,42 @@ body.is-pdf-export .post-card {
   width: auto !important;
   flex: none !important;
   max-width: none !important;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+body.is-pdf-export .post-card:nth-child(n + 7) {
+  display: none !important;
 }
 
 body.is-pdf-export .post-card__media {
+  aspect-ratio: 1 / 1 !important;
+  max-height: 72px !important;
   background: #ebe6f0 !important;
 }
 
+body.is-pdf-export .post-card__img {
+  object-fit: cover !important;
+}
+
+body.is-pdf-export .post-card__body {
+  padding: 0.35rem 0.45rem 0.5rem !important;
+}
+
 body.is-pdf-export .post-card__body h3 {
-  font-size: 0.95rem !important;
+  font-size: 0.62rem !important;
+  margin: 0.15rem 0 !important;
+  line-height: 1.2 !important;
+}
+
+body.is-pdf-export .post-platform {
+  font-size: 0.5rem !important;
+}
+
+body.is-pdf-export .post-client,
+body.is-pdf-export .post-desc,
+body.is-pdf-export .post-tags {
+  display: none !important;
 }
 
 /* ─── Contact & footer ─── */
@@ -320,7 +413,7 @@ body.is-pdf-export .device__carousel .device__slide {
   .device__chrome,
   .device__notch,
   .post-card__shine,
-  .work-marquee--hero {
+  .print-clients {
     display: none !important;
   }
 
@@ -361,19 +454,40 @@ body.is-pdf-export .device__carousel .device__slide {
     transform: none !important;
   }
 
-  .print-clients {
+  .work-marquee--hero {
     display: block !important;
-    margin-top: 1rem;
-    padding: 0.75rem 1rem;
-    background: #f0eaf5;
-    border: 1px solid #e0d8e8;
-    border-radius: 8px;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0.75rem 0 0 !important;
+    padding: 0.35rem 0 0.5rem !important;
+    overflow: visible !important;
   }
 
-  .print-clients__text {
-    color: #333;
-    font-size: 0.85rem;
-    line-height: 1.5;
+  .work-marquee--hero .work-marquee__row {
+    transform: none !important;
+    margin-top: 0.3rem !important;
+    padding: 0.45rem 0.35rem !important;
+    background: #f0eaf5 !important;
+  }
+
+  .work-marquee--hero .work-marquee__inner {
+    font-size: 0.95rem !important;
+    flex-wrap: wrap !important;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .work-marquee--hero .work-marquee__group:nth-child(2) {
+    display: none !important;
+  }
+
+  .section--posts {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+
+  .section--posts .section-head {
+    margin-bottom: 0.5rem !important;
   }
 
   [data-parallax],
@@ -439,14 +553,33 @@ body.is-pdf-export .device__carousel .device__slide {
 
   .posts-track {
     display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 0.65rem !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.4rem !important;
     width: 100% !important;
     transform: none !important;
   }
 
   .post-card {
     width: auto !important;
+  }
+
+  .post-card:nth-child(n + 7) {
+    display: none !important;
+  }
+
+  .post-card__media {
+    aspect-ratio: 1 / 1 !important;
+    max-height: 72px !important;
+  }
+
+  .post-client,
+  .post-desc,
+  .post-tags {
+    display: none !important;
+  }
+
+  .post-card__body h3 {
+    font-size: 0.62rem !important;
   }
 
   .device--browser,
