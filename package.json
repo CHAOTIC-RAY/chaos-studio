@@ -5,7 +5,8 @@
   "description": "Ibrahim Wafig — graphic design portfolio on Cloudflare Workers",
   "scripts": {
     "sync:content": "node scripts/sync-content.mjs",
-    "build": "npm run sync:content && npm run build --workspace=frontend",
+    "build": "npm run sync:content && node scripts/generate-icons.mjs && npm run build --workspace=frontend",
+    "icons": "node scripts/generate-icons.mjs",
     "build:frontend": "npm run build --workspace=frontend",
     "dev": "wrangler dev",
     "deploy": "npm run build && wrangler deploy",
@@ -15,6 +16,7 @@
     "frontend"
   ],
   "devDependencies": {
+    "sharp": "^0.34.5",
     "typescript": "^5.8.3",
     "wrangler": "^4.34.0"
   },

@@ -10,7 +10,17 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       injectRegister: "auto",
-      includeAssets: ["favicon.svg", "pwa-icon.svg", "pwa-icon-maskable.svg"],
+      includeAssets: [
+        "favicon.svg",
+        "pwa-icon.svg",
+        "pwa-icon-maskable.svg",
+        "icons/favicon-16.png",
+        "icons/favicon-32.png",
+        "icons/apple-touch-icon.png",
+        "icons/icon-192.png",
+        "icons/icon-512.png",
+        "icons/icon-maskable-512.png",
+      ],
       manifest: {
         id: "/",
         name: "Ibrahim Wafig · Graphic Design Portfolio",
@@ -27,27 +37,22 @@ export default defineConfig({
         categories: ["portfolio", "design", "business"],
         icons: [
           {
-            src: "/pwa-icon.svg",
-            sizes: "any",
-            type: "image/svg+xml",
+            src: "/icons/icon-192.png",
+            sizes: "192x192",
+            type: "image/png",
             purpose: "any",
           },
           {
-            src: "/pwa-icon.svg",
+            src: "/icons/icon-512.png",
             sizes: "512x512",
-            type: "image/svg+xml",
+            type: "image/png",
             purpose: "any",
           },
           {
-            src: "/pwa-icon-maskable.svg",
+            src: "/icons/icon-maskable-512.png",
             sizes: "512x512",
-            type: "image/svg+xml",
+            type: "image/png",
             purpose: "maskable",
-          },
-          {
-            src: "/favicon.svg",
-            sizes: "32x32",
-            type: "image/svg+xml",
           },
         ],
       },
