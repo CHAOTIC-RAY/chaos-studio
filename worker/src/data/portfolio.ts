@@ -190,7 +190,8 @@ export const portfolio = {
     phone: "+960 9401011",
     instagram: "@xx_chaos",
     instagramUrl: "https://instagram.com/xx_chaos",
-    telegramUrl: "https://t.me/xx_chaos",
+    telegram: "@Wafig",
+    telegramUrl: "https://t.me/Wafig",
     whatsappUrl: "https://wa.me/9609401011",
   },
 } as const;

@@ -75,6 +75,7 @@ export interface Portfolio {
     phone: string;
     instagram: string;
     instagramUrl: string;
+    telegram: string;
     telegramUrl: string;
     whatsappUrl: string;
   };

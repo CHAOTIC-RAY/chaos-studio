@@ -200,8 +200,11 @@ body.is-pdf-export .edu-card {
 }
 
 body.is-pdf-export .grid-2,
-body.is-pdf-export .contact-row,
 body.is-pdf-export .edu-grid {
+  grid-template-columns: 1fr !important;
+}
+
+body.is-pdf-export .contact-banner__inner {
   grid-template-columns: 1fr !important;
 }
 
@@ -362,8 +365,23 @@ body.is-pdf-export .post-tags {
   display: none !important;
 }
 
-/* ─── Contact & footer ─── */
-body.is-pdf-export .contact-chips a {
+/* ─── Contact banner & footer ─── */
+body.is-pdf-export .contact-banner {
+  background: #f0eaf5 !important;
+  border: 1px solid #e0d8e8 !important;
+  box-shadow: none !important;
+}
+
+body.is-pdf-export .contact-banner__glow {
+  display: none !important;
+}
+
+body.is-pdf-export .contact-banner__cta {
+  box-shadow: none !important;
+  border: 1px solid #7b3fa0 !important;
+}
+
+body.is-pdf-export .contact-banner__links a {
   color: #4e1370 !important;
 }
 
@@ -524,9 +542,25 @@ body.is-pdf-export .device__carousel .device__slide {
   }
 
   .grid-2,
-  .contact-row,
   .edu-grid {
     grid-template-columns: 1fr !important;
+  }
+
+  .contact-banner {
+    background: #f0eaf5 !important;
+    box-shadow: none !important;
+  }
+
+  .contact-banner__glow {
+    display: none !important;
+  }
+
+  .contact-banner__inner {
+    grid-template-columns: 1fr !important;
+  }
+
+  .contact-banner__cta {
+    box-shadow: none !important;
   }
 
   .skills-grid {

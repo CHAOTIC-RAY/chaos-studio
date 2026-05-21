@@ -1,6 +1,6 @@
 import type { Portfolio } from "./types/portfolio";
 import { CHAOS_LOGO_SVG } from "./brand/logo";
-import { ICON_CLOSE, ICON_MENU, ICON_MOON, ICON_PRINT, ICON_SUN } from "./icons";
+import { ICON_CLOSE, ICON_MENU, ICON_MOON, ICON_PRINT, ICON_SUN, ICON_TELEGRAM } from "./icons";
 import { renderToolTag } from "./skill-icons";
 import { renderWorkMarquee } from "./render-work-marquee";
 
@@ -242,32 +242,42 @@ export function renderPage(p: Portfolio): string {
       </section>
 
       <section id="contact" class="section section--contact">
-        <div class="section-head" data-reveal>
-          <p class="eyebrow">Contact</p>
-          <h2>Let's work together</h2>
-        </div>
-        <div class="contact-row" data-reveal>
-          <div class="contact-chips">
-            <a href="mailto:${esc(p.contact.email)}">${esc(p.contact.email)}</a>
-            <a href="tel:${esc(p.contact.phone.replace(/\s/g, ""))}">${esc(p.contact.phone)}</a>
-            <a href="${esc(p.contact.instagramUrl)}" target="_blank" rel="noopener noreferrer">${esc(p.contact.instagram)}</a>
-            <a href="${esc(p.contact.telegramUrl)}" target="_blank" rel="noopener noreferrer">Telegram</a>
-            <a href="${esc(p.contact.whatsappUrl)}" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <div class="contact-banner" data-reveal>
+          <div class="contact-banner__glow" aria-hidden="true"></div>
+          <div class="contact-banner__inner">
+            <div class="contact-banner__copy">
+              <p class="eyebrow">Get in touch</p>
+              <h2>Let's work together</h2>
+              <p class="contact-banner__lead">
+                Brand campaigns, social content, or product design — reach out on Telegram for a quick reply.
+              </p>
+            </div>
+            <div class="contact-banner__actions">
+              <a
+                class="btn btn-primary contact-banner__cta"
+                href="${esc(p.contact.telegramUrl)}"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-magnetic
+              >
+                ${ICON_TELEGRAM}
+                <span>Message ${esc(p.contact.telegram)} on Telegram</span>
+              </a>
+              <ul class="contact-banner__links">
+                <li><a href="mailto:${esc(p.contact.email)}">${esc(p.contact.email)}</a></li>
+                <li><a href="tel:${esc(p.contact.phone.replace(/\s/g, ""))}">${esc(p.contact.phone)}</a></li>
+                <li><a href="${esc(p.contact.instagramUrl)}" target="_blank" rel="noopener noreferrer">${esc(p.contact.instagram)}</a></li>
+                <li><a href="${esc(p.contact.whatsappUrl)}" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
+              </ul>
+            </div>
           </div>
-          <form id="contact-form" class="contact-form glass-card" novalidate>
-            <label><span>Name</span><input name="name" required autocomplete="name" /></label>
-            <label><span>Email</span><input name="email" type="email" required autocomplete="email" /></label>
-            <label><span>Message</span><textarea name="message" rows="4" required></textarea></label>
-            <button type="submit" class="btn btn-primary" data-magnetic>Send message</button>
-            <p id="form-feedback" class="form-feedback" role="status"></p>
-          </form>
         </div>
       </section>
     </main>
 
     <footer class="site-footer">
       <p>© ${new Date().getFullYear()} ${esc(p.profile.name)} · ${esc(p.profile.role)}</p>
-      <a href="${esc(p.contact.telegramUrl)}" target="_blank" rel="noopener noreferrer">Contact on Telegram</a>
+      <a href="${esc(p.contact.telegramUrl)}" target="_blank" rel="noopener noreferrer">${esc(p.contact.telegram)} on Telegram</a>
     </footer>
   `;
 }

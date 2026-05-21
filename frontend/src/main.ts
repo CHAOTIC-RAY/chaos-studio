@@ -1,5 +1,5 @@
 import "./styles/index.css";
-import { fetchPortfolio, submitContact } from "./api";
+import { fetchPortfolio } from "./api";
 import { initCanvasBackground } from "./background/canvas-bg";
 import { initInteractions } from "./interactions";
 import { initMouseEffects } from "./mouse/mouse-effects";
@@ -29,7 +29,6 @@ async function init(): Promise<void> {
     cleanups.push(initInteractions());
     cleanups.push(bindNav());
     cleanups.push(bindMobileNav());
-    cleanups.push(bindContactForm());
     cleanups.push(bindPrintPortfolio(portfolio.profile.name));
 
     window.addEventListener("beforeunload", () => cleanups.forEach((fn) => fn()));
@@ -108,43 +107,6 @@ function bindMobileNav(): () => void {
     mq.removeEventListener("change", onMq);
     document.body.classList.remove("nav-open");
   };
-}
-
-function bindContactForm(): () => void {
-  const form = document.getElementById("contact-form") as HTMLFormElement | null;
-  const feedback = document.getElementById("form-feedback");
-  if (!form) return () => {};
-
-  const handler = async (e: Event) => {
-    e.preventDefault();
-    if (!feedback) return;
-    const data = new FormData(form);
-    const name = String(data.get("name") ?? "").trim();
-    const email = String(data.get("email") ?? "").trim();
-    const message = String(data.get("message") ?? "").trim();
-    if (!name || !email || !message) {
-      feedback.textContent = "Please fill in all fields.";
-      feedback.className = "form-feedback error";
-      return;
-    }
-    const btn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
-    btn.disabled = true;
-    feedback.textContent = "Sending…";
-    try {
-      const res = await submitContact({ name, email, message });
-      feedback.textContent = res.message;
-      feedback.className = "form-feedback ok";
-      form.reset();
-    } catch {
-      feedback.textContent = "Could not send. Try again.";
-      feedback.className = "form-feedback error";
-    } finally {
-      btn.disabled = false;
-    }
-  };
-
-  form.addEventListener("submit", handler);
-  return () => form.removeEventListener("submit", handler);
 }
 
 function bindPrintPortfolio(profileName: string): () => void {
