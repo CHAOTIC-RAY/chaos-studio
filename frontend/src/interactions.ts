@@ -11,7 +11,43 @@ export function initInteractions(): () => void {
   cleanups.push(initActiveNav());
   cleanups.push(initPostImageFallback());
   cleanups.push(initPostVideos());
+  cleanups.push(initPostCarousels());
   return () => cleanups.forEach((fn) => fn());
+}
+
+const POST_CAROUSEL_MS = 3400;
+
+function initPostCarousels(): () => void {
+  if (prefersReducedMotion()) return () => {};
+
+  const timers: number[] = [];
+
+  document.querySelectorAll<HTMLElement>(".post-card__carousel").forEach((carousel) => {
+    const slides = Array.from(carousel.querySelectorAll<HTMLElement>(".post-card__slide"));
+    if (slides.length < 2) return;
+
+    carousel.classList.add("post-card__carousel--js");
+
+    let index = 0;
+    const setActive = (next: number) => {
+      slides.forEach((slide, i) => {
+        slide.classList.toggle("is-active", i === next);
+        slide.style.opacity = i === next ? "1" : "0";
+        slide.style.zIndex = i === next ? "1" : "0";
+      });
+    };
+
+    setActive(0);
+
+    timers.push(
+      window.setInterval(() => {
+        index = (index + 1) % slides.length;
+        setActive(index);
+      }, POST_CAROUSEL_MS),
+    );
+  });
+
+  return () => timers.forEach((t) => window.clearInterval(t));
 }
 
 /** Studio page: magnetic buttons + in-page nav highlights only */

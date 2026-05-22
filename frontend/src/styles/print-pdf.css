@@ -336,13 +336,13 @@ body.is-pdf-export .post-card:nth-child(n + 7) {
 }
 
 body.is-pdf-export .post-card__media {
-  aspect-ratio: 1 / 1 !important;
+  aspect-ratio: 1080 / 1350 !important;
   max-height: 72px !important;
   background: #ebe6f0 !important;
 }
 
 body.is-pdf-export .post-card__img {
-  object-fit: cover !important;
+  object-fit: contain !important;
 }
 
 body.is-pdf-export .post-card__body {
@@ -609,7 +609,7 @@ body.is-pdf-export .device__carousel .device__slide {
   }
 
   .post-card__media {
-    aspect-ratio: 1 / 1 !important;
+    aspect-ratio: 1080 / 1350 !important;
     max-height: 72px !important;
   }
 

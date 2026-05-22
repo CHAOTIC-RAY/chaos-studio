@@ -642,8 +642,8 @@ function renderPostSlideImg(
           data-image-base="${esc(imageBase)}"
           src="${esc(src)}"
           alt="${esc(post.title)} — ${esc(post.client)}${opts.slideCount > 1 ? ` (${opts.slideIndex + 1}/${opts.slideCount})` : ""}"
-          width="400"
-          height="500"
+          width="1080"
+          height="1350"
           loading="${opts.eager ? "eager" : "lazy"}"
           ${opts.slideCount > 1 ? `style="--slide-i:${opts.slideIndex};--slide-count:${opts.slideCount}"` : ""}
         />`;
@@ -669,7 +669,7 @@ function renderPostMedia(post: SocialPost): string {
     .map((slide, i) => renderPostSlideImg(post, slide, { slideIndex: i, slideCount: count, eager: i === 0 }))
     .join("");
   return `
-    <div class="post-card__carousel post-card__carousel--${count}" aria-label="${esc(post.title)} carousel">
+    <div class="post-card__carousel post-card__carousel--${count}" style="--slide-count:${count}" aria-label="${esc(post.title)} carousel">
       ${imgs}
       <span class="post-card__slides-badge" aria-hidden="true">${count} slides</span>
     </div>`;
