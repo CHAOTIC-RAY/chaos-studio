@@ -1,4 +1,5 @@
 import { prefersReducedMotion } from "./motion/reduced-motion";
+import { initPostLightbox } from "./post-lightbox";
 
 export function initInteractions(): () => void {
   const cleanups: (() => void)[] = [];
@@ -12,6 +13,7 @@ export function initInteractions(): () => void {
   cleanups.push(initPostImageFallback());
   cleanups.push(initPostVideos());
   cleanups.push(initPostCarousels());
+  cleanups.push(initPostLightbox());
   return () => cleanups.forEach((fn) => fn());
 }
 
@@ -326,29 +328,66 @@ function initPostImageFallback(): () => void {
 
 function initPostVideos(): () => void {
   const cleanups: Array<() => void> = [];
+  let unmutedVideo: HTMLVideoElement | null = null;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        const video = entry.target as HTMLVideoElement;
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.4) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      });
+    },
+    { threshold: [0, 0.4, 0.65] },
+  );
+
   document.querySelectorAll<HTMLVideoElement>(".post-card__video").forEach((video) => {
     const card = video.closest(".post-card");
     if (!card) return;
 
-    const play = () => {
-      video.play().catch(() => {});
+    video.muted = true;
+    observer.observe(video);
+
+    const unmuteBtn = card.querySelector<HTMLButtonElement>(".post-card__unmute");
+    const syncUnmute = () => {
+      if (!unmuteBtn) return;
+      unmuteBtn.setAttribute("aria-pressed", String(video.muted));
+      unmuteBtn.textContent = video.muted ? "Unmute" : "Mute";
     };
-    const stop = () => {
-      video.pause();
-      video.currentTime = 0;
+    syncUnmute();
+
+    const onUnmute = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (video.muted) {
+        if (unmutedVideo && unmutedVideo !== video) {
+          unmutedVideo.muted = true;
+          const otherBtn = unmutedVideo.closest(".post-card")?.querySelector<HTMLButtonElement>(".post-card__unmute");
+          if (otherBtn) {
+            otherBtn.setAttribute("aria-pressed", "true");
+            otherBtn.textContent = "Unmute";
+          }
+        }
+        video.muted = false;
+        unmutedVideo = video;
+        video.play().catch(() => {});
+      } else {
+        video.muted = true;
+        if (unmutedVideo === video) unmutedVideo = null;
+      }
+      syncUnmute();
     };
 
-    card.addEventListener("mouseenter", play);
-    card.addEventListener("mouseleave", stop);
-    card.addEventListener("focusin", play);
-    card.addEventListener("focusout", stop);
-
+    unmuteBtn?.addEventListener("click", onUnmute);
     cleanups.push(() => {
-      card.removeEventListener("mouseenter", play);
-      card.removeEventListener("mouseleave", stop);
-      card.removeEventListener("focusin", play);
-      card.removeEventListener("focusout", stop);
+      observer.unobserve(video);
+      unmuteBtn?.removeEventListener("click", onUnmute);
     });
   });
+
+  cleanups.push(() => observer.disconnect());
   return () => cleanups.forEach((fn) => fn());
 }

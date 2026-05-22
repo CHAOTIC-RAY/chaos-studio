@@ -621,11 +621,18 @@ function renderPostVideo(post: SocialPost): string {
           src="${esc(videoSrc)}"
           poster="${esc(posterSrc)}"
           muted
+          autoplay
           loop
           playsinline
           preload="metadata"
           aria-label="${esc(post.title)}"
-        ></video>`;
+        ></video>
+        <button type="button" class="post-card__unmute" aria-pressed="true" aria-label="Unmute ${esc(post.title)}">Unmute</button>`;
+}
+
+function renderPostViewButton(post: SocialPost): string {
+  const label = post.video ? `Play ${post.title} full screen` : `View ${post.title} full screen`;
+  return `<button type="button" class="post-card__view" data-post-view aria-label="${esc(label)}"></button>`;
 }
 
 function renderPostSlideImg(
@@ -651,8 +658,7 @@ function renderPostSlideImg(
 
 function renderPostMedia(post: SocialPost): string {
   if (post.video) {
-    return `${renderPostVideo(post)}
-        <span class="post-card__play" aria-hidden="true"></span>`;
+    return `${renderPostVideo(post)}${renderPostViewButton(post)}`;
   }
 
   const slides =
@@ -661,7 +667,7 @@ function renderPostMedia(post: SocialPost): string {
       : [postImageBase(post)];
 
   if (slides.length === 1) {
-    return renderPostSlideImg(post, slides[0], { slideIndex: 0, slideCount: 1, eager: false });
+    return `${renderPostSlideImg(post, slides[0], { slideIndex: 0, slideCount: 1, eager: false })}${renderPostViewButton(post)}`;
   }
 
   const count = slides.length;
@@ -672,7 +678,8 @@ function renderPostMedia(post: SocialPost): string {
     <div class="post-card__carousel post-card__carousel--${count}" style="--slide-count:${count}" aria-label="${esc(post.title)} carousel">
       ${imgs}
       <span class="post-card__slides-badge" aria-hidden="true">${count} slides</span>
-    </div>`;
+    </div>
+    ${renderPostViewButton(post)}`;
 }
 
 function renderPostCard(post: SocialPost, opts?: { expandable?: boolean }): string {
