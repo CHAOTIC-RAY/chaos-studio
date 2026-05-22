@@ -228,17 +228,20 @@ export function renderPage(p: Portfolio): string {
           <h2>${esc(p.socialPosts.subtitle)}</h2>
         </div>
         <div class="posts-rail" data-reveal>
-          <button type="button" class="posts-rail__btn posts-rail__btn--prev" aria-label="Scroll campaign posts left">
-            ${ICON_CHEVRON_LEFT}
-          </button>
-          <div class="posts-viewport">
-            <div class="posts-track">
-              ${renderPostsTrack(p.socialPosts.items)}
+          <div class="posts-rail__shell">
+            <button type="button" class="posts-rail__btn posts-rail__btn--prev" aria-label="Previous campaign posts">
+              ${ICON_CHEVRON_LEFT}
+            </button>
+            <div class="posts-viewport" tabindex="0" aria-label="Campaign and feed posts carousel">
+              <div class="posts-track">
+                ${renderPostsTrack(p.socialPosts.items)}
+              </div>
             </div>
+            <button type="button" class="posts-rail__btn posts-rail__btn--next" aria-label="Next campaign posts">
+              ${ICON_CHEVRON_RIGHT}
+            </button>
           </div>
-          <button type="button" class="posts-rail__btn posts-rail__btn--next" aria-label="Scroll campaign posts right">
-            ${ICON_CHEVRON_RIGHT}
-          </button>
+          <p class="posts-rail__hint">Use arrows or drag · Hover reels to preview</p>
         </div>
       </section>
 
@@ -422,7 +425,10 @@ function renderPostSlideImg(
 }
 
 function renderPostMedia(post: SocialPost): string {
-  if (post.video) return renderPostVideo(post);
+  if (post.video) {
+    return `${renderPostVideo(post)}
+        <span class="post-card__play" aria-hidden="true"></span>`;
+  }
 
   const slides =
     post.slides?.length && post.slides.length > 0
@@ -437,19 +443,25 @@ function renderPostMedia(post: SocialPost): string {
   const imgs = slides
     .map((slide, i) => renderPostSlideImg(post, slide, { slideIndex: i, slideCount: count, eager: i === 0 }))
     .join("");
-  return `<div class="post-card__carousel post-card__carousel--${count}" aria-label="${esc(post.title)} carousel">${imgs}</div>`;
+  return `
+    <div class="post-card__carousel post-card__carousel--${count}" aria-label="${esc(post.title)} carousel">
+      ${imgs}
+      <span class="post-card__slides-badge" aria-hidden="true">${count} slides</span>
+    </div>`;
 }
 
 function renderPostCard(post: SocialPost): string {
   const accent = POST_ACCENTS[post.accent] ?? "post-card--purple";
-  const kind = post.video ? "post-card--video" : "";
+  const kind = post.video ? "post-card--video" : post.slides && post.slides.length > 1 ? "post-card--carousel" : "";
+  const slideCount = post.slides?.length ?? 0;
   return `
-    <article class="post-card ${accent} ${kind}">
+    <article class="post-card ${accent} ${kind}" data-post-kind="${post.video ? "video" : slideCount > 1 ? "carousel" : "image"}">
       <div class="post-card__media">
         ${renderPostMedia(post)}
         <div class="post-card__shine" aria-hidden="true"></div>
       </div>
       <div class="post-card__body">
+        <p class="post-card__client">${esc(post.client)}</p>
         <h3>${esc(post.title)}</h3>
         <p class="post-desc">${esc(post.description)}</p>
         <div class="post-tags">${post.tags.map((t) => `<span>${esc(t)}</span>`).join("")}</div>

@@ -39,14 +39,16 @@ function initPostsRail(): () => void {
   const track = document.querySelector(".posts-track") as HTMLElement | null;
   const prev = document.querySelector(".posts-rail__btn--prev") as HTMLButtonElement | null;
   const next = document.querySelector(".posts-rail__btn--next") as HTMLButtonElement | null;
-  if (!track) return () => {};
+  if (!viewport || !track) return () => {};
+
+  const reduced = prefersReducedMotion();
+  const autoScroll = !reduced;
 
   let x = 0;
   let raf = 0;
   let paused = false;
   let pauseTimer = 0;
   const speed = 0.45;
-  const autoScroll = !prefersReducedMotion();
 
   const applyTransform = () => {
     track.style.transform = `translateX(${x}px)`;
@@ -61,25 +63,51 @@ function initPostsRail(): () => void {
   };
 
   const stepPx = () => {
+    const vw = viewport.clientWidth;
+    if (vw > 0) return Math.max(280, vw * 0.72);
     const card = track.querySelector<HTMLElement>(".post-card");
-    const group = track.querySelector<HTMLElement>(".posts-group");
-    const el = card ?? group;
-    if (!el) return 340;
-    const gap = 20;
-    return el.offsetWidth + gap;
+    if (!card) return 320;
+    return card.offsetWidth + 20;
+  };
+
+  const scrollNative = (direction: -1 | 1) => {
+    viewport.scrollBy({ left: direction * stepPx(), behavior: reduced ? "auto" : "smooth" });
   };
 
   const nudge = (direction: -1 | 1) => {
+    if (reduced) {
+      scrollNative(direction);
+      return;
+    }
     x += direction * stepPx();
     applyTransform();
     pauseBriefly();
   };
 
-  const onPrev = () => nudge(1);
-  const onNext = () => nudge(-1);
+  const onPrev = () => nudge(-1);
+  const onNext = () => nudge(1);
 
-  prev?.addEventListener("click", onPrev);
-  next?.addEventListener("click", onNext);
+  const onPrevClick = (e: Event) => {
+    e.preventDefault();
+    onPrev();
+  };
+  const onNextClick = (e: Event) => {
+    e.preventDefault();
+    onNext();
+  };
+  prev?.addEventListener("click", onPrevClick);
+  next?.addEventListener("click", onNextClick);
+
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      onPrev();
+    } else if (e.key === "ArrowRight") {
+      e.preventDefault();
+      onNext();
+    }
+  };
+  viewport.addEventListener("keydown", onKey);
 
   const loop = () => {
     if (autoScroll && !paused) {
@@ -98,25 +126,26 @@ function initPostsRail(): () => void {
     paused = false;
   };
 
-  viewport?.addEventListener("mouseenter", pause);
-  viewport?.addEventListener("mouseleave", resume);
-  viewport?.addEventListener("focusin", pause);
-  viewport?.addEventListener("focusout", resume);
+  viewport.addEventListener("mouseenter", pause);
+  viewport.addEventListener("mouseleave", resume);
+  viewport.addEventListener("focusin", pause);
+  viewport.addEventListener("focusout", resume);
 
   let isDown = false;
   let startX = 0;
   let startTx = 0;
 
-  viewport?.addEventListener("pointerdown", (e) => {
+  viewport.addEventListener("pointerdown", (e) => {
     if ((e.target as HTMLElement).closest("button, a")) return;
+    if (reduced) return;
     isDown = true;
     paused = true;
     startX = e.clientX;
     startTx = x;
     viewport.setPointerCapture(e.pointerId);
   });
-  viewport?.addEventListener("pointermove", (e) => {
-    if (!isDown) return;
+  viewport.addEventListener("pointermove", (e) => {
+    if (!isDown || reduced) return;
     x = startTx + (e.clientX - startX);
     applyTransform();
   });
@@ -125,23 +154,24 @@ function initPostsRail(): () => void {
     isDown = false;
     pauseBriefly(1200);
     try {
-      viewport?.releasePointerCapture(e.pointerId);
+      viewport.releasePointerCapture(e.pointerId);
     } catch {
       /* ignore */
     }
   };
-  viewport?.addEventListener("pointerup", endDrag);
-  viewport?.addEventListener("pointercancel", endDrag);
+  viewport.addEventListener("pointerup", endDrag);
+  viewport.addEventListener("pointercancel", endDrag);
 
   if (autoScroll) raf = requestAnimationFrame(loop);
 
   return () => {
     cancelAnimationFrame(raf);
     window.clearTimeout(pauseTimer);
-    prev?.removeEventListener("click", onPrev);
-    next?.removeEventListener("click", onNext);
-    viewport?.removeEventListener("mouseenter", pause);
-    viewport?.removeEventListener("mouseleave", resume);
+    prev?.removeEventListener("click", onPrevClick);
+    next?.removeEventListener("click", onNextClick);
+    viewport.removeEventListener("keydown", onKey);
+    viewport.removeEventListener("mouseenter", pause);
+    viewport.removeEventListener("mouseleave", resume);
   };
 }
 
