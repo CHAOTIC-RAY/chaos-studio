@@ -31,7 +31,11 @@
   --btn-ghost-bg: transparent;
   --icon-btn-bg: rgba(139, 61, 173, 0.08);
   --icon-btn-border: var(--border);
-  --dither-opacity: 0.2;
+  --dither-opacity: 0.26;
+  --dither-size: 3px;
+  --dither-opacity-studio: 0.55;
+  --dither-noise-opacity-studio: 0.42;
+  --grain-opacity-studio: 0.14;
 
   --font-display: "Syne", system-ui, sans-serif;
   --font-body: "DM Sans", system-ui, sans-serif;
@@ -76,5 +80,8 @@
   --btn-ghost-bg: transparent;
   --icon-btn-bg: rgba(255, 255, 255, 0.06);
   --icon-btn-border: var(--border);
-  --dither-opacity: 0.35;
+  --dither-opacity: 0.4;
+  --dither-opacity-studio: 0.72;
+  --dither-noise-opacity-studio: 0.55;
+  --grain-opacity-studio: 0.2;
 }

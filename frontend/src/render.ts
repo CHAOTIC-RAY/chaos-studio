@@ -1,5 +1,5 @@
 import type { Portfolio } from "./types/portfolio";
-import { CHAOS_LOGO_SVG } from "./brand/logo";
+import { CHAOS_LOGO_SVG, CHAOS_LOGO_SVG_HERO } from "./brand/logo";
 import { portfolioUrl, studioUrl } from "./router";
 import {
   ICON_CHEVRON_DOWN,
@@ -129,14 +129,18 @@ const STUDIO_NAV: NavItem[] = [
   { href: "#studio-contact", label: "Contact" },
 ];
 
-function renderBgLayers(includeHeroOrb = true): string {
+function renderBgLayers(opts?: { includeHeroOrb?: boolean; studio?: boolean }): string {
+  const includeHeroOrb = opts?.includeHeroOrb !== false;
+  const studio = opts?.studio === true;
   return `
-    <div class="bg-layers" aria-hidden="true">
+    <div class="bg-layers${studio ? " bg-layers--studio" : ""}" aria-hidden="true">
       <canvas id="bg-canvas"></canvas>
       <div class="bg-blobs"></div>
-      <div class="bg-dither" aria-hidden="true"></div>
-      <div class="bg-grain"></div>
-      ${includeHeroOrb ? '<div class="hero-orb" data-parallax="24" aria-hidden="true"></div>' : ""}
+      <div class="bg-dither${studio ? " bg-dither--studio" : ""}" aria-hidden="true"></div>
+      ${studio ? '<div class="bg-dither-noise" aria-hidden="true"></div>' : ""}
+      <div class="bg-grain${studio ? " bg-grain--studio" : ""}"></div>
+      ${studio ? '<div class="bg-logo-glow" aria-hidden="true"></div>' : ""}
+      ${includeHeroOrb && !studio ? '<div class="hero-orb" data-parallax="24" aria-hidden="true"></div>' : ""}
     </div>`;
 }
 
@@ -165,7 +169,7 @@ function renderSiteChrome(
   const ctaExternal = opts.mode === "studio" ? ' target="_blank" rel="noopener noreferrer"' : ' target="_blank" rel="noopener noreferrer"';
 
   return `
-    ${renderBgLayers(opts.mode === "portfolio")}
+    ${renderBgLayers({ includeHeroOrb: opts.mode === "portfolio", studio: opts.mode === "studio" })}
     <div class="scroll-progress" aria-hidden="true"></div>
     <a class="skip-link" href="#main">Skip to content</a>
 
@@ -374,12 +378,15 @@ export function renderStudioPage(p: Portfolio): string {
     ${renderSiteChrome(p, { mode: "studio", logoHref: portfolioUrl(), nav: STUDIO_NAV, showPrint: false })}
     <main id="main" class="page-studio">
       <section class="studio-page-hero" aria-labelledby="studio-page-title">
-        <div class="studio-page-hero__glow" aria-hidden="true"></div>
-        <div class="studio-page-hero__inner" data-reveal>
+        <div class="studio-page-hero__frame" data-reveal>
           <a class="studio-page-back" href="${portfolioUrl()}" data-route-link>
             ${ICON_CHEVRON_LEFT}
             <span>Back to portfolio</span>
           </a>
+          <div class="studio-page-logo" aria-hidden="true">
+            <div class="studio-page-logo__dither-ring" aria-hidden="true"></div>
+            <div class="studio-page-logo__mark">${CHAOS_LOGO_SVG_HERO}</div>
+          </div>
           <p class="eyebrow studio-page-hero__eyebrow">${esc(studio.tagline)}</p>
           <h1 id="studio-page-title" class="studio-page-hero__title">${esc(studio.title)}</h1>
           <p class="studio-page-hero__headline">${esc(studio.headline)}</p>

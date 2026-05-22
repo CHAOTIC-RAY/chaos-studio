@@ -1,9 +1,10 @@
 import { prefersReducedMotion } from "../motion/reduced-motion";
 import { getSmoothMouse } from "../mouse/mouse-state";
 import type { Theme } from "../theme";
-import { applyBayerDither } from "./dither";
+import { applyBayerDither, type DitherProfile } from "./dither";
 
-const DITHER_SCALE = 0.4;
+const DITHER_SCALE_DEFAULT = 0.4;
+const DITHER_SCALE_STUDIO = 0.28;
 
 const BLOB_PALETTES: Record<Theme, [string, string, string]> = {
   light: [
@@ -18,8 +19,25 @@ const BLOB_PALETTES: Record<Theme, [string, string, string]> = {
   ],
 };
 
+const BLOB_PALETTES_STUDIO: Record<Theme, [string, string, string]> = {
+  light: [
+    "rgba(213, 119, 237, 0.28)",
+    "rgba(139, 61, 173, 0.2)",
+    "rgba(78, 19, 112, 0.16)",
+  ],
+  dark: [
+    "rgba(213, 119, 237, 0.38)",
+    "rgba(168, 72, 198, 0.26)",
+    "rgba(120, 60, 180, 0.22)",
+  ],
+};
+
 function currentTheme(): Theme {
   return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+}
+
+function isStudioRoute(): boolean {
+  return document.body.classList.contains("route-studio");
 }
 
 /** Touch / coarse pointer: no mouse tracking, so blobs drift on their own. */
@@ -27,7 +45,14 @@ function usesAutoBackgroundMotion(): boolean {
   return window.matchMedia("(hover: none), (pointer: coarse)").matches;
 }
 
-function autoMotionTarget(t: number): { x: number; y: number } {
+function autoMotionTarget(t: number, studio: boolean): { x: number; y: number } {
+  if (studio) {
+    const s = t * 0.0004;
+    return {
+      x: 0.5 + Math.sin(s) * 0.06,
+      y: 0.38 + Math.cos(s * 0.9) * 0.05,
+    };
+  }
   const s = t * 0.00055;
   return {
     x: 0.5 + Math.sin(s) * 0.26 + Math.sin(s * 1.65 + 1.2) * 0.1,
@@ -55,10 +80,22 @@ export function initCanvasBackground(): () => void {
   ];
 
   const syncPalette = () => {
-    const palette = BLOB_PALETTES[currentTheme()];
+    const studio = isStudioRoute();
+    const palette = (studio ? BLOB_PALETTES_STUDIO : BLOB_PALETTES)[currentTheme()];
     blobs.forEach((b, i) => {
       b.color = palette[i];
     });
+    if (studio) {
+      blobs[0].x = 0.5;
+      blobs[0].y = 0.38;
+      blobs[0].r = 0.48;
+      blobs[1].x = 0.22;
+      blobs[1].y = 0.55;
+      blobs[1].r = 0.28;
+      blobs[2].x = 0.78;
+      blobs[2].y = 0.55;
+      blobs[2].r = 0.28;
+    }
   };
   syncPalette();
 
@@ -78,14 +115,20 @@ export function initCanvasBackground(): () => void {
     canvas.style.height = `${h}px`;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    bw = Math.max(1, Math.floor(w * DITHER_SCALE));
-    bh = Math.max(1, Math.floor(h * DITHER_SCALE));
+    const scale = isStudioRoute() ? DITHER_SCALE_STUDIO : DITHER_SCALE_DEFAULT;
+    bw = Math.max(1, Math.floor(w * scale));
+    bh = Math.max(1, Math.floor(h * scale));
     buffer.width = bw;
     buffer.height = bh;
   };
 
   const drawBlobs = (target: CanvasRenderingContext2D, tw: number, th: number, time: number) => {
-    const attractTarget = autoAnimate ? autoMotionTarget(time) : getSmoothMouse();
+    const studio = isStudioRoute();
+    const attractTarget = autoAnimate
+      ? autoMotionTarget(time, studio)
+      : studio
+        ? { x: 0.5, y: 0.38 }
+        : getSmoothMouse();
     const mx = attractTarget.x;
     const my = attractTarget.y;
     target.clearRect(0, 0, tw, th);
@@ -94,28 +137,41 @@ export function initCanvasBackground(): () => void {
 
     for (let i = 0; i < blobs.length; i++) {
       const b = blobs[i];
-      const attract = autoAnimate ? (i === 0 ? 0.012 : 0.008) : i === 0 ? 0.018 : 0.01;
+      const attract = studio
+        ? i === 0
+          ? 0.028
+          : 0.014
+        : autoAnimate
+          ? i === 0
+            ? 0.012
+            : 0.008
+          : i === 0
+            ? 0.018
+            : 0.01;
 
       if (autoAnimate) {
-        b.vx += Math.sin(driftT * 0.9 + b.phase) * 0.00012;
-        b.vy += Math.cos(driftT * 0.75 + b.phase) * 0.00012;
-        b.x += Math.sin(driftT * 0.35 + b.phase) * 0.00025;
-        b.y += Math.cos(driftT * 0.4 + b.phase) * 0.00025;
+        const drift = studio ? 0.00008 : 0.00012;
+        b.vx += Math.sin(driftT * 0.9 + b.phase) * drift;
+        b.vy += Math.cos(driftT * 0.75 + b.phase) * drift;
+        b.x += Math.sin(driftT * 0.35 + b.phase) * (drift * 2);
+        b.y += Math.cos(driftT * 0.4 + b.phase) * (drift * 2);
       }
 
       b.x += (mx - b.x) * attract + b.vx;
       b.y += (my - b.y) * attract + b.vy;
-      b.vx *= autoAnimate ? 0.992 : 0.98;
       b.vy *= autoAnimate ? 0.992 : 0.98;
+      b.vx *= autoAnimate ? 0.992 : 0.98;
 
-      b.x = Math.max(0.05, Math.min(0.95, b.x));
-      b.y = Math.max(0.05, Math.min(0.95, b.y));
+      const pad = studio ? 0.02 : 0.05;
+      b.x = Math.max(pad, Math.min(1 - pad, b.x));
+      b.y = Math.max(pad, Math.min(1 - pad, b.y));
 
       const cx = b.x * tw;
       const cy = b.y * th;
       const radius = b.r * Math.min(tw, th);
       const g = target.createRadialGradient(cx, cy, 0, cx, cy, radius);
       g.addColorStop(0, b.color);
+      g.addColorStop(studio && i === 0 ? 0.55 : 1, studio && i === 0 ? "rgba(0,0,0,0.04)" : "rgba(0,0,0,0)");
       g.addColorStop(1, "rgba(0,0,0,0)");
       target.fillStyle = g;
       target.beginPath();
@@ -125,8 +181,19 @@ export function initCanvasBackground(): () => void {
   };
 
   const draw = (time: number) => {
+    const studio = isStudioRoute();
+    const profile: DitherProfile = studio ? "studio" : "default";
+    const theme = currentTheme();
+
     drawBlobs(bctx, bw, bh, time);
-    applyBayerDither(bctx, bw, bh, currentTheme() === "light" ? 0.18 : 0.28);
+    applyBayerDither(bctx, bw, bh, {
+      profile,
+      strength: studio ? (theme === "light" ? 0.48 : 0.58) : theme === "light" ? 0.2 : 0.3,
+      noise: studio ? 0.62 : 0.1,
+      vignetteNoise: studio,
+      cx: 0.5,
+      cy: 0.38,
+    });
 
     ctx.clearRect(0, 0, w, h);
     ctx.imageSmoothingEnabled = false;
