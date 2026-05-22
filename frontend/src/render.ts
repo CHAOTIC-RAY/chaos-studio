@@ -639,13 +639,15 @@ function renderPostViewButton(post: SocialPost): string {
 function renderPostSlideImg(
   post: SocialPost,
   slide: string,
-  opts: { slideIndex: number; slideCount: number; eager?: boolean },
+  opts: { slideIndex: number; slideCount: number; eager?: boolean; connectedStrip?: boolean },
 ): string {
   const src = postSlideSrc(post, slide);
   const imageBase = post.slides?.length ? `${post.id}/${slide}` : postImageBase(post);
+  const slideClass =
+    opts.slideCount > 1 && !opts.connectedStrip ? " post-card__slide" : "";
   return `
         <img
-          class="post-card__img${opts.slideCount > 1 ? " post-card__slide" : ""}"
+          class="post-card__img${slideClass}"
           data-post-id="${esc(post.id)}"
           data-image-base="${esc(imageBase)}"
           src="${esc(src)}"
@@ -657,7 +659,34 @@ function renderPostSlideImg(
         />`;
 }
 
-function renderPostMedia(post: SocialPost): string {
+function renderPostConnectedStrip(post: SocialPost, slides: string[]): string {
+  const count = slides.length;
+  const figures = slides
+    .map(
+      (slide, i) => `
+        <figure class="post-card__connected-slide">
+          ${renderPostSlideImg(post, slide, { slideIndex: i, slideCount: count, eager: i < 2, connectedStrip: true })}
+        </figure>`,
+    )
+    .join("");
+  return `
+    <div class="post-card__connected" data-connected-carousel>
+      <div
+        class="post-card__connected-track"
+        tabindex="0"
+        aria-label="${esc(post.title)} — ${count} connected slides, swipe horizontally"
+      >
+        ${figures}
+      </div>
+      <p class="post-card__connected-hint">
+        <span class="post-card__connected-badge">${count} slides</span>
+        Swipe sideways — frames connect like an Instagram carousel
+      </p>
+    </div>
+    ${renderPostViewButton(post)}`;
+}
+
+function renderPostMedia(post: SocialPost, mode: "rail" | "expanded" = "rail"): string {
   if (post.video) {
     return `${renderPostVideo(post)}${renderPostViewButton(post)}`;
   }
@@ -669,6 +698,10 @@ function renderPostMedia(post: SocialPost): string {
 
   if (slides.length === 1) {
     return `${renderPostSlideImg(post, slides[0], { slideIndex: 0, slideCount: 1, eager: false })}${renderPostViewButton(post)}`;
+  }
+
+  if (mode === "expanded") {
+    return renderPostConnectedStrip(post, slides);
   }
 
   const count = slides.length;
@@ -685,13 +718,20 @@ function renderPostMedia(post: SocialPost): string {
 
 function renderPostCard(post: SocialPost, opts?: { expandable?: boolean }): string {
   const accent = POST_ACCENTS[post.accent] ?? "post-card--purple";
-  const kind = post.video ? "post-card--video" : post.slides && post.slides.length > 1 ? "post-card--carousel" : "";
   const slideCount = post.slides?.length ?? 0;
   const expandable = opts?.expandable ?? false;
+  const connected = expandable && slideCount > 1;
+  const kind = post.video
+    ? "post-card--video"
+    : connected
+      ? "post-card--connected"
+      : slideCount > 1
+        ? "post-card--carousel"
+        : "";
   return `
-    <article class="post-card ${accent} ${kind}${expandable ? " post-card--expandable" : ""}" data-post-kind="${post.video ? "video" : slideCount > 1 ? "carousel" : "image"}">
-      <div class="post-card__media">
-        ${renderPostMedia(post)}
+    <article class="post-card ${accent} ${kind}${expandable ? " post-card--expandable" : ""}" data-post-kind="${post.video ? "video" : connected ? "connected-carousel" : slideCount > 1 ? "carousel" : "image"}">
+      <div class="post-card__media${connected ? " post-card__media--connected" : ""}">
+        ${renderPostMedia(post, expandable ? "expanded" : "rail")}
         <div class="post-card__shine" aria-hidden="true"></div>
       </div>
       <div class="post-card__body">

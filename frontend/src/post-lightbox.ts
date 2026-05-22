@@ -238,6 +238,23 @@ export function initPostLightbox(): () => void {
         const idx = lightboxItems.findIndex((it) => it.type === "image" && it.src === src);
         if (idx >= 0) startIndex = idx;
       }
+    } else {
+      const track = card.querySelector<HTMLElement>(".post-card__connected-track");
+      if (track && lightboxItems.length > 1) {
+        const center = track.scrollLeft + track.clientWidth / 2;
+        const slides = Array.from(track.querySelectorAll<HTMLElement>(".post-card__connected-slide"));
+        let best = 0;
+        let bestDist = Number.POSITIVE_INFINITY;
+        slides.forEach((slide, i) => {
+          const mid = slide.offsetLeft + slide.offsetWidth / 2;
+          const dist = Math.abs(mid - center);
+          if (dist < bestDist) {
+            bestDist = dist;
+            best = i;
+          }
+        });
+        startIndex = best;
+      }
     }
 
     const title = card.querySelector(".post-card__body h3")?.textContent?.trim() || "Post";
