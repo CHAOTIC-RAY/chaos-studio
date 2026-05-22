@@ -1,6 +1,15 @@
 import type { Portfolio } from "./types/portfolio";
 import { CHAOS_LOGO_SVG } from "./brand/logo";
-import { ICON_CLOSE, ICON_MENU, ICON_MOON, ICON_PRINT, ICON_SUN, ICON_TELEGRAM } from "./icons";
+import {
+  ICON_CHEVRON_LEFT,
+  ICON_CHEVRON_RIGHT,
+  ICON_CLOSE,
+  ICON_MENU,
+  ICON_MOON,
+  ICON_PRINT,
+  ICON_SUN,
+  ICON_TELEGRAM,
+} from "./icons";
 import { renderToolTag } from "./skill-icons";
 import { renderWorkMarquee } from "./render-work-marquee";
 
@@ -179,10 +188,18 @@ export function renderPage(p: Portfolio): string {
           <p class="eyebrow">Campaign & feed</p>
           <h2>${esc(p.socialPosts.subtitle)}</h2>
         </div>
-        <div class="posts-viewport" data-reveal>
-          <div class="posts-track">
-            ${[...p.socialPosts.items, ...p.socialPosts.items].map((post) => renderPostCard(post)).join("")}
+        <div class="posts-rail" data-reveal>
+          <button type="button" class="posts-rail__btn posts-rail__btn--prev" aria-label="Scroll campaign posts left">
+            ${ICON_CHEVRON_LEFT}
+          </button>
+          <div class="posts-viewport">
+            <div class="posts-track">
+              ${renderPostsTrack(p.socialPosts.items)}
+            </div>
           </div>
+          <button type="button" class="posts-rail__btn posts-rail__btn--next" aria-label="Scroll campaign posts right">
+            ${ICON_CHEVRON_RIGHT}
+          </button>
         </div>
       </section>
 
@@ -282,7 +299,39 @@ export function renderPage(p: Portfolio): string {
   `;
 }
 
-function postImageBase(post: Portfolio["socialPosts"]["items"][0]): string {
+type SocialPost = Portfolio["socialPosts"]["items"][0];
+
+function groupPostsByClient(items: SocialPost[]): { client: string; posts: SocialPost[] }[] {
+  const groups: { client: string; posts: SocialPost[] }[] = [];
+  for (const post of items) {
+    const last = groups[groups.length - 1];
+    if (last?.client === post.client) last.posts.push(post);
+    else groups.push({ client: post.client, posts: [post] });
+  }
+  return groups;
+}
+
+function renderPostsTrack(items: SocialPost[]): string {
+  const groups = groupPostsByClient(items);
+  const renderGroups = () =>
+    groups
+      .map(
+        (g) => `
+      <div class="posts-group">
+        <div class="posts-group__head">
+          <span class="posts-group__name">${esc(g.client)}</span>
+          <span class="posts-group__count">${g.posts.length}</span>
+        </div>
+        <div class="posts-group__cards">
+          ${g.posts.map((post) => renderPostCard(post)).join("")}
+        </div>
+      </div>`,
+      )
+      .join("");
+  return renderGroups() + renderGroups();
+}
+
+function postImageBase(post: SocialPost): string {
   return post.image?.trim() || post.id;
 }
 
@@ -294,8 +343,26 @@ function postSlideSrc(post: Portfolio["socialPosts"]["items"][0], slide: string)
   return `/images/posts/${base}.webp`;
 }
 
+function renderPostVideo(post: SocialPost): string {
+  const dir = `/images/posts/${post.id}`;
+  const videoSrc = `${dir}/${post.video}`;
+  const posterSrc = `${dir}/${post.poster ?? "poster.webp"}`;
+  return `
+        <video
+          class="post-card__video"
+          data-post-id="${esc(post.id)}"
+          src="${esc(videoSrc)}"
+          poster="${esc(posterSrc)}"
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          aria-label="${esc(post.title)}"
+        ></video>`;
+}
+
 function renderPostSlideImg(
-  post: Portfolio["socialPosts"]["items"][0],
+  post: SocialPost,
   slide: string,
   opts: { slideIndex: number; slideCount: number; eager?: boolean },
 ): string {
@@ -315,7 +382,9 @@ function renderPostSlideImg(
         />`;
 }
 
-function renderPostMedia(post: Portfolio["socialPosts"]["items"][0]): string {
+function renderPostMedia(post: SocialPost): string {
+  if (post.video) return renderPostVideo(post);
+
   const slides =
     post.slides?.length && post.slides.length > 0
       ? post.slides
@@ -332,18 +401,17 @@ function renderPostMedia(post: Portfolio["socialPosts"]["items"][0]): string {
   return `<div class="post-card__carousel post-card__carousel--${count}" aria-label="${esc(post.title)} carousel">${imgs}</div>`;
 }
 
-function renderPostCard(post: Portfolio["socialPosts"]["items"][0]): string {
+function renderPostCard(post: SocialPost): string {
   const accent = POST_ACCENTS[post.accent] ?? "post-card--purple";
+  const kind = post.video ? "post-card--video" : "";
   return `
-    <article class="post-card ${accent}">
+    <article class="post-card ${accent} ${kind}">
       <div class="post-card__media">
         ${renderPostMedia(post)}
         <div class="post-card__shine" aria-hidden="true"></div>
       </div>
       <div class="post-card__body">
-        <span class="post-platform">${esc(post.platform)}</span>
         <h3>${esc(post.title)}</h3>
-        <p class="post-client">${esc(post.client)}</p>
         <p class="post-desc">${esc(post.description)}</p>
         <div class="post-tags">${post.tags.map((t) => `<span>${esc(t)}</span>`).join("")}</div>
       </div>

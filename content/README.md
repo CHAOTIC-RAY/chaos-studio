@@ -112,10 +112,11 @@ The card cycles through slides automatically. Keep carousel posts **one JSON ent
 
 ```bash
 npm run import:posts
+npm run apply:post-copy
 npm run build
 ```
 
-The script groups images by folder or `name-1`, `name-2` filenames, converts to WebP, updates `content/campaign-posts.json` order, and adds `slides` for multi-image groups.
+The import groups images by client folder and Instagram post timestamp (carousels), converts to WebP, and includes `.mp4` reels. Edit titles/descriptions in **`content/post-copy.json`**, then run `npm run apply:post-copy`.
 
 ---
 

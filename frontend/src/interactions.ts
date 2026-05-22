@@ -4,10 +4,11 @@ export function initInteractions(): () => void {
   const cleanups: (() => void)[] = [];
   if (!prefersReducedMotion()) {
     cleanups.push(initMagnetic());
-    cleanups.push(initPostsMarquee());
   }
+  cleanups.push(initPostsRail());
   cleanups.push(initActiveNav());
   cleanups.push(initPostImageFallback());
+  cleanups.push(initPostVideos());
   return () => cleanups.forEach((fn) => fn());
 }
 
@@ -33,22 +34,59 @@ function initMagnetic(): () => void {
     });
 }
 
-function initPostsMarquee(): () => void {
+function initPostsRail(): () => void {
   const viewport = document.querySelector(".posts-viewport") as HTMLElement | null;
   const track = document.querySelector(".posts-track") as HTMLElement | null;
+  const prev = document.querySelector(".posts-rail__btn--prev") as HTMLButtonElement | null;
+  const next = document.querySelector(".posts-rail__btn--next") as HTMLButtonElement | null;
   if (!track) return () => {};
 
   let x = 0;
   let raf = 0;
   let paused = false;
+  let pauseTimer = 0;
   const speed = 0.45;
+  const autoScroll = !prefersReducedMotion();
+
+  const applyTransform = () => {
+    track.style.transform = `translateX(${x}px)`;
+  };
+
+  const pauseBriefly = (ms = 2600) => {
+    paused = true;
+    window.clearTimeout(pauseTimer);
+    pauseTimer = window.setTimeout(() => {
+      paused = false;
+    }, ms);
+  };
+
+  const stepPx = () => {
+    const card = track.querySelector<HTMLElement>(".post-card");
+    const group = track.querySelector<HTMLElement>(".posts-group");
+    const el = card ?? group;
+    if (!el) return 340;
+    const gap = 20;
+    return el.offsetWidth + gap;
+  };
+
+  const nudge = (direction: -1 | 1) => {
+    x += direction * stepPx();
+    applyTransform();
+    pauseBriefly();
+  };
+
+  const onPrev = () => nudge(1);
+  const onNext = () => nudge(-1);
+
+  prev?.addEventListener("click", onPrev);
+  next?.addEventListener("click", onNext);
 
   const loop = () => {
-    if (!paused) {
+    if (autoScroll && !paused) {
       x -= speed;
       const half = track.scrollWidth / 2;
       if (half > 0 && Math.abs(x) >= half) x = 0;
-      track.style.transform = `translateX(${x}px)`;
+      applyTransform();
     }
     raf = requestAnimationFrame(loop);
   };
@@ -70,7 +108,7 @@ function initPostsMarquee(): () => void {
   let startTx = 0;
 
   viewport?.addEventListener("pointerdown", (e) => {
-    if ((e.target as HTMLElement).closest("a")) return;
+    if ((e.target as HTMLElement).closest("button, a")) return;
     isDown = true;
     paused = true;
     startX = e.clientX;
@@ -80,12 +118,12 @@ function initPostsMarquee(): () => void {
   viewport?.addEventListener("pointermove", (e) => {
     if (!isDown) return;
     x = startTx + (e.clientX - startX);
-    track.style.transform = `translateX(${x}px)`;
+    applyTransform();
   });
   const endDrag = (e: PointerEvent) => {
     if (!isDown) return;
     isDown = false;
-    paused = false;
+    pauseBriefly(1200);
     try {
       viewport?.releasePointerCapture(e.pointerId);
     } catch {
@@ -95,10 +133,13 @@ function initPostsMarquee(): () => void {
   viewport?.addEventListener("pointerup", endDrag);
   viewport?.addEventListener("pointercancel", endDrag);
 
-  raf = requestAnimationFrame(loop);
+  if (autoScroll) raf = requestAnimationFrame(loop);
 
   return () => {
     cancelAnimationFrame(raf);
+    window.clearTimeout(pauseTimer);
+    prev?.removeEventListener("click", onPrev);
+    next?.removeEventListener("click", onNext);
     viewport?.removeEventListener("mouseenter", pause);
     viewport?.removeEventListener("mouseleave", resume);
   };
@@ -151,4 +192,33 @@ function initPostImageFallback(): () => void {
     if (!img.getAttribute("src")) img.src = sources[0];
   });
   return () => {};
+}
+
+function initPostVideos(): () => void {
+  const cleanups: Array<() => void> = [];
+  document.querySelectorAll<HTMLVideoElement>(".post-card__video").forEach((video) => {
+    const card = video.closest(".post-card");
+    if (!card) return;
+
+    const play = () => {
+      video.play().catch(() => {});
+    };
+    const stop = () => {
+      video.pause();
+      video.currentTime = 0;
+    };
+
+    card.addEventListener("mouseenter", play);
+    card.addEventListener("mouseleave", stop);
+    card.addEventListener("focusin", play);
+    card.addEventListener("focusout", stop);
+
+    cleanups.push(() => {
+      card.removeEventListener("mouseenter", play);
+      card.removeEventListener("mouseleave", stop);
+      card.removeEventListener("focusin", play);
+      card.removeEventListener("focusout", stop);
+    });
+  });
+  return () => cleanups.forEach((fn) => fn());
 }

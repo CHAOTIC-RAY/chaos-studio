@@ -355,11 +355,18 @@ body.is-pdf-export .post-card__body h3 {
   line-height: 1.2 !important;
 }
 
-body.is-pdf-export .post-platform {
-  font-size: 0.5rem !important;
+body.is-pdf-export .posts-rail__btn {
+  display: none !important;
 }
 
-body.is-pdf-export .post-client,
+body.is-pdf-export .posts-group__head {
+  margin-bottom: 0.15rem !important;
+}
+
+body.is-pdf-export .posts-group__name {
+  font-size: 0.55rem !important;
+}
+
 body.is-pdf-export .post-desc,
 body.is-pdf-export .post-tags {
   display: none !important;

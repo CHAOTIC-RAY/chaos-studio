@@ -40,6 +40,9 @@ export interface Portfolio {
       accent: string;
       image?: string;
       slides?: string[];
+      /** Filename under /images/posts/{id}/ */
+      video?: string;
+      poster?: string;
     }[];
   };
   featuredWork: {

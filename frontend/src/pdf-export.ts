@@ -163,6 +163,12 @@ function freezeMotionForPdf(): void {
     });
   });
 
+  document.querySelectorAll<HTMLVideoElement>(".post-card__video").forEach((video) => {
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
+  });
+
   document.querySelectorAll<HTMLVideoElement>(".device__media").forEach((video) => {
     video.pause();
     video.style.display = "none";

@@ -5,11 +5,12 @@
       "id": "ayha-01",
       "platform": "Instagram",
       "client": "Ayha Maldives",
-      "title": "Ayha Maldives — carousel (10 slides)",
-      "description": "Multi-slide Instagram carousel with on-brand layout, typography, and promo visuals.",
+      "title": "Resort & consultancy campaign set",
+      "description": "Ten-slide carousel covering offers, property highlights, and consultancy branding for Ayha Maldives with consistent tropical color and clear CTAs.",
       "tags": [
         "Carousel",
-        "Instagram"
+        "Tourism",
+        "Hospitality"
       ],
       "accent": "teal",
       "slides": [
@@ -29,10 +30,11 @@
       "id": "ayha-02",
       "platform": "Instagram",
       "client": "Ayha Maldives",
-      "title": "Ayha Maldives — feed post",
-      "description": "Single-frame Instagram creative for Ayha Maldives.",
+      "title": "Offer highlight frame",
+      "description": "Single promo frame with bold pricing and package details aimed at driving DMs and bookings.",
       "tags": [
-        "Instagram"
+        "Promo",
+        "Tourism"
       ],
       "accent": "teal"
     },
@@ -40,10 +42,11 @@
       "id": "ayha-03",
       "platform": "Instagram",
       "client": "Ayha Maldives",
-      "title": "Ayha Maldives — feed post",
-      "description": "Single-frame Instagram creative for Ayha Maldives.",
+      "title": "Brand touchpoint graphic",
+      "description": "Clean layout reinforcing Ayha’s visual identity and contact paths for Maldives hospitality clients.",
       "tags": [
-        "Instagram"
+        "Branding",
+        "Hospitality"
       ],
       "accent": "teal"
     },
@@ -51,10 +54,11 @@
       "id": "aysh-saloon-01",
       "platform": "Instagram",
       "client": "Aysh Salon",
-      "title": "Aysh Salon — feed post",
-      "description": "Single-frame Instagram creative for Aysh Salon.",
+      "title": "Custom kit & neon promo",
+      "description": "High-energy sports-meets-salon graphic with neon grid, jersey mockup, and WhatsApp ordering CTA.",
       "tags": [
-        "Instagram"
+        "Promo",
+        "Sports collab"
       ],
       "accent": "pink"
     },
@@ -62,10 +66,11 @@
       "id": "aysh-saloon-02",
       "platform": "Instagram",
       "client": "Aysh Salon",
-      "title": "Aysh Salon — feed post",
-      "description": "Single-frame Instagram creative for Aysh Salon.",
+      "title": "Relaxation Trio — MVR 500",
+      "description": "Package flyer listing three bundled services (cut, blowdry, massage options) with hero portrait and salon hotline.",
       "tags": [
-        "Instagram"
+        "Packages",
+        "Beauty"
       ],
       "accent": "pink"
     },
@@ -73,10 +78,11 @@
       "id": "aysh-saloon-03",
       "platform": "Instagram",
       "client": "Aysh Salon",
-      "title": "Aysh Salon — feed post",
-      "description": "Single-frame Instagram creative for Aysh Salon.",
+      "title": "Skincare tips — oily & dry skin",
+      "description": "Educational split layout with routine tips for oily vs dry skin types and soft beauty photography.",
       "tags": [
-        "Instagram"
+        "Education",
+        "Skincare"
       ],
       "accent": "pink"
     },
@@ -84,11 +90,11 @@
       "id": "choparts-01",
       "platform": "Instagram",
       "client": "Choparts Maldives",
-      "title": "Choparts Maldives — carousel (8 slides)",
-      "description": "Multi-slide Instagram carousel with on-brand layout, typography, and promo visuals.",
+      "title": "Parts & service carousel",
+      "description": "Eight-slide set showcasing Choparts offers, vehicle visuals, and sale messaging for the Maldives auto audience.",
       "tags": [
         "Carousel",
-        "Instagram"
+        "Automotive"
       ],
       "accent": "purple",
       "slides": [
@@ -106,10 +112,11 @@
       "id": "digital-dive-01",
       "platform": "Facebook",
       "client": "Digital Dive",
-      "title": "Digital Dive — feed post",
-      "description": "Single-frame Facebook creative for Digital Dive.",
+      "title": "Agency campaign frame 1",
+      "description": "Bold social graphic for Digital Dive client work with strong headline hierarchy and brand color blocking.",
       "tags": [
-        "Facebook"
+        "Agency",
+        "Campaign"
       ],
       "accent": "purple"
     },
@@ -117,10 +124,11 @@
       "id": "digital-dive-02",
       "platform": "Facebook",
       "client": "Digital Dive",
-      "title": "Digital Dive — feed post",
-      "description": "Single-frame Facebook creative for Digital Dive.",
+      "title": "Agency campaign frame 2",
+      "description": "Follow-up creative highlighting service value and scroll-stopping contrast for feed placement.",
       "tags": [
-        "Facebook"
+        "Agency",
+        "Campaign"
       ],
       "accent": "purple"
     },
@@ -128,10 +136,11 @@
       "id": "digital-dive-03",
       "platform": "Facebook",
       "client": "Digital Dive",
-      "title": "Digital Dive — feed post",
-      "description": "Single-frame Facebook creative for Digital Dive.",
+      "title": "Agency campaign frame 3",
+      "description": "Visual tying offer details to brand marks—built for quick comprehension on mobile.",
       "tags": [
-        "Facebook"
+        "Agency",
+        "Campaign"
       ],
       "accent": "purple"
     },
@@ -139,10 +148,11 @@
       "id": "digital-dive-04",
       "platform": "Facebook",
       "client": "Digital Dive",
-      "title": "Digital Dive — feed post",
-      "description": "Single-frame Facebook creative for Digital Dive.",
+      "title": "Agency campaign frame 4",
+      "description": "Promo layout with product/hero imagery and short supporting copy for conversion-focused posts.",
       "tags": [
-        "Facebook"
+        "Agency",
+        "Campaign"
       ],
       "accent": "purple"
     },
@@ -150,10 +160,11 @@
       "id": "digital-dive-05",
       "platform": "Facebook",
       "client": "Digital Dive",
-      "title": "Digital Dive — feed post",
-      "description": "Single-frame Facebook creative for Digital Dive.",
+      "title": "Agency campaign frame 5",
+      "description": "Closing frame in the series with CTA emphasis and consistent Digital Dive art direction.",
       "tags": [
-        "Facebook"
+        "Agency",
+        "Campaign"
       ],
       "accent": "purple"
     },
@@ -161,10 +172,11 @@
       "id": "expressshipping-01",
       "platform": "Instagram",
       "client": "Express Shipping MV",
-      "title": "Express Shipping MV — feed post",
-      "description": "Single-frame Instagram creative for Express Shipping MV.",
+      "title": "Logistics promo — wave 1",
+      "description": "Shipping brand creative with parcel visuals, trust cues, and Maldives contact details.",
       "tags": [
-        "Instagram"
+        "Logistics",
+        "Promo"
       ],
       "accent": "teal"
     },
@@ -172,10 +184,11 @@
       "id": "expressshipping-02",
       "platform": "Instagram",
       "client": "Express Shipping MV",
-      "title": "Express Shipping MV — feed post",
-      "description": "Single-frame Instagram creative for Express Shipping MV.",
+      "title": "Logistics promo — wave 2",
+      "description": "Follow-on post stressing speed and reliability with iconography and high-contrast type.",
       "tags": [
-        "Instagram"
+        "Logistics",
+        "Promo"
       ],
       "accent": "teal"
     },
@@ -183,10 +196,11 @@
       "id": "expressshipping-03",
       "platform": "Instagram",
       "client": "Express Shipping MV",
-      "title": "Express Shipping MV — feed post",
-      "description": "Single-frame Instagram creative for Express Shipping MV.",
+      "title": "Service highlight",
+      "description": "Single-frame explainer of Express Shipping services with clear benefit bullets.",
       "tags": [
-        "Instagram"
+        "Logistics",
+        "Service"
       ],
       "accent": "teal"
     },
@@ -194,10 +208,11 @@
       "id": "expressshipping-04",
       "platform": "Instagram",
       "client": "Express Shipping MV",
-      "title": "Express Shipping MV — feed post",
-      "description": "Single-frame Instagram creative for Express Shipping MV.",
+      "title": "Customer offer graphic",
+      "description": "Promotional layout for seasonal or bundled shipping rates with branded color fields.",
       "tags": [
-        "Instagram"
+        "Logistics",
+        "Offer"
       ],
       "accent": "teal"
     },
@@ -205,10 +220,11 @@
       "id": "expressshipping-05",
       "platform": "Instagram",
       "client": "Express Shipping MV",
-      "title": "Express Shipping MV — feed post",
-      "description": "Single-frame Instagram creative for Express Shipping MV.",
+      "title": "Brand reminder post",
+      "description": "Minimal logo-forward frame keeping Express Shipping top-of-mind in feed.",
       "tags": [
-        "Instagram"
+        "Logistics",
+        "Branding"
       ],
       "accent": "teal"
     },
@@ -216,10 +232,11 @@
       "id": "expressshipping-06",
       "platform": "Instagram",
       "client": "Express Shipping MV",
-      "title": "Express Shipping MV — feed post",
-      "description": "Single-frame Instagram creative for Express Shipping MV.",
+      "title": "Call-to-action post",
+      "description": "Direct CTA creative pushing inquiries via phone/social with bold headline treatment.",
       "tags": [
-        "Instagram"
+        "Logistics",
+        "CTA"
       ],
       "accent": "teal"
     },
@@ -227,11 +244,12 @@
       "id": "fottcalm-01",
       "platform": "Instagram",
       "client": "Footcalm",
-      "title": "Footcalm — carousel (7 slides)",
-      "description": "Multi-slide Instagram carousel with on-brand layout, typography, and promo visuals.",
+      "title": "Product range carousel",
+      "description": "Seven-slide walkthrough of Footcalm products with pack shots, benefits, and retail-ready typography.",
       "tags": [
         "Carousel",
-        "Instagram"
+        "Product",
+        "Wellness"
       ],
       "accent": "pink",
       "slides": [
@@ -248,10 +266,11 @@
       "id": "fottcalm-02",
       "platform": "Instagram",
       "client": "Footcalm",
-      "title": "Footcalm — feed post",
-      "description": "Single-frame Instagram creative for Footcalm.",
+      "title": "Hero product feature",
+      "description": "Single product spotlight with soft lifestyle tone and ingredient/benefit callouts.",
       "tags": [
-        "Instagram"
+        "Product",
+        "Wellness"
       ],
       "accent": "pink"
     },
@@ -259,10 +278,11 @@
       "id": "fottcalm-03",
       "platform": "Instagram",
       "client": "Footcalm",
-      "title": "Footcalm — feed post",
-      "description": "Single-frame Instagram creative for Footcalm.",
+      "title": "Wellness tip graphic",
+      "description": "Educational frame pairing foot-care advice with brand palette and product mention.",
       "tags": [
-        "Instagram"
+        "Education",
+        "Wellness"
       ],
       "accent": "pink"
     },
@@ -270,11 +290,11 @@
       "id": "haus-of-paws-01",
       "platform": "Instagram",
       "client": "Haus of Paws",
-      "title": "Haus of Paws — carousel (3 slides)",
-      "description": "Multi-slide Instagram carousel with on-brand layout, typography, and promo visuals.",
+      "title": "Pet care trio carousel",
+      "description": "Three-slide set for grooming/products with friendly pet photography and playful type.",
       "tags": [
         "Carousel",
-        "Instagram"
+        "Pets"
       ],
       "accent": "gold",
       "slides": [
@@ -287,10 +307,11 @@
       "id": "haus-of-paws-02",
       "platform": "Instagram",
       "client": "Haus of Paws",
-      "title": "Haus of Paws — feed post",
-      "description": "Single-frame Instagram creative for Haus of Paws.",
+      "title": "Grooming promo",
+      "description": "Single post highlighting grooming services with warm colors and pet-forward imagery.",
       "tags": [
-        "Instagram"
+        "Pets",
+        "Promo"
       ],
       "accent": "gold"
     },
@@ -298,10 +319,11 @@
       "id": "haus-of-paws-03",
       "platform": "Instagram",
       "client": "Haus of Paws",
-      "title": "Haus of Paws — feed post",
-      "description": "Single-frame Instagram creative for Haus of Paws.",
+      "title": "Shop announcement",
+      "description": "Retail-style graphic announcing offers or arrivals for Haus of Paws customers.",
       "tags": [
-        "Instagram"
+        "Pets",
+        "Retail"
       ],
       "accent": "gold"
     },
@@ -309,10 +331,11 @@
       "id": "lumeria-01",
       "platform": "Instagram",
       "client": "Lumeria Salon",
-      "title": "Lumeria Salon — feed post",
-      "description": "Single-frame Instagram creative for Lumeria Salon.",
+      "title": "Salon intro frame",
+      "description": "Brand-forward beauty post introducing Lumeria’s tone, fonts, and soft glam photography.",
       "tags": [
-        "Instagram"
+        "Beauty",
+        "Branding"
       ],
       "accent": "pink"
     },
@@ -320,11 +343,12 @@
       "id": "lumeria-02",
       "platform": "Instagram",
       "client": "Lumeria Salon",
-      "title": "Lumeria Salon — carousel (7 slides)",
-      "description": "Multi-slide Instagram carousel with on-brand layout, typography, and promo visuals.",
+      "title": "Services & offers carousel",
+      "description": "Seven-slide carousel detailing treatments, pricing cues, and model shots for Lumeria Salon.",
       "tags": [
         "Carousel",
-        "Instagram"
+        "Beauty",
+        "Packages"
       ],
       "accent": "pink",
       "slides": [
@@ -341,10 +365,11 @@
       "id": "lumeria-03",
       "platform": "Instagram",
       "client": "Lumeria Salon",
-      "title": "Lumeria Salon — feed post",
-      "description": "Single-frame Instagram creative for Lumeria Salon.",
+      "title": "Styling spotlight",
+      "description": "Single-frame highlight of hair/styling results with elegant serif accents and muted palette.",
       "tags": [
-        "Instagram"
+        "Beauty",
+        "Styling"
       ],
       "accent": "pink"
     },
@@ -352,10 +377,11 @@
       "id": "metroflex-islanders-nutrition-01",
       "platform": "Instagram",
       "client": "Metroflex & Islanders Nutrition",
-      "title": "Metroflex & Islanders Nutrition — feed post",
-      "description": "Single-frame Instagram creative for Metroflex & Islanders Nutrition.",
+      "title": "Islanders Nutrition promo",
+      "description": "Supplement-forward creative with product photography and performance-oriented headlines.",
       "tags": [
-        "Instagram"
+        "Fitness",
+        "Nutrition"
       ],
       "accent": "gold"
     },
@@ -363,10 +389,11 @@
       "id": "metroflex-islanders-nutrition-02",
       "platform": "Instagram",
       "client": "Metroflex & Islanders Nutrition",
-      "title": "Metroflex & Islanders Nutrition — feed post",
-      "description": "Single-frame Instagram creative for Metroflex & Islanders Nutrition.",
+      "title": "Islanders product feature",
+      "description": "Focused product layout with macros/ benefits and brand marks for Islanders Nutrition.",
       "tags": [
-        "Instagram"
+        "Nutrition",
+        "Product"
       ],
       "accent": "gold"
     },
@@ -374,10 +401,11 @@
       "id": "metroflex-islanders-nutrition-03",
       "platform": "Instagram",
       "client": "Metroflex & Islanders Nutrition",
-      "title": "Metroflex & Islanders Nutrition — feed post",
-      "description": "Single-frame Instagram creative for Metroflex & Islanders Nutrition.",
+      "title": "Islanders offer post",
+      "description": "Promotional frame pushing bundles or limited pricing with energetic gym aesthetic.",
       "tags": [
-        "Instagram"
+        "Nutrition",
+        "Promo"
       ],
       "accent": "gold"
     },
@@ -385,10 +413,11 @@
       "id": "metroflex-islanders-nutrition-04",
       "platform": "Instagram",
       "client": "Metroflex & Islanders Nutrition",
-      "title": "Metroflex & Islanders Nutrition — feed post",
-      "description": "Single-frame Instagram creative for Metroflex & Islanders Nutrition.",
+      "title": "Islanders lifestyle frame",
+      "description": "Lifestyle shot tying athletes and supplements with bold typographic hierarchy.",
       "tags": [
-        "Instagram"
+        "Nutrition",
+        "Lifestyle"
       ],
       "accent": "gold"
     },
@@ -396,10 +425,11 @@
       "id": "metroflex-islanders-nutrition-05",
       "platform": "Instagram",
       "client": "Metroflex & Islanders Nutrition",
-      "title": "Metroflex & Islanders Nutrition — feed post",
-      "description": "Single-frame Instagram creative for Metroflex & Islanders Nutrition.",
+      "title": "Metroflex gym promo",
+      "description": "Metroflex-branded post highlighting membership or training offers with strong contrast.",
       "tags": [
-        "Instagram"
+        "Fitness",
+        "Gym"
       ],
       "accent": "gold"
     },
@@ -407,10 +437,11 @@
       "id": "metroflex-islanders-nutrition-06",
       "platform": "Instagram",
       "client": "Metroflex & Islanders Nutrition",
-      "title": "Metroflex & Islanders Nutrition — feed post",
-      "description": "Single-frame Instagram creative for Metroflex & Islanders Nutrition.",
+      "title": "Metroflex facility feature",
+      "description": "Showcase of gym environment/equipment with motivational copy and logo lockup.",
       "tags": [
-        "Instagram"
+        "Fitness",
+        "Gym"
       ],
       "accent": "gold"
     },
@@ -418,10 +449,11 @@
       "id": "metroflex-islanders-nutrition-07",
       "platform": "Instagram",
       "client": "Metroflex & Islanders Nutrition",
-      "title": "Metroflex & Islanders Nutrition — feed post",
-      "description": "Single-frame Instagram creative for Metroflex & Islanders Nutrition.",
+      "title": "Metroflex CTA",
+      "description": "Call-to-action creative driving sign-ups or visits with hours/contact emphasis.",
       "tags": [
-        "Instagram"
+        "Fitness",
+        "CTA"
       ],
       "accent": "gold"
     },
@@ -429,11 +461,12 @@
       "id": "rainbow-01",
       "platform": "Instagram",
       "client": "Rainbow Enterprise",
-      "title": "Rainbow Enterprise — carousel (3 slides)",
-      "description": "Multi-slide Instagram carousel with on-brand layout, typography, and promo visuals.",
+      "title": "Furniture sale carousel",
+      "description": "Three-slide promo for Rainbow homeware: product cutouts, price overlays, and seasonal sale messaging.",
       "tags": [
         "Carousel",
-        "Instagram"
+        "Furniture",
+        "Sale"
       ],
       "accent": "purple",
       "slides": [
@@ -446,10 +479,11 @@
       "id": "rainbow-02",
       "platform": "Instagram",
       "client": "Rainbow Enterprise",
-      "title": "Rainbow Enterprise — feed post",
-      "description": "Single-frame Instagram creative for Rainbow Enterprise.",
+      "title": "Showroom highlight",
+      "description": "Single frame featuring in-store/display styling with brand gradients and product focus.",
       "tags": [
-        "Instagram"
+        "Furniture",
+        "Interior"
       ],
       "accent": "purple"
     },
@@ -457,11 +491,12 @@
       "id": "rainbow-03",
       "platform": "Instagram",
       "client": "Rainbow Enterprise",
-      "title": "Rainbow Enterprise — carousel (4 slides)",
-      "description": "Multi-slide Instagram carousel with on-brand layout, typography, and promo visuals.",
+      "title": "Collection feature carousel",
+      "description": "Four-slide set presenting room sets, materials, and coordinated pricing for home buyers.",
       "tags": [
         "Carousel",
-        "Instagram"
+        "Furniture",
+        "Interior"
       ],
       "accent": "purple",
       "slides": [
@@ -472,13 +507,29 @@
       ]
     },
     {
+      "id": "rainbow-reel-01",
+      "platform": "Instagram",
+      "client": "Rainbow Enterprise",
+      "accent": "purple",
+      "video": "video.mp4",
+      "poster": "poster.webp",
+      "title": "Motion reel — showroom feature",
+      "description": "Short-form video highlighting Rainbow products in motion with dynamic cuts and branded overlays.",
+      "tags": [
+        "Reel",
+        "Furniture",
+        "Video"
+      ]
+    },
+    {
       "id": "rainbow-04",
       "platform": "Instagram",
       "client": "Rainbow Enterprise",
-      "title": "Rainbow Enterprise — feed post",
-      "description": "Single-frame Instagram creative for Rainbow Enterprise.",
+      "title": "Product spotlight",
+      "description": "Single-product layout with hero photography and concise offer line for feed conversion.",
       "tags": [
-        "Instagram"
+        "Furniture",
+        "Product"
       ],
       "accent": "purple"
     },
@@ -486,22 +537,38 @@
       "id": "rainbow-05",
       "platform": "Instagram",
       "client": "Rainbow Enterprise",
-      "title": "Rainbow Enterprise — feed post",
-      "description": "Single-frame Instagram creative for Rainbow Enterprise.",
+      "title": "Interior styling post",
+      "description": "Lifestyle-led room scene emphasizing textures, lighting, and Rainbow’s premium homeware feel.",
       "tags": [
-        "Instagram"
+        "Interior",
+        "Lifestyle"
       ],
       "accent": "purple"
+    },
+    {
+      "id": "rainbow-reel-02",
+      "platform": "Instagram",
+      "client": "Rainbow Enterprise",
+      "accent": "purple",
+      "video": "video.mp4",
+      "poster": "poster.webp",
+      "title": "Motion reel — promo push",
+      "description": "Vertical reel driving urgency on a limited offer with animated text and product glimpses.",
+      "tags": [
+        "Reel",
+        "Promo",
+        "Video"
+      ]
     },
     {
       "id": "rioga-01",
       "platform": "Instagram",
       "client": "Rioga Travel & Tours",
-      "title": "Rioga Travel & Tours — carousel (2 slides)",
-      "description": "Multi-slide Instagram carousel with on-brand layout, typography, and promo visuals.",
+      "title": "Travel offer — duo carousel",
+      "description": "Two-slide tourism promo with destination imagery, pricing cues, and Rioga booking CTAs.",
       "tags": [
         "Carousel",
-        "Instagram"
+        "Travel"
       ],
       "accent": "teal",
       "slides": [
@@ -513,11 +580,12 @@
       "id": "rioga-02",
       "platform": "Instagram",
       "client": "Rioga Travel & Tours",
-      "title": "Rioga Travel & Tours — carousel (7 slides)",
-      "description": "Multi-slide Instagram carousel with on-brand layout, typography, and promo visuals.",
+      "title": "Destination package carousel",
+      "description": "Seven-slide itinerary-style set covering destinations, inclusions, and contact details for Rioga Travel.",
       "tags": [
         "Carousel",
-        "Instagram"
+        "Travel",
+        "Tourism"
       ],
       "accent": "teal",
       "slides": [
@@ -534,10 +602,11 @@
       "id": "rioga-03",
       "platform": "Instagram",
       "client": "Rioga Travel & Tours",
-      "title": "Rioga Travel & Tours — feed post",
-      "description": "Single-frame Instagram creative for Rioga Travel & Tours.",
+      "title": "Quick travel tip frame",
+      "description": "Single educational/promo frame keeping Rioga visible between larger campaign drops.",
       "tags": [
-        "Instagram"
+        "Travel",
+        "Tips"
       ],
       "accent": "teal"
     },
@@ -545,10 +614,11 @@
       "id": "world-trip-tours-01",
       "platform": "Instagram",
       "client": "World Trip Tours",
-      "title": "World Trip Tours — feed post",
-      "description": "Single-frame Instagram creative for World Trip Tours.",
+      "title": "Tour package feature",
+      "description": "World Trip Tours creative with destination photo, package title, and clear inquiry CTA.",
       "tags": [
-        "Instagram"
+        "Travel",
+        "Tourism"
       ],
       "accent": "teal"
     },
@@ -556,10 +626,11 @@
       "id": "world-trip-tours-02",
       "platform": "Instagram",
       "client": "World Trip Tours",
-      "title": "World Trip Tours — feed post",
-      "description": "Single-frame Instagram creative for World Trip Tours.",
+      "title": "Seasonal offer graphic",
+      "description": "Follow-up promo frame with dates/pricing highlights and brand-consistent travel styling.",
       "tags": [
-        "Instagram"
+        "Travel",
+        "Offer"
       ],
       "accent": "teal"
     },

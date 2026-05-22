@@ -12,6 +12,8 @@ export type CampaignPostJson = {
   image?: string;
   /** Basenames under /images/posts/{id}/ — e.g. slide-01, slide-02 */
   slides?: string[];
+  video?: string;
+  poster?: string;
 };
 
 type CampaignFile = {

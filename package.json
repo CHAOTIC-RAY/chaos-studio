@@ -6,6 +6,7 @@
   "scripts": {
     "sync:content": "node scripts/sync-content.mjs",
     "import:posts": "node scripts/import-posts-zip.mjs",
+    "apply:post-copy": "node scripts/apply-post-copy.mjs && npm run sync:content",
     "build": "npm run sync:content && node scripts/generate-icons.mjs && npm run build --workspace=frontend",
     "icons": "node scripts/generate-icons.mjs",
     "build:frontend": "npm run build --workspace=frontend",
