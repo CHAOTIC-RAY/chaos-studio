@@ -31,6 +31,11 @@
   --btn-ghost-bg: transparent;
   --icon-btn-bg: rgba(139, 61, 173, 0.08);
   --icon-btn-border: var(--border);
+  --scrollbar-size: 10px;
+  --scrollbar-track: rgba(139, 61, 173, 0.06);
+  --scrollbar-thumb: rgba(139, 61, 173, 0.28);
+  --scrollbar-thumb-hover: rgba(107, 45, 138, 0.55);
+
   --dither-opacity: 0.26;
   --dither-size: 3px;
   --dither-opacity-studio: 0.55;
@@ -80,6 +85,10 @@
   --btn-ghost-bg: transparent;
   --icon-btn-bg: rgba(255, 255, 255, 0.06);
   --icon-btn-border: var(--border);
+  --scrollbar-track: rgba(0, 0, 0, 0.35);
+  --scrollbar-thumb: rgba(213, 119, 237, 0.35);
+  --scrollbar-thumb-hover: rgba(232, 160, 245, 0.55);
+
   --dither-opacity: 0.4;
   --dither-opacity-studio: 0.72;
   --dither-noise-opacity-studio: 0.55;

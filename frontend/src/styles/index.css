@@ -14,6 +14,60 @@ body {
   overflow-x: hidden;
 }
 
+/* Page scrollbar — thin, purple-tinted (not default OS chrome) */
+html {
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+html::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+html::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+html::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+html::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  background-clip: padding-box;
+}
+html::-webkit-scrollbar-corner {
+  background: var(--scrollbar-track);
+}
+
+/** Hide scrollbars on auto-scrolling / drag regions (content still scrolls) */
+.hide-scrollbar,
+.work-marquee,
+.work-marquee--hero,
+.work-marquee__track,
+.work-marquee__row,
+.work-marquee__inner,
+.posts-viewport,
+.posts-rail__shell,
+.nav-drawer {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar,
+.work-marquee::-webkit-scrollbar,
+.work-marquee--hero::-webkit-scrollbar,
+.work-marquee__track::-webkit-scrollbar,
+.work-marquee__row::-webkit-scrollbar,
+.work-marquee__inner::-webkit-scrollbar,
+.posts-viewport::-webkit-scrollbar,
+.posts-rail__shell::-webkit-scrollbar,
+.nav-drawer::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
 body.has-pointer-fx { cursor: none; }
 body.has-pointer-fx a,
 body.has-pointer-fx button { cursor: none; }
@@ -1933,14 +1987,13 @@ main { padding-top: var(--header-h); }
   margin: 1.25rem calc(50% - 50vw) 1.5rem;
   padding: 1.75rem 0 2.25rem;
   border-block: none;
-  overflow: visible;
+  overflow: hidden;
 }
 .work-marquee--hero .work-marquee__track {
-  overflow-x: hidden;
-  overflow-y: visible;
+  overflow: hidden;
 }
 .work-marquee--hero .work-marquee__row {
-  overflow: visible;
+  overflow: hidden;
 }
 .work-marquee--hero .work-marquee__inner {
   font-size: clamp(1.65rem, 4.5vw, 3.75rem);
@@ -1963,6 +2016,7 @@ main { padding-top: var(--header-h); }
   padding: 2.25rem 0;
   transition: transform 0.7s ease-out;
   transform: translateZ(0);
+  overflow: hidden;
 }
 .work-marquee__row--a {
   transform: rotate(-3deg);
@@ -1991,7 +2045,10 @@ main { padding-top: var(--header-h); }
   .work-marquee__row--c { margin-top: -2rem; }
 }
 .work-marquee__row:hover { transform: rotate(0); }
-.work-marquee__track { overflow: hidden; margin: 0; }
+.work-marquee__track {
+  overflow: hidden;
+  margin: 0;
+}
 .work-marquee__inner {
   display: flex;
   flex-wrap: nowrap;
