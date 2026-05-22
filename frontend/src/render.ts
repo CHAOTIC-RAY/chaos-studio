@@ -16,20 +16,24 @@ import { renderWorkMarquee } from "./render-work-marquee";
 type DeviceMedia = { image: string; frames?: string[] };
 
 const COOKXPERT_FRAMES = [
-  "/images/projects/frames/cookxpert/01-discover.png",
-  "/images/projects/frames/cookxpert/02-library.png",
-  "/images/projects/frames/cookxpert/02-fridge.png",
-  "/images/projects/frames/cookxpert/02-home.png",
+  "/images/projects/frames/cookxpert/01-discover-dark.png",
+  "/images/projects/frames/cookxpert/02-discover-light.png",
+  "/images/projects/frames/cookxpert/03-settings-appearance-dark.png",
+  "/images/projects/frames/cookxpert/04-settings-appearance-light.png",
+  "/images/projects/frames/cookxpert/05-settings-membership.png",
+  "/images/projects/frames/cookxpert/06-fridge.png",
 ];
 
 const FAISA_FRAMES = [
-  "/images/projects/frames/faisa/01-dashboard.png",
-  "/images/projects/frames/faisa/02-overview.png",
-  "/images/projects/frames/faisa/03-cards.png",
-  "/images/projects/frames/faisa/04-transfer.png",
-  "/images/projects/frames/faisa/05-bills.png",
-  "/images/projects/frames/faisa/06-detail.png",
-  "/images/projects/frames/faisa/07-profile.png",
+  "/images/projects/frames/faisa/01-splash.png",
+  "/images/projects/frames/faisa/02-home.png",
+  "/images/projects/frames/faisa/03-budget.png",
+  "/images/projects/frames/faisa/04-services.png",
+  "/images/projects/frames/faisa/05-wallet.png",
+  "/images/projects/frames/faisa/06-transfer.png",
+  "/images/projects/frames/faisa/07-receipt.png",
+  "/images/projects/frames/faisa/08-cards.png",
+  "/images/projects/frames/faisa/09-settings.png",
 ];
 
 const PROJECT_MEDIA: Record<string, { desktop?: DeviceMedia; mobile?: DeviceMedia }> = {
@@ -42,7 +46,7 @@ const PROJECT_MEDIA: Record<string, { desktop?: DeviceMedia; mobile?: DeviceMedi
     mobile: { image: "/images/projects/forge_mobile.png" },
   },
   faisa: {
-    mobile: { image: "/images/projects/frames/faisa/01-dashboard.png", frames: FAISA_FRAMES },
+    mobile: { image: "/images/projects/frames/faisa/02-home.png", frames: FAISA_FRAMES },
   },
 };
 

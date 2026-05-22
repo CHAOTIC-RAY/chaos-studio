@@ -9,4 +9,6 @@ dist/
 !.env.example
 Posts.zip
 Posts.zip.tmp
+Faisa.zip
+Faisa.zip.tmp
 .tmp-posts-import-*

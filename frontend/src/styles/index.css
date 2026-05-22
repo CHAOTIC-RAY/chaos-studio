@@ -1293,7 +1293,9 @@ main { padding-top: var(--header-h); }
 }
 .device__carousel--5 .device__slide,
 .device__carousel--6 .device__slide,
-.device__carousel--7 .device__slide {
+.device__carousel--7 .device__slide,
+.device__carousel--8 .device__slide,
+.device__carousel--9 .device__slide {
   animation-name: device-slide-fade-7;
 }
 @keyframes device-slide-fade-4 {

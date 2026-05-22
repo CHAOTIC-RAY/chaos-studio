@@ -144,7 +144,7 @@ async function main() {
 
       const byPost = new Map();
       for (const file of images) {
-        const key = postGroupKey(file);
+        const key = postGroupKey(file, clientSlug);
         if (!byPost.has(key)) byPost.set(key, []);
         byPost.get(key).push(file);
       }
