@@ -12,8 +12,28 @@ export interface Portfolio {
   chaosStudio: {
     title: string;
     tagline: string;
+    headline: string;
+    pitch: string;
     description: string;
     highlights: string[];
+    services: string[];
+    whyUs: { title: string; body: string }[];
+    pricingNote: string;
+    packages: {
+      id: string;
+      name: string;
+      tagline: string;
+      price: string;
+      currency: string;
+      recommended?: boolean;
+      features: string[];
+    }[];
+    studioContact: {
+      instagram: string;
+      instagramUrl: string;
+      phones: string;
+      email: string;
+    };
   };
   experience: {
     subtitle: string;

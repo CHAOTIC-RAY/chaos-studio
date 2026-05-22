@@ -275,15 +275,8 @@ export function renderPage(p: Portfolio): string {
         </div>
       </section>
 
-      <section id="studio" class="section">
-        <div class="section-head" data-reveal>
-          <p class="eyebrow">${esc(p.chaosStudio.tagline)}</p>
-          <h2>${esc(p.chaosStudio.title)}</h2>
-        </div>
-        <div class="glass-card" data-reveal>
-          <p class="lead">${esc(p.chaosStudio.description)}</p>
-          <ul class="bullet-list">${p.chaosStudio.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul>
-        </div>
+      <section id="studio" class="section section--studio">
+        ${renderStudioSection(p.chaosStudio)}
       </section>
 
       <section id="contact" class="section section--contact">
@@ -314,6 +307,12 @@ export function renderPage(p: Portfolio): string {
                 <li><a href="${esc(p.contact.instagramUrl)}" target="_blank" rel="noopener noreferrer">${esc(p.contact.instagram)}</a></li>
                 <li><a href="${esc(p.contact.whatsappUrl)}" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
               </ul>
+              <p class="contact-banner__studio">
+                <strong>${esc(p.chaosStudio.title)}</strong> —
+                <a href="${esc(p.chaosStudio.studioContact.instagramUrl)}" target="_blank" rel="noopener noreferrer">${esc(p.chaosStudio.studioContact.instagram)}</a>
+                · <a href="tel:+9607339104">+960 7339104</a>
+                · <a href="mailto:${esc(p.chaosStudio.studioContact.email)}">${esc(p.chaosStudio.studioContact.email)}</a>
+              </p>
             </div>
           </div>
         </div>
@@ -328,6 +327,71 @@ export function renderPage(p: Portfolio): string {
 }
 
 type SocialPost = Portfolio["socialPosts"]["items"][0];
+type ChaosStudio = Portfolio["chaosStudio"];
+
+function renderStudioSection(studio: ChaosStudio): string {
+  const services = studio.services
+    .map((s) => `<span class="studio-service">${esc(s)}</span>`)
+    .join("");
+  const whyUs = studio.whyUs
+    .map(
+      (w) => `
+        <article class="studio-why">
+          <h4>${esc(w.title)}</h4>
+          <p>${esc(w.body)}</p>
+        </article>`,
+    )
+    .join("");
+  const packages = studio.packages
+    .map(
+      (pkg) => `
+        <article class="studio-package ${pkg.recommended ? "studio-package--recommended" : ""}">
+          ${pkg.recommended ? `<span class="studio-package__badge">Recommended</span>` : ""}
+          <h3 class="studio-package__name">${esc(pkg.name)}</h3>
+          <p class="studio-package__tagline">${esc(pkg.tagline)}</p>
+          <ul class="studio-package__features">
+            ${pkg.features.map((f) => `<li>${esc(f)}</li>`).join("")}
+          </ul>
+          <p class="studio-package__price"><span class="studio-package__amount">${esc(pkg.price)}</span> <span class="studio-package__currency">${esc(pkg.currency)}</span></p>
+        </article>`,
+    )
+    .join("");
+  const sc = studio.studioContact;
+  return `
+        <div class="studio-hero" data-reveal>
+          <p class="eyebrow">${esc(studio.tagline)}</p>
+          <h2 class="studio-hero__title">${esc(studio.headline)}</h2>
+          <p class="studio-hero__pitch lead">${esc(studio.pitch)}</p>
+        </div>
+        <div class="studio-services" data-reveal aria-label="Services offered">
+          ${services}
+        </div>
+        <div class="studio-why-grid" data-reveal>
+          <div class="studio-why-label" aria-hidden="true">Why us?</div>
+          ${whyUs}
+        </div>
+        <div class="glass-card studio-about" data-reveal>
+          <h3 class="studio-about__title">${esc(studio.title)}</h3>
+          <p class="lead">${esc(studio.description)}</p>
+          <ul class="bullet-list">${studio.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul>
+        </div>
+        <div class="studio-pricing" data-reveal>
+          <div class="section-head section-head--compact">
+            <p class="eyebrow">Packages & pricing</p>
+            <h3>Service packages</h3>
+            <p class="studio-pricing__note">${esc(studio.pricingNote)}</p>
+          </div>
+          <div class="studio-packages">${packages}</div>
+        </div>
+        <div class="studio-contact glass-card" data-reveal>
+          <p class="studio-contact__cta">Let's create something bold!</p>
+          <ul class="studio-contact__links">
+            <li><a href="${esc(sc.instagramUrl)}" target="_blank" rel="noopener noreferrer">${esc(sc.instagram)}</a></li>
+            <li><a href="tel:${esc(sc.phones.replace(/\s/g, "").replace(/\//g, ","))}">${esc(sc.phones)}</a></li>
+            <li><a href="mailto:${esc(sc.email)}">${esc(sc.email)}</a></li>
+          </ul>
+        </div>`;
+}
 
 function visiblePosts(items: SocialPost[]): SocialPost[] {
   return items.filter((post) => !post.id.startsWith("_"));
