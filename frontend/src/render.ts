@@ -24,6 +24,17 @@ const COOKXPERT_FRAMES = [
   "/images/projects/frames/cookxpert/06-fridge.png",
 ];
 
+const FORGE_FRAMES = [
+  "/images/projects/frames/forge/01-profile.png",
+  "/images/projects/frames/forge/02-dashboard.png",
+  "/images/projects/frames/forge/03-calendar.png",
+  "/images/projects/frames/forge/04-scheduling.png",
+  "/images/projects/frames/forge/05-ideas.png",
+  "/images/projects/frames/forge/06-idea-board.png",
+  "/images/projects/frames/forge/07-hook-generator.png",
+  "/images/projects/frames/forge/08-trends.png",
+];
+
 const FAISA_FRAMES = [
   "/images/projects/frames/faisa/01-splash.png",
   "/images/projects/frames/faisa/02-home.png",
@@ -42,8 +53,8 @@ const PROJECT_MEDIA: Record<string, { desktop?: DeviceMedia; mobile?: DeviceMedi
     mobile: { image: "/images/projects/cookxpert_mobile.png", frames: COOKXPERT_FRAMES },
   },
   forge: {
-    desktop: { image: "/images/projects/forge_desktop.png" },
-    mobile: { image: "/images/projects/forge_mobile.png" },
+    desktop: { image: "/images/projects/forge_desktop.png", frames: FORGE_FRAMES },
+    mobile: { image: "/images/projects/forge_mobile.png", frames: FORGE_FRAMES },
   },
   faisa: {
     mobile: { image: "/images/projects/frames/faisa/02-home.png", frames: FAISA_FRAMES },
