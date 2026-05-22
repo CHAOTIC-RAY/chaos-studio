@@ -542,6 +542,7 @@ function renderPostsSection(social: Portfolio["socialPosts"]): string {
             <p class="posts-rail__hint">Use arrows or drag · Hover reels to preview · Expand for full grid</p>
           </div>
           <div class="posts-feed-expanded" data-posts-expanded hidden>
+            <p class="posts-feed-expanded__hint">Browse by client — tap a row to expand posts. Click any image for fullscreen.</p>
             ${renderPostsExpandedFeed(items)}
           </div>
         </div>`;
@@ -784,9 +785,6 @@ function renderProject(proj: Portfolio["featuredWork"]["projects"][0], index: nu
   const liveUrl = PROJECT_LIVE_URL[proj.id] ?? proj.name;
   const featured = index === 0;
   const logo = PROJECT_LOGOS[proj.id];
-  const logoMark = logo
-    ? `<img class="work-showcase__logo-mark" src="${logo}" alt="" width="160" height="160" loading="lazy" aria-hidden="true" />`
-    : "";
 
   const devices: string[] = [];
   if (media.desktop) devices.push(renderBrowserFrame(media.desktop, proj.name, liveUrl, proj.href, logo));
@@ -795,7 +793,6 @@ function renderProject(proj: Portfolio["featuredWork"]["projects"][0], index: nu
   const deviceBlock =
     devices.length > 0
       ? `<div class="work-showcase__devices ${devices.length > 1 ? "work-showcase__devices--dual" : "work-showcase__devices--solo"}" data-tilt-showcase>
-          ${logoMark}
           ${devices.join("")}
         </div>`
       : `<div class="work-showcase__devices work-showcase__devices--placeholder"><span>${esc(proj.name)}</span></div>`;

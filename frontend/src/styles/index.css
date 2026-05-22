@@ -564,7 +564,12 @@ main { padding-top: var(--header-h); }
   gap: 0.5rem 0.65rem;
   flex-shrink: 0;
   border-color: rgba(213, 119, 237, 0.45);
-  background: rgba(213, 119, 237, 0.1);
+  background: rgba(213, 119, 237, 0.12);
+  color: var(--text);
+}
+.posts-panel--expanded .posts-panel__toggle {
+  background: rgba(213, 119, 237, 0.2);
+  border-color: rgba(213, 119, 237, 0.55);
 }
 .posts-panel__toggle-meta {
   font-size: 0.72rem;
@@ -591,14 +596,28 @@ main { padding-top: var(--header-h); }
 .posts-feed-expanded {
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
-  padding: 0.25rem 0 1rem;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: linear-gradient(165deg, rgba(213, 119, 237, 0.06), rgba(255, 255, 255, 0.02) 40%);
+}
+.posts-feed-expanded__hint {
+  margin: 0 0 0.15rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.45;
 }
 .posts-accordion {
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-md);
+  background: var(--card);
   overflow: hidden;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.posts-accordion[open] {
+  border-color: rgba(213, 119, 237, 0.4);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
 }
 .posts-accordion__summary {
   display: flex;
@@ -637,19 +656,32 @@ main { padding-top: var(--header-h); }
   transform: rotate(180deg);
 }
 .posts-accordion__body {
-  padding: 0 1rem 1.15rem;
+  padding: 0.85rem 1rem 1.15rem;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 .posts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
-  gap: 1.25rem;
-  padding-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 1.15rem;
+  padding-top: 0.35rem;
 }
 .posts-grid .post-card {
-  flex: none;
-  max-width: none;
-  width: 100%;
+  flex: 0 1 min(324px, 100%);
+  width: min(380px, 100%);
+  max-width: 380px;
+}
+@media (min-width: 1100px) {
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 380px));
+    justify-content: start;
+  }
+  .posts-grid .post-card {
+    width: 100%;
+    max-width: 380px;
+  }
 }
 .post-card--expandable .post-desc {
   display: -webkit-box;
@@ -1638,29 +1670,9 @@ body.lightbox-open {
   transform-style: preserve-3d;
   will-change: transform;
 }
-.work-showcase__logo-mark {
-  position: absolute;
-  left: 50%;
-  top: 42%;
-  transform: translate(-50%, -50%);
-  width: clamp(7rem, 18vw, 10rem);
-  height: auto;
-  opacity: 0.14;
-  filter: blur(0.5px);
-  pointer-events: none;
-  z-index: 0;
-}
 .work-showcase__devices .device {
   position: relative;
   z-index: 1;
-}
-.work-showcase--cookxpert .work-showcase__logo-mark {
-  opacity: 0.2;
-  filter: drop-shadow(0 0 40px rgba(255, 120, 200, 0.35));
-}
-.work-showcase--forge .work-showcase__logo-mark {
-  opacity: 0.22;
-  filter: drop-shadow(0 0 36px rgba(255, 180, 80, 0.3));
 }
 .work-showcase__devices--solo {
   justify-content: center;
@@ -1909,14 +1921,21 @@ body.lightbox-open {
   background: #0e0e12;
 }
 .device--phone {
-  width: clamp(100px, 22vw, 130px);
-  padding: 8px;
+  width: clamp(108px, 24vw, 148px);
+  padding: 5px;
   border-radius: 28px;
   background: linear-gradient(160deg, #3a3a42, #1a1a20);
   border: 2px solid rgba(255, 255, 255, 0.14);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
 }
-.device__bezel { position: relative; border-radius: 22px; overflow: hidden; background: #000; }
+.device__bezel {
+  position: relative;
+  border-radius: 22px;
+  overflow: hidden;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+}
 .device__notch {
   position: absolute;
   top: 6px;
@@ -1931,13 +1950,24 @@ body.lightbox-open {
 .device--phone .device__screen {
   aspect-ratio: 9 / 19.5;
   overflow: hidden;
+  flex: 1;
+  width: 100%;
+  line-height: 0;
 }
-.device--phone .device__screen .device__media {
+.device--phone .device__screen .device__media,
+.device--phone .device__screen .device__slide {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   object-position: top center;
   background: #000;
+  display: block;
+}
+.device--phone .device__screen .device__carousel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 .device__media { display: block; }
 .work-showcase--faisa .work-showcase__devices--solo .device--phone {
