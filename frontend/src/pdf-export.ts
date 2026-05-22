@@ -40,9 +40,11 @@ function collectBlocks(main: HTMLElement): CaptureBlock[] {
     }
     if (id === "posts") {
       const head = section.querySelector(".section-head");
+      const expanded = section.querySelector("[data-posts-expanded]");
       const viewport = section.querySelector(".posts-viewport");
       if (head) blocks.push({ el: head as HTMLElement, label: "posts-head" });
-      if (viewport) blocks.push({ el: viewport as HTMLElement, label: "posts-grid" });
+      if (expanded) blocks.push({ el: expanded as HTMLElement, label: "posts-grid" });
+      else if (viewport) blocks.push({ el: viewport as HTMLElement, label: "posts-grid" });
       return;
     }
     blocks.push({ el: section as HTMLElement, label: id || "section" });
