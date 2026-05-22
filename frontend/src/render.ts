@@ -15,25 +15,49 @@ import { renderWorkMarquee } from "./render-work-marquee";
 
 type DeviceMedia = { image: string; frames?: string[] };
 
-const COOKXPERT_FRAMES = [
-  "/images/projects/frames/cookxpert/01-discover-dark.png",
-  "/images/projects/frames/cookxpert/02-discover-light.png",
-  "/images/projects/frames/cookxpert/03-settings-appearance-dark.png",
-  "/images/projects/frames/cookxpert/04-settings-appearance-light.png",
-  "/images/projects/frames/cookxpert/05-settings-membership.png",
-  "/images/projects/frames/cookxpert/06-fridge.png",
-];
+const frame = (dir: string, names: string[]) =>
+  names.map((n) => `/images/projects/frames/${dir}/${n}`);
 
-const FORGE_FRAMES = [
-  "/images/projects/frames/forge/01-profile.png",
-  "/images/projects/frames/forge/02-dashboard.png",
-  "/images/projects/frames/forge/03-calendar.png",
-  "/images/projects/frames/forge/04-scheduling.png",
-  "/images/projects/frames/forge/05-ideas.png",
-  "/images/projects/frames/forge/06-idea-board.png",
-  "/images/projects/frames/forge/07-hook-generator.png",
-  "/images/projects/frames/forge/08-trends.png",
-];
+const COOKXPERT_DESKTOP_FRAMES = frame("cookxpert/desktop", [
+  "01-discover-dark.png",
+  "02-discover-light.png",
+  "03-library.png",
+  "04-notifications.png",
+  "05-settings-appearance-dark.png",
+  "06-settings-appearance-light.png",
+  "07-settings-membership.png",
+  "08-fridge.png",
+]);
+
+const COOKXPERT_MOBILE_FRAMES = frame("cookxpert/mobile", [
+  "01-discover-dark.png",
+  "02-library.png",
+  "03-fridge.png",
+  "04-settings.png",
+  "05-discover-light.png",
+]);
+
+const FORGE_DESKTOP_FRAMES = frame("forge/desktop", [
+  "01-profile.png",
+  "02-dashboard.png",
+  "03-calendar.png",
+  "04-scheduling.png",
+  "05-ideas.png",
+  "06-idea-board.png",
+  "07-hook-generator.png",
+  "08-trends.png",
+]);
+
+const FORGE_MOBILE_FRAMES = frame("forge/mobile", [
+  "01-profile.png",
+  "02-dashboard.png",
+  "03-calendar.png",
+  "04-scheduling.png",
+  "05-ideas.png",
+  "06-idea-board.png",
+  "07-hook-generator.png",
+  "08-trends.png",
+]);
 
 const FAISA_FRAMES = [
   "/images/projects/frames/faisa/01-splash.png",
@@ -49,15 +73,15 @@ const FAISA_FRAMES = [
 
 const PROJECT_MEDIA: Record<string, { desktop?: DeviceMedia; mobile?: DeviceMedia }> = {
   cookxpert: {
-    desktop: { image: "/images/projects/cookxpert_desktop.png", frames: COOKXPERT_FRAMES },
-    mobile: { image: "/images/projects/cookxpert_mobile.png", frames: COOKXPERT_FRAMES },
+    desktop: { image: "/images/projects/cookxpert_desktop.png", frames: COOKXPERT_DESKTOP_FRAMES },
+    mobile: { image: "/images/projects/cookxpert_mobile.png", frames: COOKXPERT_MOBILE_FRAMES },
   },
   forge: {
-    desktop: { image: "/images/projects/forge_desktop.png", frames: FORGE_FRAMES },
-    mobile: { image: "/images/projects/forge_mobile.png", frames: FORGE_FRAMES },
+    desktop: { image: "/images/projects/forge_desktop.png", frames: FORGE_DESKTOP_FRAMES },
+    mobile: { image: "/images/projects/forge_mobile.png", frames: FORGE_MOBILE_FRAMES },
   },
   faisa: {
-    mobile: { image: "/images/projects/frames/faisa/02-home.png", frames: FAISA_FRAMES },
+    mobile: { image: "/images/projects/faisa_mobile.png", frames: FAISA_FRAMES },
   },
 };
 

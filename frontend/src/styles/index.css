@@ -1402,7 +1402,6 @@ main { position: relative; z-index: 1; }
   #bg-canvas, .bg-dither, .mouse-spotlight, .cursor-dot, .cursor-ring, .hero-orb { display: none; }
   body.has-pointer-fx { cursor: auto; }
   .posts-rail { flex-wrap: wrap; }
-  .posts-rail__btn { display: none; }
   .posts-track { transform: none !important; flex-wrap: wrap; width: auto; }
   .posts-viewport { mask-image: none; cursor: default; flex: 1 1 100%; }
   .posts-group__cards { flex-wrap: wrap; }
