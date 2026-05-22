@@ -36,6 +36,7 @@ const FORGE = [
   ["Screenshot 2026-05-23 023334.png", "08-trends.png"],
 ];
 
+/** Chronological zip order; carousel order is set in render.ts (FAISA_FRAMES). */
 const FAISA = [
   ["Screenshot 2026-05-23 022238.png", "01-splash.png"],
   ["Screenshot 2026-05-23 022310.png", "02-home.png"],
@@ -44,7 +45,7 @@ const FAISA = [
   ["Screenshot 2026-05-23 022517.png", "05-wallet.png"],
   ["Screenshot 2026-05-23 022537.png", "06-transfer.png"],
   ["Screenshot 2026-05-23 022612.png", "07-receipt.png"],
-  ["Screenshot 2026-05-23 022633.png", "08-cards.png"],
+  ["Screenshot 2026-05-23 022633.png", "08-create-account.png"],
   ["Screenshot 2026-05-23 022813.png", "09-settings.png"],
 ];
 

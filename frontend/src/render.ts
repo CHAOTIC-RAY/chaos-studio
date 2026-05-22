@@ -59,15 +59,16 @@ const FORGE_MOBILE_FRAMES = frame("forge/mobile", [
   "03-scheduling.png",
 ]);
 
+/** MIB prototype flow: splash → home → services → analytics → wallet → transfer → receipt → create account → settings */
 const FAISA_FRAMES = [
   "/images/projects/frames/faisa/01-splash.png",
   "/images/projects/frames/faisa/02-home.png",
-  "/images/projects/frames/faisa/03-budget.png",
   "/images/projects/frames/faisa/04-services.png",
+  "/images/projects/frames/faisa/03-budget.png",
   "/images/projects/frames/faisa/05-wallet.png",
   "/images/projects/frames/faisa/06-transfer.png",
   "/images/projects/frames/faisa/07-receipt.png",
-  "/images/projects/frames/faisa/08-cards.png",
+  "/images/projects/frames/faisa/08-create-account.png",
   "/images/projects/frames/faisa/09-settings.png",
 ];
 
