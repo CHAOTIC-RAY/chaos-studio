@@ -27,6 +27,7 @@ const COOKXPERT_DESKTOP_FRAMES = frame("cookxpert/desktop", [
   "06-settings-appearance-light.png",
   "07-settings-membership.png",
   "08-fridge.png",
+  "09-recipe-detail.png",
 ]);
 
 const COOKXPERT_MOBILE_FRAMES = frame("cookxpert/mobile", [
@@ -54,12 +55,7 @@ const FORGE_DESKTOP_FRAMES = frame("forge/desktop", [
 const FORGE_MOBILE_FRAMES = frame("forge/mobile", [
   "01-profile.png",
   "02-dashboard.png",
-  "03-calendar.png",
-  "04-scheduling.png",
-  "05-ideas.png",
-  "06-idea-board.png",
-  "07-hook-generator.png",
-  "08-trends.png",
+  "03-scheduling.png",
 ]);
 
 const FAISA_FRAMES = [

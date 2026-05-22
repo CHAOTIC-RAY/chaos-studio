@@ -8,6 +8,8 @@
     "import:posts": "node scripts/import-posts-zip.mjs",
     "apply:post-copy": "node scripts/apply-post-copy.mjs && npm run sync:content",
     "import:faisa": "node scripts/import-faisa-zip.mjs",
+    "import:apps": "npm run import:faisa && node scripts/import-app-screenshots.mjs",
+    "download:apps": "curl -sL \"https://drive.google.com/uc?export=download&id=1UUjwktcD_O1zNocCum121wjnb9Ybrnen\" -o AppScreenshots.zip",
     "capture:cookxpert": "node scripts/capture-cookxpert.mjs",
     "capture:cookxpert:mobile": "node scripts/capture-cookxpert-mobile.mjs",
     "capture:forge:mobile": "node scripts/capture-forge-mobile.mjs",

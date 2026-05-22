@@ -1,6 +1,7 @@
 # CookXpert frames
 
 - **`desktop/`** — wide browser screenshots from `Faisa.zip` (`app screenshots/Cookxperts/`). Used in the desktop browser mockup only.
-- **`mobile/`** — 390×844 captures from the live app (`npm run capture:cookxpert:mobile`). Used in the phone mockup only.
+- **`mobile/`** — Real mobile screenshots from `AppScreenshots.zip` (`npm run import:apps`).
+- **`desktop/09-recipe-detail.png`** — Added from the same zip (recipe detail screen).
 
-Re-import desktop: `npm run import:faisa` (requires `Faisa.zip` at repo root).
+Re-import everything: `npm run download:apps` then `npm run import:apps` (needs `Faisa.zip` + `AppScreenshots.zip` at repo root).
