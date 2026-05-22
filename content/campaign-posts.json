@@ -617,6 +617,57 @@
       "accent": "teal"
     },
     {
+      "id": "mdp-post",
+      "platform": "Instagram",
+      "client": "MDP Campaign",
+      "title": "Campaign feed post",
+      "description": "Square social frame for the MDP campaign — bold typography and brand-forward layout built for feed engagement.",
+      "tags": [
+        "Campaign",
+        "Social",
+        "MDP"
+      ],
+      "accent": "purple"
+    },
+    {
+      "id": "mdp-poster",
+      "platform": "Print / OOH",
+      "client": "MDP Campaign",
+      "title": "Campaign poster",
+      "description": "Portrait poster artwork for MDP — high-impact visuals sized for print and vertical placements.",
+      "tags": [
+        "Poster",
+        "Print",
+        "MDP"
+      ],
+      "accent": "purple"
+    },
+    {
+      "id": "mdp-media-kit",
+      "platform": "Media kit",
+      "client": "MDP Campaign · Khulaasa",
+      "title": "Khulaasa media kit",
+      "description": "Full media kit for Khulaasa: nine landscape pages with brand specs, applications, and campaign guidance — swipe through like a connected deck.",
+      "tags": [
+        "Media kit",
+        "Branding",
+        "Carousel",
+        "Khulaasa"
+      ],
+      "accent": "teal",
+      "slides": [
+        "slide-01",
+        "slide-02",
+        "slide-03",
+        "slide-04",
+        "slide-05",
+        "slide-06",
+        "slide-07",
+        "slide-08",
+        "slide-09"
+      ]
+    },
+    {
       "id": "_copy-me-for-new-post",
       "enabled": false,
       "platform": "Instagram",
