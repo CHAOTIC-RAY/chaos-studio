@@ -91,6 +91,11 @@ const PROJECT_LIVE_URL: Record<string, string> = {
   faisa: "Adobe XD prototype",
 };
 
+const PROJECT_LOGOS: Record<string, string> = {
+  cookxpert: "/images/projects/logos/cookxpert.png",
+  forge: "/images/projects/logos/forge.png",
+};
+
 const POST_ACCENTS: Record<string, string> = {
   purple: "post-card--purple",
   pink: "post-card--pink",
@@ -541,12 +546,21 @@ function renderScreenMedia(media: DeviceMedia, label: string, kind: "desktop" | 
   return `<img class="device__media" src="${media.image}" alt="${alt}" loading="lazy" width="${kind === "desktop" ? 1200 : 390}" height="${kind === "desktop" ? 750 : 844}" />`;
 }
 
-function renderBrowserFrame(media: DeviceMedia, label: string, liveUrl: string, siteHref: string): string {
+function renderBrowserFrame(
+  media: DeviceMedia,
+  label: string,
+  liveUrl: string,
+  siteHref: string,
+  logo?: string,
+): string {
+  const favicon = logo
+    ? `<img class="device__favicon" src="${logo}" alt="" width="18" height="18" loading="lazy" />`
+    : "";
   return `
     <div class="device device--browser" aria-label="${esc(label)} desktop preview">
       <div class="device__chrome">
         <span class="device__dots" aria-hidden="true"><i></i><i></i><i></i></span>
-        <a class="device__url" href="${esc(siteHref)}" target="_blank" rel="noopener noreferrer">${esc(liveUrl)}</a>
+        <span class="device__chrome-brand">${favicon}<a class="device__url" href="${esc(siteHref)}" target="_blank" rel="noopener noreferrer">${esc(liveUrl)}</a></span>
       </div>
       <div class="device__screen">
         ${renderScreenMedia(media, label, "desktop")}
@@ -555,10 +569,14 @@ function renderBrowserFrame(media: DeviceMedia, label: string, liveUrl: string, 
   `;
 }
 
-function renderPhoneFrame(media: DeviceMedia, label: string): string {
+function renderPhoneFrame(media: DeviceMedia, label: string, logo?: string): string {
+  const appIcon = logo
+    ? `<img class="device__app-icon" src="${logo}" alt="" width="20" height="20" loading="lazy" />`
+    : "";
   return `
     <div class="device device--phone" aria-label="${esc(label)} mobile preview">
       <div class="device__bezel">
+        ${appIcon}
         <span class="device__notch" aria-hidden="true"></span>
         <div class="device__screen">
           ${renderScreenMedia(media, label, "mobile")}
@@ -568,18 +586,39 @@ function renderPhoneFrame(media: DeviceMedia, label: string): string {
   `;
 }
 
+function renderProjectHead(proj: Portfolio["featuredWork"]["projects"][0], featured: boolean): string {
+  const label = featured ? "Featured product" : "Web & mobile";
+  const logo = PROJECT_LOGOS[proj.id];
+  if (!logo) {
+    return `<span class="work-showcase__label">${label}</span><h3>${esc(proj.name)}</h3>`;
+  }
+  return `
+          <div class="work-showcase__brand">
+            <img class="work-showcase__logo" src="${logo}" alt="${esc(proj.name)} logo" width="80" height="80" loading="lazy" />
+            <div class="work-showcase__brand-copy">
+              <span class="work-showcase__label">${label}</span>
+              <h3>${esc(proj.name)}</h3>
+            </div>
+          </div>`;
+}
+
 function renderProject(proj: Portfolio["featuredWork"]["projects"][0], index: number): string {
   const media = PROJECT_MEDIA[proj.id] ?? {};
   const liveUrl = PROJECT_LIVE_URL[proj.id] ?? proj.name;
   const featured = index === 0;
+  const logo = PROJECT_LOGOS[proj.id];
+  const logoMark = logo
+    ? `<img class="work-showcase__logo-mark" src="${logo}" alt="" width="160" height="160" loading="lazy" aria-hidden="true" />`
+    : "";
 
   const devices: string[] = [];
-  if (media.desktop) devices.push(renderBrowserFrame(media.desktop, proj.name, liveUrl, proj.href));
-  if (media.mobile) devices.push(renderPhoneFrame(media.mobile, proj.name));
+  if (media.desktop) devices.push(renderBrowserFrame(media.desktop, proj.name, liveUrl, proj.href, logo));
+  if (media.mobile) devices.push(renderPhoneFrame(media.mobile, proj.name, logo));
 
   const deviceBlock =
     devices.length > 0
       ? `<div class="work-showcase__devices ${devices.length > 1 ? "work-showcase__devices--dual" : "work-showcase__devices--solo"}" data-tilt-showcase>
+          ${logoMark}
           ${devices.join("")}
         </div>`
       : `<div class="work-showcase__devices work-showcase__devices--placeholder"><span>${esc(proj.name)}</span></div>`;
@@ -598,8 +637,7 @@ function renderProject(proj: Portfolio["featuredWork"]["projects"][0], index: nu
       <div class="work-showcase__stage">
         ${deviceBlock}
         <div class="work-showcase__panel">
-          <span class="work-showcase__label">${featured ? "Featured product" : "Web & mobile"}</span>
-          <h3>${esc(proj.name)}</h3>
+          ${renderProjectHead(proj, featured)}
           <p class="work-showcase__tagline">${esc(proj.tagline)}</p>
           ${proj.description ? `<p class="work-showcase__desc">${esc(proj.description)}</p>` : ""}
           ${highlights}

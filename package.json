@@ -10,6 +10,8 @@
     "import:faisa": "node scripts/import-faisa-zip.mjs",
     "import:apps": "npm run import:faisa && node scripts/import-app-screenshots.mjs",
     "download:apps": "curl -sL \"https://drive.google.com/uc?export=download&id=1UUjwktcD_O1zNocCum121wjnb9Ybrnen\" -o AppScreenshots.zip",
+    "download:logos": "curl -sL \"https://drive.google.com/uc?export=download&id=12hjtHPVEl27Q1kSh23bV_q7T7N9j_DmW\" -o AppLogos.zip",
+    "import:logos": "node scripts/import-app-logos.mjs",
     "capture:cookxpert": "node scripts/capture-cookxpert.mjs",
     "capture:cookxpert:mobile": "node scripts/capture-cookxpert-mobile.mjs",
     "capture:forge:mobile": "node scripts/capture-forge-mobile.mjs",
