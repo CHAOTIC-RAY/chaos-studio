@@ -29,7 +29,10 @@ const reel02 = {
   ...copy["rainbow-reel-02"],
 };
 
-const posts = data.posts.filter((p) => !p.id.startsWith("_"));
+const posts = data.posts
+  .filter((p) => !p.id.startsWith("_"))
+  .filter((p, i, arr) => arr.findIndex((x) => x.id === p.id) === i);
+
 const template = data.posts.find((p) => p.id.startsWith("_"));
 
 const merged = posts.map((post) => {
@@ -46,8 +49,8 @@ const merged = posts.map((post) => {
 const out = [];
 for (const post of merged) {
   out.push(post);
-  if (post.id === "rainbow-03") out.push(reel01);
-  if (post.id === "rainbow-05") out.push(reel02);
+  if (post.id === "rainbow-03" && !merged.some((p) => p.id === "rainbow-reel-01")) out.push(reel01);
+  if (post.id === "rainbow-05" && !merged.some((p) => p.id === "rainbow-reel-02")) out.push(reel02);
 }
 
 data.posts = [...out, ...(template ? [template] : [])];

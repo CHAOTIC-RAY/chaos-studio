@@ -214,11 +214,35 @@ async function main() {
       accent: "purple",
     };
 
+    let posts = importedPosts;
+    if (fs.existsSync(postsJsonPath)) {
+      try {
+        const existing = JSON.parse(fs.readFileSync(postsJsonPath, "utf8"));
+        const manual = (existing.posts ?? []).filter(
+          (p) =>
+            p.video ||
+            p.id.startsWith("rainbow-reel") ||
+            (p.id === "expressshipping-01" && p.slides?.length > 1),
+        );
+        const ids = new Set(importedPosts.map((p) => p.id));
+        for (const p of manual) {
+          if (!ids.has(p.id)) {
+            importedPosts.push(p);
+            ids.add(p.id);
+          }
+        }
+        posts = importedPosts;
+      } catch {
+        /* fresh import */
+      }
+    }
+
     const data = {
       subtitle: "Campaign & feed highlights",
-      posts: [...importedPosts, template],
+      posts: [...posts, template],
     };
     fs.writeFileSync(postsJsonPath, `${JSON.stringify(data, null, 2)}\n`);
+    console.log("Run: npm run apply:post-copy  to merge titles and Rainbow reels.");
     console.log(`\nImported ${importedPosts.length} posts into ${postsJsonPath}`);
   } finally {
     fs.rmSync(tmp, { recursive: true, force: true });

@@ -31,10 +31,13 @@ const COOKXPERT_DESKTOP_FRAMES = frame("cookxpert/desktop", [
 
 const COOKXPERT_MOBILE_FRAMES = frame("cookxpert/mobile", [
   "01-discover-dark.png",
-  "02-library.png",
-  "03-fridge.png",
-  "04-settings.png",
-  "05-discover-light.png",
+  "02-discover-light.png",
+  "03-library.png",
+  "04-notifications.png",
+  "05-settings-appearance-dark.png",
+  "06-settings-appearance-light.png",
+  "07-settings-membership.png",
+  "08-fridge.png",
 ]);
 
 const FORGE_DESKTOP_FRAMES = frame("forge/desktop", [
