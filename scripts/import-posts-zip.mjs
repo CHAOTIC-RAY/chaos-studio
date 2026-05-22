@@ -62,12 +62,24 @@ function clientSlugFromFolder(folderName) {
   return slugify(folderName);
 }
 
+/** Multi-upload panoramas: separate timestamps that belong to one carousel */
+const CAROUSEL_TIMESTAMP_MERGE = {
+  expressshipping: [["1730799379", "1730799437", "1730799475"]],
+};
+
 /** Instagram export: account_UNIXTIME_mediaId_userId */
-function postGroupKey(filename) {
+function postGroupKey(filename, clientSlug) {
   const base = path.basename(filename, path.extname(filename));
   const ig = base.match(/_(\d{10})_(\d+)_\d+$/);
-  if (ig) return ig[1];
-  return base;
+  if (!ig) return base;
+  const ts = ig[1];
+  const merges = CAROUSEL_TIMESTAMP_MERGE[clientSlug];
+  if (merges) {
+    for (const group of merges) {
+      if (group.includes(ts)) return `carousel-${group[0]}`;
+    }
+  }
+  return ts;
 }
 
 function slideSortKey(filename) {

@@ -60,31 +60,21 @@
     "tags": ["Agency", "Campaign"]
   },
   "expressshipping-01": {
-    "title": "Logistics promo — wave 1",
-    "description": "Shipping brand creative with parcel visuals, trust cues, and Maldives contact details.",
-    "tags": ["Logistics", "Promo"]
+    "title": "Pinned banner — land, air & sea",
+    "description": "Three-panel panoramic carousel for profile pinning: container ship stern, centered logo with “Delivering your world across land, air and sea,” and bow with hotline +960 9381818.",
+    "tags": ["Carousel", "Banner", "Logistics"]
   },
   "expressshipping-02": {
-    "title": "Logistics promo — wave 2",
-    "description": "Follow-on post stressing speed and reliability with iconography and high-contrast type.",
-    "tags": ["Logistics", "Promo"]
-  },
-  "expressshipping-03": {
-    "title": "Service highlight",
-    "description": "Single-frame explainer of Express Shipping services with clear benefit bullets.",
-    "tags": ["Logistics", "Service"]
-  },
-  "expressshipping-04": {
     "title": "Customer offer graphic",
     "description": "Promotional layout for seasonal or bundled shipping rates with branded color fields.",
     "tags": ["Logistics", "Offer"]
   },
-  "expressshipping-05": {
+  "expressshipping-03": {
     "title": "Brand reminder post",
     "description": "Minimal logo-forward frame keeping Express Shipping top-of-mind in feed.",
     "tags": ["Logistics", "Branding"]
   },
-  "expressshipping-06": {
+  "expressshipping-04": {
     "title": "Call-to-action post",
     "description": "Direct CTA creative pushing inquiries via phone/social with bold headline treatment.",
     "tags": ["Logistics", "CTA"]

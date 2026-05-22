@@ -172,40 +172,22 @@
       "id": "expressshipping-01",
       "platform": "Instagram",
       "client": "Express Shipping MV",
-      "title": "Logistics promo — wave 1",
-      "description": "Shipping brand creative with parcel visuals, trust cues, and Maldives contact details.",
+      "title": "Pinned banner — land, air & sea",
+      "description": "Three-panel panoramic carousel for profile pinning: container ship stern, centered logo with “Delivering your world across land, air and sea,” and bow with hotline +960 9381818.",
       "tags": [
-        "Logistics",
-        "Promo"
+        "Carousel",
+        "Banner",
+        "Logistics"
       ],
-      "accent": "teal"
+      "accent": "teal",
+      "slides": [
+        "slide-01",
+        "slide-02",
+        "slide-03"
+      ]
     },
     {
       "id": "expressshipping-02",
-      "platform": "Instagram",
-      "client": "Express Shipping MV",
-      "title": "Logistics promo — wave 2",
-      "description": "Follow-on post stressing speed and reliability with iconography and high-contrast type.",
-      "tags": [
-        "Logistics",
-        "Promo"
-      ],
-      "accent": "teal"
-    },
-    {
-      "id": "expressshipping-03",
-      "platform": "Instagram",
-      "client": "Express Shipping MV",
-      "title": "Service highlight",
-      "description": "Single-frame explainer of Express Shipping services with clear benefit bullets.",
-      "tags": [
-        "Logistics",
-        "Service"
-      ],
-      "accent": "teal"
-    },
-    {
-      "id": "expressshipping-04",
       "platform": "Instagram",
       "client": "Express Shipping MV",
       "title": "Customer offer graphic",
@@ -217,7 +199,7 @@
       "accent": "teal"
     },
     {
-      "id": "expressshipping-05",
+      "id": "expressshipping-03",
       "platform": "Instagram",
       "client": "Express Shipping MV",
       "title": "Brand reminder post",
@@ -229,7 +211,7 @@
       "accent": "teal"
     },
     {
-      "id": "expressshipping-06",
+      "id": "expressshipping-04",
       "platform": "Instagram",
       "client": "Express Shipping MV",
       "title": "Call-to-action post",
