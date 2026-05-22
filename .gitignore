@@ -7,3 +7,6 @@ dist/
 .env
 .env.*
 !.env.example
+Posts.zip
+Posts.zip.tmp
+.tmp-posts-import-*

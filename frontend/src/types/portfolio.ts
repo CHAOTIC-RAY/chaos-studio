@@ -39,6 +39,7 @@ export interface Portfolio {
       tags: string[];
       accent: string;
       image?: string;
+      slides?: string[];
     }[];
   };
   featuredWork: {

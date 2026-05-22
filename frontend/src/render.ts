@@ -286,22 +286,58 @@ function postImageBase(post: Portfolio["socialPosts"]["items"][0]): string {
   return post.image?.trim() || post.id;
 }
 
+function postSlideSrc(post: Portfolio["socialPosts"]["items"][0], slide: string): string {
+  if (post.slides?.length) {
+    return `/images/posts/${post.id}/${slide}.webp`;
+  }
+  const base = postImageBase(post);
+  return `/images/posts/${base}.webp`;
+}
+
+function renderPostSlideImg(
+  post: Portfolio["socialPosts"]["items"][0],
+  slide: string,
+  opts: { slideIndex: number; slideCount: number; eager?: boolean },
+): string {
+  const src = postSlideSrc(post, slide);
+  const imageBase = post.slides?.length ? `${post.id}/${slide}` : postImageBase(post);
+  return `
+        <img
+          class="post-card__img${opts.slideCount > 1 ? " post-card__slide" : ""}"
+          data-post-id="${esc(post.id)}"
+          data-image-base="${esc(imageBase)}"
+          src="${esc(src)}"
+          alt="${esc(post.title)} — ${esc(post.client)}${opts.slideCount > 1 ? ` (${opts.slideIndex + 1}/${opts.slideCount})` : ""}"
+          width="400"
+          height="500"
+          loading="${opts.eager ? "eager" : "lazy"}"
+          ${opts.slideCount > 1 ? `style="--slide-i:${opts.slideIndex};--slide-count:${opts.slideCount}"` : ""}
+        />`;
+}
+
+function renderPostMedia(post: Portfolio["socialPosts"]["items"][0]): string {
+  const slides =
+    post.slides?.length && post.slides.length > 0
+      ? post.slides
+      : [postImageBase(post)];
+
+  if (slides.length === 1) {
+    return renderPostSlideImg(post, slides[0], { slideIndex: 0, slideCount: 1, eager: false });
+  }
+
+  const count = slides.length;
+  const imgs = slides
+    .map((slide, i) => renderPostSlideImg(post, slide, { slideIndex: i, slideCount: count, eager: i === 0 }))
+    .join("");
+  return `<div class="post-card__carousel post-card__carousel--${count}" aria-label="${esc(post.title)} carousel">${imgs}</div>`;
+}
+
 function renderPostCard(post: Portfolio["socialPosts"]["items"][0]): string {
   const accent = POST_ACCENTS[post.accent] ?? "post-card--purple";
-  const imageBase = postImageBase(post);
   return `
     <article class="post-card ${accent}">
       <div class="post-card__media">
-        <img
-          class="post-card__img"
-          data-post-id="${esc(post.id)}"
-          data-image-base="${esc(imageBase)}"
-          src="/images/posts/${esc(imageBase)}.webp"
-          alt="${esc(post.title)} — ${esc(post.client)}"
-          width="400"
-          height="500"
-          loading="lazy"
-        />
+        ${renderPostMedia(post)}
         <div class="post-card__shine" aria-hidden="true"></div>
       </div>
       <div class="post-card__body">

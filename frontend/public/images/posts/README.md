@@ -5,11 +5,16 @@
 
 ## Image files
 
-Put one image per post here. The filename must match the post `id` in JSON (or the optional `image` field).
+**Single image:** filename = post `id` → `summer-sale-2026.webp` (or `.jpg` / `.png`)
 
-| Example JSON `id` | Image file (any of these) |
-|-------------------|---------------------------|
-| `summer-sale-2026` | `summer-sale-2026.webp`, `.jpg`, or `.png` |
+**Carousel:** folder `summer-sale-2026/` with `slide-01.webp`, `slide-02.webp`, … and `"slides": ["slide-01", "slide-02"]` in JSON.
+
+| Example JSON `id` | Image file(s) |
+|-------------------|----------------|
+| `summer-sale-2026` | `summer-sale-2026.webp` |
+| `rainbow-sale` (carousel) | `rainbow-sale/slide-01.webp`, `slide-02.webp`, … |
+
+Bulk import: place `Posts.zip` at repo root and run `npm run import:posts`.
 
 Recommended size: **1080×1350** (4:5) or **1080×1080**.
 
