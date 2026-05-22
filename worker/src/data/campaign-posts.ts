@@ -10,6 +10,8 @@ export type CampaignPostJson = {
   accent: string;
   enabled?: boolean;
   image?: string;
+  /** Basenames under /images/posts/{id}/ — e.g. slide-01, slide-02 */
+  slides?: string[];
 };
 
 type CampaignFile = {

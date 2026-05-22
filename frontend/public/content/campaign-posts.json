@@ -2,57 +2,565 @@
   "subtitle": "Campaign & feed highlights",
   "posts": [
     {
-      "id": "rainbow-sale",
+      "id": "ayha-01",
       "platform": "Instagram",
-      "client": "Rainbow Enterprise",
-      "title": "Seasonal furniture sale carousel",
-      "description": "Multi-slide promo with price overlays, product cutouts, and bold typography tuned for mobile feed readability.",
-      "tags": ["Carousel", "Price overlay", "Furniture"],
-      "accent": "purple"
+      "client": "Ayha Maldives",
+      "title": "Ayha Maldives — carousel (10 slides)",
+      "description": "Multi-slide Instagram carousel with on-brand layout, typography, and promo visuals.",
+      "tags": [
+        "Carousel",
+        "Instagram"
+      ],
+      "accent": "teal",
+      "slides": [
+        "slide-01",
+        "slide-02",
+        "slide-03",
+        "slide-04",
+        "slide-05",
+        "slide-06",
+        "slide-07",
+        "slide-08",
+        "slide-09",
+        "slide-10"
+      ]
     },
     {
-      "id": "rainbow-interior",
+      "id": "ayha-02",
+      "platform": "Instagram",
+      "client": "Ayha Maldives",
+      "title": "Ayha Maldives — feed post",
+      "description": "Single-frame Instagram creative for Ayha Maldives.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "teal"
+    },
+    {
+      "id": "ayha-03",
+      "platform": "Instagram",
+      "client": "Ayha Maldives",
+      "title": "Ayha Maldives — feed post",
+      "description": "Single-frame Instagram creative for Ayha Maldives.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "teal"
+    },
+    {
+      "id": "aysh-saloon-01",
+      "platform": "Instagram",
+      "client": "Aysh Salon",
+      "title": "Aysh Salon — feed post",
+      "description": "Single-frame Instagram creative for Aysh Salon.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "pink"
+    },
+    {
+      "id": "aysh-saloon-02",
+      "platform": "Instagram",
+      "client": "Aysh Salon",
+      "title": "Aysh Salon — feed post",
+      "description": "Single-frame Instagram creative for Aysh Salon.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "pink"
+    },
+    {
+      "id": "aysh-saloon-03",
+      "platform": "Instagram",
+      "client": "Aysh Salon",
+      "title": "Aysh Salon — feed post",
+      "description": "Single-frame Instagram creative for Aysh Salon.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "pink"
+    },
+    {
+      "id": "choparts-01",
+      "platform": "Instagram",
+      "client": "Choparts Maldives",
+      "title": "Choparts Maldives — carousel (8 slides)",
+      "description": "Multi-slide Instagram carousel with on-brand layout, typography, and promo visuals.",
+      "tags": [
+        "Carousel",
+        "Instagram"
+      ],
+      "accent": "purple",
+      "slides": [
+        "slide-01",
+        "slide-02",
+        "slide-03",
+        "slide-04",
+        "slide-05",
+        "slide-06",
+        "slide-07",
+        "slide-08"
+      ]
+    },
+    {
+      "id": "digital-dive-01",
       "platform": "Facebook",
-      "client": "Rainbow Enterprise",
-      "title": "Interior styling feature post",
-      "description": "Lifestyle-led layout pairing room sets with brand gradients and soft shadows for a premium homeware feel.",
-      "tags": ["Lifestyle", "Interior", "Brand"],
-      "accent": "pink"
-    },
-    {
-      "id": "cookxpert-launch",
-      "platform": "Product",
-      "client": "CookXpert",
-      "title": "App launch announcement graphic",
-      "description": "Pink–purple gradient hero with feature callouts for Chef AI, meal guides, and Android APK availability.",
-      "tags": ["Product", "UI promo", "AI"],
-      "accent": "pink"
-    },
-    {
-      "id": "chaos-brand",
-      "platform": "Portfolio",
-      "client": "ChaosStudio.mv",
-      "title": "Studio identity system",
-      "description": "Logo lockups, purple glass card language, and social templates reused across client decks and CV layouts.",
-      "tags": ["Branding", "Identity", "Glass UI"],
+      "client": "Digital Dive",
+      "title": "Digital Dive — feed post",
+      "description": "Single-frame Facebook creative for Digital Dive.",
+      "tags": [
+        "Facebook"
+      ],
       "accent": "purple"
     },
     {
-      "id": "polytechnic-class",
-      "platform": "Education",
-      "client": "Maldives Polytechnic",
-      "title": "C3 class showcase poster",
-      "description": "Print-ready poster compiling student work with grid-based typography and high-contrast section labels.",
-      "tags": ["Teaching", "Print", "Layout"],
+      "id": "digital-dive-02",
+      "platform": "Facebook",
+      "client": "Digital Dive",
+      "title": "Digital Dive — feed post",
+      "description": "Single-frame Facebook creative for Digital Dive.",
+      "tags": [
+        "Facebook"
+      ],
+      "accent": "purple"
+    },
+    {
+      "id": "digital-dive-03",
+      "platform": "Facebook",
+      "client": "Digital Dive",
+      "title": "Digital Dive — feed post",
+      "description": "Single-frame Facebook creative for Digital Dive.",
+      "tags": [
+        "Facebook"
+      ],
+      "accent": "purple"
+    },
+    {
+      "id": "digital-dive-04",
+      "platform": "Facebook",
+      "client": "Digital Dive",
+      "title": "Digital Dive — feed post",
+      "description": "Single-frame Facebook creative for Digital Dive.",
+      "tags": [
+        "Facebook"
+      ],
+      "accent": "purple"
+    },
+    {
+      "id": "digital-dive-05",
+      "platform": "Facebook",
+      "client": "Digital Dive",
+      "title": "Digital Dive — feed post",
+      "description": "Single-frame Facebook creative for Digital Dive.",
+      "tags": [
+        "Facebook"
+      ],
+      "accent": "purple"
+    },
+    {
+      "id": "expressshipping-01",
+      "platform": "Instagram",
+      "client": "Express Shipping MV",
+      "title": "Express Shipping MV — feed post",
+      "description": "Single-frame Instagram creative for Express Shipping MV.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "teal"
+    },
+    {
+      "id": "expressshipping-02",
+      "platform": "Instagram",
+      "client": "Express Shipping MV",
+      "title": "Express Shipping MV — feed post",
+      "description": "Single-frame Instagram creative for Express Shipping MV.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "teal"
+    },
+    {
+      "id": "expressshipping-03",
+      "platform": "Instagram",
+      "client": "Express Shipping MV",
+      "title": "Express Shipping MV — feed post",
+      "description": "Single-frame Instagram creative for Express Shipping MV.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "teal"
+    },
+    {
+      "id": "expressshipping-04",
+      "platform": "Instagram",
+      "client": "Express Shipping MV",
+      "title": "Express Shipping MV — feed post",
+      "description": "Single-frame Instagram creative for Express Shipping MV.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "teal"
+    },
+    {
+      "id": "expressshipping-05",
+      "platform": "Instagram",
+      "client": "Express Shipping MV",
+      "title": "Express Shipping MV — feed post",
+      "description": "Single-frame Instagram creative for Express Shipping MV.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "teal"
+    },
+    {
+      "id": "expressshipping-06",
+      "platform": "Instagram",
+      "client": "Express Shipping MV",
+      "title": "Express Shipping MV — feed post",
+      "description": "Single-frame Instagram creative for Express Shipping MV.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "teal"
+    },
+    {
+      "id": "fottcalm-01",
+      "platform": "Instagram",
+      "client": "Footcalm",
+      "title": "Footcalm — carousel (7 slides)",
+      "description": "Multi-slide Instagram carousel with on-brand layout, typography, and promo visuals.",
+      "tags": [
+        "Carousel",
+        "Instagram"
+      ],
+      "accent": "pink",
+      "slides": [
+        "slide-01",
+        "slide-02",
+        "slide-03",
+        "slide-04",
+        "slide-05",
+        "slide-06",
+        "slide-07"
+      ]
+    },
+    {
+      "id": "fottcalm-02",
+      "platform": "Instagram",
+      "client": "Footcalm",
+      "title": "Footcalm — feed post",
+      "description": "Single-frame Instagram creative for Footcalm.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "pink"
+    },
+    {
+      "id": "fottcalm-03",
+      "platform": "Instagram",
+      "client": "Footcalm",
+      "title": "Footcalm — feed post",
+      "description": "Single-frame Instagram creative for Footcalm.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "pink"
+    },
+    {
+      "id": "haus-of-paws-01",
+      "platform": "Instagram",
+      "client": "Haus of Paws",
+      "title": "Haus of Paws — carousel (3 slides)",
+      "description": "Multi-slide Instagram carousel with on-brand layout, typography, and promo visuals.",
+      "tags": [
+        "Carousel",
+        "Instagram"
+      ],
+      "accent": "gold",
+      "slides": [
+        "slide-01",
+        "slide-02",
+        "slide-03"
+      ]
+    },
+    {
+      "id": "haus-of-paws-02",
+      "platform": "Instagram",
+      "client": "Haus of Paws",
+      "title": "Haus of Paws — feed post",
+      "description": "Single-frame Instagram creative for Haus of Paws.",
+      "tags": [
+        "Instagram"
+      ],
       "accent": "gold"
     },
     {
-      "id": "ayha-tourism",
+      "id": "haus-of-paws-03",
       "platform": "Instagram",
-      "client": "Ayha Maldives",
-      "title": "Resort offer story set",
-      "description": "Vertical story frames with offer badges, ocean tones, and clear CTA buttons for limited-time packages.",
-      "tags": ["Stories", "Tourism", "CTA"],
+      "client": "Haus of Paws",
+      "title": "Haus of Paws — feed post",
+      "description": "Single-frame Instagram creative for Haus of Paws.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "gold"
+    },
+    {
+      "id": "lumeria-01",
+      "platform": "Instagram",
+      "client": "Lumeria Salon",
+      "title": "Lumeria Salon — feed post",
+      "description": "Single-frame Instagram creative for Lumeria Salon.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "pink"
+    },
+    {
+      "id": "lumeria-02",
+      "platform": "Instagram",
+      "client": "Lumeria Salon",
+      "title": "Lumeria Salon — carousel (7 slides)",
+      "description": "Multi-slide Instagram carousel with on-brand layout, typography, and promo visuals.",
+      "tags": [
+        "Carousel",
+        "Instagram"
+      ],
+      "accent": "pink",
+      "slides": [
+        "slide-01",
+        "slide-02",
+        "slide-03",
+        "slide-04",
+        "slide-05",
+        "slide-06",
+        "slide-07"
+      ]
+    },
+    {
+      "id": "lumeria-03",
+      "platform": "Instagram",
+      "client": "Lumeria Salon",
+      "title": "Lumeria Salon — feed post",
+      "description": "Single-frame Instagram creative for Lumeria Salon.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "pink"
+    },
+    {
+      "id": "metroflex-islanders-nutrition-01",
+      "platform": "Instagram",
+      "client": "Metroflex & Islanders Nutrition",
+      "title": "Metroflex & Islanders Nutrition — feed post",
+      "description": "Single-frame Instagram creative for Metroflex & Islanders Nutrition.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "gold"
+    },
+    {
+      "id": "metroflex-islanders-nutrition-02",
+      "platform": "Instagram",
+      "client": "Metroflex & Islanders Nutrition",
+      "title": "Metroflex & Islanders Nutrition — feed post",
+      "description": "Single-frame Instagram creative for Metroflex & Islanders Nutrition.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "gold"
+    },
+    {
+      "id": "metroflex-islanders-nutrition-03",
+      "platform": "Instagram",
+      "client": "Metroflex & Islanders Nutrition",
+      "title": "Metroflex & Islanders Nutrition — feed post",
+      "description": "Single-frame Instagram creative for Metroflex & Islanders Nutrition.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "gold"
+    },
+    {
+      "id": "metroflex-islanders-nutrition-04",
+      "platform": "Instagram",
+      "client": "Metroflex & Islanders Nutrition",
+      "title": "Metroflex & Islanders Nutrition — feed post",
+      "description": "Single-frame Instagram creative for Metroflex & Islanders Nutrition.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "gold"
+    },
+    {
+      "id": "metroflex-islanders-nutrition-05",
+      "platform": "Instagram",
+      "client": "Metroflex & Islanders Nutrition",
+      "title": "Metroflex & Islanders Nutrition — feed post",
+      "description": "Single-frame Instagram creative for Metroflex & Islanders Nutrition.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "gold"
+    },
+    {
+      "id": "metroflex-islanders-nutrition-06",
+      "platform": "Instagram",
+      "client": "Metroflex & Islanders Nutrition",
+      "title": "Metroflex & Islanders Nutrition — feed post",
+      "description": "Single-frame Instagram creative for Metroflex & Islanders Nutrition.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "gold"
+    },
+    {
+      "id": "metroflex-islanders-nutrition-07",
+      "platform": "Instagram",
+      "client": "Metroflex & Islanders Nutrition",
+      "title": "Metroflex & Islanders Nutrition — feed post",
+      "description": "Single-frame Instagram creative for Metroflex & Islanders Nutrition.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "gold"
+    },
+    {
+      "id": "rainbow-01",
+      "platform": "Instagram",
+      "client": "Rainbow Enterprise",
+      "title": "Rainbow Enterprise — carousel (3 slides)",
+      "description": "Multi-slide Instagram carousel with on-brand layout, typography, and promo visuals.",
+      "tags": [
+        "Carousel",
+        "Instagram"
+      ],
+      "accent": "purple",
+      "slides": [
+        "slide-01",
+        "slide-02",
+        "slide-03"
+      ]
+    },
+    {
+      "id": "rainbow-02",
+      "platform": "Instagram",
+      "client": "Rainbow Enterprise",
+      "title": "Rainbow Enterprise — feed post",
+      "description": "Single-frame Instagram creative for Rainbow Enterprise.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "purple"
+    },
+    {
+      "id": "rainbow-03",
+      "platform": "Instagram",
+      "client": "Rainbow Enterprise",
+      "title": "Rainbow Enterprise — carousel (4 slides)",
+      "description": "Multi-slide Instagram carousel with on-brand layout, typography, and promo visuals.",
+      "tags": [
+        "Carousel",
+        "Instagram"
+      ],
+      "accent": "purple",
+      "slides": [
+        "slide-01",
+        "slide-02",
+        "slide-03",
+        "slide-04"
+      ]
+    },
+    {
+      "id": "rainbow-04",
+      "platform": "Instagram",
+      "client": "Rainbow Enterprise",
+      "title": "Rainbow Enterprise — feed post",
+      "description": "Single-frame Instagram creative for Rainbow Enterprise.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "purple"
+    },
+    {
+      "id": "rainbow-05",
+      "platform": "Instagram",
+      "client": "Rainbow Enterprise",
+      "title": "Rainbow Enterprise — feed post",
+      "description": "Single-frame Instagram creative for Rainbow Enterprise.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "purple"
+    },
+    {
+      "id": "rioga-01",
+      "platform": "Instagram",
+      "client": "Rioga Travel & Tours",
+      "title": "Rioga Travel & Tours — carousel (2 slides)",
+      "description": "Multi-slide Instagram carousel with on-brand layout, typography, and promo visuals.",
+      "tags": [
+        "Carousel",
+        "Instagram"
+      ],
+      "accent": "teal",
+      "slides": [
+        "slide-01",
+        "slide-02"
+      ]
+    },
+    {
+      "id": "rioga-02",
+      "platform": "Instagram",
+      "client": "Rioga Travel & Tours",
+      "title": "Rioga Travel & Tours — carousel (7 slides)",
+      "description": "Multi-slide Instagram carousel with on-brand layout, typography, and promo visuals.",
+      "tags": [
+        "Carousel",
+        "Instagram"
+      ],
+      "accent": "teal",
+      "slides": [
+        "slide-01",
+        "slide-02",
+        "slide-03",
+        "slide-04",
+        "slide-05",
+        "slide-06",
+        "slide-07"
+      ]
+    },
+    {
+      "id": "rioga-03",
+      "platform": "Instagram",
+      "client": "Rioga Travel & Tours",
+      "title": "Rioga Travel & Tours — feed post",
+      "description": "Single-frame Instagram creative for Rioga Travel & Tours.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "teal"
+    },
+    {
+      "id": "world-trip-tours-01",
+      "platform": "Instagram",
+      "client": "World Trip Tours",
+      "title": "World Trip Tours — feed post",
+      "description": "Single-frame Instagram creative for World Trip Tours.",
+      "tags": [
+        "Instagram"
+      ],
+      "accent": "teal"
+    },
+    {
+      "id": "world-trip-tours-02",
+      "platform": "Instagram",
+      "client": "World Trip Tours",
+      "title": "World Trip Tours — feed post",
+      "description": "Single-frame Instagram creative for World Trip Tours.",
+      "tags": [
+        "Instagram"
+      ],
       "accent": "teal"
     },
     {
@@ -62,7 +570,10 @@
       "client": "Client name here",
       "title": "Your campaign title",
       "description": "Write 1–3 sentences about what you designed and the goal of the post.",
-      "tags": ["Tag one", "Tag two"],
+      "tags": [
+        "Tag one",
+        "Tag two"
+      ],
       "accent": "purple"
     }
   ]

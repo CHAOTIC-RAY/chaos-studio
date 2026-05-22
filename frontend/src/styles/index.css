@@ -480,6 +480,40 @@ main { padding-top: var(--header-h); }
   background: var(--post-media-bg);
   border-bottom: 1px solid var(--border);
 }
+.post-card__carousel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.post-card__slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation-name: post-slide-fade;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-duration: calc(var(--slide-count, 4) * 2.4s);
+  animation-delay: calc(var(--slide-i, 0) * -2.4s);
+}
+.post-card__carousel--5 .post-card__slide,
+.post-card__carousel--6 .post-card__slide,
+.post-card__carousel--7 .post-card__slide,
+.post-card__carousel--8 .post-card__slide {
+  animation-name: post-slide-fade-many;
+}
+@keyframes post-slide-fade {
+  0%, 22% { opacity: 1; }
+  26%, 100% { opacity: 0; }
+}
+@keyframes post-slide-fade-many {
+  0%, 13% { opacity: 1; }
+  16%, 100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .post-card__slide { animation: none; opacity: 0; }
+  .post-card__slide:first-child { opacity: 1; }
+}
 .post-card__img {
   width: 100%;
   height: 100%;

@@ -155,6 +155,14 @@ function freezeMotionForPdf(): void {
     });
   });
 
+  document.querySelectorAll<HTMLElement>(".post-card__carousel").forEach((carousel) => {
+    carousel.querySelectorAll<HTMLElement>(".post-card__slide").forEach((slide, i) => {
+      slide.style.animation = "none";
+      slide.style.opacity = i === 0 ? "1" : "0";
+      slide.style.position = i === 0 ? "relative" : "absolute";
+    });
+  });
+
   document.querySelectorAll<HTMLVideoElement>(".device__media").forEach((video) => {
     video.pause();
     video.style.display = "none";

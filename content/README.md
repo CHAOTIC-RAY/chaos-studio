@@ -89,6 +89,36 @@ Then save the file as `frontend/public/images/posts/my-custom-filename.webp` (or
 
 ---
 
+## Carousel posts (multiple slides, one card)
+
+Put slides in a folder named after the post `id`:
+
+`frontend/public/images/posts/rainbow-sale/slide-01.webp`  
+`frontend/public/images/posts/rainbow-sale/slide-02.webp`  
+…
+
+In JSON, list slide basenames (no extension):
+
+```json
+"slides": ["slide-01", "slide-02", "slide-03"]
+```
+
+The card cycles through slides automatically. Keep carousel posts **one JSON entry** so they stay grouped in the feed.
+
+### Import many images from `Posts.zip`
+
+1. Copy `Posts.zip` to the repo root.
+2. Run:
+
+```bash
+npm run import:posts
+npm run build
+```
+
+The script groups images by folder or `name-1`, `name-2` filenames, converts to WebP, updates `content/campaign-posts.json` order, and adds `slides` for multi-image groups.
+
+---
+
 ## Hide a post without deleting it
 
 ```json
