@@ -327,6 +327,14 @@ main { padding-top: var(--header-h); }
   margin: 0 auto;
 }
 .section-head { margin-bottom: 2rem; }
+.section-head--posts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+}
+.section-head--posts .section-head__copy { flex: 1 1 12rem; min-width: 0; }
 
 .hero {
   min-height: calc(100vh - var(--header-h));
@@ -439,6 +447,137 @@ main { padding-top: var(--header-h); }
 
 /* Posts carousel */
 .section--posts { overflow: visible; }
+.posts-panel__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem 0.65rem;
+  flex-shrink: 0;
+  border-color: rgba(213, 119, 237, 0.45);
+  background: rgba(213, 119, 237, 0.1);
+}
+.posts-panel__toggle-meta {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+.posts-panel__toggle-icon {
+  display: grid;
+  place-items: center;
+  transition: transform 0.3s ease;
+}
+.posts-panel--expanded .posts-panel__toggle-icon {
+  transform: rotate(180deg);
+}
+.posts-panel {
+  position: relative;
+}
+.posts-panel--collapsed .posts-feed-expanded {
+  display: none;
+}
+.posts-panel--expanded .posts-rail {
+  display: none;
+}
+.posts-feed-expanded {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.25rem 0 1rem;
+}
+.posts-accordion {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+}
+.posts-accordion__summary {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.posts-accordion__summary::-webkit-details-marker { display: none; }
+.posts-accordion__summary::marker { content: ""; }
+.posts-accordion__name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--purple-bright);
+  flex: 1;
+  min-width: 0;
+}
+.posts-accordion__count {
+  font-size: 0.68rem;
+  color: var(--muted);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+.posts-accordion__icon {
+  display: grid;
+  place-items: center;
+  color: var(--purple-bright);
+  transition: transform 0.25s ease;
+}
+.posts-accordion[open] .posts-accordion__icon {
+  transform: rotate(180deg);
+}
+.posts-accordion__body {
+  padding: 0 1rem 1.15rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+  gap: 1.25rem;
+  padding-top: 1rem;
+}
+.posts-grid .post-card {
+  flex: none;
+  max-width: none;
+  width: 100%;
+}
+.post-card--expandable .post-desc {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+.post-card--expandable.post-card--open .post-desc {
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+.post-card--expandable.post-card--open .post-card__media {
+  aspect-ratio: auto;
+  max-height: min(520px, 70vh);
+}
+.post-card--expandable.post-card--open.post-card--video .post-card__media {
+  max-height: min(640px, 75vh);
+}
+.post-card__more {
+  margin-top: 0.75rem;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--purple-bright);
+  background: transparent;
+  border: 1px solid rgba(213, 119, 237, 0.35);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.post-card__more:hover {
+  border-color: rgba(213, 119, 237, 0.7);
+  background: rgba(213, 119, 237, 0.12);
+}
+.post-card__more:focus-visible {
+  outline: 2px solid var(--purple-bright);
+  outline-offset: 2px;
+}
 .posts-rail {
   position: relative;
   margin: 0 calc(-1 * clamp(0.85rem, 4vw, 1.25rem));
@@ -1469,6 +1608,17 @@ main { position: relative; z-index: 1; }
   }
   .posts-group__name { font-size: 0.65rem; }
   .posts-rail__hint { font-size: 0.65rem; }
+  .section-head--posts {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .posts-panel__toggle {
+    width: 100%;
+    justify-content: center;
+  }
+  .posts-grid {
+    grid-template-columns: 1fr;
+  }
   .section {
     padding-left: clamp(0.85rem, 4vw, 1.25rem);
     padding-right: clamp(0.85rem, 4vw, 1.25rem);

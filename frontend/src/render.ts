@@ -1,6 +1,7 @@
 import type { Portfolio } from "./types/portfolio";
 import { CHAOS_LOGO_SVG } from "./brand/logo";
 import {
+  ICON_CHEVRON_DOWN,
   ICON_CHEVRON_LEFT,
   ICON_CHEVRON_RIGHT,
   ICON_CLOSE,
@@ -222,26 +223,7 @@ export function renderPage(p: Portfolio): string {
       </section>
 
       <section id="posts" class="section section--posts">
-        <div class="section-head" data-reveal>
-          <p class="eyebrow">Campaign & feed</p>
-          <h2>${esc(p.socialPosts.subtitle)}</h2>
-        </div>
-        <div class="posts-rail" data-reveal>
-          <div class="posts-rail__shell">
-            <button type="button" class="posts-rail__btn posts-rail__btn--prev" aria-label="Previous campaign posts">
-              ${ICON_CHEVRON_LEFT}
-            </button>
-            <div class="posts-viewport" tabindex="0" aria-label="Campaign and feed posts carousel">
-              <div class="posts-track">
-                ${renderPostsTrack(p.socialPosts.items)}
-              </div>
-            </div>
-            <button type="button" class="posts-rail__btn posts-rail__btn--next" aria-label="Next campaign posts">
-              ${ICON_CHEVRON_RIGHT}
-            </button>
-          </div>
-          <p class="posts-rail__hint">Use arrows or drag · Hover reels to preview</p>
-        </div>
+        ${renderPostsSection(p.socialPosts)}
       </section>
 
       <section id="work" class="section">
@@ -342,6 +324,54 @@ export function renderPage(p: Portfolio): string {
 
 type SocialPost = Portfolio["socialPosts"]["items"][0];
 
+function visiblePosts(items: SocialPost[]): SocialPost[] {
+  return items.filter((post) => !post.id.startsWith("_"));
+}
+
+function renderPostsSection(social: Portfolio["socialPosts"]): string {
+  const items = visiblePosts(social.items);
+  const count = items.length;
+  return `
+        <div class="section-head section-head--posts" data-reveal>
+          <div class="section-head__copy">
+            <p class="eyebrow">Campaign & feed</p>
+            <h2>${esc(social.subtitle)}</h2>
+          </div>
+          <button
+            type="button"
+            class="btn btn-sm posts-panel__toggle"
+            data-posts-expand
+            aria-expanded="false"
+            aria-controls="posts-panel"
+          >
+            <span class="posts-panel__toggle-label">Expand full feed</span>
+            <span class="posts-panel__toggle-meta">${count} posts</span>
+            <span class="posts-panel__toggle-icon" aria-hidden="true">${ICON_CHEVRON_DOWN}</span>
+          </button>
+        </div>
+        <div class="posts-panel posts-panel--collapsed" id="posts-panel" data-posts-panel data-reveal>
+          <div class="posts-rail" data-posts-carousel>
+            <div class="posts-rail__shell">
+              <button type="button" class="posts-rail__btn posts-rail__btn--prev" aria-label="Previous campaign posts">
+                ${ICON_CHEVRON_LEFT}
+              </button>
+              <div class="posts-viewport" tabindex="0" aria-label="Campaign and feed posts carousel">
+                <div class="posts-track">
+                  ${renderPostsTrack(items)}
+                </div>
+              </div>
+              <button type="button" class="posts-rail__btn posts-rail__btn--next" aria-label="Next campaign posts">
+                ${ICON_CHEVRON_RIGHT}
+              </button>
+            </div>
+            <p class="posts-rail__hint">Use arrows or drag · Hover reels to preview · Expand for full grid</p>
+          </div>
+          <div class="posts-feed-expanded" data-posts-expanded hidden>
+            ${renderPostsExpandedFeed(items)}
+          </div>
+        </div>`;
+}
+
 function groupPostsByClient(items: SocialPost[]): { client: string; posts: SocialPost[] }[] {
   const groups: { client: string; posts: SocialPost[] }[] = [];
   for (const post of items) {
@@ -370,6 +400,27 @@ function renderPostsTrack(items: SocialPost[]): string {
       )
       .join("");
   return renderGroups() + renderGroups();
+}
+
+function renderPostsExpandedFeed(items: SocialPost[]): string {
+  const groups = groupPostsByClient(items);
+  return groups
+    .map(
+      (g, i) => `
+      <details class="posts-accordion" ${i === 0 ? "open" : ""}>
+        <summary class="posts-accordion__summary">
+          <span class="posts-accordion__name">${esc(g.client)}</span>
+          <span class="posts-accordion__count">${g.posts.length} post${g.posts.length === 1 ? "" : "s"}</span>
+          <span class="posts-accordion__icon" aria-hidden="true">${ICON_CHEVRON_DOWN}</span>
+        </summary>
+        <div class="posts-accordion__body">
+          <div class="posts-grid">
+            ${g.posts.map((post) => renderPostCard(post, { expandable: true })).join("")}
+          </div>
+        </div>
+      </details>`,
+    )
+    .join("");
 }
 
 function postImageBase(post: SocialPost): string {
@@ -449,12 +500,13 @@ function renderPostMedia(post: SocialPost): string {
     </div>`;
 }
 
-function renderPostCard(post: SocialPost): string {
+function renderPostCard(post: SocialPost, opts?: { expandable?: boolean }): string {
   const accent = POST_ACCENTS[post.accent] ?? "post-card--purple";
   const kind = post.video ? "post-card--video" : post.slides && post.slides.length > 1 ? "post-card--carousel" : "";
   const slideCount = post.slides?.length ?? 0;
+  const expandable = opts?.expandable ?? false;
   return `
-    <article class="post-card ${accent} ${kind}" data-post-kind="${post.video ? "video" : slideCount > 1 ? "carousel" : "image"}">
+    <article class="post-card ${accent} ${kind}${expandable ? " post-card--expandable" : ""}" data-post-kind="${post.video ? "video" : slideCount > 1 ? "carousel" : "image"}">
       <div class="post-card__media">
         ${renderPostMedia(post)}
         <div class="post-card__shine" aria-hidden="true"></div>
@@ -464,6 +516,11 @@ function renderPostCard(post: SocialPost): string {
         <h3>${esc(post.title)}</h3>
         <p class="post-desc">${esc(post.description)}</p>
         <div class="post-tags">${post.tags.map((t) => `<span>${esc(t)}</span>`).join("")}</div>
+        ${
+          expandable
+            ? `<button type="button" class="post-card__more" aria-expanded="false">Show more</button>`
+            : ""
+        }
       </div>
     </article>
   `;

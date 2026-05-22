@@ -6,6 +6,8 @@ export function initInteractions(): () => void {
     cleanups.push(initMagnetic());
   }
   cleanups.push(initPostsRail());
+  cleanups.push(initPostsPanel());
+  cleanups.push(initPostCardExpand());
   cleanups.push(initActiveNav());
   cleanups.push(initPostImageFallback());
   cleanups.push(initPostVideos());
@@ -35,10 +37,11 @@ function initMagnetic(): () => void {
 }
 
 function initPostsRail(): () => void {
-  const viewport = document.querySelector(".posts-viewport") as HTMLElement | null;
-  const track = document.querySelector(".posts-track") as HTMLElement | null;
-  const prev = document.querySelector(".posts-rail__btn--prev") as HTMLButtonElement | null;
-  const next = document.querySelector(".posts-rail__btn--next") as HTMLButtonElement | null;
+  const carousel = document.querySelector("[data-posts-carousel]");
+  const viewport = carousel?.querySelector(".posts-viewport") as HTMLElement | null;
+  const track = carousel?.querySelector(".posts-track") as HTMLElement | null;
+  const prev = carousel?.querySelector(".posts-rail__btn--prev") as HTMLButtonElement | null;
+  const next = carousel?.querySelector(".posts-rail__btn--next") as HTMLButtonElement | null;
   if (!viewport || !track) return () => {};
 
   const reduced = prefersReducedMotion();
@@ -110,6 +113,11 @@ function initPostsRail(): () => void {
   viewport.addEventListener("keydown", onKey);
 
   const loop = () => {
+    const panel = document.querySelector("[data-posts-panel]");
+    if (panel?.classList.contains("posts-panel--expanded")) {
+      raf = requestAnimationFrame(loop);
+      return;
+    }
     if (autoScroll && !paused) {
       x -= speed;
       const half = track.scrollWidth / 2;
@@ -173,6 +181,52 @@ function initPostsRail(): () => void {
     viewport.removeEventListener("mouseenter", pause);
     viewport.removeEventListener("mouseleave", resume);
   };
+}
+
+function initPostsPanel(): () => void {
+  const panel = document.querySelector("[data-posts-panel]") as HTMLElement | null;
+  const btn = document.querySelector("[data-posts-expand]") as HTMLButtonElement | null;
+  const expanded = document.querySelector("[data-posts-expanded]") as HTMLElement | null;
+  const label = btn?.querySelector(".posts-panel__toggle-label");
+  if (!panel || !btn || !expanded) return () => {};
+
+  const setExpanded = (on: boolean) => {
+    panel.classList.toggle("posts-panel--expanded", on);
+    panel.classList.toggle("posts-panel--collapsed", !on);
+    btn.setAttribute("aria-expanded", String(on));
+    expanded.hidden = !on;
+    if (label) label.textContent = on ? "Show carousel" : "Expand full feed";
+    if (on) {
+      expanded.querySelectorAll<HTMLVideoElement>(".post-card__video").forEach((v) => {
+        v.pause();
+        v.currentTime = 0;
+      });
+      requestAnimationFrame(() => {
+        panel.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "nearest" });
+      });
+    }
+  };
+
+  const onToggle = () => setExpanded(!panel.classList.contains("posts-panel--expanded"));
+  btn.addEventListener("click", onToggle);
+  return () => btn.removeEventListener("click", onToggle);
+}
+
+function initPostCardExpand(): () => void {
+  const cleanups: Array<() => void> = [];
+  document.querySelectorAll<HTMLElement>(".post-card--expandable").forEach((card) => {
+    const btn = card.querySelector<HTMLButtonElement>(".post-card__more");
+    if (!btn) return;
+    const onClick = (e: Event) => {
+      e.stopPropagation();
+      const open = card.classList.toggle("post-card--open");
+      btn.setAttribute("aria-expanded", String(open));
+      btn.textContent = open ? "Show less" : "Show more";
+    };
+    btn.addEventListener("click", onClick);
+    cleanups.push(() => btn.removeEventListener("click", onClick));
+  });
+  return () => cleanups.forEach((fn) => fn());
 }
 
 function initActiveNav(): () => void {
