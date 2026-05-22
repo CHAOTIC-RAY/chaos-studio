@@ -1,42 +1,80 @@
 import "./styles/index.css";
 import { fetchPortfolio } from "./api";
 import { initCanvasBackground } from "./background/canvas-bg";
-import { initInteractions } from "./interactions";
+import { initInteractions, initStudioInteractions } from "./interactions";
 import { initMouseEffects } from "./mouse/mouse-effects";
 import { initHeaderScroll, initScrollAnimations } from "./motion/scroll";
 import { initWorkMarquee } from "./motion/work-marquee";
 import { downloadPortfolioPdf } from "./pdf-export";
-import { renderPage } from "./render";
+import { renderPage, renderStudioPage } from "./render";
+import { getRoute, navigateTo, type AppRoute } from "./router";
+import type { Portfolio } from "./types/portfolio";
 import { initTheme } from "./theme";
 
-async function init(): Promise<void> {
-  const app = document.getElementById("app");
-  if (!app) return;
+let portfolio: Portfolio | null = null;
+const cleanups: (() => void)[] = [];
 
-  try {
-    const portfolio = await fetchPortfolio();
+function runCleanup(): void {
+  while (cleanups.length) {
+    const fn = cleanups.pop();
+    fn?.();
+  }
+}
+
+async function mount(route: AppRoute): Promise<void> {
+  const app = document.getElementById("app");
+  if (!app || !portfolio) return;
+
+  runCleanup();
+
+  app.classList.toggle("app--studio", route === "studio");
+  document.body.classList.toggle("route-studio", route === "studio");
+
+  if (route === "studio") {
+    document.title = `${portfolio.chaosStudio.title} · Packages & Services`;
+    app.innerHTML = renderStudioPage(portfolio);
+  } else {
     document.title = `${portfolio.profile.name} · Graphic Design Portfolio`;
     app.innerHTML = renderPage(portfolio);
-    app.classList.remove("loading-screen");
+  }
 
-    const cleanups: (() => void)[] = [];
-    cleanups.push(initTheme());
-    cleanups.push(initMouseEffects());
-    cleanups.push(initCanvasBackground());
-    cleanups.push(initScrollAnimations());
+  app.classList.remove("loading-screen");
+
+  cleanups.push(initTheme());
+  cleanups.push(initMouseEffects());
+  cleanups.push(initCanvasBackground());
+  cleanups.push(initScrollAnimations());
+  cleanups.push(initHeaderScroll());
+  cleanups.push(bindRouteLinks());
+  cleanups.push(bindMobileNav());
+
+  if (route === "portfolio") {
     cleanups.push(initWorkMarquee());
-    cleanups.push(initHeaderScroll());
     cleanups.push(initInteractions());
     cleanups.push(bindNav());
-    cleanups.push(bindMobileNav());
     cleanups.push(bindPrintPortfolio(portfolio.profile.name));
-
-    window.addEventListener("beforeunload", () => cleanups.forEach((fn) => fn()));
-  } catch (err) {
-    console.error(err);
-    app.innerHTML =
-      '<p class="load-error">Could not load portfolio. Please refresh or try again later.</p>';
+  } else {
+    cleanups.push(initStudioInteractions());
+    cleanups.push(bindNav());
   }
+}
+
+function bindRouteLinks(): () => void {
+  const links = document.querySelectorAll<HTMLAnchorElement>("[data-route-link]");
+  const handler = (e: Event) => {
+    const link = e.currentTarget as HTMLAnchorElement;
+    const href = link.getAttribute("href");
+    if (!href) return;
+    e.preventDefault();
+    const route: AppRoute =
+      href === "/studio" || href.endsWith("/studio") ? "studio" : "portfolio";
+    navigateTo(route);
+    void mount(route);
+    closeMobileNav();
+    window.scrollTo(0, 0);
+  };
+  links.forEach((link) => link.addEventListener("click", handler));
+  return () => links.forEach((link) => link.removeEventListener("click", handler));
 }
 
 function bindNav(): () => void {
@@ -132,6 +170,26 @@ function bindPrintPortfolio(profileName: string): () => void {
 
   btn.addEventListener("click", handler);
   return () => btn.removeEventListener("click", handler);
+}
+
+async function init(): Promise<void> {
+  const app = document.getElementById("app");
+  if (!app) return;
+
+  try {
+    portfolio = await fetchPortfolio();
+    const onPopState = () => {
+      void mount(getRoute());
+    };
+    window.addEventListener("popstate", onPopState);
+    cleanups.push(() => window.removeEventListener("popstate", onPopState));
+
+    await mount(getRoute());
+  } catch (err) {
+    console.error(err);
+    app.innerHTML =
+      '<p class="load-error">Could not load portfolio. Please refresh or try again later.</p>';
+  }
 }
 
 init();

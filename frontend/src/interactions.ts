@@ -14,6 +14,16 @@ export function initInteractions(): () => void {
   return () => cleanups.forEach((fn) => fn());
 }
 
+/** Studio page: magnetic buttons + in-page nav highlights only */
+export function initStudioInteractions(): () => void {
+  const cleanups: (() => void)[] = [];
+  if (!prefersReducedMotion()) {
+    cleanups.push(initMagnetic());
+  }
+  cleanups.push(initActiveNav());
+  return () => cleanups.forEach((fn) => fn());
+}
+
 function initMagnetic(): () => void {
   const els = document.querySelectorAll<HTMLElement>("[data-magnetic]");
   const pairs: Array<{ el: HTMLElement; move: (e: MouseEvent) => void; leave: () => void }> = [];

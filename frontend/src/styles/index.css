@@ -904,7 +904,143 @@ main { padding-top: var(--header-h); }
 }
 .cursor-ring.is-idle { opacity: 0.4; }
 
-/* Chaos Studio */
+/* Chaos Studio — home teaser */
+.section--studio-teaser {
+  overflow: visible;
+}
+.studio-teaser {
+  position: relative;
+  padding: clamp(1.75rem, 4vw, 2.5rem);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(213, 119, 237, 0.4);
+  background: linear-gradient(145deg, rgba(213, 119, 237, 0.14), var(--card) 55%);
+  overflow: hidden;
+}
+.studio-teaser__glow {
+  position: absolute;
+  inset: -20% 30% auto -10%;
+  height: 70%;
+  background: radial-gradient(ellipse, rgba(213, 119, 237, 0.35), transparent 70%);
+  pointer-events: none;
+}
+.studio-teaser__inner {
+  position: relative;
+  display: grid;
+  gap: 1.5rem;
+  align-items: end;
+}
+@media (min-width: 768px) {
+  .studio-teaser__inner {
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+  }
+}
+.studio-teaser__title {
+  margin: 0.35rem 0 0.65rem;
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
+  background: linear-gradient(120deg, var(--purple-bright), #fff 50%, var(--purple));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.studio-teaser__pitch {
+  margin: 0 0 0.5rem;
+  max-width: 42ch;
+}
+.studio-teaser__hint {
+  margin: 0;
+  font-size: 0.88rem;
+}
+.studio-teaser__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+/* Chaos Studio — dedicated page */
+.route-studio .site-header--studio .logo-text {
+  color: var(--purple-bright);
+}
+.page-studio {
+  padding-top: 0;
+}
+.studio-page-hero {
+  position: relative;
+  padding: clamp(2.5rem, 8vw, 5rem) 0 clamp(2rem, 5vw, 3rem);
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+}
+.studio-page-hero__glow {
+  position: absolute;
+  inset: -30% -10% 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 0%, rgba(213, 119, 237, 0.45), transparent 55%),
+    radial-gradient(ellipse 60% 50% at 90% 20%, rgba(78, 19, 112, 0.5), transparent 50%);
+  pointer-events: none;
+}
+.studio-page-hero__inner {
+  position: relative;
+  max-width: 52rem;
+}
+.studio-page-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.studio-page-back:hover {
+  color: var(--purple-bright);
+}
+.studio-page-back .icon {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+.studio-page-hero__eyebrow {
+  margin-bottom: 0.5rem;
+}
+.studio-page-hero__title {
+  margin: 0 0 0.5rem;
+  font-size: clamp(2.25rem, 8vw, 3.75rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  background: linear-gradient(125deg, var(--purple-bright), #fff 40%, var(--purple));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.studio-page-hero__headline {
+  margin: 0 0 0.85rem;
+  font-size: clamp(1.1rem, 3vw, 1.45rem);
+  font-weight: 700;
+  color: var(--text);
+  max-width: 40ch;
+}
+.studio-page-hero__pitch {
+  max-width: 52ch;
+  margin: 0 0 1.5rem;
+}
+.studio-page-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.studio-page-body {
+  padding-bottom: 3rem;
+}
+.route-studio .studio-page-body .studio-hero {
+  display: none;
+}
+.site-footer--studio {
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+}
+
+/* Chaos Studio — content blocks */
 .section--studio {
   overflow: visible;
 }

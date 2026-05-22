@@ -1,5 +1,6 @@
 import type { Portfolio } from "./types/portfolio";
 import { CHAOS_LOGO_SVG } from "./brand/logo";
+import { portfolioUrl, studioUrl } from "./router";
 import {
   ICON_CHEVRON_DOWN,
   ICON_CHEVRON_LEFT,
@@ -110,45 +111,79 @@ function esc(s: string): string {
   return d.innerHTML;
 }
 
-export function renderPage(p: Portfolio): string {
-  const nav = [
-    { id: "about", label: "About" },
-    { id: "experience", label: "Experience" },
-    { id: "posts", label: "Posts" },
-    { id: "work", label: "Work" },
-    { id: "skills", label: "Skills" },
-    { id: "studio", label: "Studio" },
-    { id: "contact", label: "Contact" },
-  ];
+type NavItem = { href: string; label: string; route?: boolean };
 
+const PORTFOLIO_NAV: NavItem[] = [
+  { href: "#about", label: "About" },
+  { href: "#experience", label: "Experience" },
+  { href: "#posts", label: "Posts" },
+  { href: "#work", label: "Work" },
+  { href: "#skills", label: "Skills" },
+  { href: studioUrl(), label: "Studio", route: true },
+  { href: "#contact", label: "Contact" },
+];
+
+const STUDIO_NAV: NavItem[] = [
+  { href: portfolioUrl(), label: "Portfolio", route: true },
+  { href: "#packages", label: "Packages" },
+  { href: "#studio-contact", label: "Contact" },
+];
+
+function renderBgLayers(includeHeroOrb = true): string {
   return `
     <div class="bg-layers" aria-hidden="true">
       <canvas id="bg-canvas"></canvas>
       <div class="bg-blobs"></div>
       <div class="bg-dither" aria-hidden="true"></div>
       <div class="bg-grain"></div>
-      <div class="hero-orb" data-parallax="24" aria-hidden="true"></div>
-    </div>
+      ${includeHeroOrb ? '<div class="hero-orb" data-parallax="24" aria-hidden="true"></div>' : ""}
+    </div>`;
+}
+
+function renderNavLinks(items: NavItem[]): string {
+  return items
+    .map((l) => {
+      const routeAttr = l.route ? ' data-route-link' : "";
+      return `<a class="nav__link" href="${esc(l.href)}"${routeAttr}>${esc(l.label)}</a>`;
+    })
+    .join("");
+}
+
+function renderSiteChrome(
+  p: Portfolio,
+  opts: { mode: "portfolio" | "studio"; logoHref: string; nav: NavItem[]; showPrint?: boolean },
+): string {
+  const printBtn =
+    opts.showPrint !== false
+      ? `<button type="button" class="btn-icon btn-print" id="print-portfolio" aria-label="Print or save portfolio as PDF">
+          ${ICON_PRINT}
+        </button>`
+      : "";
+  const ctaHref =
+    opts.mode === "studio" ? esc(p.chaosStudio.studioContact.instagramUrl) : esc(p.contact.telegramUrl);
+  const ctaLabel = opts.mode === "studio" ? "Instagram" : "Contact";
+  const ctaExternal = opts.mode === "studio" ? ' target="_blank" rel="noopener noreferrer"' : ' target="_blank" rel="noopener noreferrer"';
+
+  return `
+    ${renderBgLayers(opts.mode === "portfolio")}
     <div class="scroll-progress" aria-hidden="true"></div>
     <a class="skip-link" href="#main">Skip to content</a>
 
-    <header class="site-header">
-      <a class="logo" href="#top">
+    <header class="site-header ${opts.mode === "studio" ? "site-header--studio" : ""}">
+      <a class="logo" href="${esc(opts.logoHref)}"${opts.mode === "studio" ? ' data-route-link' : ""}>
         ${CHAOS_LOGO_SVG}
-        <span class="logo-text">${esc(p.profile.name)}</span>
+        <span class="logo-text">${opts.mode === "studio" ? esc(p.chaosStudio.title) : esc(p.profile.name)}</span>
       </a>
       <nav class="nav nav--desktop" aria-label="Primary">
-        ${nav.map((l) => `<a class="nav__link" href="#${l.id}">${l.label}</a>`).join("")}
+        ${renderNavLinks(opts.nav)}
       </nav>
       <div class="header-actions">
         <button type="button" class="btn-icon theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Switch to dark mode">
           <span class="theme-toggle__sun">${ICON_SUN}</span>
           <span class="theme-toggle__moon">${ICON_MOON}</span>
         </button>
-        <button type="button" class="btn-icon btn-print" id="print-portfolio" aria-label="Print or save portfolio as PDF">
-          ${ICON_PRINT}
-        </button>
-        <a class="nav-cta" href="${esc(p.contact.telegramUrl)}" target="_blank" rel="noopener noreferrer">Contact</a>
+        ${printBtn}
+        <a class="nav-cta" href="${ctaHref}"${ctaExternal}>${ctaLabel}</a>
       </div>
     </header>
     <button type="button" class="nav-toggle nav-toggle--fab" id="nav-toggle" aria-expanded="false" aria-controls="nav-drawer" aria-label="Open menu">
@@ -158,10 +193,15 @@ export function renderPage(p: Portfolio): string {
     <div class="nav-drawer" id="nav-drawer" hidden>
       <div class="nav-drawer__backdrop" data-nav-close tabindex="-1" aria-hidden="true"></div>
       <nav class="nav nav--mobile" aria-label="Mobile">
-        ${nav.map((l) => `<a class="nav__link" href="#${l.id}">${l.label}</a>`).join("")}
-        <a class="nav-cta nav-cta--block" href="${esc(p.contact.telegramUrl)}" target="_blank" rel="noopener noreferrer">Contact</a>
+        ${renderNavLinks(opts.nav)}
+        <a class="nav-cta nav-cta--block" href="${ctaHref}"${ctaExternal}>${ctaLabel}</a>
       </nav>
-    </div>
+    </div>`;
+}
+
+export function renderPage(p: Portfolio): string {
+  return `
+    ${renderSiteChrome(p, { mode: "portfolio", logoHref: "#top", nav: PORTFOLIO_NAV, showPrint: true })}
 
     <main id="main">
       <section id="top" class="hero">
@@ -276,8 +316,8 @@ export function renderPage(p: Portfolio): string {
         </div>
       </section>
 
-      <section id="studio" class="section section--studio">
-        ${renderStudioSection(p.chaosStudio)}
+      <section id="studio" class="section section--studio-teaser">
+        ${renderStudioTeaser(p.chaosStudio)}
       </section>
 
       <section id="contact" class="section section--contact">
@@ -327,10 +367,64 @@ export function renderPage(p: Portfolio): string {
   `;
 }
 
+export function renderStudioPage(p: Portfolio): string {
+  const studio = p.chaosStudio;
+  const sc = studio.studioContact;
+  return `
+    ${renderSiteChrome(p, { mode: "studio", logoHref: portfolioUrl(), nav: STUDIO_NAV, showPrint: false })}
+    <main id="main" class="page-studio">
+      <section class="studio-page-hero" aria-labelledby="studio-page-title">
+        <div class="studio-page-hero__glow" aria-hidden="true"></div>
+        <div class="studio-page-hero__inner" data-reveal>
+          <a class="studio-page-back" href="${portfolioUrl()}" data-route-link>
+            ${ICON_CHEVRON_LEFT}
+            <span>Back to portfolio</span>
+          </a>
+          <p class="eyebrow studio-page-hero__eyebrow">${esc(studio.tagline)}</p>
+          <h1 id="studio-page-title" class="studio-page-hero__title">${esc(studio.title)}</h1>
+          <p class="studio-page-hero__headline">${esc(studio.headline)}</p>
+          <p class="studio-page-hero__pitch lead">${esc(studio.pitch)}</p>
+          <div class="studio-page-hero__actions">
+            <a class="btn btn-primary" href="#packages" data-magnetic>View packages</a>
+            <a class="btn btn-ghost" href="${esc(sc.instagramUrl)}" target="_blank" rel="noopener noreferrer" data-magnetic>${esc(sc.instagram)}</a>
+          </div>
+        </div>
+      </section>
+      <div class="studio-page-body section section--studio">
+        ${renderStudioContent(studio, { omitHero: true })}
+      </div>
+    </main>
+    <footer class="site-footer site-footer--studio">
+      <p>© ${new Date().getFullYear()} ${esc(studio.title)} · Malé, Maldives</p>
+      <a href="${esc(sc.instagramUrl)}" target="_blank" rel="noopener noreferrer">${esc(sc.instagram)}</a>
+      · <a href="mailto:${esc(sc.email)}">${esc(sc.email)}</a>
+    </footer>
+  `;
+}
+
+function renderStudioTeaser(studio: ChaosStudio): string {
+  return `
+        <div class="studio-teaser" data-reveal>
+          <div class="studio-teaser__glow" aria-hidden="true"></div>
+          <div class="studio-teaser__inner">
+            <div class="studio-teaser__copy">
+              <p class="eyebrow">${esc(studio.tagline)}</p>
+              <h2 class="studio-teaser__title">${esc(studio.title)}</h2>
+              <p class="lead studio-teaser__pitch">${esc(studio.headline)}</p>
+              <p class="muted studio-teaser__hint">Services, packages, and studio contact — on a dedicated page.</p>
+            </div>
+            <div class="studio-teaser__actions">
+              <a class="btn btn-primary" href="${studioUrl()}" data-route-link data-magnetic>Explore Chaos Studio</a>
+              <a class="btn btn-ghost" href="${esc(studio.studioContact.instagramUrl)}" target="_blank" rel="noopener noreferrer">${esc(studio.studioContact.instagram)}</a>
+            </div>
+          </div>
+        </div>`;
+}
+
 type SocialPost = Portfolio["socialPosts"]["items"][0];
 type ChaosStudio = Portfolio["chaosStudio"];
 
-function renderStudioSection(studio: ChaosStudio): string {
+function renderStudioContent(studio: ChaosStudio, opts?: { omitHero?: boolean }): string {
   const services = studio.services
     .map((s) => `<span class="studio-service">${esc(s)}</span>`)
     .join("");
@@ -358,12 +452,16 @@ function renderStudioSection(studio: ChaosStudio): string {
     )
     .join("");
   const sc = studio.studioContact;
-  return `
+  const hero = opts?.omitHero
+    ? ""
+    : `
         <div class="studio-hero" data-reveal>
           <p class="eyebrow">${esc(studio.tagline)}</p>
           <h2 class="studio-hero__title">${esc(studio.headline)}</h2>
           <p class="studio-hero__pitch lead">${esc(studio.pitch)}</p>
-        </div>
+        </div>`;
+  return `
+        ${hero}
         <div class="studio-services" data-reveal aria-label="Services offered">
           ${services}
         </div>
@@ -376,7 +474,7 @@ function renderStudioSection(studio: ChaosStudio): string {
           <p class="lead">${esc(studio.description)}</p>
           <ul class="bullet-list">${studio.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul>
         </div>
-        <div class="studio-pricing" data-reveal>
+        <div class="studio-pricing" id="packages" data-reveal>
           <div class="section-head section-head--compact">
             <p class="eyebrow">Packages & pricing</p>
             <h3>Service packages</h3>
@@ -384,7 +482,7 @@ function renderStudioSection(studio: ChaosStudio): string {
           </div>
           <div class="studio-packages">${packages}</div>
         </div>
-        <div class="studio-contact glass-card" data-reveal>
+        <div class="studio-contact glass-card" id="studio-contact" data-reveal>
           <p class="studio-contact__cta">Let's create something bold!</p>
           <ul class="studio-contact__links">
             <li><a href="${esc(sc.instagramUrl)}" target="_blank" rel="noopener noreferrer">${esc(sc.instagram)}</a></li>
