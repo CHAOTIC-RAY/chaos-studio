@@ -1677,7 +1677,13 @@ body.route-studio {
 }
 .studio-page-hero__pitch {
   max-width: 44ch;
-  margin: 0 auto 1.5rem;
+  margin: 0 auto 1.15rem;
+}
+.studio-page-hero__services {
+  justify-content: center;
+  max-width: 40rem;
+  margin: 0 auto 1.35rem;
+  gap: 0.5rem;
 }
 .studio-page-hero__actions {
   display: flex;

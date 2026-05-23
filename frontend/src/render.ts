@@ -391,6 +391,9 @@ export function renderStudioPage(p: Portfolio): string {
           <h1 id="studio-page-title" class="studio-page-hero__title">${esc(studio.title)}</h1>
           <p class="studio-page-hero__headline">${esc(studio.headline)}</p>
           <p class="studio-page-hero__pitch lead">${esc(studio.pitch)}</p>
+          <div class="studio-services studio-page-hero__services" aria-label="Services we provide">
+            ${renderStudioServicePills(studio.services)}
+          </div>
           <div class="studio-page-hero__actions">
             <a class="btn btn-primary" href="#packages" data-magnetic>View packages</a>
             <a class="btn btn-ghost" href="${esc(sc.instagramUrl)}" target="_blank" rel="noopener noreferrer" data-magnetic>${esc(sc.instagram)}</a>
@@ -431,10 +434,12 @@ function renderStudioTeaser(studio: ChaosStudio): string {
 type SocialPost = Portfolio["socialPosts"]["items"][0];
 type ChaosStudio = Portfolio["chaosStudio"];
 
+function renderStudioServicePills(services: string[]): string {
+  return services.map((s) => `<span class="studio-service">${esc(s)}</span>`).join("");
+}
+
 function renderStudioContent(studio: ChaosStudio, opts?: { omitHero?: boolean }): string {
-  const services = studio.services
-    .map((s) => `<span class="studio-service">${esc(s)}</span>`)
-    .join("");
+  const services = renderStudioServicePills(studio.services);
   const whyUs = studio.whyUs
     .map(
       (w) => `

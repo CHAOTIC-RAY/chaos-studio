@@ -33,6 +33,10 @@ export const portfolio = {
       "Teaching design fundamentals alongside client work",
     ],
     services: [
+      "Interior designing",
+      "Architecture",
+      "App designing",
+      "Website designing",
       "Branding & logo design",
       "Jersey design",
       "Marketing videos",
