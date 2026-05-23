@@ -137,22 +137,23 @@ h2 { font-size: clamp(2rem, 4vw, 3rem); }
 
 .bg-dither--studio {
   opacity: var(--dither-opacity-studio);
-  mix-blend-mode: overlay;
+  mix-blend-mode: soft-light;
   background-size: 2px 2px;
   animation: dither-shift 12s linear infinite;
+  background-position: calc(var(--bg-mx, 50%) - 50%) calc(var(--bg-my, 38%) - 38%);
 }
 
 .bg-dither-noise {
   position: absolute;
   inset: 0;
   opacity: var(--dither-noise-opacity-studio);
-  mix-blend-mode: hard-light;
+  mix-blend-mode: soft-light;
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.35' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.85'/%3E%3C/svg%3E");
   background-size: 180px 180px;
   image-rendering: pixelated;
   animation: noise-drift 8s steps(6) infinite;
-  mask-image: radial-gradient(ellipse 70% 55% at 50% 38%, transparent 0%, transparent 22%, #000 72%);
+  mask-image: radial-gradient(ellipse 52% 48% at var(--bg-mx, 50%) var(--bg-my, 38%), #000 0%, #000 38%, transparent 72%);
 }
 
 .bg-grain {
@@ -170,17 +171,7 @@ h2 { font-size: clamp(2rem, 4vw, 3rem); }
 }
 
 .bg-logo-glow {
-  position: absolute;
-  left: 50%;
-  top: 38%;
-  width: min(52vmax, 28rem);
-  height: min(52vmax, 28rem);
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(213, 119, 237, 0.35) 0%, rgba(78, 19, 112, 0.12) 42%, transparent 68%);
-  filter: blur(28px);
-  opacity: 0.9;
-  pointer-events: none;
+  display: none;
 }
 
 @keyframes dither-shift {
@@ -1463,9 +1454,36 @@ body.lightbox-open {
   gap: 0.65rem;
 }
 
-/* Chaos Studio — dedicated page */
+/* Chaos Studio — dedicated page (always deep dark canvas + UI) */
+body.route-studio {
+  color-scheme: dark;
+  --bg: #0a0810;
+  --bg-deep: #06050a;
+  --card: rgba(40, 24, 48, 0.82);
+  --text: #f0ecf4;
+  --muted: #a8a0b0;
+  --border: rgba(213, 119, 237, 0.18);
+  --header-scrolled-bg: rgba(10, 8, 16, 0.9);
+  --dither-opacity-studio: 0.38;
+  --dither-noise-opacity-studio: 0.28;
+  --grain-opacity-studio: 0.12;
+}
+.route-studio .bg-layers--studio {
+  background: radial-gradient(ellipse 90% 70% at var(--bg-mx, 50%) var(--bg-my, 38%), rgba(78, 19, 112, 0.35) 0%, transparent 55%),
+    var(--bg-deep);
+}
+.route-studio .bg-dither--studio {
+  mix-blend-mode: screen;
+  opacity: 0.32;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='2' height='2' fill='%23d577ed' opacity='0.45'/%3E%3Crect x='4' width='2' height='2' fill='%234e1370' opacity='0.35'/%3E%3Crect x='2' y='4' width='2' height='2' fill='%23a848c6' opacity='0.4'/%3E%3Crect x='6' y='4' width='2' height='2' fill='%231a1220' opacity='0.5'/%3E%3C/svg%3E");
+}
 .route-studio .site-header--studio .logo-text {
   color: var(--purple-bright);
+}
+.route-studio [data-theme-toggle] {
+  opacity: 0.45;
+  pointer-events: none;
+  cursor: default;
 }
 .route-studio #main,
 .route-studio .studio-page-body {
@@ -1528,6 +1546,8 @@ body.lightbox-open {
 .studio-page-logo__mark {
   position: relative;
   z-index: 1;
+  transform: translate(calc(var(--logo-mx, 0) * 1px), calc(var(--logo-my, 0) * 1px));
+  transition: transform 0.12s ease-out;
 }
 .logo-mark-svg--studio-hero {
   width: 100%;
@@ -1535,17 +1555,7 @@ body.lightbox-open {
   color: var(--purple-bright);
 }
 .studio-page-logo__dither-ring {
-  position: absolute;
-  inset: -35%;
-  border-radius: 50%;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='2' height='2' fill='%23d577ed' opacity='0.35'/%3E%3Crect x='4' width='2' height='2' fill='%23fff' opacity='0.15'/%3E%3Crect x='2' y='4' width='2' height='2' fill='%23fff' opacity='0.5'/%3E%3Crect x='6' y='4' width='2' height='2' fill='%23d577ed' opacity='0.2'/%3E%3C/svg%3E");
-  background-size: 3px 3px;
-  image-rendering: pixelated;
-  opacity: 0.85;
-  mix-blend-mode: overlay;
-  animation: dither-shift 6s linear infinite;
-  mask-image: radial-gradient(circle, #000 35%, transparent 72%);
-  pointer-events: none;
+  display: none;
 }
 .studio-page-hero__eyebrow {
   margin-bottom: 0.5rem;

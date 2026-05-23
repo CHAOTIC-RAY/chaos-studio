@@ -15,6 +15,8 @@ export function initMouseEffects(): () => void {
     initParallax(),
     initShowcaseTilt(),
     initHeroParallax(),
+    initStudioBackgroundParallax(),
+    initStudioHeroLogoParallax(),
   ];
 
   return () => {
@@ -97,6 +99,37 @@ function initParallax(): () => void {
       const depth = Number(el.dataset.parallax) || 12;
       el.style.transform = `translate(${dx * depth}px, ${dy * depth}px)`;
     });
+    raf = requestAnimationFrame(loop);
+  };
+  raf = requestAnimationFrame(loop);
+  return () => cancelAnimationFrame(raf);
+}
+
+/** Moves studio CSS dither mask / noise with pointer (pairs with canvas logo glow). */
+function initStudioBackgroundParallax(): () => void {
+  const layers = document.querySelector<HTMLElement>(".bg-layers--studio");
+  if (!layers) return () => {};
+
+  let raf = 0;
+  const loop = () => {
+    const { x, y } = getSmoothMouse();
+    layers.style.setProperty("--bg-mx", `${x * 100}%`);
+    layers.style.setProperty("--bg-my", `${y * 100}%`);
+    raf = requestAnimationFrame(loop);
+  };
+  raf = requestAnimationFrame(loop);
+  return () => cancelAnimationFrame(raf);
+}
+
+function initStudioHeroLogoParallax(): () => void {
+  const mark = document.querySelector<HTMLElement>(".studio-page-logo__mark");
+  if (!mark) return () => {};
+
+  let raf = 0;
+  const loop = () => {
+    const { x, y } = getSmoothMouse();
+    mark.style.setProperty("--logo-mx", String((x - 0.5) * 14));
+    mark.style.setProperty("--logo-my", String((y - 0.5) * 12));
     raf = requestAnimationFrame(loop);
   };
   raf = requestAnimationFrame(loop);
