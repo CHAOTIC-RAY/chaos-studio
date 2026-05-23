@@ -6,7 +6,9 @@ import type { Theme } from "../theme";
 import { applyBayerDither, type DitherProfile } from "./dither";
 
 const DITHER_SCALE_DEFAULT = 0.4;
-const DITHER_SCALE_STUDIO = 0.32;
+const DITHER_SCALE_STUDIO = 0.2;
+const STUDIO_MAX_DPR = 1.25;
+const STUDIO_FRAME_MS = 36;
 
 const BLOB_PALETTES: Record<Theme, [string, string, string]> = {
   light: [
@@ -69,8 +71,8 @@ function drawStudioLogoAt(
   solidFill: boolean,
 ): void {
   const path = getChaosLogoPath();
-  const pulse = 1 + Math.sin(time * 0.0014) * 0.035;
-  const wobble = Math.sin(time * 0.00075) * 0.012;
+  const pulse = 1 + Math.sin(time * 0.001) * 0.02;
+  const wobble = Math.sin(time * 0.0005) * 0.006;
   const fit = (Math.min(target.canvas.width, target.canvas.height) * 0.62) / CHAOS_LOGO_VIEWBOX.h;
   const s = fit * pulse * scaleMul;
 
@@ -200,9 +202,13 @@ export function initCanvasBackground(): () => void {
   let bw = 0;
   let bh = 0;
   let raf = 0;
+  let lastStudioDraw = 0;
+  let lastStudioKey = "";
+  let studioCleared = false;
 
   const resize = () => {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const studio = isStudioRoute();
+    const dpr = Math.min(window.devicePixelRatio || 1, studio ? STUDIO_MAX_DPR : 2);
     w = window.innerWidth;
     h = window.innerHeight;
     canvas.width = w * dpr;
@@ -211,7 +217,7 @@ export function initCanvasBackground(): () => void {
     canvas.style.height = `${h}px`;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    const scale = isStudioRoute() ? DITHER_SCALE_STUDIO : DITHER_SCALE_DEFAULT;
+    const scale = studio ? DITHER_SCALE_STUDIO : DITHER_SCALE_DEFAULT;
     bw = Math.max(1, Math.floor(w * scale));
     bh = Math.max(1, Math.floor(h * scale));
     buffer.width = bw;
@@ -265,20 +271,50 @@ export function initCanvasBackground(): () => void {
     const theme = currentTheme();
 
     if (studio) {
-      const { x: mx, y: my } = studioPointerTarget(time);
+      if (document.hidden) {
+        raf = requestAnimationFrame(draw);
+        return;
+      }
+
       const scroll = getStudioScrollState();
+      const visible = scroll.reveal > 0.004 || scroll.fill > 0.004;
+
+      if (!visible) {
+        if (!studioCleared) {
+          ctx.clearRect(0, 0, w, h);
+          studioCleared = true;
+        }
+        raf = requestAnimationFrame(draw);
+        return;
+      }
+      studioCleared = false;
+
+      const scrollKey = `${scroll.reveal.toFixed(3)}|${scroll.scale.toFixed(2)}|${scroll.fill.toFixed(3)}|${scroll.finale.toFixed(3)}`;
+      const pointer = studioPointerTarget(time);
+      const pointerKey = `${pointer.x.toFixed(2)}|${pointer.y.toFixed(2)}`;
+      const drawKey = `${scrollKey}|${pointerKey}`;
+      const due = time - lastStudioDraw >= STUDIO_FRAME_MS;
+
+      if (!due && drawKey === lastStudioKey) {
+        raf = requestAnimationFrame(draw);
+        return;
+      }
+      lastStudioDraw = time;
+      lastStudioKey = drawKey;
+
+      const { x: mx, y: my } = pointer;
       bctx.clearRect(0, 0, bw, bh);
       drawStudioLogoGlow(bctx, bw, bh, time, mx, my, theme);
       const ditherReveal = scroll.reveal * (1 - scroll.fill * 0.7) + scroll.fill * 0.35;
       if (ditherReveal > 0.02) {
         applyBayerDither(bctx, bw, bh, {
           profile,
-          strength: (theme === "dark" ? 0.62 : 0.48) * ditherReveal,
-          noise: 0.68 * ditherReveal,
-          vignetteNoise: true,
+          lite: true,
+          strength: (theme === "dark" ? 0.52 : 0.4) * ditherReveal,
+          noise: 0.45 * ditherReveal,
+          vignetteNoise: false,
           cx: mx,
           cy: my + scroll.finale * 0.15,
-          time,
         });
       }
     } else {

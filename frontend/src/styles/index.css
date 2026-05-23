@@ -1548,29 +1548,40 @@ body.lightbox-open {
 /* Chaos Studio — dedicated page (always deep dark canvas + UI) */
 body.route-studio {
   color-scheme: dark;
-  --bg: #0a0810;
-  --bg-deep: #06050a;
-  --card: rgba(40, 24, 48, 0.82);
+  --bg: #040308;
+  --bg-deep: #020106;
+  --card: rgba(28, 16, 36, 0.88);
   --text: #f0ecf4;
-  --muted: #a8a0b0;
-  --border: rgba(213, 119, 237, 0.18);
-  --header-scrolled-bg: rgba(10, 8, 16, 0.9);
-  --dither-opacity-studio: 0.38;
-  --dither-noise-opacity-studio: 0.28;
-  --grain-opacity-studio: 0.12;
+  --muted: #9a92a4;
+  --border: rgba(213, 119, 237, 0.14);
+  --header-scrolled-bg: rgba(4, 3, 8, 0.92);
+  --dither-opacity-studio: 0.2;
+  --dither-noise-opacity-studio: 0;
+  --grain-opacity-studio: 0.05;
   --studio-logo-reveal: 0;
   --studio-logo-scale: 0.48;
   --studio-logo-fill: 0;
   --studio-finale: 0;
 }
 .route-studio .bg-layers--studio {
-  background: radial-gradient(ellipse 90% 70% at var(--bg-mx, 50%) var(--bg-my, 38%), rgba(78, 19, 112, 0.35) 0%, transparent 55%),
+  background: radial-gradient(ellipse 88% 68% at var(--bg-mx, 50%) var(--bg-my, 38%), rgba(62, 14, 92, 0.22) 0%, transparent 52%),
     var(--bg-deep);
 }
 .route-studio .bg-dither--studio {
-  mix-blend-mode: screen;
-  opacity: 0.32;
+  mix-blend-mode: soft-light;
+  opacity: 0.22;
+  animation: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='2' height='2' fill='%23d577ed' opacity='0.45'/%3E%3Crect x='4' width='2' height='2' fill='%234e1370' opacity='0.35'/%3E%3Crect x='2' y='4' width='2' height='2' fill='%23a848c6' opacity='0.4'/%3E%3Crect x='6' y='4' width='2' height='2' fill='%231a1220' opacity='0.5'/%3E%3C/svg%3E");
+}
+.route-studio .bg-dither-noise {
+  display: none;
+}
+.route-studio #bg-canvas {
+  opacity: 0.92;
+}
+.route-studio .studio-page-body > *:not(.studio-finale) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 480px;
 }
 .route-studio .site-header--studio .logo-text {
   color: var(--purple-bright);

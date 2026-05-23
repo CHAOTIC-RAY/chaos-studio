@@ -46,6 +46,15 @@ function lerpState(a: StudioScrollState, b: StudioScrollState, t: number): Studi
   };
 }
 
+function stateDelta(a: StudioScrollState, b: StudioScrollState): number {
+  return (
+    Math.abs(a.reveal - b.reveal) +
+    Math.abs(a.scale - b.scale) * 0.08 +
+    Math.abs(a.fill - b.fill) +
+    Math.abs(a.finale - b.finale)
+  );
+}
+
 function applyCssVars(s: StudioScrollState): void {
   const root = document.documentElement;
   root.style.setProperty("--studio-logo-reveal", s.reveal.toFixed(4));
@@ -84,7 +93,8 @@ export function initStudioScrollEffect(): () => void {
 
   let measureRaf = 0;
   let smoothRaf = 0;
-  const SMOOTH_RATE = 0.065;
+  const SMOOTH_RATE = 0.11;
+  const SETTLE_EPS = 0.0015;
 
   const measureTarget = () => {
     const scrollY = window.scrollY;
@@ -118,20 +128,34 @@ export function initStudioScrollEffect(): () => void {
     target = { reveal, scale, fill, finale: finaleProgress };
   };
 
+  const ensureSmoothLoop = () => {
+    if (!smoothRaf) smoothRaf = requestAnimationFrame(smoothTick);
+  };
+
   const smoothTick = () => {
+    smoothRaf = 0;
     current = lerpState(current, target, SMOOTH_RATE);
     state = current;
     applyCssVars(current);
-    smoothRaf = requestAnimationFrame(smoothTick);
+
+    if (stateDelta(current, target) > SETTLE_EPS) {
+      smoothRaf = requestAnimationFrame(smoothTick);
+    }
   };
 
   const onScroll = () => {
     cancelAnimationFrame(measureRaf);
-    measureRaf = requestAnimationFrame(measureTarget);
+    measureRaf = requestAnimationFrame(() => {
+      measureTarget();
+      ensureSmoothLoop();
+    });
   };
 
   measureTarget();
-  smoothRaf = requestAnimationFrame(smoothTick);
+  applyCssVars(target);
+  current = { ...target };
+  state = current;
+  ensureSmoothLoop();
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", onScroll, { passive: true });
 

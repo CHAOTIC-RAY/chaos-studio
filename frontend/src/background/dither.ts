@@ -23,6 +23,8 @@ export type DitherOptions = {
   cy?: number;
   /** Animated dither phase (ms) — studio logo shimmer */
   time?: number;
+  /** Faster path: 4×4 Bayer, no time animation, single noise pass */
+  lite?: boolean;
 };
 
 function bayerThreshold(x: number, y: number, size: 4 | 8): number {
@@ -54,15 +56,16 @@ export function applyBayerDither(
     typeof strengthOrOptions === "number" ? { strength: strengthOrOptions } : strengthOrOptions;
 
   const profile = opts.profile ?? "default";
+  const lite = opts.lite === true;
   const strength = opts.strength ?? (profile === "studio" ? 0.42 : 0.22);
   const noise = opts.noise ?? (profile === "studio" ? 0.55 : 0.08);
-  const vignette = opts.vignetteNoise ?? profile === "studio";
+  const vignette = opts.vignetteNoise ?? (profile === "studio" && !lite);
   const cx = opts.cx ?? 0.5;
   const cy = opts.cy ?? 0.42;
-  const matrix: 4 | 8 = profile === "studio" ? 8 : 4;
+  const matrix: 4 | 8 = lite || profile !== "studio" ? 4 : 8;
   const seed = profile === "studio" ? 9137 : 42;
   const timePhase = opts.time ?? 0;
-  const animate = profile === "studio" && timePhase > 0;
+  const animate = !lite && profile === "studio" && timePhase > 0;
 
   const imageData = ctx.getImageData(0, 0, width, height);
   const data = imageData.data;
@@ -85,7 +88,10 @@ export function applyBayerDither(
       const ty = animate ? y + Math.floor(timePhase * 0.03) : y;
       const ordered = bayerThreshold(tx, ty, matrix);
       const grain = (hashNoise(tx, ty, seed + Math.floor(timePhase * 0.02)) - 0.5) * 2;
-      const grain2 = profile === "studio" ? (hashNoise(tx * 3 + 7, ty * 5 + 11, seed + 3 + Math.floor(timePhase * 0.015)) - 0.5) * 1.2 : 0;
+      const grain2 =
+        profile === "studio" && !lite
+          ? (hashNoise(tx * 3 + 7, ty * 5 + 11, seed + 3 + Math.floor(timePhase * 0.015)) - 0.5) * 1.2
+          : 0;
       const noiseMix = (ordered * (1 - noise * 0.65) + grain * noise + grain2 * noise * 0.45) * (0.65 + edge * 0.55);
 
       const shift = noiseMix * strength * 255;

@@ -1,23 +1,30 @@
 import { prefersReducedMotion } from "../motion/reduced-motion";
 import { getSmoothMouse, initMouseState, mouse } from "./mouse-state";
 
+function isStudioRoute(): boolean {
+  return document.body.classList.contains("route-studio");
+}
+
 export function initMouseEffects(): () => void {
   if (prefersReducedMotion() || !window.matchMedia("(pointer: fine)").matches) {
     return () => {};
   }
 
-  document.body.classList.add("has-pointer-fx");
+  const studio = isStudioRoute();
+  if (!studio) document.body.classList.add("has-pointer-fx");
 
-  const cleanups: (() => void)[] = [
-    initMouseState(),
-    initCursor(),
-    initSpotlight(),
-    initParallax(),
-    initShowcaseTilt(),
-    initHeroParallax(),
-    initStudioBackgroundParallax(),
-    initStudioHeroLogoParallax(),
-  ];
+  const cleanups: (() => void)[] = [initMouseState()];
+
+  if (studio) {
+    cleanups.push(initStudioBackgroundParallax());
+    cleanups.push(initStudioHeroLogoParallax());
+  } else {
+    cleanups.push(initCursor());
+    cleanups.push(initSpotlight());
+    cleanups.push(initParallax());
+    cleanups.push(initShowcaseTilt());
+    cleanups.push(initHeroParallax());
+  }
 
   return () => {
     document.body.classList.remove("has-pointer-fx");
@@ -105,20 +112,28 @@ function initParallax(): () => void {
   return () => cancelAnimationFrame(raf);
 }
 
-/** Moves studio CSS dither mask / noise with pointer (pairs with canvas logo glow). */
+/** Studio: update CSS parallax on pointer move only (no perpetual RAF). */
 function initStudioBackgroundParallax(): () => void {
   const layers = document.querySelector<HTMLElement>(".bg-layers--studio");
   if (!layers) return () => {};
 
   let raf = 0;
-  const loop = () => {
+  const apply = () => {
+    raf = 0;
     const { x, y } = getSmoothMouse();
     layers.style.setProperty("--bg-mx", `${x * 100}%`);
     layers.style.setProperty("--bg-my", `${y * 100}%`);
-    raf = requestAnimationFrame(loop);
   };
-  raf = requestAnimationFrame(loop);
-  return () => cancelAnimationFrame(raf);
+  const schedule = () => {
+    if (!raf) raf = requestAnimationFrame(apply);
+  };
+
+  window.addEventListener("mousemove", schedule, { passive: true });
+  apply();
+  return () => {
+    cancelAnimationFrame(raf);
+    window.removeEventListener("mousemove", schedule);
+  };
 }
 
 function initStudioHeroLogoParallax(): () => void {
@@ -126,14 +141,22 @@ function initStudioHeroLogoParallax(): () => void {
   if (!mark) return () => {};
 
   let raf = 0;
-  const loop = () => {
+  const apply = () => {
+    raf = 0;
     const { x, y } = getSmoothMouse();
-    mark.style.setProperty("--logo-mx", String((x - 0.5) * 14));
-    mark.style.setProperty("--logo-my", String((y - 0.5) * 12));
-    raf = requestAnimationFrame(loop);
+    mark.style.setProperty("--logo-mx", String((x - 0.5) * 10));
+    mark.style.setProperty("--logo-my", String((y - 0.5) * 8));
   };
-  raf = requestAnimationFrame(loop);
-  return () => cancelAnimationFrame(raf);
+  const schedule = () => {
+    if (!raf) raf = requestAnimationFrame(apply);
+  };
+
+  window.addEventListener("mousemove", schedule, { passive: true });
+  apply();
+  return () => {
+    cancelAnimationFrame(raf);
+    window.removeEventListener("mousemove", schedule);
+  };
 }
 
 function initHeroParallax(): () => void {
