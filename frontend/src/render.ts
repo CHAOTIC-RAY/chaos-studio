@@ -14,6 +14,7 @@ import {
   ICON_TELEGRAM,
 } from "./icons";
 import { renderToolTag } from "./skill-icons";
+import { studioPackageIcon } from "./studio-package-icons";
 import { renderWorkMarquee } from "./render-work-marquee";
 
 type DeviceMedia = { image: string; frames?: string[] };
@@ -451,15 +452,21 @@ function renderStudioPackage(pkg: Portfolio["chaosStudio"]["packages"][0]): stri
   const badge = pkg.recommended
     ? `<span class="studio-package__badge">Recommended</span>`
     : "";
+  const icon = studioPackageIcon(pkg.id);
   return `
         <article class="studio-package ${pkg.recommended ? "studio-package--recommended" : ""}" data-package-id="${esc(pkg.id)}">
           <div class="studio-package__glow" aria-hidden="true"></div>
           <header class="studio-package__header">
-            <div class="studio-package__title-row">
-              <h3 class="studio-package__name">${esc(pkg.name)}</h3>
-              ${badge}
+            <div class="studio-package__identity">
+              <span class="studio-package__icon studio-package__icon--${esc(pkg.id)}">${icon}</span>
+              <div class="studio-package__intro">
+                <div class="studio-package__title-row">
+                  <h3 class="studio-package__name">${esc(pkg.name)}</h3>
+                  ${badge}
+                </div>
+                <p class="studio-package__tagline">${esc(pkg.tagline)}</p>
+              </div>
             </div>
-            <p class="studio-package__tagline">${esc(pkg.tagline)}</p>
             <p class="studio-package__meta">${pkg.features.length} deliverables included</p>
           </header>
           <ul class="studio-package__features" role="list">
