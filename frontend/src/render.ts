@@ -894,10 +894,14 @@ function renderProject(proj: Portfolio["featuredWork"]["projects"][0], index: nu
   if (media.desktop) devices.push(renderBrowserFrame(media.desktop, proj.name, liveUrl, proj.href, logo));
   if (media.mobile) devices.push(renderPhoneFrame(media.mobile, proj.name, logo));
 
+  const deviceInner =
+    devices.length > 1
+      ? `<div class="work-showcase__composition">${devices.join("")}</div>`
+      : devices.join("");
   const deviceBlock =
     devices.length > 0
       ? `<div class="work-showcase__devices ${devices.length > 1 ? "work-showcase__devices--dual" : "work-showcase__devices--solo"}" data-tilt-showcase>
-          ${devices.join("")}
+          ${deviceInner}
         </div>`
       : `<div class="work-showcase__devices work-showcase__devices--placeholder"><span>${esc(proj.name)}</span></div>`;
 

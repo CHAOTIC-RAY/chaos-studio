@@ -1841,11 +1841,11 @@ body.route-studio {
 }
 .work-showcase__glow {
   position: absolute;
-  inset: -20% -10% auto;
-  height: 70%;
+  inset: -8% -5% auto;
+  height: 52%;
   pointer-events: none;
-  opacity: 0.55;
-  filter: blur(60px);
+  opacity: 0.5;
+  filter: blur(48px);
   background: var(--showcase-glow, radial-gradient(circle, rgba(213, 119, 237, 0.35), transparent 70%));
 }
 .work-showcase__stage {
@@ -1865,11 +1865,10 @@ body.route-studio {
 .work-showcase__devices {
   position: relative;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
-  gap: clamp(0.75rem, 2vw, 1.5rem);
-  padding: clamp(1.5rem, 4vw, 2.5rem);
-  min-height: 280px;
+  padding: clamp(0.85rem, 2vw, 1.35rem);
+  min-height: 0;
   transform: perspective(1100px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
   transform-style: preserve-3d;
   will-change: transform;
@@ -1880,6 +1879,34 @@ body.route-studio {
 }
 .work-showcase__devices--solo {
   justify-content: center;
+}
+.work-showcase__composition {
+  position: relative;
+  width: min(100%, 440px);
+  margin: 0 auto;
+  line-height: 0;
+}
+.work-showcase__devices--dual {
+  padding: clamp(0.75rem, 2vw, 1.15rem) clamp(0.65rem, 2vw, 1rem);
+}
+.work-showcase__devices--dual .work-showcase__composition {
+  width: min(100%, 400px);
+}
+.work-showcase__devices--dual .device--browser {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 100%;
+  flex: none;
+}
+.work-showcase__devices--dual .device--phone {
+  position: absolute;
+  right: 2%;
+  bottom: -2%;
+  width: clamp(96px, 26%, 132px);
+  z-index: 3;
+  margin: 0;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
 }
 .work-showcase__devices--placeholder {
   color: var(--muted);
@@ -2040,18 +2067,18 @@ body.route-studio {
 .device { flex-shrink: 0; }
 .device--browser {
   flex: 1;
-  max-width: min(100%, 520px);
-  border-radius: 14px;
+  max-width: min(100%, 480px);
+  border-radius: 12px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
   background: #1c1c22;
 }
 .device__chrome {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  padding: 0.55rem 0.85rem;
+  gap: 0.5rem;
+  padding: 0.4rem 0.65rem;
   background: linear-gradient(180deg, #2a2a32, #1e1e26);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -2116,13 +2143,25 @@ body.route-studio {
   aspect-ratio: 16 / 10;
   overflow: hidden;
   background: #0e0e12;
+  line-height: 0;
 }
-.device--browser .device__screen .device__media {
+.device--browser .device__screen .device__media,
+.device--browser .device__screen .device__slide {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   object-position: top center;
   background: #0e0e12;
+  display: block;
+}
+.work-showcase .device--browser .device__screen {
+  aspect-ratio: 16 / 9;
+}
+.work-showcase .device--browser .device__screen .device__carousel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 .device--phone {
   width: clamp(108px, 24vw, 148px);
@@ -2587,17 +2626,23 @@ main { position: relative; z-index: 1; }
   }
   .scroll-cue { display: none; }
   .work-showcase__devices {
-    flex-direction: column;
-    align-items: center;
-    min-height: auto;
-    padding: 1.25rem 1rem;
+    padding: 0.85rem 0.75rem;
+  }
+  .work-showcase__composition,
+  .work-showcase__devices--dual .work-showcase__composition {
+    width: min(100%, 340px);
+  }
+  .work-showcase__devices--dual .device--phone {
+    width: clamp(82px, 30%, 108px);
+    right: 0;
+    bottom: -1%;
   }
   .device--browser {
     max-width: 100%;
     width: 100%;
   }
-  .device--phone {
-    width: clamp(90px, 32vw, 120px);
+  .work-showcase__devices--solo .device--phone {
+    width: clamp(100px, 36vw, 130px);
   }
   .work-showcase__panel {
     padding: 1.15rem 1rem 1.35rem;
