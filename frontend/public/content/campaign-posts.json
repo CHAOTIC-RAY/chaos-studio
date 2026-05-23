@@ -203,23 +203,20 @@
       "id": "expressshipping-03",
       "platform": "Instagram",
       "client": "Express Shipping MV",
-      "title": "Brand reminder post",
-      "description": "I designed this minimal logo-led post for Express Shipping MV to keep the brand visible between larger campaigns without heavy copy.",
+      "title": "Brand lockup — land, air & sea",
+      "description": "I designed this logo-led frame for Express Shipping MV using the centre panel from their pinned banner—the mark, land/air/sea line, and brand colours without the full ship panorama.",
       "tags": [
         "Logistics",
         "Branding"
       ],
-      "accent": "teal",
-      "slides": [
-        "slide-01"
-      ]
+      "accent": "teal"
     },
     {
       "id": "expressshipping-04",
       "platform": "Instagram",
       "client": "Express Shipping MV",
       "title": "Freight inquiry CTA — carousel",
-      "description": "I built this three-slide carousel for Express Shipping MV to push freight enquiries with bold headlines and repeated phone and social contact paths.",
+      "description": "I built this three-slide carousel for Express Shipping MV: a CTA opener, a rates/offer frame, and a bow contact panel so each swipe adds something new for freight enquiries.",
       "tags": [
         "Logistics",
         "CTA"
