@@ -208,7 +208,10 @@
         "Logistics",
         "Branding"
       ],
-      "accent": "teal"
+      "accent": "teal",
+      "slides": [
+        "slide-01"
+      ]
     },
     {
       "id": "expressshipping-04",
@@ -220,7 +223,12 @@
         "Logistics",
         "CTA"
       ],
-      "accent": "teal"
+      "accent": "teal",
+      "slides": [
+        "slide-01",
+        "slide-02",
+        "slide-03"
+      ]
     },
     {
       "id": "fottcalm-01",
