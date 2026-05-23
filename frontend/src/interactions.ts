@@ -15,6 +15,7 @@ export function initInteractions(): () => void {
   cleanups.push(initPostImageFallback());
   cleanups.push(initPostVideos());
   cleanups.push(initPostCarousels());
+  cleanups.push(initPostFilmstripCounters());
   cleanups.push(initPostLightbox());
   return () => cleanups.forEach((fn) => fn());
 }
@@ -33,12 +34,14 @@ function initPostCarousels(): () => void {
     carousel.classList.add("post-card__carousel--js");
 
     let index = 0;
+    const counter = carousel.querySelector<HTMLElement>("[data-slide-counter]");
     const setActive = (next: number) => {
       slides.forEach((slide, i) => {
         slide.classList.toggle("is-active", i === next);
         slide.style.opacity = i === next ? "1" : "0";
         slide.style.zIndex = i === next ? "1" : "0";
       });
+      if (counter) counter.textContent = `${next + 1} / ${slides.length}`;
     };
 
     setActive(0);
@@ -59,6 +62,46 @@ function initPostCarousels(): () => void {
     start();
     cleanups.push(observeInView(carousel, start, stop, 0.12));
     cleanups.push(stop);
+  });
+
+  return () => cleanups.forEach((fn) => fn());
+}
+
+function initPostFilmstripCounters(): () => void {
+  const cleanups: (() => void)[] = [];
+
+  document.querySelectorAll<HTMLElement>("[data-filmstrip]").forEach((wrap) => {
+    const track = wrap.querySelector<HTMLElement>(".post-card__filmstrip-track");
+    const counter = wrap.querySelector<HTMLElement>("[data-slide-counter]");
+    const slides = track
+      ? Array.from(track.querySelectorAll<HTMLElement>(".post-card__filmstrip-slide"))
+      : [];
+    if (!track || !counter || slides.length < 2) return;
+
+    let raf = 0;
+    const update = () => {
+      const center = track.scrollLeft + track.clientWidth * 0.35;
+      let best = 0;
+      let bestDist = Infinity;
+      slides.forEach((slide, i) => {
+        const dist = Math.abs(slide.offsetLeft - center);
+        if (dist < bestDist) {
+          bestDist = dist;
+          best = i;
+        }
+      });
+      counter.textContent = `${best + 1} / ${slides.length}`;
+    };
+
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(update);
+    };
+
+    track.addEventListener("scroll", onScroll, { passive: true });
+    update();
+    cleanups.push(() => track.removeEventListener("scroll", onScroll));
+    cleanups.push(() => cancelAnimationFrame(raf));
   });
 
   return () => cleanups.forEach((fn) => fn());

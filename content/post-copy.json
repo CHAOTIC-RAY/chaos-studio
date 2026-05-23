@@ -1,222 +1,237 @@
 {
   "ayha-01": {
-    "title": "Resort & consultancy campaign set",
-    "description": "Ten-slide carousel covering offers, property highlights, and consultancy branding for Ayha Maldives with consistent tropical color and clear CTAs.",
+    "title": "Ayha Maldives — full campaign carousel",
+    "description": "A ten-slide Instagram set for Ayha’s resort and consultancy arm: package hooks, island visuals, and consultancy proof points in one tropical palette so followers can scan offers and book without leaving the feed.",
     "tags": ["Carousel", "Tourism", "Hospitality"]
   },
   "ayha-02": {
-    "title": "Offer highlight frame",
-    "description": "Single promo frame with bold pricing and package details aimed at driving DMs and bookings.",
+    "title": "Limited-time resort offer",
+    "description": "Single-frame promo with headline pricing and inclusions sized for saves and DMs—built to convert warm traffic from the main carousel.",
     "tags": ["Promo", "Tourism"]
   },
   "ayha-03": {
-    "title": "Brand touchpoint graphic",
-    "description": "Clean layout reinforcing Ayha’s visual identity and contact paths for Maldives hospitality clients.",
+    "title": "Brand & contact lockup",
+    "description": "Identity-forward graphic that reinforces Ayha’s mark, tone, and direct contact paths for hospitality enquiries in the Maldives.",
     "tags": ["Branding", "Hospitality"]
   },
   "aysh-saloon-01": {
-    "title": "Custom kit & neon promo",
-    "description": "High-energy sports-meets-salon graphic with neon grid, jersey mockup, and WhatsApp ordering CTA.",
+    "title": "Custom kit — neon sports collab",
+    "description": "High-contrast salon promo pairing a jersey mockup with neon grid art and a WhatsApp order line for limited custom kits.",
     "tags": ["Promo", "Sports collab"]
   },
   "aysh-saloon-02": {
     "title": "Relaxation Trio — MVR 500",
-    "description": "Package flyer listing three bundled services (cut, blowdry, massage options) with hero portrait and salon hotline.",
+    "description": "Package board listing three bundled services with hero portrait, clear MVR pricing, and the salon hotline for same-day bookings.",
     "tags": ["Packages", "Beauty"]
   },
   "aysh-saloon-03": {
-    "title": "Skincare tips — oily & dry skin",
-    "description": "Educational split layout with routine tips for oily vs dry skin types and soft beauty photography.",
+    "title": "Skincare routines — oily vs dry",
+    "description": "Educational split card with practical tips for oily and dry skin, soft beauty photography, and room for product callouts.",
     "tags": ["Education", "Skincare"]
   },
   "choparts-01": {
-    "title": "Parts & service carousel",
-    "description": "Eight-slide set showcasing Choparts offers, vehicle visuals, and sale messaging for the Maldives auto audience.",
+    "title": "Choparts — parts & service carousel",
+    "description": "Eight-slide set for Maldives drivers: vehicle highlights, parts offers, and service reminders with bold sale typography and brand yellow.",
     "tags": ["Carousel", "Automotive"]
   },
   "digital-dive-01": {
-    "title": "Agency campaign frame 1",
-    "description": "Bold social graphic for Digital Dive client work with strong headline hierarchy and brand color blocking.",
+    "title": "Digital Dive — campaign opener",
+    "description": "Lead frame for a Facebook series: oversized headline, agency color blocks, and hierarchy tuned for thumb-stopping mobile feed placement.",
     "tags": ["Agency", "Campaign"]
   },
   "digital-dive-02": {
-    "title": "Agency campaign frame 2",
-    "description": "Follow-up creative highlighting service value and scroll-stopping contrast for feed placement.",
+    "title": "Digital Dive — value proposition",
+    "description": "Second frame stressing client outcomes and service clarity with high contrast type and restrained imagery.",
     "tags": ["Agency", "Campaign"]
   },
   "digital-dive-03": {
-    "title": "Agency campaign frame 3",
-    "description": "Visual tying offer details to brand marks—built for quick comprehension on mobile.",
+    "title": "Digital Dive — offer detail",
+    "description": "Mid-series slide pairing proof points with brand marks so the offer reads in under three seconds on a phone.",
     "tags": ["Agency", "Campaign"]
   },
   "digital-dive-04": {
-    "title": "Agency campaign frame 4",
-    "description": "Promo layout with product/hero imagery and short supporting copy for conversion-focused posts.",
+    "title": "Digital Dive — product hero",
+    "description": "Conversion-focused layout with hero product art, short supporting lines, and CTA weight for retargeting audiences.",
     "tags": ["Agency", "Campaign"]
   },
   "digital-dive-05": {
-    "title": "Agency campaign frame 5",
-    "description": "Closing frame in the series with CTA emphasis and consistent Digital Dive art direction.",
+    "title": "Digital Dive — series closer",
+    "description": "Closing frame with primary CTA, consistent art direction, and contact cues to complete the five-part set.",
     "tags": ["Agency", "Campaign"]
   },
   "expressshipping-01": {
-    "title": "Pinned banner — land, air & sea",
-    "description": "Three-panel panoramic carousel for profile pinning: container ship stern, centered logo with “Delivering your world across land, air and sea,” and bow with hotline +960 9381818.",
+    "title": "Profile banner — land, air & sea",
+    "description": "Three-panel pinned carousel: stern, centered logo with “Delivering your world across land, air and sea,” and bow frame with hotline +960 9381818.",
     "tags": ["Carousel", "Banner", "Logistics"]
   },
   "expressshipping-02": {
-    "title": "Customer offer graphic",
-    "description": "Promotional layout for seasonal or bundled shipping rates with branded color fields.",
+    "title": "Seasonal shipping offer",
+    "description": "Promo graphic for rate or bundle messaging with navy/teal brand fields and scannable price blocks.",
     "tags": ["Logistics", "Offer"]
   },
   "expressshipping-03": {
-    "title": "Brand reminder post",
-    "description": "Minimal logo-forward frame keeping Express Shipping top-of-mind in feed.",
+    "title": "Brand presence reminder",
+    "description": "Logo-led feed post that keeps Express Shipping visible between larger campaigns—minimal copy, maximum recall.",
     "tags": ["Logistics", "Branding"]
   },
   "expressshipping-04": {
-    "title": "Call-to-action post",
-    "description": "Direct CTA creative pushing inquiries via phone/social with bold headline treatment.",
+    "title": "Inquiry CTA carousel",
+    "description": "Three-slide push to phone and social inboxes: bold headlines, service cues, and repeated contact paths for freight enquiries.",
     "tags": ["Logistics", "CTA"]
   },
   "fottcalm-01": {
-    "title": "Product range carousel",
-    "description": "Seven-slide walkthrough of Footcalm products with pack shots, benefits, and retail-ready typography.",
+    "title": "Footcalm range — product carousel",
+    "description": "Seven-slide retail walkthrough: pack shots, benefit lines, and shelf-ready typography across the full Footcalm line.",
     "tags": ["Carousel", "Product", "Wellness"]
   },
   "fottcalm-02": {
-    "title": "Hero product feature",
-    "description": "Single product spotlight with soft lifestyle tone and ingredient/benefit callouts.",
+    "title": "Hero SKU spotlight",
+    "description": "Single-product feature with lifestyle tone, ingredient callouts, and soft wellness palette for feed saves.",
     "tags": ["Product", "Wellness"]
   },
   "fottcalm-03": {
-    "title": "Wellness tip graphic",
-    "description": "Educational frame pairing foot-care advice with brand palette and product mention.",
+    "title": "Foot-care tip card",
+    "description": "Quick educational graphic linking daily foot-care advice to Footcalm products and brand colors.",
     "tags": ["Education", "Wellness"]
   },
   "haus-of-paws-01": {
-    "title": "Pet care trio carousel",
-    "description": "Three-slide set for grooming/products with friendly pet photography and playful type.",
+    "title": "Haus of Paws — care trio",
+    "description": "Three-slide set blending grooming, retail, and playful pet photography with approachable type for pet parents.",
     "tags": ["Carousel", "Pets"]
   },
   "haus-of-paws-02": {
-    "title": "Grooming promo",
-    "description": "Single post highlighting grooming services with warm colors and pet-forward imagery.",
+    "title": "Grooming appointment promo",
+    "description": "Warm, pet-forward single post promoting grooming slots with clear service naming and brand gold accents.",
     "tags": ["Pets", "Promo"]
   },
   "haus-of-paws-03": {
-    "title": "Shop announcement",
-    "description": "Retail-style graphic announcing offers or arrivals for Haus of Paws customers.",
+    "title": "Shop news & arrivals",
+    "description": "Retail announcement layout for in-store offers or new stock with friendly illustration and product cues.",
     "tags": ["Pets", "Retail"]
   },
   "lumeria-01": {
-    "title": "Salon intro frame",
-    "description": "Brand-forward beauty post introducing Lumeria’s tone, fonts, and soft glam photography.",
+    "title": "Lumeria Salon — brand intro",
+    "description": "Opening frame establishing Lumeria’s glam photography, serif accents, and muted luxury palette for the feed series.",
     "tags": ["Beauty", "Branding"]
   },
   "lumeria-02": {
-    "title": "Services & offers carousel",
-    "description": "Seven-slide carousel detailing treatments, pricing cues, and model shots for Lumeria Salon.",
+    "title": "Services & packages — 7 slides",
+    "description": "Carousel covering treatments, indicative pricing, and model shots so clients can compare services before booking.",
     "tags": ["Carousel", "Beauty", "Packages"]
   },
   "lumeria-03": {
-    "title": "Styling spotlight",
-    "description": "Single-frame highlight of hair/styling results with elegant serif accents and muted palette.",
+    "title": "Styling results feature",
+    "description": "After-style spotlight with elegant typography and photography that sells the salon’s finishing work.",
     "tags": ["Beauty", "Styling"]
   },
   "metroflex-islanders-nutrition-01": {
-    "title": "Islanders Nutrition promo",
-    "description": "Supplement-forward creative with product photography and performance-oriented headlines.",
+    "title": "Islanders Nutrition — launch promo",
+    "description": "Supplement-led creative with product photography and performance headlines for gym-goers and athletes.",
     "tags": ["Fitness", "Nutrition"]
   },
   "metroflex-islanders-nutrition-02": {
-    "title": "Islanders product feature",
-    "description": "Focused product layout with macros/ benefits and brand marks for Islanders Nutrition.",
+    "title": "Islanders — SKU deep dive",
+    "description": "Focused product board with benefits, macros, and Islanders marks for shoppers comparing formulas.",
     "tags": ["Nutrition", "Product"]
   },
   "metroflex-islanders-nutrition-03": {
-    "title": "Islanders offer post",
-    "description": "Promotional frame pushing bundles or limited pricing with energetic gym aesthetic.",
+    "title": "Islanders — bundle offer",
+    "description": "Limited-time bundle messaging with energetic gym styling and price emphasis for in-store pickup.",
     "tags": ["Nutrition", "Promo"]
   },
   "metroflex-islanders-nutrition-04": {
-    "title": "Islanders lifestyle frame",
-    "description": "Lifestyle shot tying athletes and supplements with bold typographic hierarchy.",
+    "title": "Islanders — athlete lifestyle",
+    "description": "Lifestyle frame connecting training culture to product use with bold typographic hierarchy.",
     "tags": ["Nutrition", "Lifestyle"]
   },
   "metroflex-islanders-nutrition-05": {
-    "title": "Metroflex gym promo",
-    "description": "Metroflex-branded post highlighting membership or training offers with strong contrast.",
+    "title": "Metroflex — membership push",
+    "description": "Gym-branded promo highlighting training offers and Metroflex identity for local fitness audiences.",
     "tags": ["Fitness", "Gym"]
   },
   "metroflex-islanders-nutrition-06": {
-    "title": "Metroflex facility feature",
-    "description": "Showcase of gym environment/equipment with motivational copy and logo lockup.",
+    "title": "Metroflex — facility showcase",
+    "description": "Environment-led post featuring equipment and space with motivational copy and logo lockup.",
     "tags": ["Fitness", "Gym"]
   },
   "metroflex-islanders-nutrition-07": {
-    "title": "Metroflex CTA",
-    "description": "Call-to-action creative driving sign-ups or visits with hours/contact emphasis.",
+    "title": "Metroflex — sign-up CTA",
+    "description": "Direct response graphic with hours, contact, and membership CTA for walk-ins and DMs.",
     "tags": ["Fitness", "CTA"]
   },
   "rainbow-01": {
-    "title": "Furniture sale carousel",
-    "description": "Three-slide promo for Rainbow homeware: product cutouts, price overlays, and seasonal sale messaging.",
+    "title": "Rainbow sale — 3-slide carousel",
+    "description": "Homeware promo with cutout products, price overlays, and seasonal sale language across three swipes.",
     "tags": ["Carousel", "Furniture", "Sale"]
   },
   "rainbow-02": {
-    "title": "Showroom highlight",
-    "description": "Single frame featuring in-store/display styling with brand gradients and product focus.",
+    "title": "Showroom styling feature",
+    "description": "In-store display photography with Rainbow gradients and product focus for aspirational buyers.",
     "tags": ["Furniture", "Interior"]
   },
   "rainbow-03": {
-    "title": "Collection feature carousel",
-    "description": "Four-slide set presenting room sets, materials, and coordinated pricing for home buyers.",
+    "title": "Room sets — 4-slide collection",
+    "description": "Coordinated room scenes, materials, and pricing cues for customers planning full-room purchases.",
     "tags": ["Carousel", "Furniture", "Interior"]
   },
   "rainbow-reel-01": {
-    "title": "Motion reel — showroom feature",
-    "description": "Short-form video highlighting Rainbow products in motion with dynamic cuts and branded overlays.",
+    "title": "Reel — showroom in motion",
+    "description": "Short vertical video with dynamic cuts, product highlights, and branded overlays for Instagram reach.",
     "tags": ["Reel", "Furniture", "Video"]
   },
   "rainbow-04": {
-    "title": "Product spotlight",
-    "description": "Single-product layout with hero photography and concise offer line for feed conversion.",
+    "title": "Single SKU spotlight",
+    "description": "Hero product photography with a tight offer line optimized for feed conversion.",
     "tags": ["Furniture", "Product"]
   },
   "rainbow-05": {
-    "title": "Interior styling post",
-    "description": "Lifestyle-led room scene emphasizing textures, lighting, and Rainbow’s premium homeware feel.",
+    "title": "Styled interior scene",
+    "description": "Lifestyle room composition emphasizing texture, lighting, and Rainbow’s premium homeware positioning.",
     "tags": ["Interior", "Lifestyle"]
   },
   "rainbow-reel-02": {
-    "title": "Motion reel — promo push",
-    "description": "Vertical reel driving urgency on a limited offer with animated text and product glimpses.",
+    "title": "Reel — limited offer push",
+    "description": "Urgency-led reel with animated type and quick product glimpses to drive showroom visits.",
     "tags": ["Reel", "Promo", "Video"]
   },
   "rioga-01": {
-    "title": "Travel offer — duo carousel",
-    "description": "Two-slide tourism promo with destination imagery, pricing cues, and Rioga booking CTAs.",
+    "title": "Rioga — duo destination promo",
+    "description": "Two-slide travel offer with destination photography, package cues, and booking CTAs for Rioga Travel & Tours.",
     "tags": ["Carousel", "Travel"]
   },
   "rioga-02": {
-    "title": "Destination package carousel",
-    "description": "Seven-slide itinerary-style set covering destinations, inclusions, and contact details for Rioga Travel.",
+    "title": "Rioga — itinerary carousel",
+    "description": "Seven-slide package breakdown: destinations, inclusions, timelines, and contact details for enquiry-ready followers.",
     "tags": ["Carousel", "Travel", "Tourism"]
   },
   "rioga-03": {
-    "title": "Quick travel tip frame",
-    "description": "Single educational/promo frame keeping Rioga visible between larger campaign drops.",
+    "title": "Rioga — travel tip",
+    "description": "Light educational frame that keeps Rioga visible between larger package campaigns.",
     "tags": ["Travel", "Tips"]
   },
   "world-trip-tours-01": {
-    "title": "Tour package feature",
-    "description": "World Trip Tours creative with destination photo, package title, and clear inquiry CTA.",
+    "title": "World Trip Tours — package hero",
+    "description": "Destination-led post with package title, hero photography, and a clear inquiry CTA for tour bookings.",
     "tags": ["Travel", "Tourism"]
   },
   "world-trip-tours-02": {
-    "title": "Seasonal offer graphic",
-    "description": "Follow-up promo frame with dates/pricing highlights and brand-consistent travel styling.",
+    "title": "World Trip Tours — seasonal offer",
+    "description": "Date- and price-forward promo with consistent travel branding for limited-window packages.",
     "tags": ["Travel", "Offer"]
+  },
+  "mdp-post": {
+    "title": "MDP — Mohamed Amir campaign (feed)",
+    "description": "Square social key visual for the MDP political campaign: strong portrait hierarchy, campaign palette, and type built for feed shares and recognition.",
+    "tags": ["Campaign", "Politics", "MDP"]
+  },
+  "mdp-poster": {
+    "title": "MDP — vertical campaign poster",
+    "description": "Portrait poster artwork for print, rallies, and vertical placements—high-impact photo treatment and campaign lockup at poster scale.",
+    "tags": ["Poster", "Print", "MDP"]
+  },
+  "mdp-media-kit": {
+    "title": "Khulaasa — complete media kit",
+    "description": "Nine-page landscape kit for Khulaasa (MDP): cover, brand story, logo usage, color and type, applications, and rollout guidance—numbered in PDF page order for press and partners.",
+    "tags": ["Media kit", "Branding", "Khulaasa", "MDP"]
   }
 }

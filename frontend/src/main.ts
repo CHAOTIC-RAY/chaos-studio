@@ -1,5 +1,6 @@
 import "./styles/index.css";
 import { fetchPortfolio } from "./api";
+import { exitLoadingScreen, mountLoadingScreen } from "./loading-screen";
 import { initCanvasBackground } from "./background/canvas-bg";
 import { initInteractions, initStudioInteractions } from "./interactions";
 import { initMouseEffects } from "./mouse/mouse-effects";
@@ -39,7 +40,7 @@ async function mount(route: AppRoute): Promise<void> {
     app.innerHTML = renderPage(portfolio);
   }
 
-  app.classList.remove("loading-screen");
+  await exitLoadingScreen(app);
 
   cleanups.push(initTheme());
   cleanups.push(
@@ -181,6 +182,8 @@ function bindPrintPortfolio(profileName: string): () => void {
 async function init(): Promise<void> {
   const app = document.getElementById("app");
   if (!app) return;
+
+  mountLoadingScreen(app);
 
   try {
     portfolio = await fetchPortfolio();

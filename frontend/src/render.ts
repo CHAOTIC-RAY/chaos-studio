@@ -804,6 +804,10 @@ function renderPostPosterFull(post: SocialPost): string {
     ${renderPostViewButton(post)}`;
 }
 
+function renderSlideCounter(current: number, total: number): string {
+  return `<span class="post-card__slide-counter" data-slide-counter aria-hidden="true">${current} / ${total}</span>`;
+}
+
 function renderPostMediaKitGrid(post: SocialPost, slides: string[]): string {
   const count = slides.length;
   const cells = slides
@@ -811,6 +815,7 @@ function renderPostMediaKitGrid(post: SocialPost, slides: string[]): string {
       (slide, i) => `
         <figure class="post-card__kit-cell">
           ${renderPostSlideImg(post, slide, { slideIndex: i, slideCount: count, eager: i < 3 })}
+          <span class="post-card__kit-page" aria-hidden="true">${i + 1}</span>
         </figure>`,
     )
     .join("");
@@ -840,7 +845,7 @@ function renderPostFilmstrip(post: SocialPost, slides: string[]): string {
       >
         ${figures}
       </div>
-      <span class="post-card__filmstrip-badge" aria-hidden="true">${count} slides</span>
+      ${renderSlideCounter(1, count)}
     </div>
     ${renderPostViewButton(post)}`;
 }
@@ -879,7 +884,7 @@ function renderPostMedia(post: SocialPost, mode: "rail" | "expanded" = "rail"): 
   return `
     <div class="post-card__carousel post-card__carousel--${count}" style="--slide-count:${count}" aria-label="${esc(post.title)} carousel">
       ${imgs}
-      <span class="post-card__slides-badge" aria-hidden="true">${count} slides</span>
+      ${renderSlideCounter(1, count)}
     </div>
     ${renderPostViewButton(post)}`;
 }
