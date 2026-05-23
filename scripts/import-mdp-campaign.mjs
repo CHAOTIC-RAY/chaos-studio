@@ -68,6 +68,8 @@ function upsertPosts(slideCount) {
     },
     {
       id: "mdp-poster",
+      cardLayout: "poster",
+      mediaAspect: "portrait",
       platform: "Print / OOH",
       client: "MDP Campaign",
       title: "Campaign poster",
@@ -78,6 +80,8 @@ function upsertPosts(slideCount) {
     },
     {
       id: "mdp-media-kit",
+      cardLayout: "media-kit",
+      mediaAspect: "landscape",
       platform: "Media kit",
       client: "MDP Campaign · Khulaasa",
       title: "Khulaasa media kit",

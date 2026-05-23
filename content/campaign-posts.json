@@ -632,6 +632,8 @@
     },
     {
       "id": "mdp-poster",
+      "cardLayout": "poster",
+      "mediaAspect": "portrait",
       "platform": "Print / OOH",
       "client": "MDP Campaign",
       "title": "Campaign poster",
@@ -645,6 +647,7 @@
     },
     {
       "id": "mdp-media-kit",
+      "cardLayout": "media-kit",
       "mediaAspect": "landscape",
       "platform": "Media kit",
       "client": "MDP Campaign · Khulaasa",

@@ -564,8 +564,26 @@ function clientSlug(client: string): string {
     .replace(/^-|-$/g, "");
 }
 
+function postCardLayout(post: SocialPost): "poster" | "media-kit" | null {
+  if (post.cardLayout === "poster" || post.cardLayout === "media-kit") return post.cardLayout;
+  if (post.id.includes("poster") || post.tags.some((t) => /poster/i.test(t))) return "poster";
+  if (
+    post.platform === "Media kit" ||
+    post.tags.some((t) => /media\s*kit/i.test(t)) ||
+    (post.slides && post.slides.length >= 4 && post.mediaAspect === "landscape")
+  ) {
+    return "media-kit";
+  }
+  return null;
+}
+
 function postKindLabel(post: SocialPost): string {
   if (post.video) return "Reel";
+  if (postCardLayout(post) === "poster") return "Poster";
+  if (postCardLayout(post) === "media-kit") {
+    const n = post.slides?.length ?? 0;
+    return n > 0 ? `Media kit · ${n} pages` : "Media kit";
+  }
   const n = post.slides?.length ?? 0;
   if (n > 1) return `${n} slides`;
   return "Image";
@@ -727,6 +745,32 @@ function renderPostSlideImg(
         />`;
 }
 
+function renderPostPosterFull(post: SocialPost): string {
+  const slide = postImageBase(post);
+  return `
+    <div class="post-card__poster-full">
+      ${renderPostSlideImg(post, slide, { slideIndex: 0, slideCount: 1, eager: true })}
+    </div>
+    ${renderPostViewButton(post)}`;
+}
+
+function renderPostMediaKitGrid(post: SocialPost, slides: string[]): string {
+  const count = slides.length;
+  const cells = slides
+    .map(
+      (slide, i) => `
+        <figure class="post-card__kit-cell">
+          ${renderPostSlideImg(post, slide, { slideIndex: i, slideCount: count, eager: i < 3 })}
+        </figure>`,
+    )
+    .join("");
+  return `
+    <div class="post-card__kit-grid post-card__kit-grid--${count}" data-media-kit-grid aria-label="${esc(post.title)} — ${count} pages, full media kit">
+      ${cells}
+    </div>
+    ${renderPostViewButton(post)}`;
+}
+
 function renderPostFilmstrip(post: SocialPost, slides: string[]): string {
   const count = slides.length;
   const figures = slides
@@ -756,10 +800,19 @@ function renderPostMedia(post: SocialPost, mode: "rail" | "expanded" = "rail"): 
     return `${renderPostVideo(post)}${renderPostViewButton(post)}`;
   }
 
+  const layout = postCardLayout(post);
   const slides =
     post.slides?.length && post.slides.length > 0
       ? post.slides
       : [postImageBase(post)];
+
+  if (layout === "poster") {
+    return renderPostPosterFull(post);
+  }
+
+  if (layout === "media-kit" && slides.length > 1) {
+    return renderPostMediaKitGrid(post, slides);
+  }
 
   if (slides.length === 1) {
     return `${renderPostSlideImg(post, slides[0], { slideIndex: 0, slideCount: 1, eager: false })}${renderPostViewButton(post)}`;
@@ -785,17 +838,32 @@ function renderPostCard(post: SocialPost, opts?: { feed?: "rail" | "expanded" })
   const feed = opts?.feed ?? "rail";
   const isFeed = feed === "expanded";
   const accent = POST_ACCENTS[post.accent] ?? "post-card--purple";
+  const layout = postCardLayout(post);
   const aspect = postAspectClass(post);
   const slideCount = post.slides?.length ?? 0;
-  const filmstrip = isFeed && slideCount > 1;
+  const filmstrip = isFeed && slideCount > 1 && layout !== "media-kit";
   const kind = post.video
     ? "post-card--video"
-    : filmstrip
-      ? "post-card--filmstrip"
-      : slideCount > 1
-        ? "post-card--carousel"
-        : "";
-  const postKind = post.video ? "video" : filmstrip ? "filmstrip" : slideCount > 1 ? "carousel" : "image";
+    : layout === "poster"
+      ? "post-card--poster-full"
+      : layout === "media-kit"
+        ? "post-card--media-kit-full"
+        : filmstrip
+          ? "post-card--filmstrip"
+          : slideCount > 1
+            ? "post-card--carousel"
+            : "";
+  const postKind = post.video
+    ? "video"
+    : layout === "poster"
+      ? "poster-full"
+      : layout === "media-kit"
+        ? "media-kit-full"
+        : filmstrip
+          ? "filmstrip"
+          : slideCount > 1
+            ? "carousel"
+            : "image";
   const meta = `
         <div class="post-card__meta">
           <span class="post-card__platform">${esc(post.platform)}</span>
@@ -803,8 +871,8 @@ function renderPostCard(post: SocialPost, opts?: { feed?: "rail" | "expanded" })
         </div>`;
 
   return `
-    <article class="post-card ${accent} ${aspect} ${kind}${isFeed ? " post-card--feed post-card--feed-grid" : ""}" data-post-kind="${postKind}" data-post-id="${esc(post.id)}">
-      <div class="post-card__media${filmstrip ? " post-card__media--filmstrip" : ""}">
+    <article class="post-card ${accent} ${aspect} ${kind}${isFeed ? " post-card--feed post-card--feed-grid" : ""}${layout ? ` post-card--layout-${layout}` : ""}" data-post-kind="${postKind}" data-post-id="${esc(post.id)}">
+      <div class="post-card__media${filmstrip ? " post-card__media--filmstrip" : ""}${layout === "poster" ? " post-card__media--poster-full" : ""}${layout === "media-kit" ? " post-card__media--kit-full" : ""}">
         ${renderPostMedia(post, feed)}
         <div class="post-card__shine" aria-hidden="true"></div>
       </div>

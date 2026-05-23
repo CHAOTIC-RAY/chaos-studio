@@ -59,6 +59,8 @@ export interface Portfolio {
       tags: string[];
       accent: string;
       mediaAspect?: "portrait" | "landscape" | "square";
+      /** poster = full portrait artwork; media-kit = all pages visible in one grid */
+      cardLayout?: "poster" | "media-kit";
       image?: string;
       slides?: string[];
       /** Filename under /images/posts/{id}/ */
