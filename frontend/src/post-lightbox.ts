@@ -258,7 +258,7 @@ export function initPostLightbox(): () => void {
     }
 
     const title = card.querySelector(".post-card__title, .post-card__body h3")?.textContent?.trim() || "Post";
-    const section = card.closest<HTMLElement>("[data-posts-section]");
+    const section = card.closest<HTMLElement>("[data-posts-tab-panel], [data-posts-section]");
     const client =
       section?.getAttribute("data-client") ||
       card.querySelector(".post-card__client")?.textContent?.trim() ||

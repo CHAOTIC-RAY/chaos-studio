@@ -519,7 +519,7 @@ function renderPostsSection(social: Portfolio["socialPosts"]): string {
             aria-expanded="false"
             aria-controls="posts-panel"
           >
-            <span class="posts-panel__toggle-label">Expand full feed</span>
+            <span class="posts-panel__toggle-label">Browse full feed</span>
             <span class="posts-panel__toggle-meta">${count} posts</span>
             <span class="posts-panel__toggle-icon" aria-hidden="true">${ICON_CHEVRON_DOWN}</span>
           </button>
@@ -594,33 +594,38 @@ function renderPostsTrack(items: SocialPost[]): string {
 function renderPostsExpandedFeed(items: SocialPost[]): string {
   const groups = groupPostsByClient(items);
   const clientCount = groups.length;
-  const nav = groups
+  const tabs = groups
     .map(
-      (g) => `
-        <a class="posts-feed__chip" href="#posts-client-${esc(clientSlug(g.client))}" data-posts-chip>
-          <span class="posts-feed__chip-label">${esc(g.client)}</span>
-          <span class="posts-feed__chip-count">${g.posts.length}</span>
-        </a>`,
+      (g, i) => `
+        <button
+          type="button"
+          role="tab"
+          class="posts-feed__tab${i === 0 ? " posts-feed__tab--active" : ""}"
+          data-posts-tab="${esc(clientSlug(g.client))}"
+          aria-selected="${i === 0 ? "true" : "false"}"
+          aria-controls="posts-panel-${esc(clientSlug(g.client))}"
+          id="posts-tab-${esc(clientSlug(g.client))}"
+        >
+          <span class="posts-feed__tab-label">${esc(g.client)}</span>
+          <span class="posts-feed__tab-count">${g.posts.length}</span>
+        </button>`,
     )
     .join("");
 
-  const sections = groups
+  const panels = groups
     .map(
-      (g) => `
+      (g, i) => `
       <section
-        class="posts-feed__section"
-        id="posts-client-${esc(clientSlug(g.client))}"
-        data-posts-section
+        class="posts-feed__panel${i === 0 ? " posts-feed__panel--active" : ""}"
+        id="posts-panel-${esc(clientSlug(g.client))}"
+        role="tabpanel"
+        data-posts-tab-panel="${esc(clientSlug(g.client))}"
         data-client="${esc(g.client)}"
-        aria-labelledby="posts-heading-${esc(clientSlug(g.client))}"
+        aria-labelledby="posts-tab-${esc(clientSlug(g.client))}"
+        ${i === 0 ? "" : "hidden"}
       >
-        <header class="posts-feed__section-head">
-          <div class="posts-feed__section-title">
-            <h3 class="posts-feed__section-name" id="posts-heading-${esc(clientSlug(g.client))}">${esc(g.client)}</h3>
-            <p class="posts-feed__section-meta">${g.posts.length} post${g.posts.length === 1 ? "" : "s"} in this campaign</p>
-          </div>
-        </header>
-        <div class="posts-feed__list">
+        <p class="posts-feed__panel-intro">${g.posts.length} post${g.posts.length === 1 ? "" : "s"} · Swipe multi-slide decks sideways · Tap any frame for fullscreen</p>
+        <div class="posts-feed__grid">
           ${g.posts.map((post) => renderPostCard(post, { feed: "expanded" })).join("")}
         </div>
       </section>`,
@@ -631,12 +636,12 @@ function renderPostsExpandedFeed(items: SocialPost[]): string {
     <div class="posts-feed__shell">
       <header class="posts-feed__toolbar" data-posts-toolbar>
         <div class="posts-feed__toolbar-copy">
-          <p class="posts-feed__eyebrow">Full archive</p>
-          <p class="posts-feed__lead">${items.length} posts · ${clientCount} client${clientCount === 1 ? "" : "s"} · Click any frame for fullscreen</p>
+          <p class="posts-feed__eyebrow">Campaign archive</p>
+          <p class="posts-feed__lead">${items.length} posts · ${clientCount} client${clientCount === 1 ? "" : "s"}</p>
         </div>
-        <nav class="posts-feed__nav hide-scrollbar" aria-label="Jump to client">${nav}</nav>
+        <div class="posts-feed__tabs hide-scrollbar" role="tablist" aria-label="Filter by client">${tabs}</div>
       </header>
-      <div class="posts-feed__sections">${sections}</div>
+      <div class="posts-feed__panels">${panels}</div>
     </div>`;
 }
 
@@ -798,7 +803,7 @@ function renderPostCard(post: SocialPost, opts?: { feed?: "rail" | "expanded" })
         </div>`;
 
   return `
-    <article class="post-card ${accent} ${aspect} ${kind}${isFeed ? " post-card--feed" : ""}" data-post-kind="${postKind}" data-post-id="${esc(post.id)}">
+    <article class="post-card ${accent} ${aspect} ${kind}${isFeed ? " post-card--feed post-card--feed-grid" : ""}" data-post-kind="${postKind}" data-post-id="${esc(post.id)}">
       <div class="post-card__media${filmstrip ? " post-card__media--filmstrip" : ""}">
         ${renderPostMedia(post, feed)}
         <div class="post-card__shine" aria-hidden="true"></div>

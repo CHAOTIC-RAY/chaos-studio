@@ -93,58 +93,116 @@ function initPostsRail(): () => void {
   if (!viewport || !track) return () => {};
 
   const reduced = prefersReducedMotion();
-  const autoScroll = !reduced;
+  const autoAdvance = !reduced;
+  const TRANSITION_MS = 480;
+  const AUTO_MS = 4200;
 
   let x = 0;
-  let raf = 0;
   let paused = false;
   let pauseTimer = 0;
-  const speed = 0.45;
+  let autoTimer = 0;
+  let transitionTimer = 0;
 
-  const applyTransform = () => {
-    track.style.transform = `translateX(${x}px)`;
+  const allCards = () => Array.from(track.querySelectorAll<HTMLElement>(".post-card"));
+
+  const loopCount = () => Math.max(1, allCards().length / 2);
+
+  const offsetInTrack = (el: HTMLElement) => {
+    let pos = 0;
+    let cur: HTMLElement | null = el;
+    while (cur && cur !== track) {
+      pos += cur.offsetLeft;
+      cur = cur.offsetParent as HTMLElement | null;
+    }
+    return pos;
   };
 
-  const pauseBriefly = (ms = 2600) => {
+  const snapOffsets = () => {
+    const cards = allCards();
+    const n = loopCount();
+    return cards.slice(0, n).map((card) => offsetInTrack(card));
+  };
+
+  const applyTransform = (animate = false) => {
+    if (animate && !reduced) {
+      track.style.transition = `transform ${TRANSITION_MS}ms cubic-bezier(0.16, 1, 0.3, 1)`;
+      window.clearTimeout(transitionTimer);
+      transitionTimer = window.setTimeout(() => {
+        track.style.transition = "";
+      }, TRANSITION_MS + 40);
+    } else {
+      track.style.transition = "";
+    }
+    track.style.transform = `translate3d(${x}px, 0, 0)`;
+  };
+
+  const normalizeX = () => {
+    const half = track.scrollWidth / 2;
+    if (half <= 0) return;
+    while (-x >= half - 1) x += half;
+    while (x > 1) x -= half;
+  };
+
+  const nearestIndex = () => {
+    const offsets = snapOffsets();
+    if (!offsets.length) return 0;
+    normalizeX();
+    const pos = -x;
+    let best = 0;
+    let bestDist = Number.POSITIVE_INFINITY;
+    offsets.forEach((off, i) => {
+      const dist = Math.abs(off - pos);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = i;
+      }
+    });
+    return best;
+  };
+
+  const goToIndex = (index: number, animate = false) => {
+    const offsets = snapOffsets();
+    const len = offsets.length;
+    if (!len) return;
+    const i = ((index % len) + len) % len;
+    x = -offsets[i];
+    normalizeX();
+    applyTransform(animate);
+  };
+
+  const step = (direction: -1 | 1) => {
+    const next = nearestIndex() + direction;
+    goToIndex(next, !reduced);
+    pauseBriefly(AUTO_MS);
+  };
+
+  const pauseBriefly = (ms = AUTO_MS) => {
     paused = true;
     window.clearTimeout(pauseTimer);
     pauseTimer = window.setTimeout(() => {
-      paused = false;
+      if (!hoverPause) paused = false;
     }, ms);
   };
 
-  const stepPx = () => {
-    const vw = viewport.clientWidth;
-    if (vw > 0) return Math.max(280, vw * 0.72);
-    const card = track.querySelector<HTMLElement>(".post-card");
-    if (!card) return 320;
-    return card.offsetWidth + 20;
-  };
+  const isExpanded = () =>
+    document.querySelector("[data-posts-panel]")?.classList.contains("posts-panel--expanded");
 
-  const scrollNative = (direction: -1 | 1) => {
-    viewport.scrollBy({ left: direction * stepPx(), behavior: reduced ? "auto" : "smooth" });
+  const scheduleAuto = () => {
+    window.clearInterval(autoTimer);
+    if (!autoAdvance) return;
+    autoTimer = window.setInterval(() => {
+      if (paused || isExpanded()) return;
+      step(1);
+    }, AUTO_MS);
   };
-
-  const nudge = (direction: -1 | 1) => {
-    if (reduced) {
-      scrollNative(direction);
-      return;
-    }
-    x += direction * stepPx();
-    applyTransform();
-    pauseBriefly();
-  };
-
-  const onPrev = () => nudge(-1);
-  const onNext = () => nudge(1);
 
   const onPrevClick = (e: Event) => {
     e.preventDefault();
-    onPrev();
+    step(-1);
   };
   const onNextClick = (e: Event) => {
     e.preventDefault();
-    onNext();
+    step(1);
   };
   prev?.addEventListener("click", onPrevClick);
   next?.addEventListener("click", onNextClick);
@@ -152,40 +210,33 @@ function initPostsRail(): () => void {
   const onKey = (e: KeyboardEvent) => {
     if (e.key === "ArrowLeft") {
       e.preventDefault();
-      onPrev();
+      step(-1);
     } else if (e.key === "ArrowRight") {
       e.preventDefault();
-      onNext();
+      step(1);
     }
   };
   viewport.addEventListener("keydown", onKey);
 
-  const loop = () => {
-    const panel = document.querySelector("[data-posts-panel]");
-    if (panel?.classList.contains("posts-panel--expanded")) {
-      raf = requestAnimationFrame(loop);
-      return;
-    }
-    if (autoScroll && !paused) {
-      x -= speed;
-      const half = track.scrollWidth / 2;
-      if (half > 0 && Math.abs(x) >= half) x = 0;
-      applyTransform();
-    }
-    raf = requestAnimationFrame(loop);
-  };
+  let hoverPause = false;
 
   const pause = () => {
     paused = true;
-  };
-  const resume = () => {
-    paused = false;
+    window.clearTimeout(pauseTimer);
   };
 
-  viewport.addEventListener("mouseenter", pause);
-  viewport.addEventListener("mouseleave", resume);
+  viewport.addEventListener("mouseenter", () => {
+    hoverPause = true;
+    pause();
+  });
+  viewport.addEventListener("mouseleave", () => {
+    hoverPause = false;
+    pauseBriefly(800);
+  });
   viewport.addEventListener("focusin", pause);
-  viewport.addEventListener("focusout", resume);
+  viewport.addEventListener("focusout", () => {
+    if (!hoverPause) pauseBriefly(800);
+  });
 
   let isDown = false;
   let startX = 0;
@@ -196,6 +247,7 @@ function initPostsRail(): () => void {
     if (reduced) return;
     isDown = true;
     paused = true;
+    track.style.transition = "";
     startX = e.clientX;
     startTx = x;
     viewport.setPointerCapture(e.pointerId);
@@ -203,12 +255,13 @@ function initPostsRail(): () => void {
   viewport.addEventListener("pointermove", (e) => {
     if (!isDown || reduced) return;
     x = startTx + (e.clientX - startX);
-    applyTransform();
+    applyTransform(false);
   });
   const endDrag = (e: PointerEvent) => {
     if (!isDown) return;
     isDown = false;
-    pauseBriefly(1200);
+    goToIndex(nearestIndex(), !reduced);
+    pauseBriefly(AUTO_MS);
     try {
       viewport.releasePointerCapture(e.pointerId);
     } catch {
@@ -218,16 +271,20 @@ function initPostsRail(): () => void {
   viewport.addEventListener("pointerup", endDrag);
   viewport.addEventListener("pointercancel", endDrag);
 
-  if (autoScroll) raf = requestAnimationFrame(loop);
+  const onResize = () => goToIndex(nearestIndex(), false);
+  window.addEventListener("resize", onResize);
+
+  goToIndex(0, false);
+  scheduleAuto();
 
   return () => {
-    cancelAnimationFrame(raf);
+    window.clearInterval(autoTimer);
     window.clearTimeout(pauseTimer);
+    window.clearTimeout(transitionTimer);
+    window.removeEventListener("resize", onResize);
     prev?.removeEventListener("click", onPrevClick);
     next?.removeEventListener("click", onNextClick);
     viewport.removeEventListener("keydown", onKey);
-    viewport.removeEventListener("mouseenter", pause);
-    viewport.removeEventListener("mouseleave", resume);
   };
 }
 
@@ -264,52 +321,37 @@ function initPostsExpandedFeed(): () => void {
   const feed = document.querySelector("[data-posts-expanded]");
   if (!feed) return () => {};
 
-  const chips = Array.from(feed.querySelectorAll<HTMLAnchorElement>("[data-posts-chip]"));
-  const sections = Array.from(feed.querySelectorAll<HTMLElement>("[data-posts-section]"));
-  if (!chips.length || !sections.length) return () => {};
+  const tabs = Array.from(feed.querySelectorAll<HTMLButtonElement>("[data-posts-tab]"));
+  const panels = Array.from(feed.querySelectorAll<HTMLElement>("[data-posts-tab-panel]"));
+  if (!tabs.length || !panels.length) return () => {};
 
-  const setActive = (slug: string | null) => {
-    chips.forEach((chip) => {
-      const href = chip.getAttribute("href") ?? "";
-      const match = slug && href === `#${slug}`;
-      chip.classList.toggle("posts-feed__chip--active", Boolean(match));
-      if (match) chip.setAttribute("aria-current", "true");
-      else chip.removeAttribute("aria-current");
+  const activate = (slug: string) => {
+    tabs.forEach((tab) => {
+      const on = tab.getAttribute("data-posts-tab") === slug;
+      tab.classList.toggle("posts-feed__tab--active", on);
+      tab.setAttribute("aria-selected", String(on));
+    });
+    panels.forEach((panel) => {
+      const on = panel.getAttribute("data-posts-tab-panel") === slug;
+      panel.classList.toggle("posts-feed__panel--active", on);
+      panel.hidden = !on;
     });
   };
 
-  const onChipClick = (e: Event) => {
-    const chip = (e.currentTarget as HTMLAnchorElement).closest<HTMLAnchorElement>("[data-posts-chip]");
-    if (!chip) return;
-    const id = chip.getAttribute("href")?.slice(1);
-    if (!id) return;
-    const section = document.getElementById(id);
-    if (!section) return;
-    e.preventDefault();
-    section.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
-    setActive(id);
-  };
+  const cleanups: Array<() => void> = [];
+  tabs.forEach((tab) => {
+    const onClick = () => {
+      const slug = tab.getAttribute("data-posts-tab");
+      if (slug) activate(slug);
+    };
+    tab.addEventListener("click", onClick);
+    cleanups.push(() => tab.removeEventListener("click", onClick));
+  });
 
-  chips.forEach((chip) => chip.addEventListener("click", onChipClick));
+  const first = tabs[0]?.getAttribute("data-posts-tab");
+  if (first) activate(first);
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      const visible = entries
-        .filter((en) => en.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-      const top = visible[0]?.target as HTMLElement | undefined;
-      if (top?.id) setActive(top.id);
-    },
-    { rootMargin: "-20% 0px -55% 0px", threshold: [0, 0.15, 0.35] },
-  );
-  sections.forEach((section) => observer.observe(section));
-
-  setActive(sections[0]?.id ?? null);
-
-  return () => {
-    chips.forEach((chip) => chip.removeEventListener("click", onChipClick));
-    observer.disconnect();
-  };
+  return () => cleanups.forEach((fn) => fn());
 }
 
 function initActiveNav(): () => void {
