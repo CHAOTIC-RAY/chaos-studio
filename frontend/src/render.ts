@@ -2,6 +2,7 @@ import type { Portfolio } from "./types/portfolio";
 import { CHAOS_LOGO_SVG, CHAOS_LOGO_SVG_HERO } from "./brand/logo";
 import { portfolioUrl, studioUrl } from "./router";
 import {
+  ICON_CHECK,
   ICON_CHEVRON_DOWN,
   ICON_CHEVRON_LEFT,
   ICON_CHEVRON_RIGHT,
@@ -438,6 +439,46 @@ function renderStudioServicePills(services: string[]): string {
   return services.map((s) => `<span class="studio-service">${esc(s)}</span>`).join("");
 }
 
+function renderStudioPackage(pkg: Portfolio["chaosStudio"]["packages"][0]): string {
+  const featureItems = pkg.features
+    .map(
+      (f) => `
+            <li class="studio-package__feature">
+              <span class="studio-package__check">${ICON_CHECK}</span>
+              <span class="studio-package__feature-text">${esc(f)}</span>
+            </li>`,
+    )
+    .join("");
+  const badge = pkg.recommended
+    ? `<span class="studio-package__badge">Recommended</span>`
+    : "";
+  return `
+        <article class="studio-package ${pkg.recommended ? "studio-package--recommended" : ""}" data-package-id="${esc(pkg.id)}">
+          <div class="studio-package__glow" aria-hidden="true"></div>
+          <header class="studio-package__header">
+            <div class="studio-package__title-row">
+              <h3 class="studio-package__name">${esc(pkg.name)}</h3>
+              ${badge}
+            </div>
+            <p class="studio-package__tagline">${esc(pkg.tagline)}</p>
+            <p class="studio-package__meta">${pkg.features.length} deliverables included</p>
+          </header>
+          <ul class="studio-package__features" role="list">
+            ${featureItems}
+          </ul>
+          <footer class="studio-package__footer">
+            <div class="studio-package__price">
+              <span class="studio-package__price-label">Starting at</span>
+              <p class="studio-package__price-row">
+                <span class="studio-package__amount">${esc(pkg.price)}</span>
+                <span class="studio-package__currency">${esc(pkg.currency)}</span>
+              </p>
+            </div>
+            <a class="studio-package__cta btn btn-ghost" href="#studio-contact" data-magnetic>Enquire</a>
+          </footer>
+        </article>`;
+}
+
 function renderStudioContent(studio: ChaosStudio, opts?: { omitHero?: boolean }): string {
   const services = renderStudioServicePills(studio.services);
   const whyUs = studio.whyUs
@@ -449,20 +490,7 @@ function renderStudioContent(studio: ChaosStudio, opts?: { omitHero?: boolean })
         </article>`,
     )
     .join("");
-  const packages = studio.packages
-    .map(
-      (pkg) => `
-        <article class="studio-package ${pkg.recommended ? "studio-package--recommended" : ""}">
-          ${pkg.recommended ? `<span class="studio-package__badge">Recommended</span>` : ""}
-          <h3 class="studio-package__name">${esc(pkg.name)}</h3>
-          <p class="studio-package__tagline">${esc(pkg.tagline)}</p>
-          <ul class="studio-package__features">
-            ${pkg.features.map((f) => `<li>${esc(f)}</li>`).join("")}
-          </ul>
-          <p class="studio-package__price"><span class="studio-package__amount">${esc(pkg.price)}</span> <span class="studio-package__currency">${esc(pkg.currency)}</span></p>
-        </article>`,
-    )
-    .join("");
+  const packages = studio.packages.map((pkg) => renderStudioPackage(pkg)).join("");
   const sc = studio.studioContact;
   const hero = opts?.omitHero
     ? ""
