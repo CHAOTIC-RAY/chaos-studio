@@ -404,11 +404,10 @@ export function renderStudioPage(p: Portfolio): string {
       <div class="studio-page-body section section--studio">
         ${renderStudioContent(studio, { omitHero: true })}
       </div>
+      ${renderStudioFinale(studio)}
     </main>
     <footer class="site-footer site-footer--studio">
       <p>© ${new Date().getFullYear()} ${esc(studio.title)} · Malé, Maldives</p>
-      <a href="${esc(sc.instagramUrl)}" target="_blank" rel="noopener noreferrer">${esc(sc.instagram)}</a>
-      · <a href="mailto:${esc(sc.email)}">${esc(sc.email)}</a>
     </footer>
   `;
 }
@@ -479,6 +478,22 @@ function renderStudioPackage(pkg: Portfolio["chaosStudio"]["packages"][0]): stri
         </article>`;
 }
 
+function renderStudioFinale(studio: ChaosStudio): string {
+  const sc = studio.studioContact;
+  return `
+      <section class="studio-finale" id="studio-contact" aria-labelledby="studio-finale-cta">
+        <div class="studio-finale__wash" aria-hidden="true"></div>
+        <div class="studio-finale__inner" data-reveal>
+          <h2 class="studio-finale__cta" id="studio-finale-cta">Let's create something bold!</h2>
+          <ul class="studio-finale__links">
+            <li><a href="${esc(sc.instagramUrl)}" target="_blank" rel="noopener noreferrer">${esc(sc.instagram)}</a></li>
+            <li><a href="tel:${esc(sc.phones.replace(/\s/g, "").replace(/\//g, ","))}">${esc(sc.phones)}</a></li>
+            <li><a href="mailto:${esc(sc.email)}">${esc(sc.email)}</a></li>
+          </ul>
+        </div>
+      </section>`;
+}
+
 function renderStudioContent(studio: ChaosStudio, opts?: { omitHero?: boolean }): string {
   const services = renderStudioServicePills(studio.services);
   const whyUs = studio.whyUs
@@ -491,7 +506,6 @@ function renderStudioContent(studio: ChaosStudio, opts?: { omitHero?: boolean })
     )
     .join("");
   const packages = studio.packages.map((pkg) => renderStudioPackage(pkg)).join("");
-  const sc = studio.studioContact;
   const hero = opts?.omitHero
     ? ""
     : `
@@ -500,11 +514,15 @@ function renderStudioContent(studio: ChaosStudio, opts?: { omitHero?: boolean })
           <h2 class="studio-hero__title">${esc(studio.headline)}</h2>
           <p class="studio-hero__pitch lead">${esc(studio.pitch)}</p>
         </div>`;
-  return `
-        ${hero}
+  const servicesBlock = opts?.omitHero
+    ? ""
+    : `
         <div class="studio-services" data-reveal aria-label="Services offered">
           ${services}
-        </div>
+        </div>`;
+  return `
+        ${hero}
+        ${servicesBlock}
         <div class="studio-why-grid" data-reveal>
           <div class="studio-why-label" aria-hidden="true">Why us?</div>
           ${whyUs}
@@ -521,18 +539,7 @@ function renderStudioContent(studio: ChaosStudio, opts?: { omitHero?: boolean })
             <p class="studio-pricing__note">${esc(studio.pricingNote)}</p>
           </div>
           <div class="studio-packages">${packages}</div>
-        </div>
-        <section class="studio-finale" id="studio-contact" aria-labelledby="studio-finale-cta">
-          <div class="studio-finale__wash" aria-hidden="true"></div>
-          <div class="studio-finale__content" data-reveal>
-            <p class="studio-finale__cta" id="studio-finale-cta">Let's create something bold!</p>
-            <ul class="studio-finale__links">
-              <li><a href="${esc(sc.instagramUrl)}" target="_blank" rel="noopener noreferrer">${esc(sc.instagram)}</a></li>
-              <li><a href="tel:${esc(sc.phones.replace(/\s/g, "").replace(/\//g, ","))}">${esc(sc.phones)}</a></li>
-              <li><a href="mailto:${esc(sc.email)}">${esc(sc.email)}</a></li>
-            </ul>
-          </div>
-        </section>`;
+        </div>`;
 }
 
 function visiblePosts(items: SocialPost[]): SocialPost[] {

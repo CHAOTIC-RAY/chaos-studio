@@ -1580,13 +1580,17 @@ body.route-studio {
   pointer-events: none;
   cursor: default;
 }
-.route-studio #main,
+.route-studio .studio-page-hero__frame,
 .route-studio .studio-page-body {
   max-width: var(--max-w);
   margin-left: auto;
   margin-right: auto;
   padding-left: clamp(1rem, 3vw, 2rem);
   padding-right: clamp(1rem, 3vw, 2rem);
+}
+.route-studio .page-studio {
+  width: 100%;
+  max-width: none;
 }
 .page-studio {
   padding-top: 0;
@@ -1697,11 +1701,6 @@ body.route-studio {
 .route-studio .studio-page-body .studio-hero {
   display: none;
 }
-.site-footer--studio {
-  flex-wrap: wrap;
-  gap: 0.35rem 0.75rem;
-}
-
 /* Chaos Studio — content blocks */
 .section--studio {
   overflow: visible;
@@ -2088,75 +2087,70 @@ body.route-studio {
 }
 .studio-finale {
   position: relative;
-  margin-top: clamp(2.5rem, 6vw, 4rem);
-  margin-bottom: 0;
-  width: 100vw;
-  max-width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  min-height: calc(88vh + var(--studio-finale, 0) * 28vh);
+  width: 100%;
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(3rem, 10vw, 6rem) clamp(1.25rem, 4vw, 2.5rem);
+  padding: clamp(5rem, 14vh, 9rem) clamp(1.5rem, 6vw, 4rem);
   text-align: center;
   overflow: hidden;
   isolation: isolate;
 }
 .studio-finale__wash {
   position: absolute;
-  inset: -12%;
+  inset: -20%;
   z-index: 0;
   pointer-events: none;
-  opacity: calc(var(--studio-logo-fill, 0) * 0.55 + var(--studio-finale, 0) * 0.85);
+  opacity: calc(var(--studio-logo-fill, 0) * 0.5 + var(--studio-finale, 0) * 0.9);
   background:
     radial-gradient(
-      ellipse 85% 75% at 50% 42%,
-      rgba(213, 119, 237, calc(0.35 + var(--studio-finale, 0) * 0.45)) 0%,
-      rgba(120, 60, 180, calc(0.22 + var(--studio-finale, 0) * 0.28)) 42%,
-      transparent 72%
+      ellipse 100% 85% at 50% 45%,
+      rgba(213, 119, 237, calc(0.4 + var(--studio-finale, 0) * 0.5)) 0%,
+      rgba(120, 60, 180, calc(0.28 + var(--studio-finale, 0) * 0.32)) 38%,
+      transparent 70%
     ),
     radial-gradient(
-      ellipse 120% 90% at 50% 55%,
-      rgba(78, 19, 112, calc(0.25 + var(--studio-finale, 0) * 0.35)) 0%,
-      transparent 65%
+      ellipse 140% 100% at 50% 50%,
+      rgba(78, 19, 112, calc(0.3 + var(--studio-finale, 0) * 0.4)) 0%,
+      transparent 62%
     );
-  transform: scale(calc(1 + var(--studio-logo-scale, 0.48) * 0.08 + var(--studio-finale, 0) * 0.35));
-  transition: opacity 0.12s linear, transform 0.12s linear;
+  transform: scale(calc(1 + var(--studio-logo-scale, 0.48) * 0.06 + var(--studio-finale, 0) * 0.28));
 }
-.studio-finale__content {
+.studio-finale__inner {
   position: relative;
   z-index: 1;
-  width: min(100%, 42rem);
-  padding: clamp(1.5rem, 4vw, 2.75rem);
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(213, 119, 237, calc(0.25 + var(--studio-finale, 0) * 0.45));
-  background: linear-gradient(
-    155deg,
-    rgba(213, 119, 237, calc(0.08 + var(--studio-finale, 0) * 0.22)),
-    rgba(10, 8, 16, calc(0.55 + var(--studio-finale, 0) * 0.35))
-  );
-  box-shadow:
-    0 0 calc(40px + var(--studio-finale, 0) * 80px) rgba(213, 119, 237, calc(0.12 + var(--studio-finale, 0) * 0.35)),
-    inset 0 1px 0 rgba(255, 255, 255, calc(0.04 + var(--studio-finale, 0) * 0.08));
-  transform: scale(calc(1 + var(--studio-finale, 0) * 0.14));
-  transition: transform 0.12s linear, border-color 0.12s linear, box-shadow 0.12s linear;
+  width: 100%;
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1.25rem, 4vh, 2.5rem);
+  transform: scale(calc(0.94 + var(--studio-finale, 0) * 0.06));
 }
 .studio-finale__cta {
-  margin: 0 0 clamp(0.85rem, 2vw, 1.25rem);
+  margin: 0;
+  width: 100%;
   font-size: clamp(
-    1.35rem,
-    calc(3.2vw + 0.5rem + var(--studio-finale, 0) * 1.75rem),
-    3.75rem
+    2rem,
+    calc(5vw + 1rem + var(--studio-finale, 0) * 2.5rem),
+    5rem
   );
   font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
+  line-height: 0.98;
+  letter-spacing: -0.03em;
   color: var(--purple-bright);
   text-shadow:
-    0 0 calc(20px + var(--studio-finale, 0) * 48px) rgba(213, 119, 237, calc(0.35 + var(--studio-finale, 0) * 0.55)),
-    0 2px 0 rgba(10, 6, 16, calc(var(--studio-finale, 0) * 0.4));
-  transform: scale(calc(1 + var(--studio-finale, 0) * 0.06));
+    0 0 calc(28px + var(--studio-finale, 0) * 64px) rgba(213, 119, 237, calc(0.45 + var(--studio-finale, 0) * 0.5)),
+    0 4px 24px rgba(10, 6, 16, calc(0.35 + var(--studio-finale, 0) * 0.25));
 }
 .studio-finale__links {
   list-style: none;
@@ -2165,16 +2159,18 @@ body.route-studio {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.5rem 1.25rem;
-  font-size: clamp(0.88rem, 1.1vw + 0.5rem, 1.05rem);
-  opacity: calc(0.82 + var(--studio-finale, 0) * 0.18);
+  align-items: center;
+  gap: clamp(0.65rem, 2vw, 1rem) clamp(1.25rem, 4vw, 2.5rem);
+  font-size: clamp(0.95rem, 1.8vw + 0.35rem, 1.2rem);
+  opacity: calc(0.88 + var(--studio-finale, 0) * 0.12);
 }
 .studio-finale__links a {
   color: var(--text);
   text-decoration: none;
-  border-bottom: 1px solid transparent;
+  border-bottom: 1px solid rgba(213, 119, 237, 0.35);
+  padding-bottom: 0.15rem;
   transition: color 0.2s, border-color 0.2s;
-  font-weight: calc(500 + var(--studio-finale, 0) * 300);
+  font-weight: 600;
 }
 .studio-finale__links a:hover {
   color: var(--purple-bright);
@@ -2183,9 +2179,18 @@ body.route-studio {
 body.studio-finale-active .route-studio .site-header--studio {
   background: rgba(10, 8, 16, calc(0.75 + var(--studio-finale, 0) * 0.2));
 }
-body.studio-finale-active .studio-page-body {
+body.studio-finale-active .studio-page-body,
+body.studio-finale-active .studio-finale {
   position: relative;
   z-index: 1;
+}
+.site-footer--studio {
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+  gap: 0.35rem 0.75rem;
+  padding-top: 1.25rem;
+  padding-bottom: 1.5rem;
 }
 .contact-banner__studio {
   margin: 1rem 0 0;

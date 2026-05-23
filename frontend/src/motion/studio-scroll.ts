@@ -11,13 +11,18 @@ export type StudioScrollState = {
   finale: number;
 };
 
-let state: StudioScrollState = {
+const INITIAL: StudioScrollState = {
   reveal: 0,
   scale: 0.48,
   fill: 0,
   finale: 0,
 };
 
+let state: StudioScrollState = { ...INITIAL };
+let target: StudioScrollState = { ...INITIAL };
+let current: StudioScrollState = { ...INITIAL };
+
+/** Eased value exposed to canvas + CSS (lerped each frame). */
 export function getStudioScrollState(): StudioScrollState {
   return state;
 }
@@ -26,9 +31,19 @@ function clamp(v: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, v));
 }
 
-function smoothstep(t: number): number {
+/** Smoother than smoothstep — gentler start/end for scroll-driven motion. */
+function smootherstep(t: number): number {
   const x = clamp(t, 0, 1);
-  return x * x * (3 - 2 * x);
+  return x * x * x * (x * (x * 6 - 15) + 10);
+}
+
+function lerpState(a: StudioScrollState, b: StudioScrollState, t: number): StudioScrollState {
+  return {
+    reveal: a.reveal + (b.reveal - a.reveal) * t,
+    scale: a.scale + (b.scale - a.scale) * t,
+    fill: a.fill + (b.fill - a.fill) * t,
+    finale: a.finale + (b.finale - a.finale) * t,
+  };
 }
 
 function applyCssVars(s: StudioScrollState): void {
@@ -60,65 +75,74 @@ export function initStudioScrollEffect(): () => void {
     state = { reveal: 1, scale: 1.1, fill: 0, finale: 0 };
     applyCssVars(state);
     return () => {
-      state = { reveal: 0, scale: 0.48, fill: 0, finale: 0 };
+      state = { ...INITIAL };
+      target = { ...INITIAL };
+      current = { ...INITIAL };
       clearCssVars();
     };
   }
 
-  let raf = 0;
+  let measureRaf = 0;
+  let smoothRaf = 0;
+  const SMOOTH_RATE = 0.065;
 
-  const measure = () => {
+  const measureTarget = () => {
     const scrollY = window.scrollY;
     const vh = window.innerHeight;
     const pageTop = page.offsetTop;
     const pageHeight = page.offsetHeight;
     const scrollInPage = scrollY - pageTop + vh * 0.12;
 
-    const revealStart = vh * 0.05;
-    const revealSpan = vh * 1.15;
-    const reveal = smoothstep((scrollInPage - revealStart) / revealSpan);
+    const revealStart = vh * 0.08;
+    const revealSpan = vh * 1.35;
+    const reveal = smootherstep((scrollInPage - revealStart) / revealSpan);
 
-    const growStart = vh * 0.25;
-    const growSpan = Math.max(vh * 2.2, pageHeight - vh * 2.4);
-    const grow = smoothstep((scrollInPage - growStart) / growSpan);
-    const scale = 0.46 + grow * 4.2;
+    const growStart = vh * 0.35;
+    const growSpan = Math.max(vh * 2.6, pageHeight - vh * 2.2);
+    const grow = smootherstep((scrollInPage - growStart) / growSpan);
+    const scale = 0.48 + grow * 3.4;
 
     let fill = 0;
     let finaleProgress = 0;
     if (finale) {
       const rect = finale.getBoundingClientRect();
       const finaleTop = scrollY + rect.top;
-      const enter = finaleTop - vh * 0.55;
-      const peak = finaleTop - vh * 0.08;
-      finaleProgress = smoothstep((scrollY - enter) / Math.max(1, peak - enter));
-      const floodStart = finaleTop - vh * 0.35;
-      const floodPeak = finaleTop + vh * 0.12;
-      fill = smoothstep((scrollY - floodStart) / Math.max(1, floodPeak - floodStart));
+      const enter = finaleTop - vh * 0.65;
+      const peak = finaleTop - vh * 0.05;
+      finaleProgress = smootherstep((scrollY - enter) / Math.max(1, peak - enter));
+      const floodStart = finaleTop - vh * 0.5;
+      const floodPeak = finaleTop + vh * 0.2;
+      fill = smootherstep((scrollY - floodStart) / Math.max(1, floodPeak - floodStart));
     }
 
-    state = {
-      reveal,
-      scale,
-      fill,
-      finale: finaleProgress,
-    };
-    applyCssVars(state);
+    target = { reveal, scale, fill, finale: finaleProgress };
+  };
+
+  const smoothTick = () => {
+    current = lerpState(current, target, SMOOTH_RATE);
+    state = current;
+    applyCssVars(current);
+    smoothRaf = requestAnimationFrame(smoothTick);
   };
 
   const onScroll = () => {
-    cancelAnimationFrame(raf);
-    raf = requestAnimationFrame(measure);
+    cancelAnimationFrame(measureRaf);
+    measureRaf = requestAnimationFrame(measureTarget);
   };
 
-  measure();
+  measureTarget();
+  smoothRaf = requestAnimationFrame(smoothTick);
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", onScroll, { passive: true });
 
   return () => {
-    cancelAnimationFrame(raf);
+    cancelAnimationFrame(measureRaf);
+    cancelAnimationFrame(smoothRaf);
     window.removeEventListener("scroll", onScroll);
     window.removeEventListener("resize", onScroll);
-    state = { reveal: 0, scale: 0.48, fill: 0, finale: 0 };
+    state = { ...INITIAL };
+    target = { ...INITIAL };
+    current = { ...INITIAL };
     clearCssVars();
   };
 }
