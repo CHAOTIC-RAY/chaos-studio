@@ -1,4 +1,5 @@
 import { CHAOS_LOGO_VIEWBOX, getChaosLogoPath } from "../brand/logo";
+import { getStudioScrollState } from "../motion/studio-scroll";
 import { prefersReducedMotion } from "../motion/reduced-motion";
 import { getSmoothMouse } from "../mouse/mouse-state";
 import type { Theme } from "../theme";
@@ -57,28 +58,27 @@ function studioPointerTarget(time: number): { x: number; y: number } {
   };
 }
 
-function drawStudioLogoGlow(
+function drawStudioLogoAt(
   target: CanvasRenderingContext2D,
-  tw: number,
-  th: number,
+  cx: number,
+  cy: number,
+  scaleMul: number,
   time: number,
-  mx: number,
-  my: number,
   theme: Theme,
+  alpha: number,
+  solidFill: boolean,
 ): void {
   const path = getChaosLogoPath();
-  const parallaxX = (mx - 0.5) * 0.16;
-  const parallaxY = (my - 0.5) * 0.14;
-  const cx = tw * (0.5 + parallaxX);
-  const cy = th * (0.38 + parallaxY);
-  const pulse = 1 + Math.sin(time * 0.0014) * 0.045;
-  const wobble = Math.sin(time * 0.00075) * 0.018;
-  const fit = (Math.min(tw, th) * 0.62) / CHAOS_LOGO_VIEWBOX.h;
+  const pulse = 1 + Math.sin(time * 0.0014) * 0.035;
+  const wobble = Math.sin(time * 0.00075) * 0.012;
+  const fit = (Math.min(target.canvas.width, target.canvas.height) * 0.62) / CHAOS_LOGO_VIEWBOX.h;
+  const s = fit * pulse * scaleMul;
 
   target.save();
+  target.globalAlpha = alpha;
   target.translate(cx, cy);
   target.rotate(wobble);
-  target.scale(fit * pulse, fit * pulse);
+  target.scale(s, s);
   target.translate(-CHAOS_LOGO_VIEWBOX.w / 2, -CHAOS_LOGO_VIEWBOX.h / 2);
   target.clip(path);
 
@@ -86,7 +86,10 @@ function drawStudioLogoGlow(
   const ly = CHAOS_LOGO_VIEWBOX.h * 0.42;
   const r = CHAOS_LOGO_VIEWBOX.w * 0.78;
 
-  if (theme === "dark") {
+  if (solidFill) {
+    target.fillStyle = theme === "dark" ? "rgba(213, 119, 237, 0.92)" : "rgba(168, 72, 198, 0.85)";
+    target.fillRect(-CHAOS_LOGO_VIEWBOX.w, -CHAOS_LOGO_VIEWBOX.h, CHAOS_LOGO_VIEWBOX.w * 3, CHAOS_LOGO_VIEWBOX.h * 3);
+  } else if (theme === "dark") {
     const core = target.createRadialGradient(lx, ly, 0, lx, ly, r * 0.55);
     core.addColorStop(0, "rgba(232, 160, 245, 0.95)");
     core.addColorStop(0.35, "rgba(213, 119, 237, 0.72)");
@@ -111,15 +114,57 @@ function drawStudioLogoGlow(
   }
 
   target.restore();
+}
 
-  // Soft ambient wash (follows pointer, stays behind logo shape)
-  const ax = mx * tw;
-  const ay = my * th;
-  const amb = target.createRadialGradient(ax, ay, 0, ax, ay, Math.min(tw, th) * 0.55);
-  amb.addColorStop(0, theme === "dark" ? "rgba(78, 19, 112, 0.22)" : "rgba(213, 119, 237, 0.12)");
-  amb.addColorStop(1, "rgba(0, 0, 0, 0)");
-  target.fillStyle = amb;
-  target.fillRect(0, 0, tw, th);
+function drawStudioLogoGlow(
+  target: CanvasRenderingContext2D,
+  tw: number,
+  th: number,
+  time: number,
+  mx: number,
+  my: number,
+  theme: Theme,
+): void {
+  const { reveal, scale, fill, finale } = getStudioScrollState();
+  if (reveal < 0.004 && fill < 0.004) return;
+
+  const parallaxX = (mx - 0.5) * 0.14;
+  const parallaxY = (my - 0.5) * 0.12;
+  const cx = tw * (0.5 + parallaxX);
+  const cy = th * (0.36 + parallaxY + finale * 0.22);
+
+  const glowAlpha = reveal * (1 - fill * 0.55);
+  if (glowAlpha > 0.01) {
+    drawStudioLogoAt(target, cx, cy, scale, time, theme, glowAlpha, false);
+  }
+
+  if (fill > 0.02) {
+    const floodScale = scale * (1 + fill * 2.8);
+    drawStudioLogoAt(target, cx, cy, floodScale, time, theme, fill * 0.95, true);
+  }
+
+  if (fill > 0.08) {
+    target.save();
+    target.globalAlpha = fill * 0.35;
+    const wash = target.createRadialGradient(cx, cy, 0, cx, cy, Math.max(tw, th) * 0.85);
+    wash.addColorStop(0, "rgba(213, 119, 237, 0.45)");
+    wash.addColorStop(0.45, "rgba(120, 60, 180, 0.28)");
+    wash.addColorStop(1, "rgba(10, 6, 16, 0)");
+    target.fillStyle = wash;
+    target.fillRect(0, 0, tw, th);
+    target.restore();
+  }
+
+  if (reveal > 0.05 && fill < 0.65) {
+    const ax = mx * tw;
+    const ay = my * th;
+    const amb = target.createRadialGradient(ax, ay, 0, ax, ay, Math.min(tw, th) * 0.5);
+    amb.addColorStop(0, theme === "dark" ? "rgba(78, 19, 112, 0.18)" : "rgba(213, 119, 237, 0.1)");
+    amb.addColorStop(1, "rgba(0, 0, 0, 0)");
+    target.globalAlpha = reveal * 0.85;
+    target.fillStyle = amb;
+    target.fillRect(0, 0, tw, th);
+  }
 }
 
 export function initCanvasBackground(): () => void {
@@ -221,17 +266,21 @@ export function initCanvasBackground(): () => void {
 
     if (studio) {
       const { x: mx, y: my } = studioPointerTarget(time);
+      const scroll = getStudioScrollState();
       bctx.clearRect(0, 0, bw, bh);
       drawStudioLogoGlow(bctx, bw, bh, time, mx, my, theme);
-      applyBayerDither(bctx, bw, bh, {
-        profile,
-        strength: theme === "dark" ? 0.62 : 0.48,
-        noise: 0.68,
-        vignetteNoise: true,
-        cx: mx,
-        cy: my,
-        time,
-      });
+      const ditherReveal = scroll.reveal * (1 - scroll.fill * 0.7) + scroll.fill * 0.35;
+      if (ditherReveal > 0.02) {
+        applyBayerDither(bctx, bw, bh, {
+          profile,
+          strength: (theme === "dark" ? 0.62 : 0.48) * ditherReveal,
+          noise: 0.68 * ditherReveal,
+          vignetteNoise: true,
+          cx: mx,
+          cy: my + scroll.finale * 0.15,
+          time,
+        });
+      }
     } else {
       drawBlobs(bctx, bw, bh, time);
       applyBayerDither(bctx, bw, bh, {

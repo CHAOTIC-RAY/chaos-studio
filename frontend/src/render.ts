@@ -489,14 +489,17 @@ function renderStudioContent(studio: ChaosStudio, opts?: { omitHero?: boolean })
           </div>
           <div class="studio-packages">${packages}</div>
         </div>
-        <div class="studio-contact glass-card" id="studio-contact" data-reveal>
-          <p class="studio-contact__cta">Let's create something bold!</p>
-          <ul class="studio-contact__links">
-            <li><a href="${esc(sc.instagramUrl)}" target="_blank" rel="noopener noreferrer">${esc(sc.instagram)}</a></li>
-            <li><a href="tel:${esc(sc.phones.replace(/\s/g, "").replace(/\//g, ","))}">${esc(sc.phones)}</a></li>
-            <li><a href="mailto:${esc(sc.email)}">${esc(sc.email)}</a></li>
-          </ul>
-        </div>`;
+        <section class="studio-finale" id="studio-contact" aria-labelledby="studio-finale-cta">
+          <div class="studio-finale__wash" aria-hidden="true"></div>
+          <div class="studio-finale__content" data-reveal>
+            <p class="studio-finale__cta" id="studio-finale-cta">Let's create something bold!</p>
+            <ul class="studio-finale__links">
+              <li><a href="${esc(sc.instagramUrl)}" target="_blank" rel="noopener noreferrer">${esc(sc.instagram)}</a></li>
+              <li><a href="tel:${esc(sc.phones.replace(/\s/g, "").replace(/\//g, ","))}">${esc(sc.phones)}</a></li>
+              <li><a href="mailto:${esc(sc.email)}">${esc(sc.email)}</a></li>
+            </ul>
+          </div>
+        </section>`;
 }
 
 function visiblePosts(items: SocialPost[]): SocialPost[] {

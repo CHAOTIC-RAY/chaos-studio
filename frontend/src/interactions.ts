@@ -1,4 +1,5 @@
 import { prefersReducedMotion } from "./motion/reduced-motion";
+import { initStudioScrollEffect } from "./motion/studio-scroll";
 import { initPostLightbox } from "./post-lightbox";
 
 export function initInteractions(): () => void {
@@ -55,6 +56,7 @@ function initPostCarousels(): () => void {
 /** Studio page: magnetic buttons + in-page nav highlights only */
 export function initStudioInteractions(): () => void {
   const cleanups: (() => void)[] = [];
+  cleanups.push(initStudioScrollEffect());
   if (!prefersReducedMotion()) {
     cleanups.push(initMagnetic());
   }
