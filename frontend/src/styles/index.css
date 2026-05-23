@@ -575,9 +575,19 @@ main { padding-top: var(--header-h); }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
 
 .scroll-cue {
-  position: absolute; bottom: 2rem; left: clamp(1rem, 4vw, 2.5rem);
-  font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase;
-  color: var(--muted); display: flex; flex-direction: column; gap: 0.4rem;
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
 }
 .scroll-line {
   width: 1px; height: 2.5rem;
@@ -1694,11 +1704,6 @@ body.route-studio {
 .route-studio .site-header--studio .logo-text {
   color: var(--purple-bright);
 }
-.route-studio [data-theme-toggle] {
-  opacity: 0.45;
-  pointer-events: none;
-  cursor: default;
-}
 .route-studio .studio-page-hero__frame,
 .route-studio .studio-page-body {
   max-width: var(--max-w);
@@ -2362,12 +2367,20 @@ body.studio-finale-active .studio-finale {
   z-index: 1;
 }
 .site-footer--studio {
+  width: 100%;
+  max-width: none;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   text-align: center;
   gap: 0.35rem 0.75rem;
   padding-top: 1.25rem;
   padding-bottom: 1.5rem;
+}
+.site-footer--studio p {
+  width: 100%;
+  margin: 0;
+  text-align: center;
 }
 .contact-banner__studio {
   margin: 1rem 0 0;
@@ -3291,6 +3304,10 @@ main { position: relative; z-index: 1; }
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
+  }
+  .site-footer--studio {
+    align-items: center;
+    text-align: center;
   }
 }
 

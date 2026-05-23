@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -31,7 +31,7 @@
         try {
           t = localStorage.getItem(k);
         } catch (e) {}
-        if (t !== "light" && t !== "dark") t = "light";
+        if (t !== "light" && t !== "dark") t = "dark";
         document.documentElement.setAttribute("data-theme", t);
       })();
     </script>

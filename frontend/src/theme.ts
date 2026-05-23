@@ -12,9 +12,9 @@ export function getStoredTheme(): Theme | null {
   return null;
 }
 
-/** Default is light mode per product request. */
+/** Default is dark mode site-wide; user choice persists in localStorage. */
 export function getPreferredTheme(): Theme {
-  return getStoredTheme() ?? "light";
+  return getStoredTheme() ?? "dark";
 }
 
 export function applyTheme(theme: Theme): void {
@@ -35,18 +35,12 @@ function updateToggleState(theme: Theme): void {
   });
 }
 
-function themeForCurrentRoute(): Theme {
-  if (document.body.classList.contains("route-studio")) return "dark";
-  return getPreferredTheme();
-}
-
 export function initTheme(): () => void {
-  const theme = themeForCurrentRoute();
+  const theme = getPreferredTheme();
   applyTheme(theme);
   updateToggleState(theme);
 
   const handler = () => {
-    if (document.body.classList.contains("route-studio")) return;
     const current =
       document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
     const next: Theme = current === "dark" ? "light" : "dark";
