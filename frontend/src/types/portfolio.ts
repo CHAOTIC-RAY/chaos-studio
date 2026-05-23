@@ -58,6 +58,7 @@ export interface Portfolio {
       description: string;
       tags: string[];
       accent: string;
+      mediaAspect?: "portrait" | "landscape" | "square";
       image?: string;
       slides?: string[];
       /** Filename under /images/posts/{id}/ */

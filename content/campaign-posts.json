@@ -618,6 +618,7 @@
     },
     {
       "id": "mdp-post",
+      "mediaAspect": "square",
       "platform": "Instagram",
       "client": "MDP Campaign",
       "title": "Campaign feed post",
@@ -644,6 +645,7 @@
     },
     {
       "id": "mdp-media-kit",
+      "mediaAspect": "landscape",
       "platform": "Media kit",
       "client": "MDP Campaign · Khulaasa",
       "title": "Khulaasa media kit",

@@ -514,7 +514,7 @@ function renderPostsSection(social: Portfolio["socialPosts"]): string {
           </div>
           <button
             type="button"
-            class="btn btn-sm posts-panel__toggle"
+            class="posts-panel__toggle"
             data-posts-expand
             aria-expanded="false"
             aria-controls="posts-panel"
@@ -542,7 +542,6 @@ function renderPostsSection(social: Portfolio["socialPosts"]): string {
             <p class="posts-rail__hint">Use arrows or drag · Hover reels to preview · Expand for full grid</p>
           </div>
           <div class="posts-feed-expanded" data-posts-expanded hidden>
-            <p class="posts-feed-expanded__hint">Browse by client — tap a row to expand posts. Click any image for fullscreen.</p>
             ${renderPostsExpandedFeed(items)}
           </div>
         </div>`;
@@ -556,6 +555,20 @@ function groupPostsByClient(items: SocialPost[]): { client: string; posts: Socia
     else groups.push({ client: post.client, posts: [post] });
   }
   return groups;
+}
+
+function clientSlug(client: string): string {
+  return client
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function postKindLabel(post: SocialPost): string {
+  if (post.video) return "Reel";
+  const n = post.slides?.length ?? 0;
+  if (n > 1) return `${n} slides`;
+  return "Image";
 }
 
 function renderPostsTrack(items: SocialPost[]): string {
@@ -580,23 +593,51 @@ function renderPostsTrack(items: SocialPost[]): string {
 
 function renderPostsExpandedFeed(items: SocialPost[]): string {
   const groups = groupPostsByClient(items);
-  return groups
+  const clientCount = groups.length;
+  const nav = groups
     .map(
-      (g, i) => `
-      <details class="posts-accordion" ${i === 0 ? "open" : ""}>
-        <summary class="posts-accordion__summary">
-          <span class="posts-accordion__name">${esc(g.client)}</span>
-          <span class="posts-accordion__count">${g.posts.length} post${g.posts.length === 1 ? "" : "s"}</span>
-          <span class="posts-accordion__icon" aria-hidden="true">${ICON_CHEVRON_DOWN}</span>
-        </summary>
-        <div class="posts-accordion__body">
-          <div class="posts-grid">
-            ${g.posts.map((post) => renderPostCard(post, { expandable: true })).join("")}
-          </div>
-        </div>
-      </details>`,
+      (g) => `
+        <a class="posts-feed__chip" href="#posts-client-${esc(clientSlug(g.client))}" data-posts-chip>
+          <span class="posts-feed__chip-label">${esc(g.client)}</span>
+          <span class="posts-feed__chip-count">${g.posts.length}</span>
+        </a>`,
     )
     .join("");
+
+  const sections = groups
+    .map(
+      (g) => `
+      <section
+        class="posts-feed__section"
+        id="posts-client-${esc(clientSlug(g.client))}"
+        data-posts-section
+        data-client="${esc(g.client)}"
+        aria-labelledby="posts-heading-${esc(clientSlug(g.client))}"
+      >
+        <header class="posts-feed__section-head">
+          <div class="posts-feed__section-title">
+            <h3 class="posts-feed__section-name" id="posts-heading-${esc(clientSlug(g.client))}">${esc(g.client)}</h3>
+            <p class="posts-feed__section-meta">${g.posts.length} post${g.posts.length === 1 ? "" : "s"} in this campaign</p>
+          </div>
+        </header>
+        <div class="posts-feed__list">
+          ${g.posts.map((post) => renderPostCard(post, { feed: "expanded" })).join("")}
+        </div>
+      </section>`,
+    )
+    .join("");
+
+  return `
+    <div class="posts-feed__shell">
+      <header class="posts-feed__toolbar" data-posts-toolbar>
+        <div class="posts-feed__toolbar-copy">
+          <p class="posts-feed__eyebrow">Full archive</p>
+          <p class="posts-feed__lead">${items.length} posts · ${clientCount} client${clientCount === 1 ? "" : "s"} · Click any frame for fullscreen</p>
+        </div>
+        <nav class="posts-feed__nav hide-scrollbar" aria-label="Jump to client">${nav}</nav>
+      </header>
+      <div class="posts-feed__sections">${sections}</div>
+    </div>`;
 }
 
 function postImageBase(post: SocialPost): string {
@@ -636,15 +677,37 @@ function renderPostViewButton(post: SocialPost): string {
   return `<button type="button" class="post-card__view" data-post-view aria-label="${esc(label)}"></button>`;
 }
 
+function postMediaAspect(post: SocialPost): "portrait" | "landscape" | "square" {
+  return post.mediaAspect ?? "portrait";
+}
+
+function postSlideDimensions(post: SocialPost): { width: number; height: number } {
+  switch (postMediaAspect(post)) {
+    case "landscape":
+      return { width: 841, height: 596 };
+    case "square":
+      return { width: 1080, height: 1080 };
+    default:
+      return { width: 1080, height: 1350 };
+  }
+}
+
+function postAspectClass(post: SocialPost): string {
+  const aspect = postMediaAspect(post);
+  if (aspect === "landscape") return "post-card--landscape";
+  if (aspect === "square") return "post-card--square";
+  return "";
+}
+
 function renderPostSlideImg(
   post: SocialPost,
   slide: string,
-  opts: { slideIndex: number; slideCount: number; eager?: boolean; connectedStrip?: boolean },
+  opts: { slideIndex: number; slideCount: number; eager?: boolean; filmstrip?: boolean },
 ): string {
   const src = postSlideSrc(post, slide);
   const imageBase = post.slides?.length ? `${post.id}/${slide}` : postImageBase(post);
-  const slideClass =
-    opts.slideCount > 1 && !opts.connectedStrip ? " post-card__slide" : "";
+  const { width, height } = postSlideDimensions(post);
+  const slideClass = opts.slideCount > 1 && !opts.filmstrip ? " post-card__slide" : "";
   return `
         <img
           class="post-card__img${slideClass}"
@@ -652,36 +715,33 @@ function renderPostSlideImg(
           data-image-base="${esc(imageBase)}"
           src="${esc(src)}"
           alt="${esc(post.title)} — ${esc(post.client)}${opts.slideCount > 1 ? ` (${opts.slideIndex + 1}/${opts.slideCount})` : ""}"
-          width="1080"
-          height="1350"
+          width="${width}"
+          height="${height}"
           loading="${opts.eager ? "eager" : "lazy"}"
-          ${opts.slideCount > 1 ? `style="--slide-i:${opts.slideIndex};--slide-count:${opts.slideCount}"` : ""}
+          ${opts.slideCount > 1 && !opts.filmstrip ? `style="--slide-i:${opts.slideIndex};--slide-count:${opts.slideCount}"` : ""}
         />`;
 }
 
-function renderPostConnectedStrip(post: SocialPost, slides: string[]): string {
+function renderPostFilmstrip(post: SocialPost, slides: string[]): string {
   const count = slides.length;
   const figures = slides
     .map(
       (slide, i) => `
-        <figure class="post-card__connected-slide">
-          ${renderPostSlideImg(post, slide, { slideIndex: i, slideCount: count, eager: i < 2, connectedStrip: true })}
+        <figure class="post-card__filmstrip-slide">
+          ${renderPostSlideImg(post, slide, { slideIndex: i, slideCount: count, eager: i < 2, filmstrip: true })}
         </figure>`,
     )
     .join("");
   return `
-    <div class="post-card__connected" data-connected-carousel>
+    <div class="post-card__filmstrip" data-filmstrip>
       <div
-        class="post-card__connected-track"
+        class="post-card__filmstrip-track"
         tabindex="0"
-        aria-label="${esc(post.title)} — ${count} connected slides, swipe horizontally"
+        aria-label="${esc(post.title)} — ${count} slides, swipe horizontally"
       >
         ${figures}
       </div>
-      <p class="post-card__connected-hint">
-        <span class="post-card__connected-badge">${count} slides</span>
-        Swipe sideways — frames connect like an Instagram carousel
-      </p>
+      <span class="post-card__filmstrip-badge" aria-hidden="true">${count} slides</span>
     </div>
     ${renderPostViewButton(post)}`;
 }
@@ -701,7 +761,7 @@ function renderPostMedia(post: SocialPost, mode: "rail" | "expanded" = "rail"): 
   }
 
   if (mode === "expanded") {
-    return renderPostConnectedStrip(post, slides);
+    return renderPostFilmstrip(post, slides);
   }
 
   const count = slides.length;
@@ -716,34 +776,38 @@ function renderPostMedia(post: SocialPost, mode: "rail" | "expanded" = "rail"): 
     ${renderPostViewButton(post)}`;
 }
 
-function renderPostCard(post: SocialPost, opts?: { expandable?: boolean }): string {
+function renderPostCard(post: SocialPost, opts?: { feed?: "rail" | "expanded" }): string {
+  const feed = opts?.feed ?? "rail";
+  const isFeed = feed === "expanded";
   const accent = POST_ACCENTS[post.accent] ?? "post-card--purple";
+  const aspect = postAspectClass(post);
   const slideCount = post.slides?.length ?? 0;
-  const expandable = opts?.expandable ?? false;
-  const connected = expandable && slideCount > 1;
+  const filmstrip = isFeed && slideCount > 1;
   const kind = post.video
     ? "post-card--video"
-    : connected
-      ? "post-card--connected"
+    : filmstrip
+      ? "post-card--filmstrip"
       : slideCount > 1
         ? "post-card--carousel"
         : "";
+  const postKind = post.video ? "video" : filmstrip ? "filmstrip" : slideCount > 1 ? "carousel" : "image";
+  const meta = `
+        <div class="post-card__meta">
+          <span class="post-card__platform">${esc(post.platform)}</span>
+          <span class="post-card__kind">${esc(postKindLabel(post))}</span>
+        </div>`;
+
   return `
-    <article class="post-card ${accent} ${kind}${expandable ? " post-card--expandable" : ""}" data-post-kind="${post.video ? "video" : connected ? "connected-carousel" : slideCount > 1 ? "carousel" : "image"}">
-      <div class="post-card__media${connected ? " post-card__media--connected" : ""}">
-        ${renderPostMedia(post, expandable ? "expanded" : "rail")}
+    <article class="post-card ${accent} ${aspect} ${kind}${isFeed ? " post-card--feed" : ""}" data-post-kind="${postKind}" data-post-id="${esc(post.id)}">
+      <div class="post-card__media${filmstrip ? " post-card__media--filmstrip" : ""}">
+        ${renderPostMedia(post, feed)}
         <div class="post-card__shine" aria-hidden="true"></div>
       </div>
       <div class="post-card__body">
-        <p class="post-card__client">${esc(post.client)}</p>
-        <h3>${esc(post.title)}</h3>
+        ${isFeed ? meta : `<p class="post-card__client">${esc(post.client)}</p>`}
+        <h3 class="post-card__title">${esc(post.title)}</h3>
         <p class="post-desc">${esc(post.description)}</p>
         <div class="post-tags">${post.tags.map((t) => `<span>${esc(t)}</span>`).join("")}</div>
-        ${
-          expandable
-            ? `<button type="button" class="post-card__more" aria-expanded="false">Show more</button>`
-            : ""
-        }
       </div>
     </article>
   `;

@@ -8,7 +8,7 @@ export function initInteractions(): () => void {
   }
   cleanups.push(initPostsRail());
   cleanups.push(initPostsPanel());
-  cleanups.push(initPostCardExpand());
+  cleanups.push(initPostsExpandedFeed());
   cleanups.push(initActiveNav());
   cleanups.push(initPostImageFallback());
   cleanups.push(initPostVideos());
@@ -243,7 +243,7 @@ function initPostsPanel(): () => void {
     panel.classList.toggle("posts-panel--collapsed", !on);
     btn.setAttribute("aria-expanded", String(on));
     expanded.hidden = !on;
-    if (label) label.textContent = on ? "Show carousel" : "Expand full feed";
+    if (label) label.textContent = on ? "Back to carousel" : "Browse full feed";
     if (on) {
       expanded.querySelectorAll<HTMLVideoElement>(".post-card__video").forEach((v) => {
         v.pause();
@@ -260,21 +260,56 @@ function initPostsPanel(): () => void {
   return () => btn.removeEventListener("click", onToggle);
 }
 
-function initPostCardExpand(): () => void {
-  const cleanups: Array<() => void> = [];
-  document.querySelectorAll<HTMLElement>(".post-card--expandable").forEach((card) => {
-    const btn = card.querySelector<HTMLButtonElement>(".post-card__more");
-    if (!btn) return;
-    const onClick = (e: Event) => {
-      e.stopPropagation();
-      const open = card.classList.toggle("post-card--open");
-      btn.setAttribute("aria-expanded", String(open));
-      btn.textContent = open ? "Show less" : "Show more";
-    };
-    btn.addEventListener("click", onClick);
-    cleanups.push(() => btn.removeEventListener("click", onClick));
-  });
-  return () => cleanups.forEach((fn) => fn());
+function initPostsExpandedFeed(): () => void {
+  const feed = document.querySelector("[data-posts-expanded]");
+  if (!feed) return () => {};
+
+  const chips = Array.from(feed.querySelectorAll<HTMLAnchorElement>("[data-posts-chip]"));
+  const sections = Array.from(feed.querySelectorAll<HTMLElement>("[data-posts-section]"));
+  if (!chips.length || !sections.length) return () => {};
+
+  const setActive = (slug: string | null) => {
+    chips.forEach((chip) => {
+      const href = chip.getAttribute("href") ?? "";
+      const match = slug && href === `#${slug}`;
+      chip.classList.toggle("posts-feed__chip--active", Boolean(match));
+      if (match) chip.setAttribute("aria-current", "true");
+      else chip.removeAttribute("aria-current");
+    });
+  };
+
+  const onChipClick = (e: Event) => {
+    const chip = (e.currentTarget as HTMLAnchorElement).closest<HTMLAnchorElement>("[data-posts-chip]");
+    if (!chip) return;
+    const id = chip.getAttribute("href")?.slice(1);
+    if (!id) return;
+    const section = document.getElementById(id);
+    if (!section) return;
+    e.preventDefault();
+    section.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
+    setActive(id);
+  };
+
+  chips.forEach((chip) => chip.addEventListener("click", onChipClick));
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      const visible = entries
+        .filter((en) => en.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+      const top = visible[0]?.target as HTMLElement | undefined;
+      if (top?.id) setActive(top.id);
+    },
+    { rootMargin: "-20% 0px -55% 0px", threshold: [0, 0.15, 0.35] },
+  );
+  sections.forEach((section) => observer.observe(section));
+
+  setActive(sections[0]?.id ?? null);
+
+  return () => {
+    chips.forEach((chip) => chip.removeEventListener("click", onChipClick));
+    observer.disconnect();
+  };
 }
 
 function initActiveNav(): () => void {

@@ -239,10 +239,10 @@ export function initPostLightbox(): () => void {
         if (idx >= 0) startIndex = idx;
       }
     } else {
-      const track = card.querySelector<HTMLElement>(".post-card__connected-track");
+      const track = card.querySelector<HTMLElement>(".post-card__filmstrip-track");
       if (track && lightboxItems.length > 1) {
         const center = track.scrollLeft + track.clientWidth / 2;
-        const slides = Array.from(track.querySelectorAll<HTMLElement>(".post-card__connected-slide"));
+        const slides = Array.from(track.querySelectorAll<HTMLElement>(".post-card__filmstrip-slide"));
         let best = 0;
         let bestDist = Number.POSITIVE_INFINITY;
         slides.forEach((slide, i) => {
@@ -257,8 +257,12 @@ export function initPostLightbox(): () => void {
       }
     }
 
-    const title = card.querySelector(".post-card__body h3")?.textContent?.trim() || "Post";
-    const client = card.querySelector(".post-card__client")?.textContent?.trim() || "";
+    const title = card.querySelector(".post-card__title, .post-card__body h3")?.textContent?.trim() || "Post";
+    const section = card.closest<HTMLElement>("[data-posts-section]");
+    const client =
+      section?.getAttribute("data-client") ||
+      card.querySelector(".post-card__client")?.textContent?.trim() ||
+      "";
 
     openLightbox(lightboxItems, startIndex, { title, client });
   };
