@@ -21,6 +21,8 @@ export type DitherOptions = {
   vignetteNoise?: boolean;
   cx?: number;
   cy?: number;
+  /** Animated dither phase (ms) — studio logo shimmer */
+  time?: number;
 };
 
 function bayerThreshold(x: number, y: number, size: 4 | 8): number {
@@ -59,6 +61,8 @@ export function applyBayerDither(
   const cy = opts.cy ?? 0.42;
   const matrix: 4 | 8 = profile === "studio" ? 8 : 4;
   const seed = profile === "studio" ? 9137 : 42;
+  const timePhase = opts.time ?? 0;
+  const animate = profile === "studio" && timePhase > 0;
 
   const imageData = ctx.getImageData(0, 0, width, height);
   const data = imageData.data;
@@ -77,9 +81,11 @@ export function applyBayerDither(
       const dist = Math.hypot(nx - cx, ny - cy) * maxR;
       const edge = vignette ? Math.min(1, Math.pow(dist / (maxR * 0.85), 1.35)) : 0.35;
 
-      const ordered = bayerThreshold(x, y, matrix);
-      const grain = (hashNoise(x, y, seed) - 0.5) * 2;
-      const grain2 = profile === "studio" ? (hashNoise(x * 3 + 7, y * 5 + 11, seed + 3) - 0.5) * 1.2 : 0;
+      const tx = animate ? x + Math.floor(timePhase * 0.04) : x;
+      const ty = animate ? y + Math.floor(timePhase * 0.03) : y;
+      const ordered = bayerThreshold(tx, ty, matrix);
+      const grain = (hashNoise(tx, ty, seed + Math.floor(timePhase * 0.02)) - 0.5) * 2;
+      const grain2 = profile === "studio" ? (hashNoise(tx * 3 + 7, ty * 5 + 11, seed + 3 + Math.floor(timePhase * 0.015)) - 0.5) * 1.2 : 0;
       const noiseMix = (ordered * (1 - noise * 0.65) + grain * noise + grain2 * noise * 0.45) * (0.65 + edge * 0.55);
 
       const shift = noiseMix * strength * 255;

@@ -35,12 +35,18 @@ function updateToggleState(theme: Theme): void {
   });
 }
 
+function themeForCurrentRoute(): Theme {
+  if (document.body.classList.contains("route-studio")) return "dark";
+  return getPreferredTheme();
+}
+
 export function initTheme(): () => void {
-  const theme = getPreferredTheme();
+  const theme = themeForCurrentRoute();
   applyTheme(theme);
   updateToggleState(theme);
 
   const handler = () => {
+    if (document.body.classList.contains("route-studio")) return;
     const current =
       document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
     const next: Theme = current === "dark" ? "light" : "dark";

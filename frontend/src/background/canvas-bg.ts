@@ -1,10 +1,11 @@
+import { CHAOS_LOGO_VIEWBOX, getChaosLogoPath } from "../brand/logo";
 import { prefersReducedMotion } from "../motion/reduced-motion";
 import { getSmoothMouse } from "../mouse/mouse-state";
 import type { Theme } from "../theme";
 import { applyBayerDither, type DitherProfile } from "./dither";
 
 const DITHER_SCALE_DEFAULT = 0.4;
-const DITHER_SCALE_STUDIO = 0.28;
+const DITHER_SCALE_STUDIO = 0.32;
 
 const BLOB_PALETTES: Record<Theme, [string, string, string]> = {
   light: [
@@ -16,19 +17,6 @@ const BLOB_PALETTES: Record<Theme, [string, string, string]> = {
     "rgba(213, 119, 237, 0.32)",
     "rgba(168, 72, 198, 0.2)",
     "rgba(120, 60, 180, 0.18)",
-  ],
-};
-
-const BLOB_PALETTES_STUDIO: Record<Theme, [string, string, string]> = {
-  light: [
-    "rgba(213, 119, 237, 0.28)",
-    "rgba(139, 61, 173, 0.2)",
-    "rgba(78, 19, 112, 0.16)",
-  ],
-  dark: [
-    "rgba(213, 119, 237, 0.38)",
-    "rgba(168, 72, 198, 0.26)",
-    "rgba(120, 60, 180, 0.22)",
   ],
 };
 
@@ -49,8 +37,8 @@ function autoMotionTarget(t: number, studio: boolean): { x: number; y: number } 
   if (studio) {
     const s = t * 0.0004;
     return {
-      x: 0.5 + Math.sin(s) * 0.06,
-      y: 0.38 + Math.cos(s * 0.9) * 0.05,
+      x: 0.5 + Math.sin(s) * 0.08,
+      y: 0.38 + Math.cos(s * 0.9) * 0.06,
     };
   }
   const s = t * 0.00055;
@@ -58,6 +46,80 @@ function autoMotionTarget(t: number, studio: boolean): { x: number; y: number } 
     x: 0.5 + Math.sin(s) * 0.26 + Math.sin(s * 1.65 + 1.2) * 0.1,
     y: 0.5 + Math.cos(s * 0.85) * 0.22 + Math.cos(s * 1.35 + 0.6) * 0.09,
   };
+}
+
+function studioPointerTarget(time: number): { x: number; y: number } {
+  if (usesAutoBackgroundMotion()) return autoMotionTarget(time, true);
+  const m = getSmoothMouse();
+  return {
+    x: 0.5 + (m.x - 0.5) * 0.62,
+    y: 0.38 + (m.y - 0.5) * 0.55,
+  };
+}
+
+function drawStudioLogoGlow(
+  target: CanvasRenderingContext2D,
+  tw: number,
+  th: number,
+  time: number,
+  mx: number,
+  my: number,
+  theme: Theme,
+): void {
+  const path = getChaosLogoPath();
+  const parallaxX = (mx - 0.5) * 0.16;
+  const parallaxY = (my - 0.5) * 0.14;
+  const cx = tw * (0.5 + parallaxX);
+  const cy = th * (0.38 + parallaxY);
+  const pulse = 1 + Math.sin(time * 0.0014) * 0.045;
+  const wobble = Math.sin(time * 0.00075) * 0.018;
+  const fit = (Math.min(tw, th) * 0.62) / CHAOS_LOGO_VIEWBOX.h;
+
+  target.save();
+  target.translate(cx, cy);
+  target.rotate(wobble);
+  target.scale(fit * pulse, fit * pulse);
+  target.translate(-CHAOS_LOGO_VIEWBOX.w / 2, -CHAOS_LOGO_VIEWBOX.h / 2);
+  target.clip(path);
+
+  const lx = CHAOS_LOGO_VIEWBOX.w * 0.5;
+  const ly = CHAOS_LOGO_VIEWBOX.h * 0.42;
+  const r = CHAOS_LOGO_VIEWBOX.w * 0.78;
+
+  if (theme === "dark") {
+    const core = target.createRadialGradient(lx, ly, 0, lx, ly, r * 0.55);
+    core.addColorStop(0, "rgba(232, 160, 245, 0.95)");
+    core.addColorStop(0.35, "rgba(213, 119, 237, 0.72)");
+    core.addColorStop(0.7, "rgba(120, 60, 180, 0.28)");
+    core.addColorStop(1, "rgba(0, 0, 0, 0)");
+    target.fillStyle = core;
+    target.fillRect(0, 0, CHAOS_LOGO_VIEWBOX.w, CHAOS_LOGO_VIEWBOX.h);
+
+    const rim = target.createRadialGradient(lx, ly * 0.92, r * 0.2, lx, ly, r);
+    rim.addColorStop(0, "rgba(78, 19, 112, 0)");
+    rim.addColorStop(0.55, "rgba(168, 72, 198, 0.35)");
+    rim.addColorStop(1, "rgba(213, 119, 237, 0.12)");
+    target.fillStyle = rim;
+    target.fillRect(0, 0, CHAOS_LOGO_VIEWBOX.w, CHAOS_LOGO_VIEWBOX.h);
+  } else {
+    const core = target.createRadialGradient(lx, ly, 0, lx, ly, r * 0.55);
+    core.addColorStop(0, "rgba(213, 119, 237, 0.75)");
+    core.addColorStop(0.5, "rgba(139, 61, 173, 0.35)");
+    core.addColorStop(1, "rgba(0, 0, 0, 0)");
+    target.fillStyle = core;
+    target.fillRect(0, 0, CHAOS_LOGO_VIEWBOX.w, CHAOS_LOGO_VIEWBOX.h);
+  }
+
+  target.restore();
+
+  // Soft ambient wash (follows pointer, stays behind logo shape)
+  const ax = mx * tw;
+  const ay = my * th;
+  const amb = target.createRadialGradient(ax, ay, 0, ax, ay, Math.min(tw, th) * 0.55);
+  amb.addColorStop(0, theme === "dark" ? "rgba(78, 19, 112, 0.22)" : "rgba(213, 119, 237, 0.12)");
+  amb.addColorStop(1, "rgba(0, 0, 0, 0)");
+  target.fillStyle = amb;
+  target.fillRect(0, 0, tw, th);
 }
 
 export function initCanvasBackground(): () => void {
@@ -80,22 +142,11 @@ export function initCanvasBackground(): () => void {
   ];
 
   const syncPalette = () => {
-    const studio = isStudioRoute();
-    const palette = (studio ? BLOB_PALETTES_STUDIO : BLOB_PALETTES)[currentTheme()];
+    if (isStudioRoute()) return;
+    const palette = BLOB_PALETTES[currentTheme()];
     blobs.forEach((b, i) => {
       b.color = palette[i];
     });
-    if (studio) {
-      blobs[0].x = 0.5;
-      blobs[0].y = 0.38;
-      blobs[0].r = 0.48;
-      blobs[1].x = 0.22;
-      blobs[1].y = 0.55;
-      blobs[1].r = 0.28;
-      blobs[2].x = 0.78;
-      blobs[2].y = 0.55;
-      blobs[2].r = 0.28;
-    }
   };
   syncPalette();
 
@@ -123,12 +174,7 @@ export function initCanvasBackground(): () => void {
   };
 
   const drawBlobs = (target: CanvasRenderingContext2D, tw: number, th: number, time: number) => {
-    const studio = isStudioRoute();
-    const attractTarget = autoAnimate
-      ? autoMotionTarget(time, studio)
-      : studio
-        ? { x: 0.5, y: 0.38 }
-        : getSmoothMouse();
+    const attractTarget = autoAnimate ? autoMotionTarget(time, false) : getSmoothMouse();
     const mx = attractTarget.x;
     const my = attractTarget.y;
     target.clearRect(0, 0, tw, th);
@@ -137,20 +183,10 @@ export function initCanvasBackground(): () => void {
 
     for (let i = 0; i < blobs.length; i++) {
       const b = blobs[i];
-      const attract = studio
-        ? i === 0
-          ? 0.028
-          : 0.014
-        : autoAnimate
-          ? i === 0
-            ? 0.012
-            : 0.008
-          : i === 0
-            ? 0.018
-            : 0.01;
+      const attract = autoAnimate ? (i === 0 ? 0.012 : 0.008) : i === 0 ? 0.018 : 0.01;
 
       if (autoAnimate) {
-        const drift = studio ? 0.00008 : 0.00012;
+        const drift = 0.00012;
         b.vx += Math.sin(driftT * 0.9 + b.phase) * drift;
         b.vy += Math.cos(driftT * 0.75 + b.phase) * drift;
         b.x += Math.sin(driftT * 0.35 + b.phase) * (drift * 2);
@@ -162,16 +198,14 @@ export function initCanvasBackground(): () => void {
       b.vy *= autoAnimate ? 0.992 : 0.98;
       b.vx *= autoAnimate ? 0.992 : 0.98;
 
-      const pad = studio ? 0.02 : 0.05;
-      b.x = Math.max(pad, Math.min(1 - pad, b.x));
-      b.y = Math.max(pad, Math.min(1 - pad, b.y));
+      b.x = Math.max(0.05, Math.min(0.95, b.x));
+      b.y = Math.max(0.05, Math.min(0.95, b.y));
 
       const cx = b.x * tw;
       const cy = b.y * th;
       const radius = b.r * Math.min(tw, th);
       const g = target.createRadialGradient(cx, cy, 0, cx, cy, radius);
       g.addColorStop(0, b.color);
-      g.addColorStop(studio && i === 0 ? 0.55 : 1, studio && i === 0 ? "rgba(0,0,0,0.04)" : "rgba(0,0,0,0)");
       g.addColorStop(1, "rgba(0,0,0,0)");
       target.fillStyle = g;
       target.beginPath();
@@ -185,15 +219,27 @@ export function initCanvasBackground(): () => void {
     const profile: DitherProfile = studio ? "studio" : "default";
     const theme = currentTheme();
 
-    drawBlobs(bctx, bw, bh, time);
-    applyBayerDither(bctx, bw, bh, {
-      profile,
-      strength: studio ? (theme === "light" ? 0.48 : 0.58) : theme === "light" ? 0.2 : 0.3,
-      noise: studio ? 0.62 : 0.1,
-      vignetteNoise: studio,
-      cx: 0.5,
-      cy: 0.38,
-    });
+    if (studio) {
+      const { x: mx, y: my } = studioPointerTarget(time);
+      bctx.clearRect(0, 0, bw, bh);
+      drawStudioLogoGlow(bctx, bw, bh, time, mx, my, theme);
+      applyBayerDither(bctx, bw, bh, {
+        profile,
+        strength: theme === "dark" ? 0.62 : 0.48,
+        noise: 0.68,
+        vignetteNoise: true,
+        cx: mx,
+        cy: my,
+        time,
+      });
+    } else {
+      drawBlobs(bctx, bw, bh, time);
+      applyBayerDither(bctx, bw, bh, {
+        profile,
+        strength: theme === "light" ? 0.2 : 0.3,
+        noise: 0.1,
+      });
+    }
 
     ctx.clearRect(0, 0, w, h);
     ctx.imageSmoothingEnabled = false;
