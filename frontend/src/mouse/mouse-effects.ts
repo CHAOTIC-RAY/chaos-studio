@@ -46,6 +46,7 @@ function initPortfolioPointerFx(): () => void {
 
   const parallax = Array.from(document.querySelectorAll<HTMLElement>("[data-parallax]"));
   const hero = document.querySelector<HTMLElement>(".hero");
+  const bgLayers = document.querySelector<HTMLElement>(".bg-layers:not(.bg-layers--studio)");
 
   let tx = 0;
   let ty = 0;
@@ -69,6 +70,10 @@ function initPortfolioPointerFx(): () => void {
     const { x, y } = getSmoothMouse();
     spotlight.style.setProperty("--mx", `${x * 100}%`);
     spotlight.style.setProperty("--my", `${y * 100}%`);
+    if (bgLayers) {
+      bgLayers.style.setProperty("--bg-mx", `${x * 100}%`);
+      bgLayers.style.setProperty("--bg-my", `${y * 100}%`);
+    }
 
     const dx = (x - 0.5) * 2;
     const dy = (y - 0.5) * 2;
@@ -120,6 +125,8 @@ function initPortfolioPointerFx(): () => void {
     });
     hero?.style.removeProperty("--hero-mx");
     hero?.style.removeProperty("--hero-my");
+    bgLayers?.style.removeProperty("--bg-mx");
+    bgLayers?.style.removeProperty("--bg-my");
   };
 }
 

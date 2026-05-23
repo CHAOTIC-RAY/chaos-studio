@@ -5,11 +5,13 @@ import { getSmoothMouse } from "../mouse/mouse-state";
 import type { Theme } from "../theme";
 import { applyBayerDither, type DitherProfile } from "./dither";
 
-const DITHER_SCALE_DEFAULT = 0.26;
+const DITHER_SCALE_DEFAULT = 0.38;
 const DITHER_SCALE_STUDIO = 0.2;
-const MAX_DPR = 1.35;
+const MAX_DPR = 1.5;
 const STUDIO_FRAME_MS = 36;
-const PORTFOLIO_FRAME_MS = 40;
+const PORTFOLIO_FRAME_MS = 32;
+/** Re-draw portfolio canvas periodically so mouse dither stays visible while idle. */
+const PORTFOLIO_AMBIENT_MS = 64;
 
 const BLOB_PALETTES: Record<Theme, [string, string, string]> = {
   light: [
@@ -206,6 +208,7 @@ export function initCanvasBackground(): () => void {
   let lastDraw = 0;
   let lastDrawKey = "";
   let studioCleared = false;
+  let wasStudio = isStudioRoute();
 
   const resize = () => {
     const studio = isStudioRoute();
@@ -277,6 +280,12 @@ export function initCanvasBackground(): () => void {
 
   const draw = (time: number) => {
     const studio = isStudioRoute();
+    if (studio !== wasStudio) {
+      wasStudio = studio;
+      lastDrawKey = "";
+      syncPalette();
+      resize();
+    }
     const profile: DitherProfile = studio ? "studio" : "default";
     const theme = currentTheme();
 
@@ -323,15 +332,16 @@ export function initCanvasBackground(): () => void {
     } else {
       const attract = autoAnimate ? autoMotionTarget(time, false) : getSmoothMouse();
       const blobKey = blobs.map((b) => `${b.x.toFixed(2)},${b.y.toFixed(2)}`).join("|");
-      const drawKey = `${attract.x.toFixed(2)}|${attract.y.toFixed(2)}|${blobKey}|${theme}`;
+      const ambient = Math.floor(time / PORTFOLIO_AMBIENT_MS);
+      const drawKey = `${attract.x.toFixed(2)}|${attract.y.toFixed(2)}|${blobKey}|${theme}|${ambient}`;
 
       if (shouldRedraw(time, drawKey, PORTFOLIO_FRAME_MS)) {
         drawBlobs(bctx, bw, bh, time);
         applyBayerDither(bctx, bw, bh, {
-          profile,
-          lite: true,
-          strength: theme === "light" ? 0.18 : 0.26,
-          noise: 0.12,
+          profile: "default",
+          lite: false,
+          strength: theme === "light" ? 0.32 : 0.44,
+          noise: theme === "light" ? 0.22 : 0.3,
           cx: attract.x,
           cy: attract.y,
         });

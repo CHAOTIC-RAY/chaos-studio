@@ -216,8 +216,7 @@ h2 { font-size: clamp(2rem, 4vw, 3rem); }
   animation: drift 20s ease-in-out infinite alternate;
 }
 body.perf-paused .bg-blobs::before,
-body.perf-paused .bg-blobs::after,
-body.perf-paused .bg-dither {
+body.perf-paused .bg-blobs::after {
   animation-play-state: paused !important;
 }
 .bg-blobs::before { width: 55vmax; height: 55vmax; top: -15%; left: -10%; background: var(--blob-a); }
@@ -232,6 +231,7 @@ body.perf-paused .bg-dither {
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Crect width='2' height='2' fill='%23fff' opacity='0.08'/%3E%3Crect x='8' width='2' height='2' fill='%23fff' opacity='0.38'/%3E%3Crect x='4' y='4' width='2' height='2' fill='%23fff' opacity='0.14'/%3E%3Crect x='12' y='4' width='2' height='2' fill='%23fff' opacity='0.48'/%3E%3Crect x='2' y='8' width='2' height='2' fill='%23fff' opacity='0.42'/%3E%3Crect x='10' y='8' width='2' height='2' fill='%23fff' opacity='0.12'/%3E%3Crect x='6' y='12' width='2' height='2' fill='%23fff' opacity='0.52'/%3E%3Crect x='14' y='12' width='2' height='2' fill='%23fff' opacity='0.22'/%3E%3Crect x='0' y='2' width='2' height='2' fill='%23fff' opacity='0.28'/%3E%3Crect x='8' y='2' width='2' height='2' fill='%23fff' opacity='0.18'/%3E%3Crect x='4' y='6' width='2' height='2' fill='%23fff' opacity='0.55'/%3E%3Crect x='12' y='6' width='2' height='2' fill='%23fff' opacity='0.32'/%3E%3Crect x='2' y='10' width='2' height='2' fill='%23fff' opacity='0.2'/%3E%3Crect x='10' y='10' width='2' height='2' fill='%23fff' opacity='0.45'/%3E%3Crect x='6' y='14' width='2' height='2' fill='%23fff' opacity='0.35'/%3E%3Crect x='14' y='14' width='2' height='2' fill='%23fff' opacity='0.15'/%3E%3C/svg%3E");
   background-size: var(--dither-size, 3px) var(--dither-size, 3px);
+  background-position: calc(var(--bg-mx, 50%) - 50%) calc(var(--bg-my, 50%) - 50%);
   image-rendering: pixelated;
 }
 
