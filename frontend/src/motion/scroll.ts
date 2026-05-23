@@ -49,24 +49,26 @@ export function initScrollAnimations(): () => void {
       );
     });
 
-    gsap.utils.toArray<HTMLElement>(".post-card").forEach((card, i) => {
+    const postsViewport = document.querySelector(".posts-viewport");
+    const postCards = gsap.utils.toArray<HTMLElement>(".posts-rail .post-card");
+    if (postsViewport && postCards.length) {
       gsap.fromTo(
-        card,
+        postCards,
         { opacity: 0, x: 24 },
         {
           opacity: 1,
           x: 0,
           duration: 0.6,
-          delay: i * 0.05,
+          stagger: 0.035,
           ease: "power3.out",
           scrollTrigger: {
-            trigger: ".posts-track",
-            start: "top 85%",
+            trigger: postsViewport,
+            start: "top 88%",
             once: true,
           },
         },
       );
-    });
+    }
   });
 
   requestAnimationFrame(() => ScrollTrigger.refresh());

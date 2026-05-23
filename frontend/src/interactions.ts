@@ -1,3 +1,4 @@
+import { observeInView } from "./motion/perf";
 import { prefersReducedMotion } from "./motion/reduced-motion";
 import { initStudioScrollEffect } from "./motion/studio-scroll";
 import { initPostLightbox } from "./post-lightbox";
@@ -23,7 +24,7 @@ const POST_CAROUSEL_MS = 3400;
 function initPostCarousels(): () => void {
   if (prefersReducedMotion()) return () => {};
 
-  const timers: number[] = [];
+  const cleanups: (() => void)[] = [];
 
   document.querySelectorAll<HTMLElement>(".post-card__carousel").forEach((carousel) => {
     const slides = Array.from(carousel.querySelectorAll<HTMLElement>(".post-card__slide"));
@@ -42,15 +43,25 @@ function initPostCarousels(): () => void {
 
     setActive(0);
 
-    timers.push(
-      window.setInterval(() => {
+    let timer = 0;
+    const start = () => {
+      if (timer) return;
+      timer = window.setInterval(() => {
         index = (index + 1) % slides.length;
         setActive(index);
-      }, POST_CAROUSEL_MS),
-    );
+      }, POST_CAROUSEL_MS);
+    };
+    const stop = () => {
+      window.clearInterval(timer);
+      timer = 0;
+    };
+
+    start();
+    cleanups.push(observeInView(carousel, start, stop, 0.12));
+    cleanups.push(stop);
   });
 
-  return () => timers.forEach((t) => window.clearInterval(t));
+  return () => cleanups.forEach((fn) => fn());
 }
 
 /** Studio page: magnetic buttons + in-page nav highlights only */
@@ -191,9 +202,9 @@ function initPostsRail(): () => void {
 
   const scheduleAuto = () => {
     window.clearInterval(autoTimer);
-    if (!autoAdvance) return;
+    if (!autoAdvance || !railInView) return;
     autoTimer = window.setInterval(() => {
-      if (paused || isExpanded()) return;
+      if (paused || isExpanded() || !railInView) return;
       step(1);
     }, AUTO_MS);
   };
@@ -221,6 +232,7 @@ function initPostsRail(): () => void {
   viewport.addEventListener("keydown", onKey);
 
   let hoverPause = false;
+  let railInView = true;
 
   const pause = () => {
     paused = true;
@@ -279,7 +291,21 @@ function initPostsRail(): () => void {
   goToIndex(0, false);
   scheduleAuto();
 
+  const unobserveRail = observeInView(
+    carousel,
+    () => {
+      railInView = true;
+      scheduleAuto();
+    },
+    () => {
+      railInView = false;
+      window.clearInterval(autoTimer);
+    },
+    0.06,
+  );
+
   return () => {
+    unobserveRail();
     window.clearInterval(autoTimer);
     window.clearTimeout(pauseTimer);
     window.clearTimeout(transitionTimer);

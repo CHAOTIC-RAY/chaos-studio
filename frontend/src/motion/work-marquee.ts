@@ -1,3 +1,4 @@
+import { observeInView } from "./perf";
 import { prefersReducedMotion } from "./reduced-motion";
 
 function initMarqueeRow(inner: HTMLElement, velocity: number): () => void {
@@ -15,6 +16,7 @@ function initMarqueeRow(inner: HTMLElement, velocity: number): () => void {
   let lastScrollY = window.scrollY;
   let lastTime = performance.now();
   let raf = 0;
+  let active = true;
 
   const measure = () => {
     loopWidth = group.offsetWidth || inner.scrollWidth / 2;
@@ -26,6 +28,10 @@ function initMarqueeRow(inner: HTMLElement, velocity: number): () => void {
   window.addEventListener("resize", onResize);
 
   const tick = (now: number) => {
+    if (!active) {
+      raf = 0;
+      return;
+    }
     const dt = Math.min((now - lastTime) / 1000, 0.05);
     lastTime = now;
 
@@ -46,10 +52,35 @@ function initMarqueeRow(inner: HTMLElement, velocity: number): () => void {
     raf = requestAnimationFrame(tick);
   };
 
-  raf = requestAnimationFrame(tick);
+  const start = () => {
+    if (!raf) {
+      lastTime = performance.now();
+      raf = requestAnimationFrame(tick);
+    }
+  };
+  const stop = () => {
+    active = false;
+    cancelAnimationFrame(raf);
+    raf = 0;
+  };
+
+  active = true;
+  start();
+
+  const row = inner.closest(".work-marquee__row");
+  const unobserve = observeInView(
+    row,
+    () => {
+      active = true;
+      start();
+    },
+    stop,
+    0.05,
+  );
 
   return () => {
-    cancelAnimationFrame(raf);
+    unobserve();
+    stop();
     window.removeEventListener("resize", onResize);
     inner.style.transform = "";
     inner.style.animation = "";

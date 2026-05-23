@@ -17,20 +17,37 @@ export function initMouseState(): () => void {
     mouse.py = e.clientY;
     mouse.x = e.clientX / window.innerWidth;
     mouse.y = e.clientY / window.innerHeight;
+    schedule();
   };
   const onLeave = () => {
     mouse.active = false;
+    schedule();
   };
 
   const tick = () => {
-    smooth.x += (mouse.x - smooth.x) * 0.08;
-    smooth.y += (mouse.y - smooth.y) * 0.08;
-    raf = requestAnimationFrame(tick);
+    raf = 0;
+    const dx = mouse.x - smooth.x;
+    const dy = mouse.y - smooth.y;
+    smooth.x += dx * 0.1;
+    smooth.y += dy * 0.1;
+
+    const settling =
+      !mouse.active &&
+      Math.abs(dx) < 0.00025 &&
+      Math.abs(dy) < 0.00025 &&
+      Math.abs(smooth.x - 0.5) < 0.00025 &&
+      Math.abs(smooth.y - 0.5) < 0.00025;
+
+    if (!settling) schedule();
+  };
+
+  const schedule = () => {
+    if (!raf) raf = requestAnimationFrame(tick);
   };
 
   window.addEventListener("mousemove", onMove, { passive: true });
   document.documentElement.addEventListener("mouseleave", onLeave);
-  raf = requestAnimationFrame(tick);
+  schedule();
 
   return () => {
     cancelAnimationFrame(raf);

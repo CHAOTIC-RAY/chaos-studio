@@ -120,6 +120,11 @@ h2 { font-size: clamp(2rem, 4vw, 3rem); }
   filter: blur(90px) contrast(1.08);
   animation: drift 20s ease-in-out infinite alternate;
 }
+body.perf-paused .bg-blobs::before,
+body.perf-paused .bg-blobs::after,
+body.perf-paused .bg-dither {
+  animation-play-state: paused !important;
+}
 .bg-blobs::before { width: 55vmax; height: 55vmax; top: -15%; left: -10%; background: var(--blob-a); }
 .bg-blobs::after { width: 45vmax; height: 45vmax; bottom: 0; right: -10%; background: var(--blob-b); animation-delay: -8s; }
 
@@ -2319,6 +2324,8 @@ body.studio-finale-active .studio-finale {
   width: 100%;
   transform: perspective(1100px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
   transform-style: preserve-3d;
+}
+.work-showcase__devices:is(:hover, :focus-within) {
   will-change: transform;
 }
 .work-showcase__devices .device {
@@ -3088,7 +3095,20 @@ body.studio-finale-active .studio-finale {
 .site-footer a { color: var(--purple-bright); }
 
 /* NO default opacity:0 — GSAP handles reveal; content visible if JS fails */
-.section { position: relative; z-index: 1; }
+.section {
+  position: relative;
+  z-index: 1;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 420px;
+}
+.hero {
+  content-visibility: visible;
+}
+.posts-panel,
+.work-stack > .work-showcase {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 480px;
+}
 main { position: relative; z-index: 1; }
 
 /* Mobile layout tweaks */

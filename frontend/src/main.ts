@@ -3,6 +3,7 @@ import { fetchPortfolio } from "./api";
 import { initCanvasBackground } from "./background/canvas-bg";
 import { initInteractions, initStudioInteractions } from "./interactions";
 import { initMouseEffects } from "./mouse/mouse-effects";
+import { onVisibilityChange } from "./motion/perf";
 import { initHeaderScroll, initScrollAnimations } from "./motion/scroll";
 import { initWorkMarquee } from "./motion/work-marquee";
 import { downloadPortfolioPdf } from "./pdf-export";
@@ -41,6 +42,11 @@ async function mount(route: AppRoute): Promise<void> {
   app.classList.remove("loading-screen");
 
   cleanups.push(initTheme());
+  cleanups.push(
+    onVisibilityChange((visible) => {
+      document.body.classList.toggle("perf-paused", !visible);
+    }),
+  );
   cleanups.push(initMouseEffects());
   cleanups.push(initCanvasBackground());
   cleanups.push(initScrollAnimations());

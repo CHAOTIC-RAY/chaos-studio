@@ -19,11 +19,8 @@ export function initMouseEffects(): () => void {
     cleanups.push(initStudioBackgroundParallax());
     cleanups.push(initStudioHeroLogoParallax());
   } else {
-    cleanups.push(initCursor());
-    cleanups.push(initSpotlight());
-    cleanups.push(initParallax());
+    cleanups.push(initPortfolioPointerFx());
     cleanups.push(initShowcaseTilt());
-    cleanups.push(initHeroParallax());
   }
 
   return () => {
@@ -32,34 +29,75 @@ export function initMouseEffects(): () => void {
   };
 }
 
-function initCursor(): () => void {
+/** One rAF loop for cursor, spotlight, parallax layers, and hero — keeps effects, fewer loops. */
+function initPortfolioPointerFx(): () => void {
   const dot = document.createElement("div");
   dot.className = "cursor-dot";
   dot.setAttribute("aria-hidden", "true");
   const ring = document.createElement("div");
   ring.className = "cursor-ring";
   ring.setAttribute("aria-hidden", "true");
-  document.body.append(dot, ring);
+
+  const spotlight = document.createElement("div");
+  spotlight.className = "mouse-spotlight";
+  spotlight.setAttribute("aria-hidden", "true");
+
+  document.body.append(dot, ring, spotlight);
+
+  const parallax = Array.from(document.querySelectorAll<HTMLElement>("[data-parallax]"));
+  const hero = document.querySelector<HTMLElement>(".hero");
 
   let tx = 0;
   let ty = 0;
   let rx = 0;
   let ry = 0;
   let raf = 0;
+  let running = false;
 
   const loop = () => {
+    raf = 0;
     const targetX = mouse.px;
     const targetY = mouse.py;
     tx += (targetX - tx) * 0.22;
     ty += (targetY - ty) * 0.22;
     rx += (targetX - rx) * 0.12;
     ry += (targetY - ry) * 0.12;
-    dot.style.transform = `translate(${tx}px, ${ty}px) translate(-50%, -50%)`;
-    ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
+    dot.style.transform = `translate3d(${tx}px, ${ty}px, 0) translate(-50%, -50%)`;
+    ring.style.transform = `translate3d(${rx}px, ${ry}px, 0) translate(-50%, -50%)`;
     ring.classList.toggle("is-idle", !mouse.active);
-    raf = requestAnimationFrame(loop);
+
+    const { x, y } = getSmoothMouse();
+    spotlight.style.setProperty("--mx", `${x * 100}%`);
+    spotlight.style.setProperty("--my", `${y * 100}%`);
+
+    const dx = (x - 0.5) * 2;
+    const dy = (y - 0.5) * 2;
+    parallax.forEach((el) => {
+      const depth = Number(el.dataset.parallax) || 12;
+      el.style.transform = `translate3d(${dx * depth}px, ${dy * depth}px, 0)`;
+    });
+
+    if (hero) {
+      hero.style.setProperty("--hero-mx", String((x - 0.5) * 30));
+      hero.style.setProperty("--hero-my", String((y - 0.5) * 20));
+    }
+
+    const moving =
+      mouse.active ||
+      Math.abs(targetX - tx) > 0.5 ||
+      Math.abs(targetY - ty) > 0.5 ||
+      Math.abs(targetX - rx) > 0.5 ||
+      Math.abs(targetY - ry) > 0.5;
+
+    if (moving || running) {
+      running = moving;
+      schedule();
+    }
   };
-  raf = requestAnimationFrame(loop);
+
+  const schedule = () => {
+    if (!raf) raf = requestAnimationFrame(loop);
+  };
 
   const onEnter = () => ring.classList.add("is-hover");
   const onLeave = () => ring.classList.remove("is-hover");
@@ -68,48 +106,21 @@ function initCursor(): () => void {
     el.addEventListener("mouseleave", onLeave);
   });
 
+  window.addEventListener("mousemove", schedule, { passive: true });
+  schedule();
+
   return () => {
     cancelAnimationFrame(raf);
+    window.removeEventListener("mousemove", schedule);
     dot.remove();
     ring.remove();
-  };
-}
-
-function initSpotlight(): () => void {
-  const el = document.createElement("div");
-  el.className = "mouse-spotlight";
-  el.setAttribute("aria-hidden", "true");
-  document.body.appendChild(el);
-
-  let raf = 0;
-  const loop = () => {
-    const { x, y } = getSmoothMouse();
-    el.style.setProperty("--mx", `${x * 100}%`);
-    el.style.setProperty("--my", `${y * 100}%`);
-    raf = requestAnimationFrame(loop);
-  };
-  raf = requestAnimationFrame(loop);
-  return () => {
-    cancelAnimationFrame(raf);
-    el.remove();
-  };
-}
-
-function initParallax(): () => void {
-  const layers = document.querySelectorAll<HTMLElement>("[data-parallax]");
-  let raf = 0;
-  const loop = () => {
-    const { x, y } = getSmoothMouse();
-    const dx = (x - 0.5) * 2;
-    const dy = (y - 0.5) * 2;
-    layers.forEach((el) => {
-      const depth = Number(el.dataset.parallax) || 12;
-      el.style.transform = `translate(${dx * depth}px, ${dy * depth}px)`;
+    spotlight.remove();
+    parallax.forEach((el) => {
+      el.style.transform = "";
     });
-    raf = requestAnimationFrame(loop);
+    hero?.style.removeProperty("--hero-mx");
+    hero?.style.removeProperty("--hero-my");
   };
-  raf = requestAnimationFrame(loop);
-  return () => cancelAnimationFrame(raf);
 }
 
 /** Studio: update CSS parallax on pointer move only (no perpetual RAF). */
@@ -157,20 +168,6 @@ function initStudioHeroLogoParallax(): () => void {
     cancelAnimationFrame(raf);
     window.removeEventListener("mousemove", schedule);
   };
-}
-
-function initHeroParallax(): () => void {
-  const hero = document.querySelector(".hero") as HTMLElement | null;
-  if (!hero) return () => {};
-  let raf = 0;
-  const loop = () => {
-    const { x, y } = getSmoothMouse();
-    hero.style.setProperty("--hero-mx", String((x - 0.5) * 30));
-    hero.style.setProperty("--hero-my", String((y - 0.5) * 20));
-    raf = requestAnimationFrame(loop);
-  };
-  raf = requestAnimationFrame(loop);
-  return () => cancelAnimationFrame(raf);
 }
 
 /** Subtle tilt on featured-work device previews only — smoothed via rAF lerp. */

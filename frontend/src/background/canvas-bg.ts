@@ -5,10 +5,11 @@ import { getSmoothMouse } from "../mouse/mouse-state";
 import type { Theme } from "../theme";
 import { applyBayerDither, type DitherProfile } from "./dither";
 
-const DITHER_SCALE_DEFAULT = 0.4;
+const DITHER_SCALE_DEFAULT = 0.26;
 const DITHER_SCALE_STUDIO = 0.2;
-const STUDIO_MAX_DPR = 1.25;
+const MAX_DPR = 1.35;
 const STUDIO_FRAME_MS = 36;
+const PORTFOLIO_FRAME_MS = 40;
 
 const BLOB_PALETTES: Record<Theme, [string, string, string]> = {
   light: [
@@ -202,13 +203,13 @@ export function initCanvasBackground(): () => void {
   let bw = 0;
   let bh = 0;
   let raf = 0;
-  let lastStudioDraw = 0;
-  let lastStudioKey = "";
+  let lastDraw = 0;
+  let lastDrawKey = "";
   let studioCleared = false;
 
   const resize = () => {
     const studio = isStudioRoute();
-    const dpr = Math.min(window.devicePixelRatio || 1, studio ? STUDIO_MAX_DPR : 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
     w = window.innerWidth;
     h = window.innerHeight;
     canvas.width = w * dpr;
@@ -265,17 +266,21 @@ export function initCanvasBackground(): () => void {
     }
   };
 
+  const shouldRedraw = (time: number, key: string, frameMs: number) => {
+    if (document.hidden) return false;
+    const due = time - lastDraw >= frameMs;
+    if (!due && key === lastDrawKey) return false;
+    lastDraw = time;
+    lastDrawKey = key;
+    return true;
+  };
+
   const draw = (time: number) => {
     const studio = isStudioRoute();
     const profile: DitherProfile = studio ? "studio" : "default";
     const theme = currentTheme();
 
     if (studio) {
-      if (document.hidden) {
-        raf = requestAnimationFrame(draw);
-        return;
-      }
-
       const scroll = getStudioScrollState();
       const visible = scroll.reveal > 0.004 || scroll.fill > 0.004;
 
@@ -283,6 +288,7 @@ export function initCanvasBackground(): () => void {
         if (!studioCleared) {
           ctx.clearRect(0, 0, w, h);
           studioCleared = true;
+          lastDrawKey = "";
         }
         raf = requestAnimationFrame(draw);
         return;
@@ -291,45 +297,50 @@ export function initCanvasBackground(): () => void {
 
       const scrollKey = `${scroll.reveal.toFixed(3)}|${scroll.scale.toFixed(2)}|${scroll.fill.toFixed(3)}|${scroll.finale.toFixed(3)}`;
       const pointer = studioPointerTarget(time);
-      const pointerKey = `${pointer.x.toFixed(2)}|${pointer.y.toFixed(2)}`;
-      const drawKey = `${scrollKey}|${pointerKey}`;
-      const due = time - lastStudioDraw >= STUDIO_FRAME_MS;
+      const drawKey = `${scrollKey}|${pointer.x.toFixed(2)}|${pointer.y.toFixed(2)}|${theme}`;
 
-      if (!due && drawKey === lastStudioKey) {
-        raf = requestAnimationFrame(draw);
-        return;
+      if (shouldRedraw(time, drawKey, STUDIO_FRAME_MS)) {
+        const { x: mx, y: my } = pointer;
+        bctx.clearRect(0, 0, bw, bh);
+        drawStudioLogoGlow(bctx, bw, bh, time, mx, my, theme);
+        const ditherReveal = scroll.reveal * (1 - scroll.fill * 0.7) + scroll.fill * 0.35;
+        if (ditherReveal > 0.02) {
+          applyBayerDither(bctx, bw, bh, {
+            profile,
+            lite: true,
+            strength: (theme === "dark" ? 0.52 : 0.4) * ditherReveal,
+            noise: 0.45 * ditherReveal,
+            vignetteNoise: false,
+            cx: mx,
+            cy: my + scroll.finale * 0.15,
+          });
+        }
+        ctx.clearRect(0, 0, w, h);
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(buffer, 0, 0, w, h);
+        ctx.imageSmoothingEnabled = true;
       }
-      lastStudioDraw = time;
-      lastStudioKey = drawKey;
+    } else {
+      const attract = autoAnimate ? autoMotionTarget(time, false) : getSmoothMouse();
+      const blobKey = blobs.map((b) => `${b.x.toFixed(2)},${b.y.toFixed(2)}`).join("|");
+      const drawKey = `${attract.x.toFixed(2)}|${attract.y.toFixed(2)}|${blobKey}|${theme}`;
 
-      const { x: mx, y: my } = pointer;
-      bctx.clearRect(0, 0, bw, bh);
-      drawStudioLogoGlow(bctx, bw, bh, time, mx, my, theme);
-      const ditherReveal = scroll.reveal * (1 - scroll.fill * 0.7) + scroll.fill * 0.35;
-      if (ditherReveal > 0.02) {
+      if (shouldRedraw(time, drawKey, PORTFOLIO_FRAME_MS)) {
+        drawBlobs(bctx, bw, bh, time);
         applyBayerDither(bctx, bw, bh, {
           profile,
           lite: true,
-          strength: (theme === "dark" ? 0.52 : 0.4) * ditherReveal,
-          noise: 0.45 * ditherReveal,
-          vignetteNoise: false,
-          cx: mx,
-          cy: my + scroll.finale * 0.15,
+          strength: theme === "light" ? 0.18 : 0.26,
+          noise: 0.12,
+          cx: attract.x,
+          cy: attract.y,
         });
+        ctx.clearRect(0, 0, w, h);
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(buffer, 0, 0, w, h);
+        ctx.imageSmoothingEnabled = true;
       }
-    } else {
-      drawBlobs(bctx, bw, bh, time);
-      applyBayerDither(bctx, bw, bh, {
-        profile,
-        strength: theme === "light" ? 0.2 : 0.3,
-        noise: 0.1,
-      });
     }
-
-    ctx.clearRect(0, 0, w, h);
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(buffer, 0, 0, w, h);
-    ctx.imageSmoothingEnabled = true;
 
     raf = requestAnimationFrame(draw);
   };
