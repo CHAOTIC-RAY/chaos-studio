@@ -12,16 +12,13 @@ The main site PWA service worker can cache the wrong page for `/admin/`. After a
 
 You should see **Chaos Studio CMS** in the tab title, not the portfolio.
 
+## Config error: list `field` must have `name`
+
+Decap requires each list sub-field to have a `name` (e.g. `tag`, `slide`). Repo JSON stores lists as `[{ "tag": "design" }, …]`. The live site normalizes these back to string arrays. If you edit JSON by hand, keep that shape or run `npm run migrate:cms-lists`.
+
 ## Stuck on “Loading entry…”
 
-Usually the **CMS field types** do not match the JSON on GitHub (for example tags saved as `["a","b"]` but the CMS expected `{tag:"a"}` objects). The admin `config.yml` must use **string lists** (list + `field: { widget: string }` without a nested `name`).
-
-After a deploy fix:
-
-1. Hard-refresh `/admin/` (Ctrl+Shift+R).
-2. Open **Social posts** or **Site content** again.
-
-If it still spins, open DevTools → **Console** for red errors (403 = log out and log in again with GitHub).
+Hard-refresh `/admin/`. If it still spins, log out and **Login with GitHub** again (403 in Console = expired token).
 
 ## Save → GitHub → deploy flow
 

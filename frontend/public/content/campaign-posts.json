@@ -8,23 +8,51 @@
       "title": "Custom jersey collection",
       "description": "",
       "tags": [
-        "jersey design",
-        "sports",
-        "carousel",
-        "football"
+        {
+          "tag": "jersey design"
+        },
+        {
+          "tag": "sports"
+        },
+        {
+          "tag": "carousel"
+        },
+        {
+          "tag": "football"
+        }
       ],
       "accent": "teal",
       "slides": [
-        "slide-01",
-        "slide-02",
-        "slide-03",
-        "slide-04",
-        "slide-05",
-        "slide-06",
-        "slide-07",
-        "slide-08",
-        "slide-09",
-        "slide-10"
+        {
+          "slide": "slide-01"
+        },
+        {
+          "slide": "slide-02"
+        },
+        {
+          "slide": "slide-03"
+        },
+        {
+          "slide": "slide-04"
+        },
+        {
+          "slide": "slide-05"
+        },
+        {
+          "slide": "slide-06"
+        },
+        {
+          "slide": "slide-07"
+        },
+        {
+          "slide": "slide-08"
+        },
+        {
+          "slide": "slide-09"
+        },
+        {
+          "slide": "slide-10"
+        }
       ]
     },
     {
@@ -34,9 +62,15 @@
       "title": "School Uniform Design Promo",
       "description": "",
       "tags": [
-        "Uniform",
-        "Jersey Design",
-        "Illustration"
+        {
+          "tag": "Uniform"
+        },
+        {
+          "tag": "Jersey Design"
+        },
+        {
+          "tag": "Illustration"
+        }
       ],
       "accent": "teal"
     },
@@ -47,8 +81,12 @@
       "title": "Jersey Design Collection",
       "description": "",
       "tags": [
-        "events",
-        "Jersey Design"
+        {
+          "tag": "events"
+        },
+        {
+          "tag": "Jersey Design"
+        }
       ],
       "accent": "teal"
     },
@@ -59,9 +97,15 @@
       "title": "Relaxation Trio packages",
       "description": "",
       "tags": [
-        "salon",
-        "beauty",
-        "packages"
+        {
+          "tag": "salon"
+        },
+        {
+          "tag": "beauty"
+        },
+        {
+          "tag": "packages"
+        }
       ],
       "accent": "pink"
     },
@@ -72,9 +116,15 @@
       "title": "Skin tips",
       "description": "",
       "tags": [
-        "salon",
-        "skincare",
-        "education"
+        {
+          "tag": "salon"
+        },
+        {
+          "tag": "skincare"
+        },
+        {
+          "tag": "education"
+        }
       ],
       "accent": "pink"
     },
@@ -85,9 +135,15 @@
       "title": "Sothys facial promo",
       "description": "",
       "tags": [
-        "salon",
-        "facial",
-        "beauty"
+        {
+          "tag": "salon"
+        },
+        {
+          "tag": "facial"
+        },
+        {
+          "tag": "beauty"
+        }
       ],
       "accent": "pink"
     },
@@ -98,20 +154,42 @@
       "title": "Parts & service offers",
       "description": "",
       "tags": [
-        "automotive",
-        "parts",
-        "carousel"
+        {
+          "tag": "automotive"
+        },
+        {
+          "tag": "parts"
+        },
+        {
+          "tag": "carousel"
+        }
       ],
       "accent": "purple",
       "slides": [
-        "slide-01",
-        "slide-02",
-        "slide-03",
-        "slide-04",
-        "slide-05",
-        "slide-06",
-        "slide-07",
-        "slide-08"
+        {
+          "slide": "slide-01"
+        },
+        {
+          "slide": "slide-02"
+        },
+        {
+          "slide": "slide-03"
+        },
+        {
+          "slide": "slide-04"
+        },
+        {
+          "slide": "slide-05"
+        },
+        {
+          "slide": "slide-06"
+        },
+        {
+          "slide": "slide-07"
+        },
+        {
+          "slide": "slide-08"
+        }
       ]
     },
     {
@@ -121,10 +199,18 @@
       "title": "Futsal Fiesta — women's fixtures",
       "description": "",
       "tags": [
-        "futsal",
-        "fixtures",
-        "council",
-        "2024"
+        {
+          "tag": "futsal"
+        },
+        {
+          "tag": "fixtures"
+        },
+        {
+          "tag": "council"
+        },
+        {
+          "tag": "2024"
+        }
       ],
       "accent": "purple"
     },
@@ -135,10 +221,18 @@
       "title": "Futsal Fiesta — men's fixtures",
       "description": "",
       "tags": [
-        "futsal",
-        "fixtures",
-        "council",
-        "2024"
+        {
+          "tag": "futsal"
+        },
+        {
+          "tag": "fixtures"
+        },
+        {
+          "tag": "council"
+        },
+        {
+          "tag": "2024"
+        }
       ],
       "accent": "purple"
     },
@@ -149,9 +243,15 @@
       "title": "Women's champions",
       "description": "",
       "tags": [
-        "futsal",
-        "champions",
-        "sports"
+        {
+          "tag": "futsal"
+        },
+        {
+          "tag": "champions"
+        },
+        {
+          "tag": "sports"
+        }
       ],
       "accent": "purple"
     },
@@ -162,9 +262,15 @@
       "title": "Men's champions",
       "description": "",
       "tags": [
-        "futsal",
-        "champions",
-        "sports"
+        {
+          "tag": "futsal"
+        },
+        {
+          "tag": "champions"
+        },
+        {
+          "tag": "sports"
+        }
       ],
       "accent": "purple"
     },
@@ -175,9 +281,15 @@
       "title": "Sponsors & partners",
       "description": "",
       "tags": [
-        "futsal",
-        "sponsors",
-        "council"
+        {
+          "tag": "futsal"
+        },
+        {
+          "tag": "sponsors"
+        },
+        {
+          "tag": "council"
+        }
       ],
       "accent": "purple"
     },
@@ -188,16 +300,30 @@
       "title": "Profile banner — land, air & sea",
       "description": "",
       "tags": [
-        "shipping",
-        "logistics",
-        "banner",
-        "carousel"
+        {
+          "tag": "shipping"
+        },
+        {
+          "tag": "logistics"
+        },
+        {
+          "tag": "banner"
+        },
+        {
+          "tag": "carousel"
+        }
       ],
       "accent": "teal",
       "slides": [
-        "slide-01",
-        "slide-02",
-        "slide-03"
+        {
+          "slide": "slide-01"
+        },
+        {
+          "slide": "slide-02"
+        },
+        {
+          "slide": "slide-03"
+        }
       ]
     },
     {
@@ -207,9 +333,15 @@
       "title": "Customer Reviewer Club",
       "description": "",
       "tags": [
-        "shipping",
-        "partnership",
-        "logistics"
+        {
+          "tag": "shipping"
+        },
+        {
+          "tag": "partnership"
+        },
+        {
+          "tag": "logistics"
+        }
       ],
       "accent": "teal"
     },
@@ -220,9 +352,15 @@
       "title": "Brand lockup",
       "description": "",
       "tags": [
-        "shipping",
-        "branding",
-        "logo"
+        {
+          "tag": "shipping"
+        },
+        {
+          "tag": "branding"
+        },
+        {
+          "tag": "logo"
+        }
       ],
       "accent": "teal"
     },
@@ -233,16 +371,30 @@
       "title": "Freight inquiry CTA",
       "description": "",
       "tags": [
-        "shipping",
-        "freight",
-        "carousel",
-        "CTA"
+        {
+          "tag": "shipping"
+        },
+        {
+          "tag": "freight"
+        },
+        {
+          "tag": "carousel"
+        },
+        {
+          "tag": "CTA"
+        }
       ],
       "accent": "teal",
       "slides": [
-        "slide-01",
-        "slide-02",
-        "slide-03"
+        {
+          "slide": "slide-01"
+        },
+        {
+          "slide": "slide-02"
+        },
+        {
+          "slide": "slide-03"
+        }
       ]
     },
     {
@@ -252,20 +404,42 @@
       "title": "Product range",
       "description": "",
       "tags": [
-        "footcare",
-        "wellness",
-        "carousel",
-        "product"
+        {
+          "tag": "footcare"
+        },
+        {
+          "tag": "wellness"
+        },
+        {
+          "tag": "carousel"
+        },
+        {
+          "tag": "product"
+        }
       ],
       "accent": "pink",
       "slides": [
-        "slide-01",
-        "slide-02",
-        "slide-03",
-        "slide-04",
-        "slide-05",
-        "slide-06",
-        "slide-07"
+        {
+          "slide": "slide-01"
+        },
+        {
+          "slide": "slide-02"
+        },
+        {
+          "slide": "slide-03"
+        },
+        {
+          "slide": "slide-04"
+        },
+        {
+          "slide": "slide-05"
+        },
+        {
+          "slide": "slide-06"
+        },
+        {
+          "slide": "slide-07"
+        }
       ]
     },
     {
@@ -275,9 +449,15 @@
       "title": "Flat foot & plantar fasciitis",
       "description": "",
       "tags": [
-        "footcare",
-        "education",
-        "insoles"
+        {
+          "tag": "footcare"
+        },
+        {
+          "tag": "education"
+        },
+        {
+          "tag": "insoles"
+        }
       ],
       "accent": "pink"
     },
@@ -288,9 +468,15 @@
       "title": "Pain relief range",
       "description": "",
       "tags": [
-        "footcare",
-        "product",
-        "comfort"
+        {
+          "tag": "footcare"
+        },
+        {
+          "tag": "product"
+        },
+        {
+          "tag": "comfort"
+        }
       ],
       "accent": "pink"
     },
@@ -301,16 +487,30 @@
       "title": "Brand & partners",
       "description": "",
       "tags": [
-        "pets",
-        "grooming",
-        "carousel",
-        "retail"
+        {
+          "tag": "pets"
+        },
+        {
+          "tag": "grooming"
+        },
+        {
+          "tag": "carousel"
+        },
+        {
+          "tag": "retail"
+        }
       ],
       "accent": "gold",
       "slides": [
-        "slide-01",
-        "slide-02",
-        "slide-03"
+        {
+          "slide": "slide-01"
+        },
+        {
+          "slide": "slide-02"
+        },
+        {
+          "slide": "slide-03"
+        }
       ]
     },
     {
@@ -320,9 +520,15 @@
       "title": "Cutezy grand opening",
       "description": "",
       "tags": [
-        "pets",
-        "retail",
-        "launch"
+        {
+          "tag": "pets"
+        },
+        {
+          "tag": "retail"
+        },
+        {
+          "tag": "launch"
+        }
       ],
       "accent": "gold"
     },
@@ -333,9 +539,15 @@
       "title": "Pet nutrition imports",
       "description": "",
       "tags": [
-        "pets",
-        "nutrition",
-        "retail"
+        {
+          "tag": "pets"
+        },
+        {
+          "tag": "nutrition"
+        },
+        {
+          "tag": "retail"
+        }
       ],
       "accent": "gold"
     },
@@ -346,10 +558,18 @@
       "title": "Pixana treatment menu",
       "description": "",
       "tags": [
-        "salon",
-        "beauty",
-        "pricing",
-        "hair care"
+        {
+          "tag": "salon"
+        },
+        {
+          "tag": "beauty"
+        },
+        {
+          "tag": "pricing"
+        },
+        {
+          "tag": "hair care"
+        }
       ],
       "accent": "pink"
     },
@@ -360,20 +580,42 @@
       "title": "Services & packages",
       "description": "",
       "tags": [
-        "salon",
-        "beauty",
-        "carousel",
-        "packages"
+        {
+          "tag": "salon"
+        },
+        {
+          "tag": "beauty"
+        },
+        {
+          "tag": "carousel"
+        },
+        {
+          "tag": "packages"
+        }
       ],
       "accent": "pink",
       "slides": [
-        "slide-01",
-        "slide-02",
-        "slide-03",
-        "slide-04",
-        "slide-05",
-        "slide-06",
-        "slide-07"
+        {
+          "slide": "slide-01"
+        },
+        {
+          "slide": "slide-02"
+        },
+        {
+          "slide": "slide-03"
+        },
+        {
+          "slide": "slide-04"
+        },
+        {
+          "slide": "slide-05"
+        },
+        {
+          "slide": "slide-06"
+        },
+        {
+          "slide": "slide-07"
+        }
       ]
     },
     {
@@ -383,9 +625,15 @@
       "title": "Logo lockup",
       "description": "",
       "tags": [
-        "salon",
-        "branding",
-        "logo"
+        {
+          "tag": "salon"
+        },
+        {
+          "tag": "branding"
+        },
+        {
+          "tag": "logo"
+        }
       ],
       "accent": "pink"
     },
@@ -396,10 +644,18 @@
       "title": "Calisthenics Arena 2025",
       "description": "",
       "tags": [
-        "gym",
-        "fitness",
-        "tournament",
-        "events"
+        {
+          "tag": "gym"
+        },
+        {
+          "tag": "fitness"
+        },
+        {
+          "tag": "tournament"
+        },
+        {
+          "tag": "events"
+        }
       ],
       "accent": "gold"
     },
@@ -410,10 +666,18 @@
       "title": "Beef protein isolate",
       "description": "",
       "tags": [
-        "nutrition",
-        "supplements",
-        "product",
-        "offer"
+        {
+          "tag": "nutrition"
+        },
+        {
+          "tag": "supplements"
+        },
+        {
+          "tag": "product"
+        },
+        {
+          "tag": "offer"
+        }
       ],
       "accent": "gold"
     },
@@ -424,9 +688,15 @@
       "title": "Community calisthenics",
       "description": "",
       "tags": [
-        "gym",
-        "fitness",
-        "tournament"
+        {
+          "tag": "gym"
+        },
+        {
+          "tag": "fitness"
+        },
+        {
+          "tag": "tournament"
+        }
       ],
       "accent": "gold"
     },
@@ -437,9 +707,15 @@
       "title": "Ghost Lifestyle wholesale",
       "description": "",
       "tags": [
-        "nutrition",
-        "supplements",
-        "wholesale"
+        {
+          "tag": "nutrition"
+        },
+        {
+          "tag": "supplements"
+        },
+        {
+          "tag": "wholesale"
+        }
       ],
       "accent": "gold"
     },
@@ -450,9 +726,15 @@
       "title": "Creatine stack offer",
       "description": "",
       "tags": [
-        "nutrition",
-        "supplements",
-        "promo"
+        {
+          "tag": "nutrition"
+        },
+        {
+          "tag": "supplements"
+        },
+        {
+          "tag": "promo"
+        }
       ],
       "accent": "gold"
     },
@@ -463,9 +745,15 @@
       "title": "3000 sqft facility",
       "description": "",
       "tags": [
-        "gym",
-        "fitness",
-        "facility"
+        {
+          "tag": "gym"
+        },
+        {
+          "tag": "fitness"
+        },
+        {
+          "tag": "facility"
+        }
       ],
       "accent": "gold"
     },
@@ -476,10 +764,18 @@
       "title": "Calisthenics registration",
       "description": "",
       "tags": [
-        "gym",
-        "fitness",
-        "CTA",
-        "events"
+        {
+          "tag": "gym"
+        },
+        {
+          "tag": "fitness"
+        },
+        {
+          "tag": "CTA"
+        },
+        {
+          "tag": "events"
+        }
       ],
       "accent": "gold"
     },
@@ -490,16 +786,30 @@
       "title": "My Home member deals",
       "description": "",
       "tags": [
-        "retail",
-        "furniture",
-        "member offers",
-        "carousel"
+        {
+          "tag": "retail"
+        },
+        {
+          "tag": "furniture"
+        },
+        {
+          "tag": "member offers"
+        },
+        {
+          "tag": "carousel"
+        }
       ],
       "accent": "purple",
       "slides": [
-        "slide-01",
-        "slide-02",
-        "slide-03"
+        {
+          "slide": "slide-01"
+        },
+        {
+          "slide": "slide-02"
+        },
+        {
+          "slide": "slide-03"
+        }
       ]
     },
     {
@@ -509,9 +819,15 @@
       "title": "Exclusive member offers",
       "description": "",
       "tags": [
-        "retail",
-        "furniture",
-        "member offers"
+        {
+          "tag": "retail"
+        },
+        {
+          "tag": "furniture"
+        },
+        {
+          "tag": "member offers"
+        }
       ],
       "accent": "purple"
     },
@@ -522,17 +838,33 @@
       "title": "Room collection",
       "description": "",
       "tags": [
-        "furniture",
-        "interior",
-        "carousel",
-        "retail"
+        {
+          "tag": "furniture"
+        },
+        {
+          "tag": "interior"
+        },
+        {
+          "tag": "carousel"
+        },
+        {
+          "tag": "retail"
+        }
       ],
       "accent": "purple",
       "slides": [
-        "slide-01",
-        "slide-02",
-        "slide-03",
-        "slide-04"
+        {
+          "slide": "slide-01"
+        },
+        {
+          "slide": "slide-02"
+        },
+        {
+          "slide": "slide-03"
+        },
+        {
+          "slide": "slide-04"
+        }
       ]
     },
     {
@@ -542,10 +874,18 @@
       "platform": "Instagram",
       "title": "Showroom reel",
       "tags": [
-        "furniture",
-        "reel",
-        "retail",
-        "video"
+        {
+          "tag": "furniture"
+        },
+        {
+          "tag": "reel"
+        },
+        {
+          "tag": "retail"
+        },
+        {
+          "tag": "video"
+        }
       ],
       "video": "video.mp4",
       "id": "rainbow-reel-01",
@@ -558,9 +898,15 @@
       "title": "Product spotlight",
       "description": "",
       "tags": [
-        "furniture",
-        "retail",
-        "product"
+        {
+          "tag": "furniture"
+        },
+        {
+          "tag": "retail"
+        },
+        {
+          "tag": "product"
+        }
       ],
       "accent": "purple"
     },
@@ -571,10 +917,18 @@
       "title": "Anniversary sale 70% off",
       "description": "",
       "tags": [
-        "furniture",
-        "sale",
-        "promo",
-        "retail"
+        {
+          "tag": "furniture"
+        },
+        {
+          "tag": "sale"
+        },
+        {
+          "tag": "promo"
+        },
+        {
+          "tag": "retail"
+        }
       ],
       "accent": "purple"
     },
@@ -585,10 +939,18 @@
       "platform": "Instagram",
       "title": "Offer reel",
       "tags": [
-        "furniture",
-        "reel",
-        "promo",
-        "video"
+        {
+          "tag": "furniture"
+        },
+        {
+          "tag": "reel"
+        },
+        {
+          "tag": "promo"
+        },
+        {
+          "tag": "video"
+        }
       ],
       "video": "video.mp4",
       "id": "rainbow-reel-02",
@@ -601,14 +963,24 @@
       "title": "Rioga Points loyalty",
       "description": "",
       "tags": [
-        "travel",
-        "loyalty",
-        "carousel"
+        {
+          "tag": "travel"
+        },
+        {
+          "tag": "loyalty"
+        },
+        {
+          "tag": "carousel"
+        }
       ],
       "accent": "teal",
       "slides": [
-        "slide-01",
-        "slide-02"
+        {
+          "slide": "slide-01"
+        },
+        {
+          "slide": "slide-02"
+        }
       ]
     },
     {
@@ -618,20 +990,42 @@
       "title": "Tour itineraries",
       "description": "",
       "tags": [
-        "travel",
-        "tourism",
-        "carousel",
-        "packages"
+        {
+          "tag": "travel"
+        },
+        {
+          "tag": "tourism"
+        },
+        {
+          "tag": "carousel"
+        },
+        {
+          "tag": "packages"
+        }
       ],
       "accent": "teal",
       "slides": [
-        "slide-01",
-        "slide-02",
-        "slide-03",
-        "slide-04",
-        "slide-05",
-        "slide-06",
-        "slide-07"
+        {
+          "slide": "slide-01"
+        },
+        {
+          "slide": "slide-02"
+        },
+        {
+          "slide": "slide-03"
+        },
+        {
+          "slide": "slide-04"
+        },
+        {
+          "slide": "slide-05"
+        },
+        {
+          "slide": "slide-06"
+        },
+        {
+          "slide": "slide-07"
+        }
       ]
     },
     {
@@ -641,9 +1035,15 @@
       "title": "Best Travel Agency 2024",
       "description": "",
       "tags": [
-        "travel",
-        "awards",
-        "branding"
+        {
+          "tag": "travel"
+        },
+        {
+          "tag": "awards"
+        },
+        {
+          "tag": "branding"
+        }
       ],
       "accent": "teal"
     },
@@ -654,9 +1054,15 @@
       "title": "Azerbaijan & Georgia package",
       "description": "",
       "tags": [
-        "travel",
-        "tourism",
-        "package"
+        {
+          "tag": "travel"
+        },
+        {
+          "tag": "tourism"
+        },
+        {
+          "tag": "package"
+        }
       ],
       "accent": "teal"
     },
@@ -667,9 +1073,15 @@
       "title": "China tour package",
       "description": "",
       "tags": [
-        "travel",
-        "tourism",
-        "offer"
+        {
+          "tag": "travel"
+        },
+        {
+          "tag": "tourism"
+        },
+        {
+          "tag": "offer"
+        }
       ],
       "accent": "teal"
     },
@@ -681,10 +1093,18 @@
       "title": "Campaign feed visual",
       "description": "",
       "tags": [
-        "MDP",
-        "campaign",
-        "politics",
-        "portrait"
+        {
+          "tag": "MDP"
+        },
+        {
+          "tag": "campaign"
+        },
+        {
+          "tag": "politics"
+        },
+        {
+          "tag": "portrait"
+        }
       ],
       "accent": "purple"
     },
@@ -694,10 +1114,18 @@
       "platform": "Print / OOH",
       "title": "Vertical campaign poster",
       "tags": [
-        "MDP",
-        "poster",
-        "print",
-        "campaign"
+        {
+          "tag": "MDP"
+        },
+        {
+          "tag": "poster"
+        },
+        {
+          "tag": "print"
+        },
+        {
+          "tag": "campaign"
+        }
       ],
       "cardLayout": "poster",
       "id": "mdp-poster",
@@ -706,25 +1134,51 @@
     },
     {
       "slides": [
-        "slide-01",
-        "slide-02",
-        "slide-03",
-        "slide-04",
-        "slide-05",
-        "slide-06",
-        "slide-07",
-        "slide-08",
-        "slide-09"
+        {
+          "slide": "slide-01"
+        },
+        {
+          "slide": "slide-02"
+        },
+        {
+          "slide": "slide-03"
+        },
+        {
+          "slide": "slide-04"
+        },
+        {
+          "slide": "slide-05"
+        },
+        {
+          "slide": "slide-06"
+        },
+        {
+          "slide": "slide-07"
+        },
+        {
+          "slide": "slide-08"
+        },
+        {
+          "slide": "slide-09"
+        }
       ],
       "accent": "teal",
       "client": "MDP Campaign · Khulaasa",
       "platform": "Media kit",
       "title": "Khulaasa media kit",
       "tags": [
-        "MDP",
-        "media kit",
-        "branding",
-        "Khulaasa"
+        {
+          "tag": "MDP"
+        },
+        {
+          "tag": "media kit"
+        },
+        {
+          "tag": "branding"
+        },
+        {
+          "tag": "Khulaasa"
+        }
       ],
       "cardLayout": "media-kit",
       "id": "mdp-media-kit",
@@ -739,8 +1193,12 @@
       "title": "Your campaign title",
       "description": "Write 1–3 sentences about what you designed and the goal of the post.",
       "tags": [
-        "Tag one",
-        "Tag two"
+        {
+          "tag": "Tag one"
+        },
+        {
+          "tag": "Tag two"
+        }
       ],
       "accent": "purple"
     }

@@ -8,7 +8,26 @@
     "portrait": "/assets/about/portrait.svg",
     "portraitAlt": "Ibrahim Wafig — graphic designer",
     "bio": "Graphic designer with 5+ years of experience blending creative design and marketing strategy. Founder of ChaosStudio.mv — branding, campaigns, and product design for Maldivian businesses.",
-    "skills": ["Brand Identity", "Social Campaigns", "UI/UX", "Art Direction", "Photo Editing", "Motion"]
+    "skills": [
+      {
+        "skill": "Brand Identity"
+      },
+      {
+        "skill": "Social Campaigns"
+      },
+      {
+        "skill": "UI/UX"
+      },
+      {
+        "skill": "Art Direction"
+      },
+      {
+        "skill": "Photo Editing"
+      },
+      {
+        "skill": "Motion"
+      }
+    ]
   },
   "meta": {
     "ogImage": "/assets/meta/og-image.svg",
@@ -52,8 +71,20 @@
     }
   ],
   "clients": [
-    { "name": "Rainbow Enterprise", "logo": "/assets/clients/studio-a.svg", "logoAlt": "Rainbow Enterprise" },
-    { "name": "Maldives Polytechnic", "logo": "/assets/clients/form-co.svg", "logoAlt": "Maldives Polytechnic" },
-    { "name": "Ayha Maldives", "logo": "/assets/clients/north.svg", "logoAlt": "Ayha Maldives" }
+    {
+      "name": "Rainbow Enterprise",
+      "logo": "/assets/clients/studio-a.svg",
+      "logoAlt": "Rainbow Enterprise"
+    },
+    {
+      "name": "Maldives Polytechnic",
+      "logo": "/assets/clients/form-co.svg",
+      "logoAlt": "Maldives Polytechnic"
+    },
+    {
+      "name": "Ayha Maldives",
+      "logo": "/assets/clients/north.svg",
+      "logoAlt": "Ayha Maldives"
+    }
   ]
 }

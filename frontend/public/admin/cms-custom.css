@@ -734,6 +734,88 @@ button[class*="SaveButton"] {
     max-width: 100% !important;
     flex: none !important;
   }
+
+  /* Contain Decap layout — no horizontal overflow on phones */
+  #nc-root,
+  [class*="App"],
+  [class*="Workflow"],
+  [class*="AppMainContainer"],
+  [class*="CollectionMain"],
+  [class*="EditEntryMain"],
+  [class*="Pane"],
+  main {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: clip !important;
+  }
+
+  [class*="ControlContainer"],
+  [class*="WidgetContainer"],
+  [class*="NestedObjectContainer"],
+  [class*="ListItem"],
+  [class*="ListItemMeta"] {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-wrap: anywhere;
+  }
+
+  input,
+  textarea,
+  select,
+  [class*="TextInput"],
+  pre,
+  code {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  [class*="AppHeader"] {
+    flex-wrap: wrap !important;
+    gap: 0.35rem !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    min-height: auto !important;
+  }
+
+  [class*="CollectionTop"],
+  [class*="ToolbarContainer"] {
+    max-width: calc(100vw - 1rem) !important;
+  }
+
+  .chaos-admin-dashboard,
+  .chaos-media-browser,
+  .chaos-editor-help,
+  .chaos-cms-welcome {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .chaos-install-banner {
+    flex-wrap: wrap;
+    font-size: 0.78rem;
+    line-height: 1.3;
+  }
+
+  .chaos-install-banner span {
+    flex: 1 1 12rem;
+    min-width: 0;
+  }
+
+  .chaos-admin-shell__brand strong {
+    font-size: 0.9rem;
+    max-width: 42vw;
+  }
+
+  .chaos-publish-toast,
+  .chaos-cms-error-toast {
+    max-width: calc(100vw - 1.5rem) !important;
+    font-size: 0.85rem;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
 }
 
 @media (display-mode: standalone) {

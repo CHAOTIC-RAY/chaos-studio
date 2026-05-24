@@ -1,4 +1,5 @@
 import raw from "../../../content/campaign-posts.json";
+import { toStringList } from "./cms-list-shape";
 
 export type CampaignPostJson = {
   id: string;
@@ -25,6 +26,8 @@ const file = raw as CampaignFile;
 
 function normalizePost(post: CampaignPostJson): CampaignPostJson {
   const p = { ...post };
+  p.tags = toStringList(p.tags, "tag");
+  if (p.slides) p.slides = toStringList(p.slides, "slide");
   if (p.cardLayout === "default") delete p.cardLayout;
   if (p.mediaAspect === "default") delete p.mediaAspect;
   return p;

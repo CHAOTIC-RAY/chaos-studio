@@ -11,10 +11,18 @@
     "body": "Graphic designer with 5+ years of experience blending creative design and marketing strategy. Skilled in crafting brand identities, digital content, and campaigns that drive engagement and align with business goals."
   },
   "softSkills": [
-    "Committed",
-    "Multitasking",
-    "Flexible",
-    "Fast Learner"
+    {
+      "skill": "Committed"
+    },
+    {
+      "skill": "Multitasking"
+    },
+    {
+      "skill": "Flexible"
+    },
+    {
+      "skill": "Fast Learner"
+    }
   ],
   "interests": [
     {
@@ -41,10 +49,18 @@
         "featured": true,
         "description": "Designed high-quality social media campaigns, focusing on dynamic visuals, price overlays, and engaging content for furniture and interior styling. Maintained brand consistency across digital touchpoints to drive customer engagement and conversion.",
         "bullets": [
-          "Social feeds, stories, and paid ads for furniture & homeware",
-          "Price overlays, promo frames, and seasonal sale creatives",
-          "Interior styling visuals aligned to Rainbow brand palette",
-          "Fast-turnaround posts for launches, stock arrivals, and events"
+          {
+            "bullet": "Social feeds, stories, and paid ads for furniture & homeware"
+          },
+          {
+            "bullet": "Price overlays, promo frames, and seasonal sale creatives"
+          },
+          {
+            "bullet": "Interior styling visuals aligned to Rainbow brand palette"
+          },
+          {
+            "bullet": "Fast-turnaround posts for launches, stock arrivals, and events"
+          }
         ],
         "logo": "RE"
       },
@@ -55,9 +71,15 @@
         "period": "2025",
         "description": "Teaches Graphic Design C3 — guiding students through Adobe workflows, layout fundamentals, branding exercises, and portfolio-ready project briefs.",
         "bullets": [
-          "Lesson plans for Photoshop, Illustrator, and InDesign basics",
-          "Class critiques, rubrics, and practical studio assignments",
-          "Student showcase materials and certification prep support"
+          {
+            "bullet": "Lesson plans for Photoshop, Illustrator, and InDesign basics"
+          },
+          {
+            "bullet": "Class critiques, rubrics, and practical studio assignments"
+          },
+          {
+            "bullet": "Student showcase materials and certification prep support"
+          }
         ],
         "logo": "MP"
       },
@@ -68,9 +90,15 @@
         "period": "2022 - 2024",
         "description": "Produced marketing collateral, social content, and brand assets for hospitality and digital clients across the Maldives.",
         "bullets": [
-          "Social posts, flyers, and menu boards for Ayha Maldives",
-          "Campaign visuals with Digital Dive for tourism & lifestyle brands",
-          "Logo refinements, print layouts, and photo retouching"
+          {
+            "bullet": "Social posts, flyers, and menu boards for Ayha Maldives"
+          },
+          {
+            "bullet": "Campaign visuals with Digital Dive for tourism & lifestyle brands"
+          },
+          {
+            "bullet": "Logo refinements, print layouts, and photo retouching"
+          }
         ],
         "logo": "AD"
       }
@@ -88,19 +116,41 @@
         "cta": "Open App",
         "accent": "pink",
         "highlights": [
-          "Chef AI chat and guided cooking mode",
-          "Meal guides, discovery search, and shared recipe database",
-          "Fridge tracker, themes, and Android APK distribution"
+          {
+            "line": "Chef AI chat and guided cooking mode"
+          },
+          {
+            "line": "Meal guides, discovery search, and shared recipe database"
+          },
+          {
+            "line": "Fridge tracker, themes, and Android APK distribution"
+          }
         ],
         "tags": [
-          "CookXpert Chef AI",
-          "Meal guides",
-          "Shared recipe DB",
-          "Fridge tracker",
-          "Cooking mode",
-          "Discovery & Search",
-          "Themes",
-          "Android APK"
+          {
+            "tag": "CookXpert Chef AI"
+          },
+          {
+            "tag": "Meal guides"
+          },
+          {
+            "tag": "Shared recipe DB"
+          },
+          {
+            "tag": "Fridge tracker"
+          },
+          {
+            "tag": "Cooking mode"
+          },
+          {
+            "tag": "Discovery & Search"
+          },
+          {
+            "tag": "Themes"
+          },
+          {
+            "tag": "Android APK"
+          }
         ]
       },
       {
@@ -112,9 +162,15 @@
         "cta": "Try Scheduler",
         "accent": "neutral",
         "highlights": [
-          "Content calendar and queue views",
-          "Idea prompts and draft captions",
-          "Channel-specific preview frames"
+          {
+            "line": "Content calendar and queue views"
+          },
+          {
+            "line": "Idea prompts and draft captions"
+          },
+          {
+            "line": "Channel-specific preview frames"
+          }
         ]
       },
       {
@@ -126,9 +182,15 @@
         "cta": "View prototype",
         "accent": "green",
         "highlights": [
-          "Dashboard & card overview screens",
-          "Transfer and bill-pay flows",
-          "MIB-inspired green glass components"
+          {
+            "line": "Dashboard & card overview screens"
+          },
+          {
+            "line": "Transfer and bill-pay flows"
+          },
+          {
+            "line": "MIB-inspired green glass components"
+          }
         ]
       }
     ]
@@ -140,27 +202,45 @@
         "title": "Graphic Design",
         "description": "Logo design, Branding, Photo Editing",
         "tools": [
-          "Photoshop",
-          "Illustrator",
-          "Lightroom",
-          "InDesign"
+          {
+            "tool": "Photoshop"
+          },
+          {
+            "tool": "Illustrator"
+          },
+          {
+            "tool": "Lightroom"
+          },
+          {
+            "tool": "InDesign"
+          }
         ],
         "variant": "primary"
       },
       {
         "title": "Video Editing",
         "tools": [
-          "Premiere Pro",
-          "After Effects"
+          {
+            "tool": "Premiere Pro"
+          },
+          {
+            "tool": "After Effects"
+          }
         ],
         "variant": "muted"
       },
       {
         "title": "Microsoft Office",
         "tools": [
-          "PowerPoint",
-          "Word",
-          "Excel"
+          {
+            "tool": "PowerPoint"
+          },
+          {
+            "tool": "Word"
+          },
+          {
+            "tool": "Excel"
+          }
         ],
         "variant": "muted"
       },
@@ -168,9 +248,15 @@
         "title": "UI/UX Design",
         "description": "Web design, App Design",
         "tools": [
-          "Adobe XD",
-          "Figma",
-          "Dreamweaver"
+          {
+            "tool": "Adobe XD"
+          },
+          {
+            "tool": "Figma"
+          },
+          {
+            "tool": "Dreamweaver"
+          }
         ],
         "variant": "primary"
       }

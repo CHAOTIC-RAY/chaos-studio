@@ -47,7 +47,7 @@ collections:
                 name: tags
                 widget: list
                 hint: "One keyword per line (saved as text list)"
-                field: { label: Tag, widget: string }
+                field: { label: Tag, name: tag, widget: string }
               - label: Accent
                 name: accent
                 widget: select
@@ -68,7 +68,7 @@ collections:
                 name: slides
                 widget: list
                 required: false
-                field: { label: Basename, widget: string, hint: slide-01 }
+                field: { label: Basename, name: slide, widget: string, hint: slide-01 }
               - { label: Video filename, name: video, widget: string, required: false }
               - { label: Poster filename, name: poster, widget: string, required: false }
               - { label: Image basename, name: image, widget: string, required: false }
@@ -102,7 +102,7 @@ collections:
           - label: Soft skills
             name: softSkills
             widget: list
-            field: { label: Skill, widget: string }
+            field: { label: Skill, name: skill, widget: string }
           - label: Interests
             name: interests
             widget: list
@@ -128,7 +128,7 @@ collections:
                   - label: Bullets
                     name: bullets
                     widget: list
-                    field: { label: Bullet, widget: string }
+                    field: { label: Bullet, name: bullet, widget: string }
                   - { label: Logo initials, name: logo, widget: string }
                   - { label: Featured, name: featured, widget: boolean, required: false }
           - label: Featured work
@@ -151,11 +151,11 @@ collections:
                   - label: Highlights
                     name: highlights
                     widget: list
-                    field: { label: Line, widget: string }
+                    field: { label: Line, name: line, widget: string }
                   - label: Tags
                     name: tags
                     widget: list
-                    field: { label: Tag, widget: string }
+                    field: { label: Tag, name: tag, widget: string }
                   - label: Accent
                     name: accent
                     widget: select
@@ -175,7 +175,7 @@ collections:
                   - label: Tools
                     name: tools
                     widget: list
-                    field: { label: Tool, widget: string }
+                    field: { label: Tool, name: tool, widget: string }
                   - label: Style
                     name: variant
                     widget: select
@@ -219,11 +219,11 @@ collections:
             name: highlights
             widget: list
             hint: "Short lines under the hero"
-            field: { label: Line, widget: string }
+            field: { label: Line, name: line, widget: string }
           - label: Services list
             name: services
             widget: list
-            field: { label: Service, widget: string }
+            field: { label: Service, name: service, widget: string }
           - label: Pricing packages
             name: packages
             widget: list
@@ -239,7 +239,7 @@ collections:
               - label: What's included
                 name: features
                 widget: list
-                field: { label: Feature, widget: string }
+                field: { label: Feature, name: feature, widget: string }
           - { label: Pricing footnote, name: pricingNote, widget: text }
           - label: Why choose us
             name: whyUs
@@ -295,7 +295,7 @@ collections:
               - label: Skill pills
                 name: skills
                 widget: list
-                field: { label: Skill, widget: string }
+                field: { label: Skill, name: skill, widget: string }
           - label: Social links
             name: social
             widget: object

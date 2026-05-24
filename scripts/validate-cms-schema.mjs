@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Guardrails before deploy: JSON shapes must match what the site + Decap CMS expect.
- * Run: node scripts/validate-cms-schema.mjs
+ * Guardrails before deploy: JSON shapes must match what Decap CMS + site expect.
+ * CMS stores list fields as [{tag:"..."}] etc.; worker normalizes to string[] for the site.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -18,9 +18,17 @@ function assert(cond, msg) {
   if (!cond) throw new Error(msg);
 }
 
-function isStringArray(v, label) {
+function isCmsStringList(v, prop, label) {
   assert(Array.isArray(v), `${label} must be an array`);
-  assert(v.every((x) => typeof x === "string"), `${label} must be string[] (not {tag:…} objects)`);
+  for (const item of v) {
+    if (typeof item === "string") {
+      throw new Error(`${label}: still plain strings — run: npm run migrate:cms-lists`);
+    }
+    assert(
+      item && typeof item === "object" && typeof item[prop] === "string",
+      `${label}: each item must be { "${prop}": "..." }`,
+    );
+  }
 }
 
 function validateCampaign() {
@@ -29,11 +37,8 @@ function validateCampaign() {
   assert(Array.isArray(data.posts), "campaign-posts: posts");
   for (const p of data.posts) {
     assert(typeof p.id === "string" && p.id, `post missing id`);
-    isStringArray(p.tags ?? [], `post ${p.id} tags`);
-    if (p.slides != null) isStringArray(p.slides, `post ${p.id} slides`);
-    if (p.tags?.some((t) => typeof t === "object")) {
-      throw new Error(`post ${p.id}: tags look like CMS objects — use string tags only`);
-    }
+    isCmsStringList(p.tags ?? [], "tag", `post ${p.id} tags`);
+    if (p.slides != null) isCmsStringList(p.slides, "slide", `post ${p.id} slides`);
   }
 }
 
@@ -44,19 +49,26 @@ function validatePortfolio() {
       "portfolio.json must not contain chaosStudio — edit content/chaos-studio.json (Chaos Studio tab in CMS)",
     );
   }
-  isStringArray(data.softSkills ?? [], "portfolio softSkills");
+  isCmsStringList(data.softSkills ?? [], "skill", "portfolio softSkills");
   for (const job of data.experience?.items ?? []) {
-    isStringArray(job.bullets ?? [], `job ${job.id} bullets`);
+    if (job.bullets?.length) isCmsStringList(job.bullets, "bullet", `job ${job.id} bullets`);
+  }
+  for (const proj of data.featuredWork?.projects ?? []) {
+    if (proj.highlights?.length) isCmsStringList(proj.highlights, "line", `project ${proj.id} highlights`);
+    if (proj.tags?.length) isCmsStringList(proj.tags, "tag", `project ${proj.id} tags`);
+  }
+  for (const cat of data.skills?.categories ?? []) {
+    isCmsStringList(cat.tools ?? [], "tool", `skills ${cat.title} tools`);
   }
 }
 
 function validateChaosStudio() {
   const cs = readJson("content/chaos-studio.json");
   assert(typeof cs.title === "string", "chaos-studio: title");
-  isStringArray(cs.highlights ?? [], "chaos-studio highlights");
-  isStringArray(cs.services ?? [], "chaos-studio services");
+  isCmsStringList(cs.highlights ?? [], "line", "chaos-studio highlights");
+  isCmsStringList(cs.services ?? [], "service", "chaos-studio services");
   for (const pkg of cs.packages ?? []) {
-    isStringArray(pkg.features ?? [], `package ${pkg.id} features`);
+    isCmsStringList(pkg.features ?? [], "feature", `package ${pkg.id} features`);
   }
 }
 
@@ -68,6 +80,7 @@ function validateSiteConfig() {
   assert(typeof data.meta?.title === "string", "site.config meta.title");
   assert(Array.isArray(data.work), "site.config work");
   assert(Array.isArray(data.clients), "site.config clients");
+  isCmsStringList(data.about?.skills ?? [], "skill", "site.config about.skills");
 }
 
 function validateAdminAssets() {
