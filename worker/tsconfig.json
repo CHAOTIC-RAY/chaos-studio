@@ -10,5 +10,10 @@
     "skipLibCheck": true,
     "resolveJsonModule": true
   },
-  "include": ["src/**/*.ts", "../content/campaign-posts.json", "../content/portfolio.json"]
+  "include": [
+    "src/**/*.ts",
+    "../content/campaign-posts.json",
+    "../content/portfolio.json",
+    "../content/chaos-studio.json"
+  ]
 }

@@ -45,7 +45,8 @@ Your GitHub user must have **write** access to `CHAOTIC-RAY/portfolio`.
 | Collection | File | Use for |
 |------------|------|--------|
 | **Social posts** | `content/campaign-posts.json` | Post titles, tags, clients, carousels, reels |
-| **Site content** | `content/portfolio.json` | Hero, experience, skills, Chaos Studio packages, contact |
+| **Chaos Studio tab** | `content/chaos-studio.json` | Studio page — packages, pricing, services, contact |
+| **Site content** | `content/portfolio.json` | Home page — profile, experience, skills, contact |
 | **SEO & projects** | `frontend/public/assets/site.config.json` | Meta, social links, work cards, client logos |
 
 See **`content/CMS-TROUBLESHOOTING.md`** for save/deploy errors and fixes.

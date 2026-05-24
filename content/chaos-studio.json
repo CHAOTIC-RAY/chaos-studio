@@ -1,0 +1,116 @@
+{
+  "title": "ChaosStudio.mv",
+  "tagline": "Independent creative studio",
+  "headline": "Your Brand, Unleashed. Your Impact, Amplified.",
+  "pitch": "Your brand deserves more than just design — it deserves visual dominance. At Chaos Studio, we don't just create graphics; we craft experiences that grab attention, spark engagement, and leave a lasting impact.",
+  "description": "Founded ChaosStudio.mv to deliver branding, social campaigns, UI concepts, and product design for Maldivian businesses and personal ventures. Work spans identity systems, campaign art direction, and full-stack product interfaces.",
+  "highlights": [
+    "Brand identity & social kits for local clients",
+    "Product design: CookXpert, Forge, FaisaMobileXYZ",
+    "Campaign art direction & motion-ready assets",
+    "Teaching design fundamentals alongside client work"
+  ],
+  "services": [
+    "Interior designing",
+    "Architecture",
+    "App designing",
+    "Website designing",
+    "Branding & logo design",
+    "Jersey design",
+    "Marketing videos",
+    "Social media management & ads",
+    "Graphic design — posters, flyers & more"
+  ],
+  "whyUs": [
+    {
+      "title": "Affordable",
+      "body": "High-quality designs at budget-friendly rates."
+    },
+    {
+      "title": "Fast & direct",
+      "body": "No middlemen — quick, clear communication."
+    },
+    {
+      "title": "Tailored for you",
+      "body": "Unique designs that match your brand perfectly."
+    }
+  ],
+  "pricingNote": "All-in-one solutions with creativity, efficiency, and care. Prices are negotiable based on design or post type.",
+  "packages": [
+    {
+      "id": "starter",
+      "name": "Starter Package",
+      "tagline": "Perfect for businesses just starting out.",
+      "price": "2,000",
+      "currency": "MVR",
+      "features": [
+        "Logo design (3 concepts)",
+        "Letterhead design",
+        "2 social media posts per week",
+        "1 reel per week"
+      ]
+    },
+    {
+      "id": "business-booster",
+      "name": "Business Booster Package",
+      "tagline": "Ideal for small businesses looking to grow their brand.",
+      "price": "5,000",
+      "currency": "MVR",
+      "features": [
+        "Logo design (3 revisions)",
+        "Letterhead design",
+        "Jersey design (customized)",
+        "4 social media posts per week",
+        "2 reels per week"
+      ]
+    },
+    {
+      "id": "complete-branding",
+      "name": "Complete Branding Package",
+      "tagline": "For businesses that want a full branding experience.",
+      "price": "8,000",
+      "currency": "MVR",
+      "features": [
+        "Logo design (unlimited concepts + revisions)",
+        "Letterhead design",
+        "Jersey design",
+        "Banner / poster designs (2)",
+        "6 social media posts per week",
+        "4 reels per week",
+        "Strategy for a whole month's posts and reels"
+      ]
+    },
+    {
+      "id": "event-marketing",
+      "name": "Event Marketing Package",
+      "tagline": "Best for one-time campaigns or events.",
+      "price": "3,500",
+      "currency": "MVR",
+      "features": [
+        "Banner design (1 piece)",
+        "Poster design (1 piece)",
+        "5 custom social media posts",
+        "2 reels"
+      ]
+    },
+    {
+      "id": "monthly-social",
+      "name": "Monthly Social Media Management",
+      "tagline": "Ongoing posts, reels, and strategy for the full month.",
+      "price": "6,000",
+      "currency": "MVR",
+      "recommended": true,
+      "features": [
+        "20 custom posts for the month",
+        "Engaging reels for the month",
+        "Detailed strategy plan for the month"
+      ]
+    }
+  ],
+  "studioContact": {
+    "instagram": "@chaosstudio.mv",
+    "instagramUrl": "https://instagram.com/chaosstudio.mv",
+    "phones": "+960 7339104 / 7339101",
+    "email": "chaos.studio.mv@gmail.com"
+  }
+}

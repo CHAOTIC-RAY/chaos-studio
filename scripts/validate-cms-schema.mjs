@@ -39,17 +39,24 @@ function validateCampaign() {
 
 function validatePortfolio() {
   const data = readJson("content/portfolio.json");
-  isStringArray(data.softSkills ?? [], "portfolio softSkills");
-  const cs = data.chaosStudio;
-  if (cs) {
-    isStringArray(cs.highlights ?? [], "chaosStudio.highlights");
-    isStringArray(cs.services ?? [], "chaosStudio.services");
-    for (const pkg of cs.packages ?? []) {
-      isStringArray(pkg.features ?? [], `package ${pkg.id} features`);
-    }
+  if (data.chaosStudio != null) {
+    throw new Error(
+      "portfolio.json must not contain chaosStudio — edit content/chaos-studio.json (Chaos Studio tab in CMS)",
+    );
   }
+  isStringArray(data.softSkills ?? [], "portfolio softSkills");
   for (const job of data.experience?.items ?? []) {
     isStringArray(job.bullets ?? [], `job ${job.id} bullets`);
+  }
+}
+
+function validateChaosStudio() {
+  const cs = readJson("content/chaos-studio.json");
+  assert(typeof cs.title === "string", "chaos-studio: title");
+  isStringArray(cs.highlights ?? [], "chaos-studio highlights");
+  isStringArray(cs.services ?? [], "chaos-studio services");
+  for (const pkg of cs.packages ?? []) {
+    isStringArray(pkg.features ?? [], `package ${pkg.id} features`);
   }
 }
 
@@ -73,6 +80,7 @@ function validateAdminAssets() {
 try {
   validateCampaign();
   validatePortfolio();
+  validateChaosStudio();
   validateSiteConfig();
   validateAdminAssets();
   console.log("CMS schema validation passed.");

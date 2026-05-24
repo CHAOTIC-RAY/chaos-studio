@@ -79,7 +79,7 @@ collections:
       preview: false
     files:
       - name: main
-        label: Home & Chaos Studio
+        label: Home page
         file: content/portfolio.json
         fields:
           - label: Profile
@@ -109,54 +109,6 @@ collections:
             fields:
               - { label: Label, name: label, widget: string }
               - { label: Emoji, name: emoji, widget: string }
-          - label: Chaos Studio
-            name: chaosStudio
-            widget: object
-            collapsed: true
-            fields:
-              - { label: Title, name: title, widget: string }
-              - { label: Tagline, name: tagline, widget: string }
-              - { label: Headline, name: headline, widget: string }
-              - { label: Pitch, name: pitch, widget: text }
-              - { label: About, name: description, widget: text }
-              - label: Highlights
-                name: highlights
-                widget: list
-                field: { label: Line, name: line, widget: string }
-              - label: Services
-                name: services
-                widget: list
-                field: { label: Service, name: service, widget: string }
-              - label: Packages
-                name: packages
-                widget: list
-                summary: "{{fields.name}}"
-                fields:
-                  - { label: ID, name: id, widget: string }
-                  - { label: Name, name: name, widget: string }
-                  - { label: Tagline, name: tagline, widget: text }
-                  - { label: Price, name: price, widget: string }
-                  - { label: Currency, name: currency, widget: string }
-                  - { label: Recommended, name: recommended, widget: boolean, required: false }
-                  - label: Features
-                    name: features
-                    widget: list
-                    field: { label: Feature, name: feature, widget: string }
-              - label: Studio contact
-                name: studioContact
-                widget: object
-                fields:
-                  - { label: Instagram handle, name: instagram, widget: string }
-                  - { label: Instagram URL, name: instagramUrl, widget: string }
-                  - { label: Phones, name: phones, widget: string }
-                  - { label: Email, name: email, widget: string }
-              - { label: Pricing note, name: pricingNote, widget: text }
-              - label: Why us
-                name: whyUs
-                widget: list
-                fields:
-                  - { label: Title, name: title, widget: string }
-                  - { label: Body, name: body, widget: text }
           - label: Experience
             name: experience
             widget: object
@@ -248,6 +200,64 @@ collections:
               - { label: Telegram, name: telegram, widget: string }
               - { label: Telegram URL, name: telegramUrl, widget: string }
               - { label: WhatsApp URL, name: whatsappUrl, widget: string }
+
+  - name: chaos-studio
+    label: Chaos Studio tab
+    editor:
+      preview: false
+    files:
+      - name: studio-page
+        label: Studio page (/studio)
+        file: content/chaos-studio.json
+        fields:
+          - { label: Studio name, name: title, widget: string, hint: "Header on Studio tab" }
+          - { label: Short tagline, name: tagline, widget: string }
+          - { label: Main headline, name: headline, widget: string }
+          - { label: Pitch, name: pitch, widget: text }
+          - { label: About paragraph, name: description, widget: text }
+          - label: Highlight bullets
+            name: highlights
+            widget: list
+            hint: "Short lines under the hero"
+            field: { label: Line, name: line, widget: string }
+          - label: Services list
+            name: services
+            widget: list
+            field: { label: Service, name: service, widget: string }
+          - label: Pricing packages
+            name: packages
+            widget: list
+            label_singular: Package
+            summary: "{{fields.name}} — {{fields.price}} {{fields.currency}}"
+            fields:
+              - { label: Package ID, name: id, widget: string, hint: "e.g. starter (do not change after publish)" }
+              - { label: Package name, name: name, widget: string }
+              - { label: Tagline, name: tagline, widget: text }
+              - { label: Price, name: price, widget: string }
+              - { label: Currency, name: currency, widget: string, default: "MVR" }
+              - { label: Recommended badge, name: recommended, widget: boolean, required: false }
+              - label: What's included
+                name: features
+                widget: list
+                field: { label: Feature, name: feature, widget: string }
+          - { label: Pricing footnote, name: pricingNote, widget: text }
+          - label: Why choose us
+            name: whyUs
+            widget: list
+            label_singular: Reason
+            summary: "{{fields.title}}"
+            fields:
+              - { label: Title, name: title, widget: string }
+              - { label: Body, name: body, widget: text }
+          - label: Studio contact
+            name: studioContact
+            widget: object
+            collapsed: false
+            fields:
+              - { label: Instagram handle, name: instagram, widget: string }
+              - { label: Instagram link, name: instagramUrl, widget: string }
+              - { label: Phone numbers, name: phones, widget: string }
+              - { label: Email, name: email, widget: string }
 
   - name: site
     label: SEO & projects

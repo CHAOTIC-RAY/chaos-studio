@@ -7,8 +7,13 @@
       hash: "#/collections/campaign/entries/campaign-posts",
     },
     {
+      title: "Chaos Studio tab",
+      desc: "Packages, pricing, services & studio contact",
+      hash: "#/collections/chaos-studio/entries/studio-page",
+    },
+    {
       title: "Site content",
-      desc: "Hero, experience, Chaos Studio, contact",
+      desc: "Hero, experience, skills & contact",
       hash: "#/collections/portfolio/entries/main",
     },
     {
@@ -63,6 +68,7 @@
       <div class="chaos-cms-cards">${cardsHtml}</div>
       <div class="chaos-cms-links">
         <a href="https://portfolio.chaoticstudio.workers.dev/" target="_blank" rel="noopener">View live site</a>
+        <a href="https://portfolio.chaoticstudio.workers.dev/studio" target="_blank" rel="noopener">Chaos Studio tab</a>
         <a href="https://portfolio.chaoticstudio.workers.dev/#campaign" target="_blank" rel="noopener">Campaign section</a>
         <a href="https://github.com/CHAOTIC-RAY/portfolio/blob/main/content/CMS-SETUP.md" target="_blank" rel="noopener">Setup guide</a>
       </div>
