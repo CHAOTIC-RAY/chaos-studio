@@ -474,7 +474,25 @@
     injectMediaBrowser();
   }
 
+  function bindCmsErrorToast() {
+    if (window.__chaosCmsErrorBound) return;
+    window.__chaosCmsErrorBound = true;
+    window.addEventListener("unhandledrejection", (e) => {
+      const msg = e.reason?.message || String(e.reason || "");
+      if (!/cms|decap|github|entry|widget/i.test(msg)) return;
+      console.error("[CMS]", e.reason);
+      if (document.querySelector(".chaos-cms-error-toast")) return;
+      const toast = document.createElement("div");
+      toast.className = "chaos-cms-error-toast chaos-publish-toast";
+      toast.setAttribute("role", "alert");
+      toast.innerHTML = `<strong>CMS could not load this entry.</strong> Hard-refresh the page. If it persists, check the browser console.`;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 12000);
+    });
+  }
+
   function boot() {
+    bindCmsErrorToast();
     registerServiceWorker();
     setupInstallPrompt();
     injectShell();
