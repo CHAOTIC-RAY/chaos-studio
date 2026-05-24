@@ -3,13 +3,8 @@
   "name": "cms-auth",
   "main": "src/index.ts",
   "compatibility_date": "2026-05-18",
+  "workers_dev": true,
   "observability": {
     "enabled": true
-  },
-  "routes": [
-    {
-      "pattern": "cms-auth.chaoticstudio.workers.dev",
-      "custom_domain": true
-    }
-  ]
+  }
 }
