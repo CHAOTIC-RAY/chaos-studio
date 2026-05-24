@@ -21,18 +21,21 @@ publish_mode: simple
 
 collections:
   - name: campaign
-    label: Campaign & feed
+    label: Social posts
+    editor:
+      preview: false
     files:
       - name: campaign-posts
-        label: All campaign posts
+        label: All posts
         file: content/campaign-posts.json
         fields:
-          - { label: Section subtitle, name: subtitle, widget: string }
+          - { label: Section subtitle, name: subtitle, widget: string, hint: "Short line under the Campaign heading on the site" }
           - label: Posts
             name: posts
             widget: list
-            label_singular: post
+            label_singular: Post
             summary: "{{fields.client}} — {{fields.title}}"
+            collapsed: true
             fields:
               - { label: Post ID, name: id, widget: string, hint: "e.g. rainbow-01 — matches images/posts/{id}/" }
               - { label: Published, name: enabled, widget: boolean, default: true, required: false }
@@ -70,15 +73,19 @@ collections:
               - { label: Image basename, name: image, widget: string, required: false }
 
   - name: portfolio
-    label: Portfolio page
+    label: Site content
+    description: Hero, experience, skills, Chaos Studio & contact
+    editor:
+      preview: false
     files:
       - name: main
-        label: Home & studio content
+        label: Home & Chaos Studio
         file: content/portfolio.json
         fields:
           - label: Profile
             name: profile
             widget: object
+            collapsed: true
             fields:
               - { label: Name, name: name, widget: string }
               - { label: Tagline, name: tagline, widget: string }
@@ -87,6 +94,7 @@ collections:
           - label: Objective
             name: objective
             widget: object
+            collapsed: true
             fields:
               - { label: Title, name: title, widget: string }
               - { label: Body, name: body, widget: text }
@@ -103,6 +111,7 @@ collections:
           - label: Chaos Studio
             name: chaosStudio
             widget: object
+            collapsed: true
             fields:
               - { label: Title, name: title, widget: string }
               - { label: Tagline, name: tagline, widget: string }
@@ -150,6 +159,7 @@ collections:
           - label: Experience
             name: experience
             widget: object
+            collapsed: true
             fields:
               - { label: Subtitle, name: subtitle, widget: string }
               - label: Jobs
@@ -171,6 +181,7 @@ collections:
           - label: Featured work
             name: featuredWork
             widget: object
+            collapsed: true
             fields:
               - { label: Subtitle, name: subtitle, widget: string }
               - label: Projects
@@ -199,6 +210,7 @@ collections:
           - label: Skills
             name: skills
             widget: object
+            collapsed: true
             fields:
               - { label: Subtitle, name: subtitle, widget: string }
               - label: Categories
@@ -226,6 +238,7 @@ collections:
           - label: Contact
             name: contact
             widget: object
+            collapsed: true
             fields:
               - { label: Email, name: email, widget: string }
               - { label: Phone, name: phone, widget: string }
@@ -236,10 +249,12 @@ collections:
               - { label: WhatsApp URL, name: whatsappUrl, widget: string }
 
   - name: site
-    label: Site assets config
+    label: SEO & projects
+    editor:
+      preview: false
     files:
       - name: site-config
-        label: Meta & work cards (site.config.json)
+        label: Meta & work cards
         file: frontend/public/assets/site.config.json
         fields:
           - label: Meta
