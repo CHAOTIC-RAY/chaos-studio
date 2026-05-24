@@ -37,12 +37,17 @@ function readText(rel) {
 }
 
 /** Pairs that must be byte-identical before deploy (CMS edits content/, build copies to public/). */
-const MIRROR_PAIRS = [
-  ["content/campaign-posts.json", "frontend/public/content/campaign-posts.json"],
-];
+const MIRROR_PAIRS = [];
+
+function readCampaignPublicMerged() {
+  const posts = JSON.parse(readText("content/campaign-posts.json"));
+  const meta = JSON.parse(readText("content/campaign-meta.json"));
+  return `${JSON.stringify({ subtitle: meta.subtitle, posts: posts.posts }, null, 2)}\n`;
+}
 
 /** Every path Decap CMS commits to on GitHub (from config.yml). */
 const CMS_REPO_FILES = [
+  "content/campaign-meta.json",
   "content/campaign-posts.json",
   "content/portfolio.json",
   "content/chaos-studio.json",
@@ -50,6 +55,23 @@ const CMS_REPO_FILES = [
 ];
 
 function verifyMirrors() {
+  const publicCampaign = "frontend/public/content/campaign-posts.json";
+  if (!fs.existsSync(path.join(root, "content/campaign-meta.json"))) {
+    fail("Missing content/campaign-meta.json");
+  }
+  if (!fs.existsSync(path.join(root, publicCampaign))) {
+    fail(`Missing ${publicCampaign} (run: npm run sync:content)`);
+  } else {
+    const merged = readCampaignPublicMerged();
+    const onDisk = fs.readFileSync(path.join(root, publicCampaign), "utf8");
+    if (merged !== onDisk) {
+      fail(
+        `Out of sync: campaign meta+posts ≠ ${publicCampaign}\n` +
+          `  Run: npm run sync:cms`,
+      );
+    }
+  }
+
   for (const [src, dest] of MIRROR_PAIRS) {
     if (!fs.existsSync(path.join(root, src))) {
       fail(`Missing CMS source file: ${src}`);
@@ -160,11 +182,21 @@ function writeSyncStatus() {
     checkedAt: new Date().toISOString(),
     branch: "main",
     ok: errors.length === 0,
-    mirrors: MIRROR_PAIRS.map(([src, dest]) => ({
-      source: src,
-      mirror: dest,
-      inSync: filesEqual(src, dest),
-    })),
+    mirrors: [
+      {
+        source: "content/campaign-meta.json + campaign-posts.json",
+        mirror: "frontend/public/content/campaign-posts.json",
+        inSync:
+          fs.existsSync(path.join(root, "frontend/public/content/campaign-posts.json")) &&
+          readCampaignPublicMerged() ===
+            fs.readFileSync(path.join(root, "frontend/public/content/campaign-posts.json"), "utf8"),
+      },
+      ...MIRROR_PAIRS.map(([src, dest]) => ({
+        source: src,
+        mirror: dest,
+        inSync: filesEqual(src, dest),
+      })),
+    ],
     cmsFiles: CMS_REPO_FILES.map((f) => ({ path: f, exists: fs.existsSync(path.join(root, f)) })),
   };
   const out = path.join(root, "frontend/public/admin/sync-status.json");

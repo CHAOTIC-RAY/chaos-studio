@@ -53,6 +53,7 @@ Your GitHub user must have **write** access to `CHAOTIC-RAY/portfolio`.
 
 | Collection | File | Use for |
 |------------|------|--------|
+| **Campaign heading** | `content/campaign-meta.json` | Subtitle under Campaign on the home page |
 | **Social posts** | `content/campaign-posts.json` | Post titles, tags, clients, carousels, reels |
 | **Chaos Studio tab** | `content/chaos-studio.json` | Studio page — packages, pricing, services, contact |
 | **Site content** | `content/portfolio.json` | Home page — profile, experience, skills, contact |

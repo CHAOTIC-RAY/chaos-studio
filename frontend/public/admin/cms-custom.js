@@ -314,19 +314,31 @@
     host.prepend(panel);
   }
 
+  let lastEditorHelpRoute = "";
+
   function injectEditorHelp() {
+    if (!isEditor()) {
+      document.querySelectorAll(".chaos-editor-help").forEach((n) => n.remove());
+      lastEditorHelpRoute = "";
+      return;
+    }
+
+    const h = route();
+    if (h === lastEditorHelpRoute && document.querySelector(".chaos-editor-help")) return;
+
     document.querySelectorAll(".chaos-editor-help").forEach((n) => n.remove());
-    if (!isEditor()) return;
+    lastEditorHelpRoute = h;
 
     const toolbar =
       document.querySelector('[class*="ToolbarContainer"]') ||
       document.querySelector('[class*="CollectionTop"]');
     if (!toolbar) return;
 
-    const h = route();
     let text =
       "Edit the fields below, then click Publish. Do not close the tab until you see “Changes saved”.";
-    if (h.includes("campaign-posts")) {
+    if (h.includes("campaign-meta")) {
+      text = "Campaign section subtitle on the home page. Click Publish when done.";
+    } else if (h.includes("campaign-posts")) {
       text =
         "Each post needs a Post ID that matches its image folder. Tags: one keyword per line. Click Publish when finished.";
     } else if (h.includes("chaos-studio")) {
@@ -466,12 +478,20 @@
     }
   }
 
-  function refresh() {
+  function onRouteChange() {
     updateNavCurrent();
-    injectShell();
     injectDashboard();
     injectEditorHelp();
     injectMediaBrowser();
+  }
+
+  function initChrome() {
+    injectShell();
+    injectDrawer();
+    injectMobileNav();
+    injectInstallBanner();
+    injectPublishReminder();
+    registerCmsHooks();
   }
 
   function normalizeListValue(val, prop) {
@@ -533,30 +553,6 @@
     }
   }
 
-  function watchLoadingStuck() {
-    if (window.__chaosLoadingWatch) return;
-    window.__chaosLoadingWatch = true;
-    let timer;
-    const check = () => {
-      const stuck = /Loading entry/i.test(document.body?.innerText || "");
-      clearTimeout(timer);
-      if (!stuck) return;
-      timer = setTimeout(() => {
-        if (!/Loading entry/i.test(document.body?.innerText || "")) return;
-        if (document.querySelector(".chaos-loading-help")) return;
-        const el = document.createElement("div");
-        el.className = "chaos-loading-help chaos-publish-toast";
-        el.setAttribute("role", "alert");
-        el.innerHTML =
-          "<strong>Still loading?</strong> Open the profile menu → Log out → Login with GitHub again. Then hard-refresh. Large Social posts may take ~30s on mobile.";
-        document.body.appendChild(el);
-      }, 25000);
-    };
-    const obs = new MutationObserver(check);
-    obs.observe(document.body, { childList: true, subtree: true });
-    check();
-  }
-
   function bindCmsErrorToast() {
     if (window.__chaosCmsErrorBound) return;
     window.__chaosCmsErrorBound = true;
@@ -576,23 +572,20 @@
 
   function boot() {
     bindCmsErrorToast();
-    watchLoadingStuck();
-    registerCmsHooks();
-    setInterval(registerCmsHooks, 500);
     registerServiceWorker();
     setupInstallPrompt();
-    injectShell();
-    injectDrawer();
-    injectMobileNav();
-    injectInstallBanner();
-    injectPublishReminder();
-    refresh();
+    initChrome();
+    onRouteChange();
     window.addEventListener("hashchange", () => {
       closeDrawer();
-      refresh();
+      onRouteChange();
     });
-    const obs = new MutationObserver(() => refresh());
-    obs.observe(document.body, { childList: true, subtree: true });
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        registerCmsHooks();
+        onRouteChange();
+      }, 1500);
+    });
   }
 
   if (document.readyState === "loading") {

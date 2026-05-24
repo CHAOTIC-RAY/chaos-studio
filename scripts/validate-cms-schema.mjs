@@ -29,8 +29,9 @@ function isStringArray(v, label) {
 }
 
 function validateCampaign() {
+  const meta = readJson("content/campaign-meta.json");
+  assert(typeof meta.subtitle === "string", "campaign-meta: subtitle");
   const data = readJson("content/campaign-posts.json");
-  assert(typeof data.subtitle === "string", "campaign-posts: subtitle");
   assert(Array.isArray(data.posts), "campaign-posts: posts");
   for (const p of data.posts) {
     assert(typeof p.id === "string" && p.id, `post missing id`);

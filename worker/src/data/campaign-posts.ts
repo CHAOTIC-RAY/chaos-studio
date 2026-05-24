@@ -1,4 +1,5 @@
-import raw from "../../../content/campaign-posts.json";
+import rawPosts from "../../../content/campaign-posts.json";
+import meta from "../../../content/campaign-meta.json";
 import { toStringList } from "./cms-list-shape";
 
 export type CampaignPostJson = {
@@ -11,18 +12,16 @@ export type CampaignPostJson = {
   accent: string;
   enabled?: boolean;
   image?: string;
-  /** Basenames under /images/posts/{id}/ — e.g. slide-01, slide-02 */
   slides?: string[];
   video?: string;
   poster?: string;
+  cardLayout?: string;
+  mediaAspect?: string;
 };
 
-type CampaignFile = {
-  subtitle: string;
-  posts: CampaignPostJson[];
-};
+type PostsFile = { posts: CampaignPostJson[] };
 
-const file = raw as CampaignFile;
+const postsFile = rawPosts as PostsFile;
 
 function normalizePost(post: CampaignPostJson): CampaignPostJson {
   const p = { ...post };
@@ -34,12 +33,12 @@ function normalizePost(post: CampaignPostJson): CampaignPostJson {
 }
 
 export function getSocialPosts() {
-  const items = file.posts
+  const items = postsFile.posts
     .filter((p) => p.enabled !== false && !p.id.startsWith("_"))
     .map(({ enabled: _e, ...post }) => normalizePost(post));
 
   return {
-    subtitle: file.subtitle,
+    subtitle: meta.subtitle,
     items,
   };
 }

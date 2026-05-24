@@ -18,6 +18,9 @@ for (const post of campaign.posts) {
   if (post.slides) post.slides = toStringList(post.slides, "slide");
 }
 writeJson("content/campaign-posts.json", campaign);
+if (fs.existsSync(path.join(root, "content/campaign-meta.json"))) {
+  /* meta has no list fields */
+}
 
 const portfolio = JSON.parse(fs.readFileSync(path.join(root, "content/portfolio.json"), "utf8"));
 portfolio.softSkills = toStringList(portfolio.softSkills ?? [], "skill");

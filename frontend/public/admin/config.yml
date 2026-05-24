@@ -25,11 +25,17 @@ collections:
     editor:
       preview: false
     files:
-      - name: campaign-posts
-        label: All posts
-        file: content/campaign-posts.json
+      - name: campaign-meta
+        label: Campaign heading
+        file: content/campaign-meta.json
         fields:
           - { label: Section subtitle, name: subtitle, widget: string, hint: "Short line under the Campaign heading on the site" }
+      - name: campaign-posts
+        label: All posts (large — wait on load)
+        file: content/campaign-posts.json
+        editor:
+          preview: false
+        fields:
           - label: Posts
             name: posts
             widget: list
@@ -37,6 +43,8 @@ collections:
             summary: "{{fields.client}} — {{fields.title}}"
             collapsed: true
             minimize_collapsed: true
+            allow_add: true
+            allow_remove: true
             fields:
               - { label: Post ID, name: id, widget: string, hint: "e.g. rainbow-01 — matches images/posts/{id}/" }
               - { label: Published, name: enabled, widget: boolean, default: true, required: false }

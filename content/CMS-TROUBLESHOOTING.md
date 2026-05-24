@@ -16,6 +16,12 @@ You should see **Chaos Studio CMS** in the tab title, not the portfolio.
 
 Decap requires each list sub-field to have a `name` (e.g. `tag`, `slide`). Repo JSON stores lists as `[{ "tag": "design" }, …]`. The live site normalizes these back to string arrays. If you edit JSON by hand, keep that shape or run `npm run migrate:cms-lists`.
 
+## Page freezes or crashes
+
+An older admin script re-rendered on every click and could freeze the tab. After deploy, hard-refresh `/admin/` once.
+
+**Social posts** is a large file (48 posts). On a phone it can take 30–60 seconds to open — try **Campaign heading** first (small file) to confirm login works.
+
 ## Stuck on “Loading entry…”
 
 Hard-refresh `/admin/`. If it still spins, log out and **Login with GitHub** again (403 in Console = expired token).
