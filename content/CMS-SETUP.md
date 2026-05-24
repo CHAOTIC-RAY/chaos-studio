@@ -53,9 +53,12 @@ See **`content/CMS-TROUBLESHOOTING.md`** for save/deploy errors and fixes.
 
 ### Images
 
-- In the CMS sidebar: **Media** uploads go to `frontend/public/images/posts/`.
-- **Post ID** in JSON must match the folder/file name (e.g. `rainbow-01` → `images/posts/rainbow-01/` or `rainbow-01.webp`).
-- After adding images, commit via CMS; GitHub Actions builds and deploys.
+- **Media** tab (built-in): shows only files in the **root** of `frontend/public/images/posts/` (~35 uploads).
+- **All post images** panel (top of Media tab): shows **every** image including subfolders (`rainbow-01/slide-02.webp`, etc.). Click an image to copy its path for CMS fields.
+- Carousel / multi-slide posts: put files in `frontend/public/images/posts/{post-id}/` (e.g. `slide-01.webp`, `slide-02.webp`).
+- Single-image posts: `frontend/public/images/posts/{post-id}.webp` at the root.
+- **Post ID** in JSON must match the folder or file name.
+- After adding images, publish in CMS; GitHub Actions builds and deploys.
 
 ### Optional: `post-copy.json`
 

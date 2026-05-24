@@ -63,6 +63,7 @@ jobs:
           test -f frontend/dist/admin/config.yml
           test -f frontend/dist/admin/cms-custom.css
           test -f frontend/dist/admin/cms-custom.js
+          test -f frontend/dist/admin/media-manifest.json
 
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3

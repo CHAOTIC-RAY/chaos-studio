@@ -39,6 +39,7 @@ flowchart LR
 | Publish works but site unchanged | Deploy failed — open Actions log; fix `validate:cms` or build errors |
 | **Failed to persist** / 403 on save | Need **write** access to repo; check branch protection (CMS must push to `main`) |
 | Images missing after save | Post ID ≠ folder name; or deploy still running |
+| Media tab shows few files | Normal — Decap only lists **root** uploads. Use **All post images** at top of Media tab for folders |
 | Tags/posts look wrong | Re-edit tags as plain lines; run `npm run validate:cms` locally |
 
 ## GitHub secrets (Actions)

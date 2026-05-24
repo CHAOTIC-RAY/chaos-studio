@@ -72,9 +72,11 @@ function validateSiteConfig() {
 
 function validateAdminAssets() {
   const adminDir = path.join(root, "frontend/public/admin");
-  for (const f of ["index.html", "config.yml", "cms-custom.css", "cms-custom.js"]) {
+  for (const f of ["index.html", "config.yml", "cms-custom.css", "cms-custom.js", "media-manifest.json"]) {
     assert(fs.existsSync(path.join(adminDir, f)), `Missing frontend/public/admin/${f}`);
   }
+  const manifest = readJson("frontend/public/admin/media-manifest.json");
+  assert(Array.isArray(manifest.files) && manifest.files.length > 0, "media-manifest.json has no files");
 }
 
 try {
