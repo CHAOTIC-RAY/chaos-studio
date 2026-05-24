@@ -75,6 +75,10 @@
     return route().includes("/entries/");
   }
 
+  function isCampaignPosts() {
+    return route().includes("campaign-posts");
+  }
+
   function isMobileLayout() {
     return window.matchMedia("(max-width: 768px)").matches;
   }
@@ -109,11 +113,13 @@
       const banner = document.getElementById(INSTALL_BANNER_ID);
       if (banner && !localStorage.getItem("chaos-cms-install-dismissed")) {
         banner.hidden = false;
+        updateChromeClasses();
       }
     });
     window.addEventListener("appinstalled", () => {
       deferredInstallPrompt = null;
       document.getElementById(INSTALL_BANNER_ID)?.setAttribute("hidden", "");
+      updateChromeClasses();
     });
   }
 
@@ -134,6 +140,7 @@
       <button type="button" class="chaos-install-banner__dismiss" aria-label="Dismiss">×</button>
     `;
     document.body.appendChild(banner);
+    updateChromeClasses();
 
     banner.querySelector(".chaos-install-banner__install")?.addEventListener("click", async () => {
       if (!deferredInstallPrompt) {
@@ -149,7 +156,21 @@
     banner.querySelector(".chaos-install-banner__dismiss")?.addEventListener("click", () => {
       localStorage.setItem("chaos-cms-install-dismissed", "1");
       banner.hidden = true;
+      updateChromeClasses();
     });
+  }
+
+  function updateChromeClasses() {
+    const h = route();
+    document.body.classList.toggle("chaos-route-home", isHome());
+    document.body.classList.toggle("chaos-route-editor", isEditor());
+    document.body.classList.toggle("chaos-route-posts-list", isCampaignPosts());
+    document.body.classList.toggle("chaos-route-media", isMedia());
+
+    const banner = document.getElementById(INSTALL_BANNER_ID);
+    const bannerVisible =
+      banner && !banner.hidden && !window.matchMedia("(display-mode: standalone)").matches;
+    document.body.classList.toggle("chaos-banner-visible", Boolean(bannerVisible));
   }
 
   function injectShell() {
@@ -478,11 +499,304 @@
     }
   }
 
+  const POSTS_STUDIO_ID = "chaos-posts-studio";
+  let postThumbIndex = null;
+  let enhanceTimer = null;
+
+  async function loadPostThumbIndex() {
+    if (postThumbIndex) return postThumbIndex;
+    try {
+      const res = await fetch(`${SITE}/api/portfolio`, { cache: "no-store" });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const byId = new Map();
+      const bySummary = new Map();
+      for (const p of data.socialPosts?.items || []) {
+        byId.set(p.id, { thumb: postThumbUrl(p), post: p });
+        bySummary.set(summaryKey(p.client, p.title), p.id);
+      }
+      postThumbIndex = { byId, bySummary, items: data.socialPosts?.items || [] };
+    } catch {
+      postThumbIndex = { byId: new Map(), bySummary: new Map(), items: [] };
+    }
+    return postThumbIndex;
+  }
+
+  function summaryKey(client, title) {
+    return `${client || ""} — ${title || ""}`.toLowerCase().trim();
+  }
+
+  function postThumbUrl(post) {
+    if (post.slides?.length) {
+      return `${SITE}/images/posts/${post.id}/${post.slides[0]}.webp`;
+    }
+    const base = (post.image || "").trim() || post.id;
+    return `${SITE}/images/posts/${base}.webp`;
+  }
+
+  function extractPostIdFromListItem(li) {
+    for (const label of li.querySelectorAll("label, [class*='ControlLabel']")) {
+      if (!/post id/i.test(label.textContent || "")) continue;
+      const field =
+        label.closest("[class*='Control']") ||
+        label.closest("[class*='Widget']") ||
+        label.parentElement;
+      const input = field?.querySelector("input, textarea");
+      const val = input?.value?.trim();
+      if (val) return val;
+    }
+    const meta = li.querySelector("[class*='ListItemMeta']");
+    const text = meta?.textContent?.trim().toLowerCase();
+    if (text && postThumbIndex?.bySummary.has(text)) {
+      return postThumbIndex.bySummary.get(text);
+    }
+    return null;
+  }
+
+  function scheduleEnhancePosts() {
+    if (!isCampaignPosts()) return;
+    clearTimeout(enhanceTimer);
+    enhanceTimer = setTimeout(() => {
+      enhancePostLists().catch(() => {});
+      updateExpandedPostPreview().catch(() => {});
+      refreshPostsStudioCounts();
+    }, 180);
+  }
+
+  async function enhancePostLists() {
+    if (!isCampaignPosts()) return;
+    const index = await loadPostThumbIndex();
+    document.querySelectorAll("[class*='ListItem']").forEach((li) => {
+      if (li.closest(`#${POSTS_STUDIO_ID}`)) return;
+      const id = extractPostIdFromListItem(li);
+      const entry = id ? index.byId.get(id) : null;
+      const thumb = entry?.thumb;
+
+      let wrap = li.querySelector(".chaos-list-item__thumb-wrap");
+      if (!wrap) {
+        wrap = document.createElement("div");
+        wrap.className = "chaos-list-item__thumb-wrap";
+        const header =
+          li.querySelector("[class*='ListItemHeader']") ||
+          li.querySelector("button[aria-expanded]")?.parentElement;
+        if (header) header.prepend(wrap);
+        else li.prepend(wrap);
+        li.classList.add("chaos-list-item--enhanced");
+      }
+
+      if (thumb) {
+        wrap.innerHTML = `<img class="chaos-list-item__thumb" src="${thumb}" alt="" loading="lazy" />`;
+      } else {
+        wrap.innerHTML = `<div class="chaos-list-item__thumb chaos-list-item__thumb--empty" aria-hidden="true">📱</div>`;
+      }
+      if (id) li.dataset.chaosPostId = id;
+    });
+  }
+
+  async function updateExpandedPostPreview() {
+    document.querySelectorAll(".chaos-post-edit-preview").forEach((n) => n.remove());
+    if (!isCampaignPosts()) return;
+
+    const expandedBtn = document.querySelector(
+      "[class*='ListItem'] button[aria-expanded='true']",
+    );
+    const li = expandedBtn?.closest("[class*='ListItem']");
+    if (!li) return;
+
+    const index = await loadPostThumbIndex();
+    const id = li.dataset.chaosPostId || extractPostIdFromListItem(li);
+    const entry = id ? index.byId.get(id) : null;
+    const post = entry?.post;
+    const thumb = entry?.thumb;
+
+    const bar = document.createElement("div");
+    bar.className = "chaos-post-edit-preview";
+    bar.setAttribute("role", "img");
+    bar.setAttribute(
+      "aria-label",
+      post ? `Preview: ${post.client} — ${post.title}` : "Post preview",
+    );
+    const title = post?.title || li.querySelector("[class*='ListItemMeta']")?.textContent || "Post";
+    const client = post?.client || "";
+    bar.innerHTML = `
+      ${
+        thumb
+          ? `<img class="chaos-post-edit-preview__img" src="${thumb}" alt="" />`
+          : `<div class="chaos-post-edit-preview__img chaos-list-item__thumb--empty">📱</div>`
+      }
+      <div class="chaos-post-edit-preview__meta">
+        <strong>${escapeHtml(client ? `${client} — ${title}` : title)}</strong>
+        ${id ? `<span class="chaos-post-edit-preview__id">${escapeHtml(id)}</span>` : ""}
+        <span>Folder: images/posts/${escapeHtml(id || "…")}/</span>
+      </div>
+    `;
+
+    const body =
+      li.querySelector("[class*='ListItemBody']") ||
+      li.querySelector("[class*='NestedObjectContainer']") ||
+      expandedBtn?.parentElement?.nextElementSibling;
+    if (body) body.prepend(bar);
+    else li.appendChild(bar);
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function injectPostsStudio() {
+    if (!isCampaignPosts()) {
+      removeEl(POSTS_STUDIO_ID);
+      return;
+    }
+
+    const host = document.querySelector('[class*="CollectionMain"]');
+    if (!host) return;
+
+    let studio = document.getElementById(POSTS_STUDIO_ID);
+    if (!studio) {
+      studio = document.createElement("section");
+      studio.id = POSTS_STUDIO_ID;
+      studio.className = "chaos-posts-studio";
+      studio.innerHTML = `
+        <div class="chaos-posts-studio__head">
+          <div>
+            <h2>Posts studio</h2>
+            <div class="chaos-posts-studio__stats" data-posts-stats></div>
+          </div>
+        </div>
+        <div class="chaos-posts-studio__tools">
+          <input type="search" class="chaos-posts-studio__search" placeholder="Search client, title, or ID…" aria-label="Search posts" />
+          <select class="chaos-posts-studio__filter" aria-label="Filter by client">
+            <option value="">All clients</option>
+          </select>
+          <select class="chaos-posts-studio__view" aria-label="List layout">
+            <option value="list">List view</option>
+            <option value="grid">Grid view</option>
+          </select>
+        </div>
+        <p class="chaos-posts-studio__hint" data-posts-hint hidden>
+          Large file — first load can take 30–60s on mobile. Thumbnails appear as items render.
+        </p>
+      `;
+      host.prepend(studio);
+
+      const search = studio.querySelector(".chaos-posts-studio__search");
+      const filter = studio.querySelector(".chaos-posts-studio__filter");
+      const view = studio.querySelector(".chaos-posts-studio__view");
+
+      search.addEventListener("input", () => filterPostListItems(studio));
+      filter.addEventListener("change", () => filterPostListItems(studio));
+      view.addEventListener("change", () => {
+        document.body.classList.toggle("chaos-posts-grid-view", view.value === "grid");
+        document.body.classList.toggle("chaos-posts-studio-expanded", view.value === "grid");
+      });
+
+      loadPostThumbIndex().then((index) => {
+        const clients = [...new Set(index.items.map((p) => p.client).filter(Boolean))].sort();
+        for (const c of clients) {
+          const opt = document.createElement("option");
+          opt.value = c;
+          opt.textContent = c;
+          filter.appendChild(opt);
+        }
+        refreshPostsStudioCounts();
+      });
+
+      studio.querySelector("[data-posts-hint]")?.removeAttribute("hidden");
+    }
+
+    refreshPostsStudioCounts();
+    filterPostListItems(studio);
+  }
+
+  function filterPostListItems(studio) {
+    if (!studio) studio = document.getElementById(POSTS_STUDIO_ID);
+    if (!studio) return;
+
+    const q = (studio.querySelector(".chaos-posts-studio__search")?.value || "")
+      .trim()
+      .toLowerCase();
+    const client = studio.querySelector(".chaos-posts-studio__filter")?.value || "";
+
+    document.querySelectorAll("[class*='ListItem']").forEach((li) => {
+      if (li.closest(`#${POSTS_STUDIO_ID}`)) return;
+      const text = (li.textContent || "").toLowerCase();
+      const id = (li.dataset.chaosPostId || "").toLowerCase();
+      const matchQ = !q || text.includes(q) || id.includes(q);
+      const matchClient = !client || text.includes(client.toLowerCase());
+      li.classList.toggle("chaos-list-item--hidden", !(matchQ && matchClient));
+    });
+  }
+
+  function refreshPostsStudioCounts() {
+    const stats = document.querySelector("[data-posts-stats]");
+    if (!stats) return;
+
+    const items = [...document.querySelectorAll("[class*='ListItem']")].filter(
+      (li) => !li.closest(`#${POSTS_STUDIO_ID}`),
+    );
+    const visible = items.filter((li) => !li.classList.contains("chaos-list-item--hidden"));
+    const expanded = document.querySelectorAll(
+      "[class*='ListItem'] button[aria-expanded='true']",
+    ).length;
+
+    stats.innerHTML = `
+      <span class="chaos-posts-studio__stat"><strong>${visible.length}</strong> shown</span>
+      <span class="chaos-posts-studio__stat"><strong>${items.length}</strong> total</span>
+      ${
+        expanded
+          ? `<span class="chaos-posts-studio__stat"><strong>${expanded}</strong> editing</span>`
+          : ""
+      }
+    `;
+  }
+
+  function setupPostListObserver() {
+    if (window.__chaosPostListObserver) return;
+    const attach = () => {
+      const root = document.getElementById("nc-root");
+      if (!root) {
+        setTimeout(attach, 400);
+        return;
+      }
+      window.__chaosPostListObserver = true;
+      const obs = new MutationObserver((mutations) => {
+        if (!isCampaignPosts()) return;
+        const touchList = mutations.some((m) => {
+          for (const n of m.addedNodes) {
+            if (!(n instanceof Element)) continue;
+            if (n.matches?.("[class*='ListItem']") || n.querySelector?.("[class*='ListItem']")) {
+              return true;
+            }
+          }
+          return false;
+        });
+        if (touchList || mutations.some((m) => m.type === "attributes")) {
+          scheduleEnhancePosts();
+        }
+      });
+      obs.observe(root, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["aria-expanded", "class"],
+      });
+    };
+    attach();
+  }
+
   function onRouteChange() {
     updateNavCurrent();
+    updateChromeClasses();
     injectDashboard();
     injectEditorHelp();
     injectMediaBrowser();
+    injectPostsStudio();
+    scheduleEnhancePosts();
   }
 
   function initChrome() {
@@ -575,6 +889,7 @@
     registerServiceWorker();
     setupInstallPrompt();
     initChrome();
+    setupPostListObserver();
     onRouteChange();
     window.addEventListener("hashchange", () => {
       closeDrawer();
@@ -584,7 +899,9 @@
       setTimeout(() => {
         registerCmsHooks();
         onRouteChange();
+        scheduleEnhancePosts();
       }, 1500);
+      setTimeout(scheduleEnhancePosts, 3500);
     });
   }
 
