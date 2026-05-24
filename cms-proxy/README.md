@@ -23,8 +23,10 @@ In **CHAOTIC-RAY/portfolio** → **Settings** → **Secrets and variables** → 
 
 | Secret | Value |
 |--------|--------|
-| `GITHUB_OAUTH_ID` | OAuth App Client ID |
-| `GITHUB_OAUTH_SECRET` | OAuth App Client secret |
+| `CMS_OAUTH_CLIENT_ID` | OAuth App Client ID |
+| `CMS_OAUTH_CLIENT_SECRET` | OAuth App Client secret |
+
+GitHub Actions does not allow secret names starting with `GITHUB_`.
 
 The deploy workflow uploads these to the `cms-auth` worker automatically.
 
