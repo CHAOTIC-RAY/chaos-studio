@@ -589,7 +589,7 @@ function renderPostsSection(social: Portfolio["socialPosts"]): string {
                 ${ICON_CHEVRON_RIGHT}
               </button>
             </div>
-            <p class="posts-rail__hint">Use arrows or drag · Hover reels to preview · Expand for full grid</p>
+            <p class="posts-rail__hint">Auto-scrolls smoothly · drag or use arrows · expand for full grid</p>
           </div>
           <div class="posts-feed-expanded" data-posts-expanded hidden>
             ${renderPostsExpandedFeed(items)}
@@ -707,7 +707,15 @@ function renderPostsExpandedFeed(items: SocialPost[]): string {
           <p class="posts-feed__eyebrow">Campaign archive</p>
           <p class="posts-feed__lead">${items.length} posts · ${clientCount} client${clientCount === 1 ? "" : "s"}</p>
         </div>
-        <div class="posts-feed__tabs hide-scrollbar" role="tablist" aria-label="Filter by client">${tabs}</div>
+        <div class="posts-feed__tabs-wrap" data-posts-tabs-wrap>
+          <button type="button" class="posts-feed__tabs-scroll posts-feed__tabs-scroll--prev" data-posts-tabs-prev aria-label="Scroll clients left">
+            ${ICON_CHEVRON_LEFT}
+          </button>
+          <div class="posts-feed__tabs hide-scrollbar" data-posts-tabs role="tablist" aria-label="Filter by client">${tabs}</div>
+          <button type="button" class="posts-feed__tabs-scroll posts-feed__tabs-scroll--next" data-posts-tabs-next aria-label="Scroll clients right">
+            ${ICON_CHEVRON_RIGHT}
+          </button>
+        </div>
       </header>
       <div class="posts-feed__panels">${panels}</div>
     </div>`;

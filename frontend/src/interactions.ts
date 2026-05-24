@@ -11,6 +11,7 @@ export function initInteractions(): () => void {
   cleanups.push(initPostsRail());
   cleanups.push(initPostsPanel());
   cleanups.push(initPostsExpandedFeed());
+  cleanups.push(initPostsFeedTabs());
   cleanups.push(initActiveNav());
   cleanups.push(initPostImageFallback());
   cleanups.push(initPostVideos());
@@ -150,18 +151,24 @@ function initPostsRail(): () => void {
 
   const reduced = prefersReducedMotion();
   const autoAdvance = !reduced;
-  const TRANSITION_MS = 480;
-  const AUTO_MS = 4200;
+  const TRANSITION_MS = 520;
+  const PAUSE_AFTER_INTERACT_MS = 2800;
+  const SCROLL_PX_PER_SEC = 38;
 
   let x = 0;
   let paused = false;
   let pauseTimer = 0;
-  let autoTimer = 0;
   let transitionTimer = 0;
+  let raf = 0;
+  let lastTime = performance.now();
+  let animating = false;
 
-  const allCards = () => Array.from(track.querySelectorAll<HTMLElement>(".post-card"));
-
-  const loopCount = () => Math.max(1, allCards().length / 2);
+  const groups = () => Array.from(track.querySelectorAll<HTMLElement>(".posts-group"));
+  const loopGroups = () => {
+    const all = groups();
+    const half = Math.max(1, Math.floor(all.length / 2));
+    return all.slice(0, half);
+  };
 
   const offsetInTrack = (el: HTMLElement) => {
     let pos = 0;
@@ -173,11 +180,7 @@ function initPostsRail(): () => void {
     return pos;
   };
 
-  const snapOffsets = () => {
-    const cards = allCards();
-    const n = loopCount();
-    return cards.slice(0, n).map((card) => offsetInTrack(card));
-  };
+  const snapOffsets = () => loopGroups().map((group) => offsetInTrack(group));
 
   const applyTransform = (animate = false) => {
     if (animate && !reduced) {
@@ -185,16 +188,19 @@ function initPostsRail(): () => void {
       window.clearTimeout(transitionTimer);
       transitionTimer = window.setTimeout(() => {
         track.style.transition = "";
+        animating = false;
       }, TRANSITION_MS + 40);
     } else {
       track.style.transition = "";
+      animating = false;
     }
     track.style.transform = `translate3d(${x}px, 0, 0)`;
   };
 
+  const loopHalf = () => Math.max(1, track.scrollWidth / 2);
+
   const normalizeX = () => {
-    const half = track.scrollWidth / 2;
-    if (half <= 0) return;
+    const half = loopHalf();
     while (-x >= half - 1) x += half;
     while (x > 1) x -= half;
   };
@@ -223,33 +229,70 @@ function initPostsRail(): () => void {
     const i = ((index % len) + len) % len;
     x = -offsets[i];
     normalizeX();
+    if (animate) animating = true;
     applyTransform(animate);
   };
 
   const step = (direction: -1 | 1) => {
+    const offsets = snapOffsets();
+    if (!offsets.length) return;
     const next = nearestIndex() + direction;
     goToIndex(next, !reduced);
-    pauseBriefly(AUTO_MS);
+    pauseBriefly(PAUSE_AFTER_INTERACT_MS);
   };
 
-  const pauseBriefly = (ms = AUTO_MS) => {
+  const pauseBriefly = (ms = PAUSE_AFTER_INTERACT_MS) => {
     paused = true;
     window.clearTimeout(pauseTimer);
     pauseTimer = window.setTimeout(() => {
-      if (!hoverPause) paused = false;
+      if (!hoverPause && !isDown) paused = false;
     }, ms);
   };
 
   const isExpanded = () =>
     document.querySelector("[data-posts-panel]")?.classList.contains("posts-panel--expanded");
 
-  const scheduleAuto = () => {
-    window.clearInterval(autoTimer);
-    if (!autoAdvance || !railInView) return;
-    autoTimer = window.setInterval(() => {
-      if (paused || isExpanded() || !railInView) return;
-      step(1);
-    }, AUTO_MS);
+  let hoverPause = false;
+  let railInView = true;
+  let isDown = false;
+  let playing = false;
+
+  const tick = (now: number) => {
+    if (!playing) {
+      raf = 0;
+      return;
+    }
+    const dt = Math.min((now - lastTime) / 1000, 0.05);
+    lastTime = now;
+
+    if (
+      autoAdvance &&
+      railInView &&
+      !paused &&
+      !hoverPause &&
+      !isDown &&
+      !isExpanded() &&
+      !animating &&
+      loopHalf() > 1
+    ) {
+      x -= SCROLL_PX_PER_SEC * dt;
+      normalizeX();
+      applyTransform(false);
+    }
+
+    raf = requestAnimationFrame(tick);
+  };
+
+  const startLoop = () => {
+    playing = true;
+    lastTime = performance.now();
+    if (!raf) raf = requestAnimationFrame(tick);
+  };
+
+  const stopLoop = () => {
+    playing = false;
+    cancelAnimationFrame(raf);
+    raf = 0;
   };
 
   const onPrevClick = (e: Event) => {
@@ -274,9 +317,6 @@ function initPostsRail(): () => void {
   };
   viewport.addEventListener("keydown", onKey);
 
-  let hoverPause = false;
-  let railInView = true;
-
   const pause = () => {
     paused = true;
     window.clearTimeout(pauseTimer);
@@ -288,14 +328,13 @@ function initPostsRail(): () => void {
   });
   viewport.addEventListener("mouseleave", () => {
     hoverPause = false;
-    pauseBriefly(800);
+    pauseBriefly(600);
   });
   viewport.addEventListener("focusin", pause);
   viewport.addEventListener("focusout", () => {
-    if (!hoverPause) pauseBriefly(800);
+    if (!hoverPause) pauseBriefly(600);
   });
 
-  let isDown = false;
   let startX = 0;
   let startTx = 0;
 
@@ -304,6 +343,7 @@ function initPostsRail(): () => void {
     if (reduced) return;
     isDown = true;
     paused = true;
+    animating = false;
     track.style.transition = "";
     startX = e.clientX;
     startTx = x;
@@ -318,7 +358,7 @@ function initPostsRail(): () => void {
     if (!isDown) return;
     isDown = false;
     goToIndex(nearestIndex(), !reduced);
-    pauseBriefly(AUTO_MS);
+    pauseBriefly(PAUSE_AFTER_INTERACT_MS);
     try {
       viewport.releasePointerCapture(e.pointerId);
     } catch {
@@ -331,31 +371,97 @@ function initPostsRail(): () => void {
   const onResize = () => goToIndex(nearestIndex(), false);
   window.addEventListener("resize", onResize);
 
+  const onMediaReady = () => goToIndex(nearestIndex(), false);
+  track.querySelectorAll("img").forEach((img) => {
+    if (!img.complete) img.addEventListener("load", onMediaReady, { once: true });
+  });
+
   goToIndex(0, false);
-  scheduleAuto();
+  if (autoAdvance) startLoop();
 
   const unobserveRail = observeInView(
     carousel,
     () => {
       railInView = true;
-      scheduleAuto();
+      if (autoAdvance) startLoop();
     },
     () => {
       railInView = false;
-      window.clearInterval(autoTimer);
+      stopLoop();
     },
-    0.06,
+    0.04,
   );
 
   return () => {
     unobserveRail();
-    window.clearInterval(autoTimer);
+    stopLoop();
     window.clearTimeout(pauseTimer);
     window.clearTimeout(transitionTimer);
     window.removeEventListener("resize", onResize);
     prev?.removeEventListener("click", onPrevClick);
     next?.removeEventListener("click", onNextClick);
     viewport.removeEventListener("keydown", onKey);
+    track.style.transform = "";
+    track.style.transition = "";
+  };
+}
+
+function initPostsFeedTabs(): () => void {
+  const wrap = document.querySelector<HTMLElement>("[data-posts-tabs-wrap]");
+  const tabs = document.querySelector<HTMLElement>("[data-posts-tabs]");
+  const prev = document.querySelector<HTMLButtonElement>("[data-posts-tabs-prev]");
+  const next = document.querySelector<HTMLButtonElement>("[data-posts-tabs-next]");
+  if (!tabs) return () => {};
+
+  const updateEdges = () => {
+    const scrollable = tabs.scrollWidth > tabs.clientWidth + 2;
+    wrap?.classList.toggle("posts-feed__tabs-wrap--scrollable", scrollable);
+    const atStart = tabs.scrollLeft <= 2;
+    const atEnd = tabs.scrollLeft + tabs.clientWidth >= tabs.scrollWidth - 2;
+    wrap?.classList.toggle("posts-feed__tabs-wrap--start", atStart);
+    wrap?.classList.toggle("posts-feed__tabs-wrap--end", atEnd);
+    if (prev) prev.disabled = atStart;
+    if (next) next.disabled = atEnd;
+  };
+
+  const scrollBy = (delta: number) => {
+    tabs.scrollBy({ left: delta, behavior: prefersReducedMotion() ? "auto" : "smooth" });
+  };
+
+  const onWheel = (e: WheelEvent) => {
+    if (tabs.scrollWidth <= tabs.clientWidth + 2) return;
+    const dominantVertical = Math.abs(e.deltaY) > Math.abs(e.deltaX);
+    if (!dominantVertical) return;
+    e.preventDefault();
+    tabs.scrollLeft += e.deltaY;
+    updateEdges();
+  };
+
+  const onScroll = () => updateEdges();
+  tabs.addEventListener("wheel", onWheel, { passive: false });
+  tabs.addEventListener("scroll", onScroll, { passive: true });
+
+  const onPrev = (e: Event) => {
+    e.preventDefault();
+    scrollBy(-Math.max(180, tabs.clientWidth * 0.55));
+  };
+  const onNext = (e: Event) => {
+    e.preventDefault();
+    scrollBy(Math.max(180, tabs.clientWidth * 0.55));
+  };
+  prev?.addEventListener("click", onPrev);
+  next?.addEventListener("click", onNext);
+
+  const ro = new ResizeObserver(() => updateEdges());
+  ro.observe(tabs);
+  updateEdges();
+
+  return () => {
+    ro.disconnect();
+    tabs.removeEventListener("wheel", onWheel);
+    tabs.removeEventListener("scroll", onScroll);
+    prev?.removeEventListener("click", onPrev);
+    next?.removeEventListener("click", onNext);
   };
 }
 
