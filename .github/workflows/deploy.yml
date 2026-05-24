@@ -49,6 +49,15 @@ jobs:
             echo "::error::Token is not active for this account. Check CLOUDFLARE_ACCOUNT_ID matches the token's account."
             exit 1
           }
+          WORKERS_HTTP=$(curl -sS -o /tmp/cf-workers.json -w "%{http_code}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/services/portfolio" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          echo "Workers API probe: HTTP ${WORKERS_HTTP}"
+          if [ "$WORKERS_HTTP" = "403" ] || grep -q "10000" /tmp/cf-workers.json 2>/dev/null; then
+            cat /tmp/cf-workers.json || true
+            echo "::error::Token cannot access Workers (auth 10000). Create a NEW token using template 'Edit Cloudflare Workers' — see docs/DEPLOY-CLOUDFLARE.md"
+            exit 1
+          fi
           echo "Cloudflare token verified for account ${CLOUDFLARE_ACCOUNT_ID}"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

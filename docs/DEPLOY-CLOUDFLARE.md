@@ -23,6 +23,8 @@ Required permissions (included in that template):
 
 Do **not** use a token that is **Read only** on Workers Scripts.
 
+If the workflow passes **Verify Cloudflare API token** but fails on deploy with `code: 10000`, your token is valid for the account but **cannot edit Workers**. Delete the old GitHub secret and paste a **new** token from the **Edit Cloudflare Workers** template (do not reuse a read-only or custom token).
+
 ## 3. Add GitHub repository secrets
 
 Repo: **CHAOTIC-RAY/portfolio** → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
