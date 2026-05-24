@@ -67,3 +67,21 @@ jobs:
           wranglerVersion: "4.93.0"
         env:
           WRANGLER_SKIP_BUILD: "1"
+
+      - name: Deploy CMS GitHub OAuth worker
+        if: ${{ secrets.GITHUB_OAUTH_ID != '' && secrets.GITHUB_OAUTH_SECRET != '' }}
+        working-directory: cms-proxy
+        run: |
+          printf '%s' "$GITHUB_OAUTH_ID" | npx wrangler@4.93.0 secret put GITHUB_OAUTH_ID --stdin
+          printf '%s' "$GITHUB_OAUTH_SECRET" | npx wrangler@4.93.0 secret put GITHUB_OAUTH_SECRET --stdin
+          npx wrangler@4.93.0 deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          GITHUB_OAUTH_ID: ${{ secrets.GITHUB_OAUTH_ID }}
+          GITHUB_OAUTH_SECRET: ${{ secrets.GITHUB_OAUTH_SECRET }}
+
+      - name: CMS OAuth secrets missing
+        if: ${{ secrets.GITHUB_OAUTH_ID == '' || secrets.GITHUB_OAUTH_SECRET == '' }}
+        run: |
+          echo "::warning::Decap CMS GitHub login needs GITHUB_OAUTH_ID and GITHUB_OAUTH_SECRET in repo Actions secrets. See cms-proxy/README.md"

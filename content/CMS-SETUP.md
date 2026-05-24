@@ -14,19 +14,21 @@ Edit portfolio text, campaign posts, and images through a browser UI. Changes ar
 2. **Application name:** `Portfolio Decap CMS`
 3. **Homepage URL:** `https://portfolio.chaoticstudio.workers.dev`
 4. **Authorization callback URL:**  
-   `https://api.netlify.com/auth/done`  
-   (Netlify’s public bridge — works even though the site is on Cloudflare Workers.)
+   `https://cms-auth.chaoticstudio.workers.dev/callback?provider=github`
 5. Copy **Client ID** and generate **Client secret**.
 
-### B. Netlify (free OAuth bridge only)
+### B. GitHub Actions secrets (CMS login)
 
-You do **not** need to host the site on Netlify. You only use their auth endpoint:
+In the repo → **Settings** → **Secrets and variables** → **Actions**, add:
 
-1. Sign in at https://app.netlify.com
-2. **User settings** → **Applications** → **New access token** (for CLI) — optional
-3. For Decap + `base_url: https://api.netlify.com`, the OAuth app above is enough; login uses Netlify’s shared auth handler.
+| Name | Value |
+|------|--------|
+| `GITHUB_OAUTH_ID` | OAuth Client ID |
+| `GITHUB_OAUTH_SECRET` | OAuth Client secret |
 
-If login fails, use the **self-hosted proxy** in section 4.
+Push to `main` (or re-run **Deploy Worker**). The workflow deploys the `cms-auth` worker in `cms-proxy/` with these secrets.
+
+**Do not use** `https://api.netlify.com` — that only works for sites hosted on Netlify and returns “Not Found” for Workers domains.
 
 ### C. Repo access
 
@@ -75,23 +77,16 @@ Open http://localhost:8080/admin/ (decap-server prints the port). Edits commit t
 
 ---
 
-## 4. Optional: Cloudflare OAuth proxy (private repo / no Netlify)
+## 4. CMS OAuth proxy (already in repo)
 
-Deploy [decap-proxy](https://github.com/sterlingwes/decap-proxy) as its own Worker (e.g. `cms-auth.chaoticstudio.workers.dev`), then change `config.yml`:
+The `cms-proxy/` worker (`cms-auth`) is deployed from GitHub Actions. Details: `cms-proxy/README.md`.
 
-```yaml
-backend:
-  name: github
-  repo: CHAOTIC-RAY/portfolio
-  branch: main
-  base_url: https://cms-auth.chaoticstudio.workers.dev
-  auth_endpoint: auth
-```
+If login still fails:
 
-Set Worker secrets: `GITHUB_OAUTH_ID`, `GITHUB_OAUTH_SECRET`, and callback URL  
-`https://cms-auth.chaoticstudio.workers.dev/callback` on the GitHub OAuth app.
-
-See `cms-proxy/README.md` in this repo for a short checklist.
+1. Confirm OAuth callback is exactly  
+   `https://cms-auth.chaoticstudio.workers.dev/callback?provider=github`
+2. Confirm `GITHUB_OAUTH_ID` and `GITHUB_OAUTH_SECRET` are set in repo Actions secrets
+3. Re-run **Deploy Worker** and try `/admin/` in a private/incognito window
 
 ---
 

@@ -6,7 +6,8 @@ backend:
   name: github
   repo: CHAOTIC-RAY/portfolio
   branch: main
-  base_url: https://api.netlify.com
+  # Self-hosted OAuth (Netlify bridge only works for Netlify-hosted sites)
+  base_url: https://cms-auth.chaoticstudio.workers.dev
   auth_endpoint: auth
 
 site_url: https://portfolio.chaoticstudio.workers.dev

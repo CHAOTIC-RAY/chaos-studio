@@ -1,24 +1,57 @@
-# Decap CMS OAuth proxy (optional)
+# Decap CMS GitHub OAuth proxy
 
-Use this if the Netlify auth bridge (`base_url: https://api.netlify.com`) does not work for your repo (e.g. private repo or stricter OAuth).
+Decap CMS on Cloudflare Workers cannot use `https://api.netlify.com` for login unless the site is registered on Netlify. This worker handles GitHub OAuth for `/admin/`.
 
-## Steps
+**Public URL:** https://cms-auth.chaoticstudio.workers.dev
 
-1. Fork or clone https://github.com/sterlingwes/decap-proxy
-2. Create a GitHub OAuth App with callback  
-   `https://<your-proxy-worker>.workers.dev/callback`
-3. Deploy the Worker with secrets `GITHUB_OAUTH_ID` and `GITHUB_OAUTH_SECRET`
-4. In `frontend/public/admin/config.yml`, set:
+## One-time setup
 
-```yaml
-backend:
-  name: github
-  repo: CHAOTIC-RAY/portfolio
-  branch: main
-  base_url: https://<your-proxy-worker>.workers.dev
-  auth_endpoint: auth
+### 1. GitHub OAuth App
+
+GitHub → **Settings** → **Developer settings** → **OAuth Apps** → create or edit your app:
+
+| Field | Value |
+|-------|--------|
+| Homepage URL | `https://portfolio.chaoticstudio.workers.dev` |
+| Authorization callback URL | `https://cms-auth.chaoticstudio.workers.dev/callback?provider=github` |
+
+Copy **Client ID** and **Client secret**.
+
+### 2. GitHub Actions secrets
+
+In **CHAOTIC-RAY/portfolio** → **Settings** → **Secrets and variables** → **Actions**, add:
+
+| Secret | Value |
+|--------|--------|
+| `GITHUB_OAUTH_ID` | OAuth App Client ID |
+| `GITHUB_OAUTH_SECRET` | OAuth App Client secret |
+
+The deploy workflow uploads these to the `cms-auth` worker automatically.
+
+### 3. Deploy
+
+Push to `main` (or run **Deploy Worker**). The workflow deploys this worker after the portfolio site.
+
+### 4. Log in
+
+Open https://portfolio.chaoticstudio.workers.dev/admin/ → **Login with GitHub**.
+
+---
+
+## Local deploy
+
+```bash
+cd cms-proxy
+npx wrangler secret put GITHUB_OAUTH_ID
+npx wrangler secret put GITHUB_OAUTH_SECRET
+npx wrangler deploy
 ```
 
-5. Remove or comment out `base_url: https://api.netlify.com` / `auth_endpoint: auth` lines.
+## Private repo
 
-Do not deploy the OAuth proxy on the same Worker as the public portfolio unless you know how to route `/auth` separately.
+If `CHAOTIC-RAY/portfolio` is private, set worker secret:
+
+```bash
+npx wrangler secret put GITHUB_REPO_PRIVATE
+# enter: 1
+```
