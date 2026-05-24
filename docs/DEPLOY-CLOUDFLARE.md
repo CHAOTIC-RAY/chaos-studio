@@ -25,6 +25,11 @@ Do **not** use a token that is **Read only** on Workers Scripts.
 
 If the workflow passes **Verify Cloudflare API token** but fails on deploy with `code: 10000`, your token is valid for the account but **cannot edit Workers**. Delete the old GitHub secret and paste a **new** token from the **Edit Cloudflare Workers** template (do not reuse a read-only or custom token).
 
+## 2b. Account ID must match the token
+
+The token and **Account ID** must be from the **same** Cloudflare account.  
+In the dashboard, open **Workers & Pages** and copy the Account ID from the right sidebar (32 characters, no spaces).
+
 ## 3. Add GitHub repository secrets
 
 Repo: **CHAOTIC-RAY/portfolio** → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
@@ -34,7 +39,9 @@ Repo: **CHAOTIC-RAY/portfolio** → **Settings** → **Secrets and variables** �
 | `CLOUDFLARE_API_TOKEN` | Token from step 2 |
 | `CLOUDFLARE_ACCOUNT_ID` | Account ID from step 1 |
 
-Names must match exactly (case-sensitive).
+Names must match exactly (case-sensitive). Paste the token with **no spaces or line breaks** before or after.
+
+If verify failed with `Invalid API Token` but the token works in Cloudflare, re-save the secret — GitHub may have stored a truncated value.
 
 ## 4. Re-run deploy
 
