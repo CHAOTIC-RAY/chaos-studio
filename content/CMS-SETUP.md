@@ -44,9 +44,11 @@ Your GitHub user must have **write** access to `CHAOTIC-RAY/portfolio`.
 
 | Collection | File | Use for |
 |------------|------|--------|
-| **Campaign & feed** | `content/campaign-posts.json` | Post titles, tags, clients, carousels, reels |
-| **Portfolio page** | `content/portfolio.json` | Hero, experience, skills, Chaos Studio packages, contact |
-| **Site assets config** | `frontend/public/assets/site.config.json` | Meta title/description, work card covers |
+| **Social posts** | `content/campaign-posts.json` | Post titles, tags, clients, carousels, reels |
+| **Site content** | `content/portfolio.json` | Hero, experience, skills, Chaos Studio packages, contact |
+| **SEO & projects** | `frontend/public/assets/site.config.json` | Meta, social links, work cards, client logos |
+
+See **`content/CMS-TROUBLESHOOTING.md`** for save/deploy errors and fixes.
 
 ### Images
 
@@ -101,6 +103,8 @@ If login still fails:
 3. Site updates in ~1–2 minutes.
 
 Hard-refresh the live site if you still see old copy (PWA cache).
+
+CI runs `npm run validate:cms` before build — broken JSON shapes fail deploy instead of breaking the live site.
 
 ---
 

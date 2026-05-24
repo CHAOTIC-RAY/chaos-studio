@@ -58,6 +58,12 @@ jobs:
       - name: Build site
         run: npm run build
 
+      - name: Verify CMS assets in build output
+        run: |
+          test -f frontend/dist/admin/config.yml
+          test -f frontend/dist/admin/cms-custom.css
+          test -f frontend/dist/admin/cms-custom.js
+
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
@@ -69,6 +75,7 @@ jobs:
           WRANGLER_SKIP_BUILD: "1"
 
       - name: Deploy CMS GitHub OAuth worker
+        continue-on-error: true
         working-directory: cms-proxy
         run: |
           if [ -n "$CMS_OAUTH_CLIENT_ID" ] && [ -n "$CMS_OAUTH_CLIENT_SECRET" ]; then

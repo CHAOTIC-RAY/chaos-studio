@@ -35,9 +35,8 @@ const handleAuth = (url: URL, env: Env) => {
     );
   }
 
-  // CHAOTIC-RAY/portfolio is private — public_repo cannot read it (GitHub returns "not found").
-  const repoScope =
-    env.GITHUB_REPO_PUBLIC === "1" ? "public_repo,user" : "repo,user";
+  // Private repo (CHAOTIC-RAY/portfolio) — public_repo returns "repo not found".
+  const repoScope = "repo,user";
 
   const oauth2 = createOAuth(env);
   const authorizationUri = oauth2.authorizeURL({

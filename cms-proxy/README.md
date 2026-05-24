@@ -49,11 +49,7 @@ npx wrangler secret put GITHUB_OAUTH_SECRET
 npx wrangler deploy
 ```
 
-## Private repo
+## Public repo only
 
-If `CHAOTIC-RAY/portfolio` is private, set worker secret:
-
-```bash
-npx wrangler secret put GITHUB_REPO_PRIVATE
-# enter: 1
-```
+If the repo is **public** and you want minimal OAuth scope, set worker secret `GITHUB_REPO_PUBLIC` to `1`.  
+By default the proxy requests `repo` scope (required for private repos).

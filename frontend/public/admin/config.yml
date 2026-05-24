@@ -46,6 +46,7 @@ collections:
               - label: Tags
                 name: tags
                 widget: list
+                hint: "One keyword per line (saved as text list)"
                 field: { label: Tag, name: tag, widget: string }
               - label: Accent
                 name: accent
@@ -90,6 +91,7 @@ collections:
               - { label: Tagline, name: tagline, widget: string }
               - { label: Role, name: role, widget: string }
               - { label: Portfolio URL, name: portfolioUrl, widget: string }
+              - { label: Logo alt text, name: logoAlt, widget: string, required: false }
           - label: Objective
             name: objective
             widget: object
@@ -256,17 +258,43 @@ collections:
         label: Meta & work cards
         file: frontend/public/assets/site.config.json
         fields:
-          - label: Meta
+          - label: Brand assets
+            name: brand
+            widget: object
+            collapsed: true
+            fields:
+              - { label: Logo path, name: logo, widget: string }
+              - { label: Logo mark path, name: logoMark, widget: string }
+              - { label: Logo alt, name: logoAlt, widget: string }
+          - label: Meta (SEO)
             name: meta
             widget: object
+            collapsed: true
             fields:
               - { label: Page title, name: title, widget: string }
               - { label: Description, name: description, widget: text }
-          - label: About blurb
+              - { label: OG image path, name: ogImage, widget: string }
+          - label: About
             name: about
             widget: object
+            collapsed: true
             fields:
+              - { label: Portrait path, name: portrait, widget: string }
+              - { label: Portrait alt, name: portraitAlt, widget: string }
               - { label: Bio, name: bio, widget: text }
+              - label: Skill pills
+                name: skills
+                widget: list
+                field: { label: Skill, name: skill, widget: string }
+          - label: Social links
+            name: social
+            widget: object
+            collapsed: true
+            fields:
+              - { label: GitHub, name: github, widget: string }
+              - { label: Behance, name: behance, widget: string }
+              - { label: Dribbble, name: dribbble, widget: string }
+              - { label: Instagram, name: instagram, widget: string }
           - label: Work cards
             name: work
             widget: list
@@ -280,3 +308,12 @@ collections:
               - { label: Cover alt, name: coverAlt, widget: string }
               - { label: Link, name: href, widget: string }
               - { label: Featured, name: featured, widget: boolean, required: false }
+          - label: Client logos
+            name: clients
+            widget: list
+            summary: "{{fields.name}}"
+            collapsed: true
+            fields:
+              - { label: Name, name: name, widget: string }
+              - { label: Logo path, name: logo, widget: string }
+              - { label: Logo alt, name: logoAlt, widget: string }
