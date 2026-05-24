@@ -71,12 +71,12 @@ jobs:
       - name: Deploy CMS GitHub OAuth worker
         working-directory: cms-proxy
         run: |
-          if [ -z "$GITHUB_OAUTH_ID" ] || [ -z "$GITHUB_OAUTH_SECRET" ]; then
-            echo "::warning::Skipping cms-auth deploy. Add GITHUB_OAUTH_ID and GITHUB_OAUTH_SECRET to repo Actions secrets. See cms-proxy/README.md"
-            exit 0
+          if [ -n "$GITHUB_OAUTH_ID" ] && [ -n "$GITHUB_OAUTH_SECRET" ]; then
+            printf '%s' "$GITHUB_OAUTH_ID" | npx wrangler@4.93.0 secret put GITHUB_OAUTH_ID --stdin
+            printf '%s' "$GITHUB_OAUTH_SECRET" | npx wrangler@4.93.0 secret put GITHUB_OAUTH_SECRET --stdin
+          else
+            echo "::warning::GITHUB_OAUTH_ID or GITHUB_OAUTH_SECRET not set — cms-auth deploys but GitHub login will fail until both are added. See cms-proxy/README.md"
           fi
-          printf '%s' "$GITHUB_OAUTH_ID" | npx wrangler@4.93.0 secret put GITHUB_OAUTH_ID --stdin
-          printf '%s' "$GITHUB_OAUTH_SECRET" | npx wrangler@4.93.0 secret put GITHUB_OAUTH_SECRET --stdin
           npx wrangler@4.93.0 deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
