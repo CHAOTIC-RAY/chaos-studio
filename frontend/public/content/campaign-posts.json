@@ -31,12 +31,12 @@
       "id": "ayha-02",
       "platform": "Instagram",
       "client": "Ayha Maldives",
-      "title": "Maldives football facts",
+      "title": "School Uniform Design Promo",
       "description": "",
       "tags": [
-        "football",
-        "editorial",
-        "sports"
+        "Uniform",
+        "Jersey Design",
+        "Illustration"
       ],
       "accent": "teal"
     },
@@ -44,12 +44,11 @@
       "id": "ayha-03",
       "platform": "Instagram",
       "client": "Ayha Maldives",
-      "title": "After Hours — Ladies Night",
+      "title": "Jersey Design Collection",
       "description": "",
       "tags": [
         "events",
-        "nightlife",
-        "hospitality"
+        "Jersey Design"
       ],
       "accent": "teal"
     },
@@ -62,8 +61,7 @@
       "tags": [
         "salon",
         "beauty",
-        "packages",
-        "MVR 500"
+        "packages"
       ],
       "accent": "pink"
     },
@@ -71,7 +69,7 @@
       "id": "aysh-saloon-02",
       "platform": "Instagram",
       "client": "Aysh Salon",
-      "title": "Oily vs dry skin tips",
+      "title": "Skin tips",
       "description": "",
       "tags": [
         "salon",
@@ -538,20 +536,20 @@
       ]
     },
     {
-      "id": "rainbow-reel-01",
-      "platform": "Instagram",
-      "client": "Rainbow Enterprise",
       "accent": "purple",
-      "video": "video.mp4",
+      "client": "Rainbow Enterprise",
       "poster": "poster.webp",
+      "platform": "Instagram",
       "title": "Showroom reel",
-      "description": "",
       "tags": [
         "furniture",
         "reel",
         "retail",
         "video"
-      ]
+      ],
+      "video": "video.mp4",
+      "id": "rainbow-reel-01",
+      "description": ""
     },
     {
       "id": "rainbow-04",
@@ -581,20 +579,20 @@
       "accent": "purple"
     },
     {
-      "id": "rainbow-reel-02",
-      "platform": "Instagram",
-      "client": "Rainbow Enterprise",
       "accent": "purple",
-      "video": "video.mp4",
+      "client": "Rainbow Enterprise",
       "poster": "poster.webp",
+      "platform": "Instagram",
       "title": "Offer reel",
-      "description": "",
       "tags": [
         "furniture",
         "reel",
         "promo",
         "video"
-      ]
+      ],
+      "video": "video.mp4",
+      "id": "rainbow-reel-02",
+      "description": ""
     },
     {
       "id": "rioga-01",
@@ -691,36 +689,22 @@
       "accent": "purple"
     },
     {
-      "id": "mdp-poster",
-      "cardLayout": "poster",
-      "mediaAspect": "portrait",
-      "platform": "Print / OOH",
+      "accent": "purple",
       "client": "MDP Campaign",
+      "platform": "Print / OOH",
       "title": "Vertical campaign poster",
-      "description": "",
       "tags": [
         "MDP",
         "poster",
         "print",
         "campaign"
       ],
-      "accent": "purple"
+      "cardLayout": "poster",
+      "id": "mdp-poster",
+      "mediaAspect": "portrait",
+      "description": ""
     },
     {
-      "id": "mdp-media-kit",
-      "cardLayout": "media-kit",
-      "mediaAspect": "landscape",
-      "platform": "Media kit",
-      "client": "MDP Campaign · Khulaasa",
-      "title": "Khulaasa media kit",
-      "description": "",
-      "tags": [
-        "MDP",
-        "media kit",
-        "branding",
-        "Khulaasa"
-      ],
-      "accent": "teal",
       "slides": [
         "slide-01",
         "slide-02",
@@ -731,7 +715,21 @@
         "slide-07",
         "slide-08",
         "slide-09"
-      ]
+      ],
+      "accent": "teal",
+      "client": "MDP Campaign · Khulaasa",
+      "platform": "Media kit",
+      "title": "Khulaasa media kit",
+      "tags": [
+        "MDP",
+        "media kit",
+        "branding",
+        "Khulaasa"
+      ],
+      "cardLayout": "media-kit",
+      "id": "mdp-media-kit",
+      "mediaAspect": "landscape",
+      "description": ""
     },
     {
       "id": "_copy-me-for-new-post",
