@@ -18,8 +18,54 @@ jobs:
           node-version: "22"
           cache: "npm"
 
-      - name: Install and deploy
-        run: npm ci && npm run deploy
+      - name: Check Cloudflare secrets are configured
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::error::Missing repository secret CLOUDFLARE_API_TOKEN. See docs/DEPLOY-CLOUDFLARE.md"
+            exit 1
+          fi
+          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::Missing repository secret CLOUDFLARE_ACCOUNT_ID. See docs/DEPLOY-CLOUDFLARE.md"
+            exit 1
+          fi
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Verify Cloudflare API token
+        run: |
+          RESP=$(curl -sS -w "\n%{http_code}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens/verify" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json")
+          HTTP=$(echo "$RESP" | tail -n1)
+          BODY=$(echo "$RESP" | sed '$d')
+          echo "$BODY" | head -c 2000
+          if [ "$HTTP" != "200" ]; then
+            echo "::error::Token verify failed (HTTP $HTTP). Regenerate token with 'Edit Cloudflare Workers' template and correct Account ID."
+            exit 1
+          fi
+          echo "$BODY" | grep -q '"status":"active"' || {
+            echo "::error::Token is not active for this account. Check CLOUDFLARE_ACCOUNT_ID matches the token's account."
+            exit 1
+          }
+          echo "Cloudflare token verified for account ${CLOUDFLARE_ACCOUNT_ID}"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+          wranglerVersion: "4.93.0"
+        env:
+          WRANGLER_SKIP_BUILD: "1"

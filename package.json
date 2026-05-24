@@ -29,6 +29,7 @@
     "build:frontend": "npm run build --workspace=frontend",
     "dev": "wrangler dev",
     "deploy": "npm run build && wrangler deploy",
+    "deploy:ci": "WRANGLER_SKIP_BUILD=1 wrangler deploy",
     "check": "wrangler deploy --dry-run"
   },
   "workspaces": [

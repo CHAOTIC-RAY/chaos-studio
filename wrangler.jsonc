@@ -3,7 +3,7 @@
   "name": "portfolio",
   "main": "worker/index.ts",
   "build": {
-    "command": "npm run build"
+    "command": "sh -c 'test -n \"$WRANGLER_SKIP_BUILD\" || npm run build'"
   },
   "compatibility_date": "2026-05-18",
   "compatibility_flags": ["nodejs_compat"],

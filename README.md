@@ -19,7 +19,7 @@ npm run deploy
 
 **Cloudflare Workers Builds** — set **Deploy command** to `npm run deploy` (not `npx wrangler deploy` alone).
 
-Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
+Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` — see **[docs/DEPLOY-CLOUDFLARE.md](docs/DEPLOY-CLOUDFLARE.md)** if deploy fails with auth error `10000`.
 
 ## Content
 
