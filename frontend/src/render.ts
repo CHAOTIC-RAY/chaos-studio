@@ -934,7 +934,7 @@ function renderPostCard(post: SocialPost, opts?: { feed?: "rail" | "expanded" })
       <div class="post-card__body">
         ${isFeed ? meta : `<p class="post-card__client">${esc(post.client)}</p>`}
         <h3 class="post-card__title">${esc(post.title)}</h3>
-        <p class="post-desc">${esc(post.description)}</p>
+        ${post.description?.trim() ? `<p class="post-desc">${esc(post.description)}</p>` : ""}
         <div class="post-tags">${post.tags.map((t) => `<span>${esc(t)}</span>`).join("")}</div>
       </div>
     </article>

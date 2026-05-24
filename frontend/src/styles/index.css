@@ -868,6 +868,9 @@ main { padding-top: var(--header-h); }
   overflow: visible;
   -webkit-line-clamp: unset;
 }
+.post-card--feed .post-card__body:not(:has(.post-desc)) .post-tags {
+  margin-top: 0.5rem;
+}
 .post-card--feed .post-tags {
   margin-top: auto;
   padding-top: 0.35rem;
