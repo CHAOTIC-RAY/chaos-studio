@@ -22,6 +22,8 @@
     "crop:mobile": "npm run import:faisa && npm run crop:cookxpert:mobile && npm run crop:forge:mobile",
     "check:post-images": "node scripts/check-post-image-dupes.mjs",
     "optimize:media": "node scripts/optimize-media.mjs",
+    "cms:local": "npx decap-server",
+    "export:portfolio-json": "node scripts/export-portfolio-json.mjs",
     "build": "npm run sync:content && node scripts/check-post-image-dupes.mjs && node scripts/generate-icons.mjs && npm run build --workspace=frontend",
     "icons": "node scripts/generate-icons.mjs",
     "build:frontend": "npm run build --workspace=frontend",

@@ -1,10 +1,19 @@
 # Campaign & feed — easy editing
 
+## GUI editor (recommended)
+
+Open **https://portfolio.chaoticstudio.workers.dev/admin/** after deploy.  
+Setup once: **[CMS-SETUP.md](./CMS-SETUP.md)** (GitHub login + Decap CMS).
+
+## Manual editing
+
 All carousel posts are controlled by **one file**:
 
 **`content/campaign-posts.json`**
 
-After you save changes, run `npm run build` (or push to `main` to deploy). The build copies this file to the site automatically.
+Site copy (hero, studio, experience): **`content/portfolio.json`**
+
+After you save changes, run `npm run build` (or push to `main` to deploy). The build copies campaign JSON to the site automatically.
 
 ---
 

@@ -1,0 +1,267 @@
+# Decap CMS — git-based editor (Decap / Netlify CMS)
+# https://portfolio.chaoticstudio.workers.dev/admin/
+# Setup guide: content/CMS-SETUP.md
+
+backend:
+  name: github
+  repo: CHAOTIC-RAY/portfolio
+  branch: main
+  base_url: https://api.netlify.com
+  auth_endpoint: auth
+
+site_url: https://portfolio.chaoticstudio.workers.dev
+display_url: https://portfolio.chaoticstudio.workers.dev
+logo_url: https://portfolio.chaoticstudio.workers.dev/icons/icon-192.png
+
+media_folder: frontend/public/images/posts
+public_folder: /images/posts
+
+publish_mode: simple
+
+collections:
+  - name: campaign
+    label: Campaign & feed
+    files:
+      - name: campaign-posts
+        label: All campaign posts
+        file: content/campaign-posts.json
+        fields:
+          - { label: Section subtitle, name: subtitle, widget: string }
+          - label: Posts
+            name: posts
+            widget: list
+            label_singular: post
+            summary: "{{fields.client}} — {{fields.title}}"
+            fields:
+              - { label: Post ID, name: id, widget: string, hint: "e.g. rainbow-01 — matches images/posts/{id}/" }
+              - { label: Published, name: enabled, widget: boolean, default: true, required: false }
+              - { label: Platform, name: platform, widget: string }
+              - { label: Client, name: client, widget: string }
+              - { label: Title, name: title, widget: string }
+              - { label: Description, name: description, widget: text, required: false }
+              - label: Tags
+                name: tags
+                widget: list
+                field: { label: Tag, name: tag, widget: string }
+              - label: Accent
+                name: accent
+                widget: select
+                options: ["purple", "pink", "gold", "teal"]
+              - label: Layout
+                name: cardLayout
+                widget: select
+                required: false
+                options: ["default", "poster", "media-kit"]
+                default: default
+              - label: Media aspect
+                name: mediaAspect
+                widget: select
+                required: false
+                options: ["default", "square", "portrait", "landscape"]
+                default: default
+              - label: Slides
+                name: slides
+                widget: list
+                required: false
+                field: { label: Basename, name: slide, widget: string, hint: slide-01 }
+              - { label: Video filename, name: video, widget: string, required: false }
+              - { label: Poster filename, name: poster, widget: string, required: false }
+              - { label: Image basename, name: image, widget: string, required: false }
+
+  - name: portfolio
+    label: Portfolio page
+    files:
+      - name: main
+        label: Home & studio content
+        file: content/portfolio.json
+        fields:
+          - label: Profile
+            name: profile
+            widget: object
+            fields:
+              - { label: Name, name: name, widget: string }
+              - { label: Tagline, name: tagline, widget: string }
+              - { label: Role, name: role, widget: string }
+              - { label: Portfolio URL, name: portfolioUrl, widget: string }
+          - label: Objective
+            name: objective
+            widget: object
+            fields:
+              - { label: Title, name: title, widget: string }
+              - { label: Body, name: body, widget: text }
+          - label: Soft skills
+            name: softSkills
+            widget: list
+            field: { label: Skill, name: skill, widget: string }
+          - label: Interests
+            name: interests
+            widget: list
+            fields:
+              - { label: Label, name: label, widget: string }
+              - { label: Emoji, name: emoji, widget: string }
+          - label: Chaos Studio
+            name: chaosStudio
+            widget: object
+            fields:
+              - { label: Title, name: title, widget: string }
+              - { label: Tagline, name: tagline, widget: string }
+              - { label: Headline, name: headline, widget: string }
+              - { label: Pitch, name: pitch, widget: text }
+              - { label: About, name: description, widget: text }
+              - label: Highlights
+                name: highlights
+                widget: list
+                field: { label: Line, name: line, widget: string }
+              - label: Services
+                name: services
+                widget: list
+                field: { label: Service, name: service, widget: string }
+              - label: Packages
+                name: packages
+                widget: list
+                summary: "{{fields.name}}"
+                fields:
+                  - { label: ID, name: id, widget: string }
+                  - { label: Name, name: name, widget: string }
+                  - { label: Tagline, name: tagline, widget: text }
+                  - { label: Price, name: price, widget: string }
+                  - { label: Currency, name: currency, widget: string }
+                  - { label: Recommended, name: recommended, widget: boolean, required: false }
+                  - label: Features
+                    name: features
+                    widget: list
+                    field: { label: Feature, name: feature, widget: string }
+              - label: Studio contact
+                name: studioContact
+                widget: object
+                fields:
+                  - { label: Instagram handle, name: instagram, widget: string }
+                  - { label: Instagram URL, name: instagramUrl, widget: string }
+                  - { label: Phones, name: phones, widget: string }
+                  - { label: Email, name: email, widget: string }
+              - { label: Pricing note, name: pricingNote, widget: text }
+              - label: Why us
+                name: whyUs
+                widget: list
+                fields:
+                  - { label: Title, name: title, widget: string }
+                  - { label: Body, name: body, widget: text }
+          - label: Experience
+            name: experience
+            widget: object
+            fields:
+              - { label: Subtitle, name: subtitle, widget: string }
+              - label: Jobs
+                name: items
+                widget: list
+                summary: "{{fields.company}}"
+                fields:
+                  - { label: ID, name: id, widget: string }
+                  - { label: Company, name: company, widget: string }
+                  - { label: Role, name: role, widget: string }
+                  - { label: Period, name: period, widget: string }
+                  - { label: Description, name: description, widget: text, required: false }
+                  - label: Bullets
+                    name: bullets
+                    widget: list
+                    field: { label: Bullet, name: bullet, widget: string }
+                  - { label: Logo initials, name: logo, widget: string }
+                  - { label: Featured, name: featured, widget: boolean, required: false }
+          - label: Featured work
+            name: featuredWork
+            widget: object
+            fields:
+              - { label: Subtitle, name: subtitle, widget: string }
+              - label: Projects
+                name: projects
+                widget: list
+                summary: "{{fields.name}}"
+                fields:
+                  - { label: ID, name: id, widget: string }
+                  - { label: Name, name: name, widget: string }
+                  - { label: Tagline, name: tagline, widget: string }
+                  - { label: Description, name: description, widget: text }
+                  - { label: Link, name: href, widget: string }
+                  - { label: CTA label, name: cta, widget: string }
+                  - label: Highlights
+                    name: highlights
+                    widget: list
+                    field: { label: Line, name: line, widget: string }
+                  - label: Tags
+                    name: tags
+                    widget: list
+                    field: { label: Tag, name: tag, widget: string }
+                  - label: Accent
+                    name: accent
+                    widget: select
+                    options: ["pink", "neutral", "green"]
+          - label: Skills
+            name: skills
+            widget: object
+            fields:
+              - { label: Subtitle, name: subtitle, widget: string }
+              - label: Categories
+                name: categories
+                widget: list
+                fields:
+                  - { label: Title, name: title, widget: string }
+                  - { label: Description, name: description, widget: string, required: false }
+                  - label: Tools
+                    name: tools
+                    widget: list
+                    field: { label: Tool, name: tool, widget: string }
+                  - label: Style
+                    name: variant
+                    widget: select
+                    options: ["primary", "muted"]
+          - label: Education
+            name: education
+            widget: list
+            fields:
+              - { label: Degree, name: degree, widget: string }
+              - { label: School, name: school, widget: string }
+              - { label: Detail, name: detail, widget: string, required: false }
+              - { label: Period, name: period, widget: string }
+          - label: Contact
+            name: contact
+            widget: object
+            fields:
+              - { label: Email, name: email, widget: string }
+              - { label: Phone, name: phone, widget: string }
+              - { label: Instagram, name: instagram, widget: string }
+              - { label: Instagram URL, name: instagramUrl, widget: string }
+              - { label: Telegram, name: telegram, widget: string }
+              - { label: Telegram URL, name: telegramUrl, widget: string }
+              - { label: WhatsApp URL, name: whatsappUrl, widget: string }
+
+  - name: site
+    label: Site assets config
+    files:
+      - name: site-config
+        label: Meta & work cards (site.config.json)
+        file: frontend/public/assets/site.config.json
+        fields:
+          - label: Meta
+            name: meta
+            widget: object
+            fields:
+              - { label: Page title, name: title, widget: string }
+              - { label: Description, name: description, widget: text }
+          - label: About blurb
+            name: about
+            widget: object
+            fields:
+              - { label: Bio, name: bio, widget: text }
+          - label: Work cards
+            name: work
+            widget: list
+            summary: "{{fields.title}}"
+            fields:
+              - { label: Slug, name: slug, widget: string }
+              - { label: Title, name: title, widget: string }
+              - { label: Category, name: category, widget: string }
+              - { label: Year, name: year, widget: string }
+              - { label: Cover path, name: cover, widget: string }
+              - { label: Cover alt, name: coverAlt, widget: string }
+              - { label: Link, name: href, widget: string }
+              - { label: Featured, name: featured, widget: boolean, required: false }

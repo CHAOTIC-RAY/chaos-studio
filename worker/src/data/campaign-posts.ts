@@ -23,10 +23,17 @@ type CampaignFile = {
 
 const file = raw as CampaignFile;
 
+function normalizePost(post: CampaignPostJson): CampaignPostJson {
+  const p = { ...post };
+  if (p.cardLayout === "default") delete p.cardLayout;
+  if (p.mediaAspect === "default") delete p.mediaAspect;
+  return p;
+}
+
 export function getSocialPosts() {
   const items = file.posts
     .filter((p) => p.enabled !== false && !p.id.startsWith("_"))
-    .map(({ enabled: _e, ...post }) => post);
+    .map(({ enabled: _e, ...post }) => normalizePost(post));
 
   return {
     subtitle: file.subtitle,
