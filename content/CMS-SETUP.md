@@ -108,7 +108,18 @@ If login still fails:
 
 Hard-refresh the live site if you still see old copy (PWA cache).
 
-CI runs `npm run validate:cms` before build — broken JSON shapes fail deploy instead of breaking the live site.
+CI runs `npm run validate:cms` and `npm run verify:cms-sync` before build — broken JSON or out-of-sync mirrors fail deploy.
+
+### Staying in sync
+
+| What | Where |
+|------|--------|
+| CMS saves to GitHub | `content/*.json`, `frontend/public/assets/site.config.json` |
+| Site reads posts from | `frontend/public/content/campaign-posts.json` (copied at build) |
+| Check locally | `npm run verify:cms-sync` |
+| Fix mirrors | `npm run sync:cms` |
+
+The admin header shows **In sync with GitHub** when mirrors match. After you Publish in CMS, wait ~2 minutes for deploy.
 
 ---
 

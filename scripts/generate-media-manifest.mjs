@@ -8,7 +8,9 @@ import path from "node:path";
 
 const root = path.resolve(import.meta.dirname, "..");
 const postsDir = path.join(root, "frontend/public/images/posts");
-const outPath = path.join(root, "frontend/public/admin/media-manifest.json");
+const outPath = process.env.CMS_MANIFEST_OUT
+  ? path.resolve(process.env.CMS_MANIFEST_OUT)
+  : path.join(root, "frontend/public/admin/media-manifest.json");
 
 const MEDIA_RE = /\.(webp|jpe?g|png|gif|svg|mp4)$/i;
 

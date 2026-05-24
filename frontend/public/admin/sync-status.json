@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-05-24T11:48:59.887Z",
+  "branch": "main",
+  "ok": true,
+  "mirrors": [
+    {
+      "source": "content/campaign-posts.json",
+      "mirror": "frontend/public/content/campaign-posts.json",
+      "inSync": true
+    }
+  ],
+  "cmsFiles": [
+    {
+      "path": "content/campaign-posts.json",
+      "exists": true
+    },
+    {
+      "path": "content/portfolio.json",
+      "exists": true
+    },
+    {
+      "path": "content/chaos-studio.json",
+      "exists": true
+    },
+    {
+      "path": "frontend/public/assets/site.config.json",
+      "exists": true
+    }
+  ]
+}

@@ -5,6 +5,8 @@
   "description": "Ibrahim Wafig — graphic design portfolio on Cloudflare Workers",
   "scripts": {
     "sync:content": "node scripts/sync-content.mjs",
+    "sync:cms": "node scripts/sync-cms.mjs",
+    "verify:cms-sync": "node scripts/verify-cms-sync.mjs",
     "import:posts": "node scripts/import-posts-zip.mjs",
     "apply:post-copy": "node scripts/apply-post-copy.mjs && npm run sync:content",
     "import:faisa": "node scripts/import-faisa-zip.mjs",
@@ -26,7 +28,7 @@
     "export:portfolio-json": "node scripts/export-portfolio-json.mjs",
     "validate:cms": "node scripts/validate-cms-schema.mjs",
     "media:manifest": "node scripts/generate-media-manifest.mjs",
-    "build": "npm run sync:content && node scripts/validate-cms-schema.mjs && node scripts/generate-media-manifest.mjs && node scripts/check-post-image-dupes.mjs && node scripts/generate-icons.mjs && npm run build --workspace=frontend",
+    "build": "npm run sync:cms && node scripts/verify-cms-sync.mjs && node scripts/validate-cms-schema.mjs && node scripts/check-post-image-dupes.mjs && node scripts/generate-icons.mjs && npm run build --workspace=frontend && node scripts/verify-cms-sync.mjs --dist",
     "icons": "node scripts/generate-icons.mjs",
     "build:frontend": "npm run build --workspace=frontend",
     "dev": "wrangler dev",

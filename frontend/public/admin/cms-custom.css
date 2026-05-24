@@ -1,18 +1,19 @@
-/* Chaos Studio — Decap CMS admin theme */
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@600;700;800&display=swap");
+/* Chaos Studio — beginner-friendly admin */
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Syne:wght@600;700&display=swap");
 
 :root {
-  --cms-bg: #f6f2fa;
+  --cms-bg: #f4f0f8;
   --cms-surface: #ffffff;
-  --cms-surface-2: #f0eaf5;
+  --cms-surface-2: #ebe4f2;
   --cms-purple: #8b3dad;
-  --cms-purple-deep: #6b2d8a;
+  --cms-purple-deep: #5c2480;
   --cms-purple-soft: #e8d4f5;
   --cms-text: #1a1520;
   --cms-muted: #5c5468;
-  --cms-border: rgba(139, 61, 173, 0.18);
-  --cms-radius: 12px;
-  --cms-shadow: 0 8px 28px rgba(78, 19, 112, 0.08);
+  --cms-border: rgba(92, 36, 128, 0.14);
+  --cms-radius: 14px;
+  --cms-shadow: 0 4px 24px rgba(60, 20, 90, 0.07);
+  --cms-shell-h: 3.75rem;
   --cms-font: "DM Sans", system-ui, sans-serif;
   --cms-display: "Syne", system-ui, sans-serif;
 }
@@ -22,383 +23,388 @@ body {
   font-family: var(--cms-font) !important;
   background: var(--cms-bg) !important;
   color: var(--cms-text) !important;
+  font-size: 16px !important;
 }
 
-/* Top bar */
-[class*="AppHeader"],
-header[class*="css-"] {
-  background: var(--cms-surface) !important;
-  border-bottom: 1px solid var(--cms-border) !important;
-  box-shadow: var(--cms-shadow) !important;
-  min-height: 3.25rem !important;
+body {
+  padding-top: var(--cms-shell-h) !important;
 }
 
-[class*="AppHeader"] a,
-[class*="AppHeader"] button {
-  font-weight: 600 !important;
-}
-
-/* Sidebar */
-[class*="Sidebar"],
-aside[class*="css-"] {
-  background: linear-gradient(180deg, #fff 0%, var(--cms-surface-2) 100%) !important;
-  border-right: 1px solid var(--cms-border) !important;
-}
-
-[class*="SidebarHeading"] {
-  font-family: var(--cms-display) !important;
-  font-size: 0.72rem !important;
-  letter-spacing: 0.08em !important;
-  text-transform: uppercase !important;
-  color: var(--cms-muted) !important;
-}
-
-[class*="SidebarNavLink"] {
-  border-radius: 10px !important;
-  margin: 2px 8px !important;
-  padding: 0.65rem 0.85rem !important;
-  font-weight: 500 !important;
-  transition: background 0.15s ease, color 0.15s ease !important;
-}
-
-[class*="SidebarNavLink--active"],
-[class*="SidebarNavLink"][aria-current="page"] {
-  background: var(--cms-purple-soft) !important;
-  color: var(--cms-purple-deep) !important;
-  font-weight: 600 !important;
-}
-
-/* Main panels */
-[class*="CollectionMain"],
-[class*="EditorContainer"],
-main[class*="css-"] {
-  background: var(--cms-bg) !important;
-}
-
-[class*="CollectionTop"],
-[class*="ToolbarContainer"] {
-  background: var(--cms-surface) !important;
-  border: 1px solid var(--cms-border) !important;
-  border-radius: var(--cms-radius) !important;
-  margin: 1rem 1rem 0 !important;
-  padding: 0.75rem 1rem !important;
-  box-shadow: var(--cms-shadow) !important;
-}
-
-/* Collection cards / list rows */
-[class*="CollectionCard"],
-[class*="ListCard"],
-li[class*="css-"] > a[class*="css-"] {
-  border-radius: var(--cms-radius) !important;
-  border: 1px solid var(--cms-border) !important;
-  background: var(--cms-surface) !important;
-  box-shadow: var(--cms-shadow) !important;
-  transition: transform 0.15s ease, border-color 0.15s ease !important;
-}
-
-[class*="CollectionCard"]:hover,
-[class*="ListCard"]:hover {
-  border-color: var(--cms-purple) !important;
-  transform: translateY(-1px);
-}
-
-/* Form fields */
-label,
-[class*="ControlLabel"] {
-  font-weight: 600 !important;
-  color: var(--cms-text) !important;
-  font-size: 0.9rem !important;
-}
-
-input[type="text"],
-input[type="url"],
-input[type="number"],
-textarea,
-select {
-  border-radius: 10px !important;
-  border: 1px solid var(--cms-border) !important;
-  padding: 0.6rem 0.75rem !important;
-  font-family: var(--cms-font) !important;
-  background: var(--cms-surface) !important;
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-  outline: 2px solid var(--cms-purple-soft) !important;
-  border-color: var(--cms-purple) !important;
-}
-
-/* Hints */
-[class*="ControlHint"],
-p[class*="Hint"] {
-  color: var(--cms-muted) !important;
-  font-size: 0.82rem !important;
-  line-height: 1.45 !important;
-}
-
-/* Primary actions */
-button[class*="PublishedButton"],
-button[class*="SaveButton"],
-[class*="ToolbarButton"][class*="Primary"] {
-  background: linear-gradient(135deg, var(--cms-purple), var(--cms-purple-deep)) !important;
-  border: none !important;
-  border-radius: 999px !important;
-  color: #fff !important;
-  font-weight: 600 !important;
-  padding: 0.5rem 1.1rem !important;
-}
-
-button[class*="PublishedButton"]:hover,
-button[class*="SaveButton"]:hover {
-  filter: brightness(1.05);
-}
-
-/* List widget (posts) */
-[class*="ListItem"],
-[class*="NestedObjectContainer"] {
-  border-radius: var(--cms-radius) !important;
-  border: 1px solid var(--cms-border) !important;
-  background: var(--cms-surface) !important;
-  margin-bottom: 0.75rem !important;
-}
-
-/* Media library */
-[class*="MediaLibrary"] {
-  border-radius: var(--cms-radius) !important;
-}
-
-/* Welcome dashboard (injected) */
-.chaos-cms-welcome {
-  margin: 1rem 1rem 0;
-  padding: 1.25rem 1.5rem;
-  border-radius: 16px;
-  border: 1px solid var(--cms-border);
-  background: linear-gradient(135deg, #fff 0%, var(--cms-purple-soft) 120%);
+/* —— App shell —— */
+.chaos-admin-shell {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  height: var(--cms-shell-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem;
+  background: var(--cms-surface);
+  border-bottom: 1px solid var(--cms-border);
   box-shadow: var(--cms-shadow);
 }
 
-.chaos-cms-welcome h1 {
-  margin: 0 0 0.35rem;
+.chaos-admin-shell__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.chaos-admin-shell__brand img {
+  border-radius: 10px;
+}
+
+.chaos-admin-shell__brand strong {
+  display: block;
   font-family: var(--cms-display);
-  font-size: 1.45rem;
-  font-weight: 800;
+  font-size: 1.05rem;
   color: var(--cms-purple-deep);
 }
 
-.chaos-cms-welcome p {
+.chaos-admin-shell__badge {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--cms-muted);
+}
+
+.chaos-admin-shell__badge--ok {
+  color: #1a7a42;
+}
+
+.chaos-admin-shell__badge--warn {
+  color: #9a5c00;
+}
+
+.chaos-admin-shell__nav {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.chaos-admin-shell__nav a {
+  color: var(--cms-purple);
+  text-decoration: none;
+}
+
+.chaos-admin-shell__nav a:hover {
+  text-decoration: underline;
+}
+
+/* —— Dashboard —— */
+.chaos-admin-dashboard {
+  margin: 1.25rem;
+  max-width: 56rem;
+}
+
+.chaos-admin-dashboard__hero h1 {
+  margin: 0 0 0.5rem;
+  font-family: var(--cms-display);
+  font-size: 1.75rem;
+  color: var(--cms-purple-deep);
+}
+
+.chaos-admin-dashboard__hero p {
   margin: 0 0 1rem;
   color: var(--cms-muted);
-  max-width: 42rem;
-  line-height: 1.5;
+  line-height: 1.55;
+  max-width: 40rem;
 }
 
-.chaos-cms-cards {
+.chaos-admin-dashboard__steps {
+  margin: 0 0 1.5rem;
+  padding-left: 1.25rem;
+  color: var(--cms-text);
+  line-height: 1.7;
+}
+
+.chaos-admin-dashboard__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
 }
 
-.chaos-cms-card {
-  display: block;
-  padding: 1rem 1.1rem;
-  border-radius: 12px;
-  border: 1px solid var(--cms-border);
+.chaos-admin-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.15rem 1.15rem 1.15rem 3.25rem;
+  border-radius: var(--cms-radius);
+  border: 2px solid var(--cms-border);
   background: var(--cms-surface);
   text-decoration: none;
   color: inherit;
+  box-shadow: var(--cms-shadow);
   transition: border-color 0.15s ease, transform 0.15s ease;
+  min-height: 7.5rem;
 }
 
-.chaos-cms-card:hover {
+.chaos-admin-card:hover {
   border-color: var(--cms-purple);
   transform: translateY(-2px);
 }
 
-.chaos-cms-card strong {
-  display: block;
+.chaos-admin-card__step {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.85rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--cms-purple);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+.chaos-admin-card__icon {
+  font-size: 1.35rem;
+}
+
+.chaos-admin-card strong {
   font-family: var(--cms-display);
-  font-size: 1rem;
-  margin-bottom: 0.25rem;
+  font-size: 1.08rem;
   color: var(--cms-purple-deep);
 }
 
-.chaos-cms-card span {
-  font-size: 0.85rem;
-  color: var(--cms-muted);
-}
-
-.chaos-cms-links {
-  margin-top: 1rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1rem;
+.chaos-admin-card span:last-child {
   font-size: 0.88rem;
+  color: var(--cms-muted);
+  line-height: 1.45;
 }
 
-.chaos-cms-links a {
-  color: var(--cms-purple);
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.chaos-cms-links a:hover {
-  text-decoration: underline;
-}
-
-/* Full media browser (subfolders Decap does not list) */
-.chaos-media-browser {
-  margin: 1rem;
-  padding: 1.25rem 1.35rem 1.5rem;
-  border-radius: 16px;
+.chaos-admin-dashboard__note {
+  margin-top: 1.25rem;
+  padding: 1rem 1.15rem;
+  border-radius: var(--cms-radius);
+  background: var(--cms-purple-soft);
   border: 1px solid var(--cms-border);
-  background: linear-gradient(180deg, #fff 0%, var(--cms-purple-soft) 140%);
-  box-shadow: var(--cms-shadow);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--cms-text);
 }
 
-.chaos-media-browser__head {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1rem;
+/* Hide default Decap collection list on dashboard (we replace it) */
+.chaos-route-home [class*="CollectionMain"] > ul,
+.chaos-route-home [class*="CollectionMain"] > div > ul {
+  display: none !important;
+}
+
+.chaos-route-home [class*="SidebarHeading"] {
+  display: none !important;
+}
+
+/* —— Editor help —— */
+.chaos-editor-help {
+  margin: 0 1rem 1rem !important;
+  padding: 0.85rem 1rem !important;
+  border-radius: 10px !important;
+  background: var(--cms-purple-soft) !important;
+  border: 1px solid var(--cms-border) !important;
+  font-size: 0.92rem !important;
+  line-height: 1.5 !important;
+  color: var(--cms-text) !important;
+}
+
+/* —— Publish toast —— */
+.chaos-publish-toast {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  max-width: min(420px, 92vw);
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  background: var(--cms-purple-deep);
+  color: #fff;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+/* —— Decap overrides —— */
+[class*="AppHeader"],
+header[class*="css-"] {
+  top: var(--cms-shell-h) !important;
+  background: var(--cms-surface) !important;
+  border-bottom: 1px solid var(--cms-border) !important;
+}
+
+[class*="AppHeader"] a,
+[class*="AppHeader"] button {
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+}
+
+/* Bigger Contents / Media tabs */
+[class*="AppHeader"] nav a,
+[class*="AppHeader"] [role="tablist"] button {
+  padding: 0.5rem 1rem !important;
+  font-size: 1rem !important;
+}
+
+[class*="Sidebar"],
+aside[class*="css-"] {
+  background: var(--cms-surface) !important;
+  border-right: 1px solid var(--cms-border) !important;
+  padding-top: 0.5rem !important;
+}
+
+[class*="SidebarNavLink"] {
+  border-radius: 10px !important;
+  margin: 3px 10px !important;
+  padding: 0.75rem 1rem !important;
+  font-size: 0.95rem !important;
+}
+
+[class*="SidebarNavLink--active"] {
+  background: var(--cms-purple-soft) !important;
+  color: var(--cms-purple-deep) !important;
+  font-weight: 700 !important;
+}
+
+[class*="CollectionMain"],
+[class*="EditorContainer"] {
+  background: var(--cms-bg) !important;
+}
+
+label,
+[class*="ControlLabel"] {
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+}
+
+input,
+textarea,
+select {
+  font-size: 1rem !important;
+  padding: 0.65rem 0.8rem !important;
+  border-radius: 10px !important;
+  border: 1px solid var(--cms-border) !important;
+}
+
+button[class*="PublishedButton"],
+button[class*="SaveButton"] {
+  border-radius: 999px !important;
+  padding: 0.55rem 1.25rem !important;
+  font-weight: 700 !important;
+  background: linear-gradient(135deg, var(--cms-purple), var(--cms-purple-deep)) !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+[class*="ListItem"] {
+  border-radius: var(--cms-radius) !important;
+  border: 1px solid var(--cms-border) !important;
+  margin-bottom: 0.65rem !important;
+  background: var(--cms-surface) !important;
+}
+
+/* —— Media browser —— */
+.chaos-media-browser {
+  margin: 1rem 1.25rem;
+  padding: 1.25rem;
+  border-radius: var(--cms-radius);
+  border: 1px solid var(--cms-border);
+  background: var(--cms-surface);
+  box-shadow: var(--cms-shadow);
 }
 
 .chaos-media-browser h2 {
   margin: 0 0 0.35rem;
   font-family: var(--cms-display);
-  font-size: 1.35rem;
-  color: var(--cms-purple-deep);
+  font-size: 1.25rem;
 }
 
 .chaos-media-browser__lead {
-  margin: 0;
-  max-width: 42rem;
+  margin: 0 0 1rem;
   color: var(--cms-muted);
-  font-size: 0.92rem;
-  line-height: 1.5;
-}
-
-.chaos-media-browser__stats {
-  margin: 0;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--cms-purple-deep);
-  white-space: nowrap;
+  font-size: 0.9rem;
 }
 
 .chaos-media-browser__tools {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.65rem;
+  gap: 0.5rem;
   margin-bottom: 0.75rem;
 }
 
 .chaos-media-search,
 .chaos-media-folder {
-  font-family: var(--cms-font);
-  border: 1px solid var(--cms-border);
-  border-radius: 10px;
+  flex: 1 1 180px;
   padding: 0.55rem 0.75rem;
-  background: var(--cms-surface);
-  font-size: 0.92rem;
-}
-
-.chaos-media-search {
-  flex: 1 1 220px;
-  min-width: 180px;
-}
-
-.chaos-media-folder {
-  flex: 0 1 200px;
+  border-radius: 10px;
+  border: 1px solid var(--cms-border);
 }
 
 .chaos-media-hint {
-  margin: 0 0 1rem;
   font-size: 0.85rem;
   color: var(--cms-muted);
-}
-
-.chaos-media-hint code {
-  font-size: 0.82rem;
-  background: rgba(139, 61, 173, 0.1);
-  padding: 0.1rem 0.35rem;
-  border-radius: 4px;
+  margin: 0 0 0.75rem;
 }
 
 .chaos-media-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 0.75rem;
-  max-height: min(62vh, 640px);
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.65rem;
+  max-height: 50vh;
   overflow: auto;
-  padding: 0.25rem;
 }
 
 .chaos-media-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.45rem;
+  padding: 0.4rem;
   border: 1px solid var(--cms-border);
   border-radius: 10px;
-  background: var(--cms-surface);
+  background: var(--cms-bg);
   cursor: pointer;
   text-align: left;
-  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.chaos-media-item:hover {
-  border-color: var(--cms-purple);
-  transform: translateY(-1px);
-  box-shadow: var(--cms-shadow);
-}
-
-.chaos-media-item--copied {
-  border-color: #2d8a4e;
-  box-shadow: 0 0 0 2px rgba(45, 138, 78, 0.25);
 }
 
 .chaos-media-item img {
   width: 100%;
   aspect-ratio: 1;
   object-fit: contain;
-  background: repeating-conic-gradient(#e8e0ee 0% 25%, #f8f4fb 0% 50%) 50% / 16px 16px;
+  background: repeating-conic-gradient(#e8e0ee 0% 25%, #f8f4fb 0% 50%) 50% / 14px 14px;
   border-radius: 6px;
 }
 
 .chaos-media-item__folder {
-  font-size: 0.72rem;
+  display: block;
+  font-size: 0.68rem;
   font-weight: 700;
   color: var(--cms-purple);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  margin-top: 0.25rem;
 }
 
 .chaos-media-item__name {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   color: var(--cms-muted);
   word-break: break-all;
 }
 
+.chaos-media-item--copied {
+  border-color: #2d8a4e;
+  box-shadow: 0 0 0 2px rgba(45, 138, 78, 0.2);
+}
+
 .chaos-media-empty {
   color: var(--cms-muted);
-  font-size: 0.9rem;
 }
 
 @media (max-width: 720px) {
-  .chaos-cms-welcome {
-    margin: 0.75rem;
-    padding: 1rem;
-  }
-
-  .chaos-cms-cards {
+  .chaos-admin-dashboard__grid {
     grid-template-columns: 1fr;
   }
 
-  .chaos-media-browser {
-    margin: 0.75rem;
-    padding: 1rem;
+  .chaos-admin-shell__nav {
+    display: none;
   }
 }

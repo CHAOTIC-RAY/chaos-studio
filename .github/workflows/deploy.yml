@@ -55,8 +55,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Verify CMS sync (GitHub content ↔ site mirrors)
+        run: npm run verify:cms-sync
+
       - name: Build site
         run: npm run build
+
+      - name: Verify admin bundle deployed in dist
+        run: node scripts/verify-cms-sync.mjs --dist
 
       - name: Verify CMS assets in build output
         run: |
@@ -64,6 +70,7 @@ jobs:
           test -f frontend/dist/admin/cms-custom.css
           test -f frontend/dist/admin/cms-custom.js
           test -f frontend/dist/admin/media-manifest.json
+          test -f frontend/dist/admin/sync-status.json
 
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3

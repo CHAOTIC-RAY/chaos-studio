@@ -1,0 +1,32 @@
+name: CMS sync guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "content/**"
+      - "frontend/public/**"
+      - "frontend/public/admin/**"
+      - "scripts/verify-cms-sync.mjs"
+      - "scripts/sync-cms.mjs"
+  pull_request:
+    paths:
+      - "content/**"
+      - "frontend/public/**"
+      - "scripts/**"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Verify CMS ↔ GitHub ↔ site mirrors
+        run: npm run verify:cms-sync
