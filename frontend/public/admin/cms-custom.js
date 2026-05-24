@@ -2,9 +2,20 @@
   const SHELL_ID = "chaos-admin-shell";
   const DASHBOARD_ID = "chaos-admin-dashboard";
   const MEDIA_BROWSER_ID = "chaos-media-browser";
+  const DRAWER_ID = "chaos-admin-drawer";
+  const MOBILE_NAV_ID = "chaos-mobile-nav";
+  const INSTALL_BANNER_ID = "chaos-install-banner";
   const MANIFEST_URL = "/admin/media-manifest.json";
   const SYNC_STATUS_URL = "/admin/sync-status.json";
   const SITE = "https://portfolio.chaoticstudio.workers.dev";
+
+  const MOBILE_TABS = [
+    { hash: "#/", label: "Home", icon: "⌂", isMenu: false },
+    { hash: "#/collections/campaign/entries/campaign-posts", label: "Posts", icon: "📱", isMenu: false },
+    { hash: "#/collections/chaos-studio/entries/studio-page", label: "Studio", icon: "✦", isMenu: false },
+    { hash: "#/media", label: "Media", icon: "🖼", isMenu: false },
+    { hash: "", label: "More", icon: "⋯", isMenu: true },
+  ];
 
   const SECTIONS = [
     {
@@ -45,6 +56,7 @@
   ];
 
   let manifestCache = null;
+  let deferredInstallPrompt = null;
 
   function route() {
     return location.hash || "#/";
@@ -63,8 +75,81 @@
     return route().includes("/entries/");
   }
 
+  function isMobileLayout() {
+    return window.matchMedia("(max-width: 768px)").matches;
+  }
+
   function removeEl(id) {
     document.getElementById(id)?.remove();
+  }
+
+  function updateNavCurrent() {
+    const h = route();
+    document.querySelectorAll("[data-nav-hash]").forEach((el) => {
+      const target = el.getAttribute("data-nav-hash") || "";
+      const active =
+        target === "#/"
+          ? h === "#/" || h === "" || h === "#/collections"
+          : h.includes(target.replace("#", ""));
+      el.setAttribute("aria-current", active ? "page" : "false");
+    });
+  }
+
+  function registerServiceWorker() {
+    if (!("serviceWorker" in navigator)) return;
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/admin/sw.js", { scope: "/admin/" }).catch(() => {});
+    });
+  }
+
+  function setupInstallPrompt() {
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      const banner = document.getElementById(INSTALL_BANNER_ID);
+      if (banner && !localStorage.getItem("chaos-cms-install-dismissed")) {
+        banner.hidden = false;
+      }
+    });
+    window.addEventListener("appinstalled", () => {
+      deferredInstallPrompt = null;
+      document.getElementById(INSTALL_BANNER_ID)?.setAttribute("hidden", "");
+    });
+  }
+
+  function injectInstallBanner() {
+    if (document.getElementById(INSTALL_BANNER_ID)) return;
+    if (window.matchMedia("(display-mode: standalone)").matches) return;
+    if (localStorage.getItem("chaos-cms-install-dismissed")) return;
+
+    const banner = document.createElement("aside");
+    banner.id = INSTALL_BANNER_ID;
+    banner.className = "chaos-install-banner";
+    banner.hidden = true;
+    banner.setAttribute("role", "region");
+    banner.setAttribute("aria-label", "Install app");
+    banner.innerHTML = `
+      <span>Add CMS to your home screen for quick edits.</span>
+      <button type="button" class="chaos-install-banner__install">Install</button>
+      <button type="button" class="chaos-install-banner__dismiss" aria-label="Dismiss">×</button>
+    `;
+    document.body.appendChild(banner);
+
+    banner.querySelector(".chaos-install-banner__install")?.addEventListener("click", async () => {
+      if (!deferredInstallPrompt) {
+        window.alert("Use your browser menu: Add to Home Screen / Install app.");
+        return;
+      }
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      banner.hidden = true;
+    });
+
+    banner.querySelector(".chaos-install-banner__dismiss")?.addEventListener("click", () => {
+      localStorage.setItem("chaos-cms-install-dismissed", "1");
+      banner.hidden = true;
+    });
   }
 
   function injectShell() {
@@ -82,12 +167,88 @@
         </div>
       </div>
       <nav class="chaos-admin-shell__nav" aria-label="Quick links">
-        <a href="#/">Dashboard</a>
+        <a href="#/" data-nav-hash="#/">Dashboard</a>
         <a href="${SITE}/" target="_blank" rel="noopener">View site</a>
       </nav>
+      <button type="button" class="chaos-admin-shell__menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="${DRAWER_ID}-panel">☰</button>
     `;
     document.body.prepend(shell);
+    document.body.classList.add("chaos-admin-ready");
+
+    shell.querySelector(".chaos-admin-shell__menu-btn")?.addEventListener("click", () => {
+      const drawer = document.getElementById(DRAWER_ID);
+      const open = drawer?.classList.toggle("chaos-admin-drawer--open");
+      shell.querySelector(".chaos-admin-shell__menu-btn")?.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+
     loadSyncBadge(shell.querySelector("[data-sync-badge]"));
+  }
+
+  function injectDrawer() {
+    if (document.getElementById(DRAWER_ID)) return;
+
+    const drawer = document.createElement("div");
+    drawer.id = DRAWER_ID;
+    drawer.className = "chaos-admin-drawer";
+    drawer.innerHTML = `
+      <div class="chaos-admin-drawer__backdrop" tabindex="-1" aria-hidden="true"></div>
+      <nav id="${DRAWER_ID}-panel" class="chaos-admin-drawer__panel" aria-label="CMS sections">
+        <h2>Sections</h2>
+        <div class="chaos-admin-drawer__links">
+          <a href="#/" data-nav-hash="#/">Dashboard</a>
+          ${SECTIONS.map((s) => `<a href="${s.hash}" data-nav-hash="${s.hash}">${s.icon} ${s.title}</a>`).join("")}
+          <a href="${SITE}/" target="_blank" rel="noopener">View live site ↗</a>
+          <button type="button" data-install-from-menu>Install app</button>
+        </div>
+      </nav>
+    `;
+    document.body.appendChild(drawer);
+
+    drawer.querySelector(".chaos-admin-drawer__backdrop")?.addEventListener("click", closeDrawer);
+    drawer.querySelectorAll("a").forEach((a) => a.addEventListener("click", closeDrawer));
+    drawer.querySelector("[data-install-from-menu]")?.addEventListener("click", () => {
+      closeDrawer();
+      document.querySelector(".chaos-install-banner__install")?.click();
+    });
+  }
+
+  function closeDrawer() {
+    document.getElementById(DRAWER_ID)?.classList.remove("chaos-admin-drawer--open");
+    document.querySelector(".chaos-admin-shell__menu-btn")?.setAttribute("aria-expanded", "false");
+  }
+
+  function injectMobileNav() {
+    if (document.getElementById(MOBILE_NAV_ID)) return;
+
+    const nav = document.createElement("nav");
+    nav.id = MOBILE_NAV_ID;
+    nav.className = "chaos-mobile-nav";
+    nav.setAttribute("aria-label", "Quick navigation");
+    nav.innerHTML = `
+      <div class="chaos-mobile-nav__inner">
+        ${MOBILE_TABS.map((t) =>
+          t.isMenu
+            ? `<button type="button" class="chaos-mobile-nav__more" data-open-drawer aria-label="More sections">
+            <span class="chaos-mobile-nav__icon" aria-hidden="true">${t.icon}</span>${t.label}
+          </button>`
+            : `<a href="${t.hash}" data-nav-hash="${t.hash}">
+            <span class="chaos-mobile-nav__icon" aria-hidden="true">${t.icon}</span>${t.label}
+          </a>`,
+        ).join("")}
+      </div>
+    `;
+    document.body.appendChild(nav);
+
+    nav.querySelector("[data-open-drawer]")?.addEventListener("click", () => {
+      document.getElementById(DRAWER_ID)?.classList.add("chaos-admin-drawer--open");
+      document.querySelector(".chaos-admin-shell__menu-btn")?.setAttribute("aria-expanded", "true");
+    });
+
+    const applyMobileNav = () => {
+      document.body.classList.toggle("chaos-has-mobile-nav", isMobileLayout());
+    };
+    applyMobileNav();
+    window.matchMedia("(max-width: 768px)").addEventListener("change", applyMobileNav);
   }
 
   async function loadSyncBadge(el) {
@@ -306,6 +467,7 @@
   }
 
   function refresh() {
+    updateNavCurrent();
     injectShell();
     injectDashboard();
     injectEditorHelp();
@@ -313,9 +475,18 @@
   }
 
   function boot() {
+    registerServiceWorker();
+    setupInstallPrompt();
+    injectShell();
+    injectDrawer();
+    injectMobileNav();
+    injectInstallBanner();
     injectPublishReminder();
     refresh();
-    window.addEventListener("hashchange", refresh);
+    window.addEventListener("hashchange", () => {
+      closeDrawer();
+      refresh();
+    });
     const obs = new MutationObserver(() => refresh());
     obs.observe(document.body, { childList: true, subtree: true });
   }
