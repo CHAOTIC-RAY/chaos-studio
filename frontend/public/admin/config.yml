@@ -74,7 +74,6 @@ collections:
 
   - name: portfolio
     label: Site content
-    description: Hero, experience, skills, Chaos Studio & contact
     editor:
       preview: false
     files:
