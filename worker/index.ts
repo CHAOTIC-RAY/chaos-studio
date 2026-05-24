@@ -69,6 +69,14 @@ export default {
       });
     }
 
+    // CMS admin is static under /admin/ — must not fall through to portfolio SPA index.html
+    if (url.pathname === "/admin") {
+      return Response.redirect(`${url.origin}/admin/`, 301);
+    }
+    if (url.pathname.startsWith("/admin/")) {
+      return env.ASSETS.fetch(request);
+    }
+
     return env.ASSETS.fetch(request);
   },
 };

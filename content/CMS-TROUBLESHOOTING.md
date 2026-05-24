@@ -2,6 +2,16 @@
 
 Use this when something fails after **Publish** in `/admin/`.
 
+## `/admin/` shows the portfolio instead of CMS
+
+The main site PWA service worker can cache the wrong page for `/admin/`. After a deploy fix:
+
+1. Open the **portfolio home page** once (loads the updated service worker).
+2. Or clear site data: browser settings → site data → remove `portfolio.chaoticstudio.workers.dev`.
+3. Open `/admin/` in a **private/incognito** window.
+
+You should see **Chaos Studio CMS** in the tab title, not the portfolio.
+
 ## Save → GitHub → deploy flow
 
 ```mermaid
