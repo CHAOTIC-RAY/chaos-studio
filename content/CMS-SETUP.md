@@ -30,6 +30,8 @@ In the repo → **Settings** → **Secrets and variables** → **Actions**, add:
 
 Push to `main` (or re-run **Deploy Worker**). The workflow deploys the `cms-auth` worker in `cms-proxy/` with these secrets.
 
+The repo is **private**, so OAuth uses the `repo` scope. After deploy, log out of `/admin/` and **Login with GitHub** again so the new permissions apply.
+
 **Do not use** `https://api.netlify.com` — that only works for sites hosted on Netlify and returns “Not Found” for Workers domains.
 
 ### C. Repo access
@@ -87,7 +89,7 @@ If login still fails:
 
 1. Confirm OAuth callback is exactly  
    `https://cms-auth.chaoticstudio.workers.dev/callback?provider=github`
-2. Confirm `GITHUB_OAUTH_ID` and `GITHUB_OAUTH_SECRET` are set in repo Actions secrets
+2. Confirm `CMS_OAUTH_CLIENT_ID` and `CMS_OAUTH_CLIENT_SECRET` are set in repo Actions secrets
 3. Re-run **Deploy Worker** and try `/admin/` in a private/incognito window
 
 ---

@@ -3,8 +3,8 @@ import { OAuthClient } from "./oauth";
 interface Env {
   GITHUB_OAUTH_ID: string;
   GITHUB_OAUTH_SECRET: string;
-  /** Set to "1" if the repo is private (uses repo scope instead of public_repo). */
-  GITHUB_REPO_PRIVATE?: string;
+  /** Set to "1" if the repo is public only (uses public_repo scope). Default: private repo scope. */
+  GITHUB_REPO_PUBLIC?: string;
 }
 
 function randomHex(bytes: number): string {
