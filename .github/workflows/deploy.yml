@@ -72,8 +72,8 @@ jobs:
         working-directory: cms-proxy
         run: |
           if [ -n "$CMS_OAUTH_CLIENT_ID" ] && [ -n "$CMS_OAUTH_CLIENT_SECRET" ]; then
-            printf '%s' "$CMS_OAUTH_CLIENT_ID" | npx wrangler@4.93.0 secret put GITHUB_OAUTH_ID --stdin
-            printf '%s' "$CMS_OAUTH_CLIENT_SECRET" | npx wrangler@4.93.0 secret put GITHUB_OAUTH_SECRET --stdin
+            printf '%s' "$CMS_OAUTH_CLIENT_ID" | npx wrangler@4.93.0 secret put GITHUB_OAUTH_ID
+            printf '%s' "$CMS_OAUTH_CLIENT_SECRET" | npx wrangler@4.93.0 secret put GITHUB_OAUTH_SECRET
           else
             echo "::warning::CMS_OAUTH_CLIENT_ID or CMS_OAUTH_CLIENT_SECRET not set — cms-auth deploys but GitHub login will fail until both are added. See cms-proxy/README.md"
           fi
