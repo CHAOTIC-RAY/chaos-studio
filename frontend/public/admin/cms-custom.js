@@ -474,6 +474,89 @@
     injectMediaBrowser();
   }
 
+  function normalizeListValue(val, prop) {
+    if (!Array.isArray(val)) return val;
+    return val.map((item) => {
+      if (typeof item === "string") return item;
+      if (item && typeof item === "object" && prop in item) return String(item[prop]);
+      return String(item ?? "");
+    });
+  }
+
+  function normalizeEntryLists(entry) {
+    if (!entry?.data) return entry;
+    const d = entry.data;
+    if (Array.isArray(d.posts)) {
+      for (const p of d.posts) {
+        if (p.tags) p.tags = normalizeListValue(p.tags, "tag");
+        if (p.slides) p.slides = normalizeListValue(p.slides, "slide");
+      }
+    }
+    if (d.softSkills) d.softSkills = normalizeListValue(d.softSkills, "skill");
+    if (d.experience?.items) {
+      for (const job of d.experience.items) {
+        if (job.bullets) job.bullets = normalizeListValue(job.bullets, "bullet");
+      }
+    }
+    if (d.featuredWork?.projects) {
+      for (const proj of d.featuredWork.projects) {
+        if (proj.highlights) proj.highlights = normalizeListValue(proj.highlights, "line");
+        if (proj.tags) proj.tags = normalizeListValue(proj.tags, "tag");
+      }
+    }
+    if (d.skills?.categories) {
+      for (const cat of d.skills.categories) {
+        if (cat.tools) cat.tools = normalizeListValue(cat.tools, "tool");
+      }
+    }
+    if (d.highlights) d.highlights = normalizeListValue(d.highlights, "line");
+    if (d.services) d.services = normalizeListValue(d.services, "service");
+    if (d.packages) {
+      for (const pkg of d.packages) {
+        if (pkg.features) pkg.features = normalizeListValue(pkg.features, "feature");
+      }
+    }
+    if (d.about?.skills) d.about.skills = normalizeListValue(d.about.skills, "skill");
+    return entry;
+  }
+
+  function registerCmsHooks() {
+    if (window.__chaosCmsHooks || !window.CMS?.registerEventListener) return;
+    window.__chaosCmsHooks = true;
+    try {
+      window.CMS.registerEventListener({
+        name: "preLoad",
+        handler: ({ entry }) => normalizeEntryLists(entry),
+      });
+    } catch (e) {
+      console.warn("[CMS] preLoad hook failed", e);
+    }
+  }
+
+  function watchLoadingStuck() {
+    if (window.__chaosLoadingWatch) return;
+    window.__chaosLoadingWatch = true;
+    let timer;
+    const check = () => {
+      const stuck = /Loading entry/i.test(document.body?.innerText || "");
+      clearTimeout(timer);
+      if (!stuck) return;
+      timer = setTimeout(() => {
+        if (!/Loading entry/i.test(document.body?.innerText || "")) return;
+        if (document.querySelector(".chaos-loading-help")) return;
+        const el = document.createElement("div");
+        el.className = "chaos-loading-help chaos-publish-toast";
+        el.setAttribute("role", "alert");
+        el.innerHTML =
+          "<strong>Still loading?</strong> Open the profile menu → Log out → Login with GitHub again. Then hard-refresh. Large Social posts may take ~30s on mobile.";
+        document.body.appendChild(el);
+      }, 25000);
+    };
+    const obs = new MutationObserver(check);
+    obs.observe(document.body, { childList: true, subtree: true });
+    check();
+  }
+
   function bindCmsErrorToast() {
     if (window.__chaosCmsErrorBound) return;
     window.__chaosCmsErrorBound = true;
@@ -493,6 +576,9 @@
 
   function boot() {
     bindCmsErrorToast();
+    watchLoadingStuck();
+    registerCmsHooks();
+    setInterval(registerCmsHooks, 500);
     registerServiceWorker();
     setupInstallPrompt();
     injectShell();

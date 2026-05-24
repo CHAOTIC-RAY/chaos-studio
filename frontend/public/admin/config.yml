@@ -36,6 +36,7 @@ collections:
             label_singular: Post
             summary: "{{fields.client}} — {{fields.title}}"
             collapsed: true
+            minimize_collapsed: true
             fields:
               - { label: Post ID, name: id, widget: string, hint: "e.g. rainbow-01 — matches images/posts/{id}/" }
               - { label: Published, name: enabled, widget: boolean, default: true, required: false }
@@ -46,8 +47,8 @@ collections:
               - label: Tags
                 name: tags
                 widget: list
-                hint: "One keyword per line (saved as text list)"
-                field: { label: Tag, name: tag, widget: string }
+                hint: "Click + to add each tag (one per row)"
+                collapsed: true
               - label: Accent
                 name: accent
                 widget: select
@@ -68,7 +69,8 @@ collections:
                 name: slides
                 widget: list
                 required: false
-                field: { label: Basename, name: slide, widget: string, hint: slide-01 }
+                hint: "slide-01, slide-02, … (one basename per row)"
+                collapsed: true
               - { label: Video filename, name: video, widget: string, required: false }
               - { label: Poster filename, name: poster, widget: string, required: false }
               - { label: Image basename, name: image, widget: string, required: false }
@@ -102,7 +104,7 @@ collections:
           - label: Soft skills
             name: softSkills
             widget: list
-            field: { label: Skill, name: skill, widget: string }
+            hint: "One skill per row"
           - label: Interests
             name: interests
             widget: list
@@ -128,7 +130,8 @@ collections:
                   - label: Bullets
                     name: bullets
                     widget: list
-                    field: { label: Bullet, name: bullet, widget: string }
+                    hint: "One bullet per row"
+                    collapsed: true
                   - { label: Logo initials, name: logo, widget: string }
                   - { label: Featured, name: featured, widget: boolean, required: false }
           - label: Featured work
@@ -151,11 +154,13 @@ collections:
                   - label: Highlights
                     name: highlights
                     widget: list
-                    field: { label: Line, name: line, widget: string }
+                    hint: "One line per row"
+                    collapsed: true
                   - label: Tags
                     name: tags
                     widget: list
-                    field: { label: Tag, name: tag, widget: string }
+                    hint: "One tag per row"
+                    collapsed: true
                   - label: Accent
                     name: accent
                     widget: select
@@ -175,7 +180,8 @@ collections:
                   - label: Tools
                     name: tools
                     widget: list
-                    field: { label: Tool, name: tool, widget: string }
+                    hint: "One tool per row"
+                    collapsed: true
                   - label: Style
                     name: variant
                     widget: select
@@ -218,12 +224,11 @@ collections:
           - label: Highlight bullets
             name: highlights
             widget: list
-            hint: "Short lines under the hero"
-            field: { label: Line, name: line, widget: string }
+            hint: "One line per row"
           - label: Services list
             name: services
             widget: list
-            field: { label: Service, name: service, widget: string }
+            hint: "One service per row"
           - label: Pricing packages
             name: packages
             widget: list
@@ -239,7 +244,8 @@ collections:
               - label: What's included
                 name: features
                 widget: list
-                field: { label: Feature, name: feature, widget: string }
+                hint: "One feature per row"
+                collapsed: true
           - { label: Pricing footnote, name: pricingNote, widget: text }
           - label: Why choose us
             name: whyUs
@@ -295,7 +301,7 @@ collections:
               - label: Skill pills
                 name: skills
                 widget: list
-                field: { label: Skill, name: skill, widget: string }
+                hint: "One skill per row"
           - label: Social links
             name: social
             widget: object

@@ -5,47 +5,21 @@
   "pitch": "Your brand deserves more than just design — it deserves visual dominance. At Chaos Studio, we don't just create graphics; we craft experiences that grab attention, spark engagement, and leave a lasting impact.",
   "description": "Founded ChaosStudio.mv to deliver branding, social campaigns, UI concepts, and product design for Maldivian businesses and personal ventures. Work spans identity systems, campaign art direction, and full-stack product interfaces.",
   "highlights": [
-    {
-      "line": "Brand identity & social kits for local clients"
-    },
-    {
-      "line": "Product design: CookXpert, Forge, FaisaMobileXYZ"
-    },
-    {
-      "line": "Campaign art direction & motion-ready assets"
-    },
-    {
-      "line": "Teaching design fundamentals alongside client work"
-    }
+    "Brand identity & social kits for local clients",
+    "Product design: CookXpert, Forge, FaisaMobileXYZ",
+    "Campaign art direction & motion-ready assets",
+    "Teaching design fundamentals alongside client work"
   ],
   "services": [
-    {
-      "service": "Interior designing"
-    },
-    {
-      "service": "Architecture"
-    },
-    {
-      "service": "App designing"
-    },
-    {
-      "service": "Website designing"
-    },
-    {
-      "service": "Branding & logo design"
-    },
-    {
-      "service": "Jersey design"
-    },
-    {
-      "service": "Marketing videos"
-    },
-    {
-      "service": "Social media management & ads"
-    },
-    {
-      "service": "Graphic design — posters, flyers & more"
-    }
+    "Interior designing",
+    "Architecture",
+    "App designing",
+    "Website designing",
+    "Branding & logo design",
+    "Jersey design",
+    "Marketing videos",
+    "Social media management & ads",
+    "Graphic design — posters, flyers & more"
   ],
   "whyUs": [
     {
@@ -70,18 +44,10 @@
       "price": "2,000",
       "currency": "MVR",
       "features": [
-        {
-          "feature": "Logo design (3 concepts)"
-        },
-        {
-          "feature": "Letterhead design"
-        },
-        {
-          "feature": "2 social media posts per week"
-        },
-        {
-          "feature": "1 reel per week"
-        }
+        "Logo design (3 concepts)",
+        "Letterhead design",
+        "2 social media posts per week",
+        "1 reel per week"
       ]
     },
     {
@@ -91,21 +57,11 @@
       "price": "5,000",
       "currency": "MVR",
       "features": [
-        {
-          "feature": "Logo design (3 revisions)"
-        },
-        {
-          "feature": "Letterhead design"
-        },
-        {
-          "feature": "Jersey design (customized)"
-        },
-        {
-          "feature": "4 social media posts per week"
-        },
-        {
-          "feature": "2 reels per week"
-        }
+        "Logo design (3 revisions)",
+        "Letterhead design",
+        "Jersey design (customized)",
+        "4 social media posts per week",
+        "2 reels per week"
       ]
     },
     {
@@ -115,27 +71,13 @@
       "price": "8,000",
       "currency": "MVR",
       "features": [
-        {
-          "feature": "Logo design (unlimited concepts + revisions)"
-        },
-        {
-          "feature": "Letterhead design"
-        },
-        {
-          "feature": "Jersey design"
-        },
-        {
-          "feature": "Banner / poster designs (2)"
-        },
-        {
-          "feature": "6 social media posts per week"
-        },
-        {
-          "feature": "4 reels per week"
-        },
-        {
-          "feature": "Strategy for a whole month's posts and reels"
-        }
+        "Logo design (unlimited concepts + revisions)",
+        "Letterhead design",
+        "Jersey design",
+        "Banner / poster designs (2)",
+        "6 social media posts per week",
+        "4 reels per week",
+        "Strategy for a whole month's posts and reels"
       ]
     },
     {
@@ -145,18 +87,10 @@
       "price": "3,500",
       "currency": "MVR",
       "features": [
-        {
-          "feature": "Banner design (1 piece)"
-        },
-        {
-          "feature": "Poster design (1 piece)"
-        },
-        {
-          "feature": "5 custom social media posts"
-        },
-        {
-          "feature": "2 reels"
-        }
+        "Banner design (1 piece)",
+        "Poster design (1 piece)",
+        "5 custom social media posts",
+        "2 reels"
       ]
     },
     {
@@ -167,15 +101,9 @@
       "currency": "MVR",
       "recommended": true,
       "features": [
-        {
-          "feature": "20 custom posts for the month"
-        },
-        {
-          "feature": "Engaging reels for the month"
-        },
-        {
-          "feature": "Detailed strategy plan for the month"
-        }
+        "20 custom posts for the month",
+        "Engaging reels for the month",
+        "Detailed strategy plan for the month"
       ]
     }
   ],
