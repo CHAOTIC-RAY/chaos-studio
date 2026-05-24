@@ -13,8 +13,20 @@
   --cms-border: rgba(139, 61, 173, 0.18);
   --cms-radius: 12px;
   --cms-shadow: 0 8px 28px rgba(78, 19, 112, 0.08);
+  --cms-shell-h: 3.5rem;
+  --cms-mobile-nav-h: 3.5rem;
+  --cms-safe-top: env(safe-area-inset-top, 0px);
+  --cms-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --cms-safe-left: env(safe-area-inset-left, 0px);
+  --cms-safe-right: env(safe-area-inset-right, 0px);
+  --cms-touch-min: 44px;
   --cms-font: "DM Sans", system-ui, sans-serif;
   --cms-display: "Syne", system-ui, sans-serif;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 html,
@@ -22,6 +34,19 @@ body {
   font-family: var(--cms-font) !important;
   background: var(--cms-bg) !important;
   color: var(--cms-text) !important;
+  font-size: 16px !important;
+  min-height: 100%;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: rgba(139, 61, 173, 0.12);
+}
+
+body.chaos-admin-ready {
+  padding-top: calc(var(--cms-shell-h) + var(--cms-safe-top)) !important;
+}
+
+body.chaos-has-mobile-nav {
+  padding-bottom: calc(var(--cms-mobile-nav-h) + var(--cms-safe-bottom) + 0.35rem) !important;
 }
 
 /* Top bar */
@@ -387,18 +412,442 @@ button[class*="SaveButton"]:hover {
   font-size: 0.9rem;
 }
 
-@media (max-width: 720px) {
+/* —— App shell (mobile + desktop) —— */
+.chaos-admin-shell {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  height: calc(var(--cms-shell-h) + var(--cms-safe-top));
+  padding: var(--cms-safe-top) max(0.65rem, var(--cms-safe-right)) 0 max(0.65rem, var(--cms-safe-left));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  background: var(--cms-surface);
+  border-bottom: 1px solid var(--cms-border);
+  box-shadow: var(--cms-shadow);
+}
+
+.chaos-admin-shell__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.chaos-admin-shell__brand img {
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.chaos-admin-shell__brand strong {
+  display: block;
+  font-family: var(--cms-display);
+  font-size: 0.98rem;
+  color: var(--cms-purple-deep);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chaos-admin-shell__badge {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--cms-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chaos-admin-shell__nav {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.chaos-admin-shell__nav a {
+  color: var(--cms-purple);
+  text-decoration: none;
+  min-height: var(--cms-touch-min);
+  display: inline-flex;
+  align-items: center;
+}
+
+.chaos-admin-shell__menu-btn {
+  display: none;
+  min-width: var(--cms-touch-min);
+  min-height: var(--cms-touch-min);
+  border: none;
+  border-radius: 12px;
+  background: var(--cms-purple-soft);
+  color: var(--cms-purple-deep);
+  font-size: 1.3rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.chaos-admin-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.chaos-admin-drawer--open {
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.chaos-admin-drawer__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 21, 32, 0.45);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.chaos-admin-drawer--open .chaos-admin-drawer__backdrop {
+  opacity: 1;
+}
+
+.chaos-admin-drawer__panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(18rem, 92vw);
+  height: 100%;
+  padding: calc(var(--cms-shell-h) + var(--cms-safe-top) + 0.75rem) 1rem calc(1rem + var(--cms-safe-bottom));
+  background: var(--cms-surface);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12);
+  transform: translateX(100%);
+  transition: transform 0.22s ease;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chaos-admin-drawer--open .chaos-admin-drawer__panel {
+  transform: translateX(0);
+}
+
+.chaos-admin-drawer__panel h2 {
+  margin: 0 0 0.65rem;
+  font-family: var(--cms-display);
+  font-size: 0.95rem;
+  color: var(--cms-purple-deep);
+}
+
+.chaos-admin-drawer__links a,
+.chaos-admin-drawer__links button {
+  display: flex;
+  align-items: center;
+  min-height: var(--cms-touch-min);
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.15rem;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--cms-text);
+  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.chaos-admin-drawer__links a:hover,
+.chaos-admin-drawer__links button:hover {
+  background: var(--cms-purple-soft);
+}
+
+.chaos-admin-drawer__links a[aria-current="page"] {
+  background: var(--cms-purple-soft);
+  color: var(--cms-purple-deep);
+}
+
+.chaos-mobile-nav {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  height: calc(var(--cms-mobile-nav-h) + var(--cms-safe-bottom));
+  padding: 0 var(--cms-safe-right) var(--cms-safe-bottom) var(--cms-safe-left);
+  background: var(--cms-surface);
+  border-top: 1px solid var(--cms-border);
+  box-shadow: 0 -4px 20px rgba(78, 19, 112, 0.08);
+}
+
+.chaos-mobile-nav__inner {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  height: var(--cms-mobile-nav-h);
+  max-width: 32rem;
+  margin: 0 auto;
+}
+
+.chaos-mobile-nav a,
+.chaos-mobile-nav__more {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+  min-height: var(--cms-touch-min);
+  padding: 0.2rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--cms-muted);
+  text-decoration: none;
+  line-height: 1.1;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+  width: 100%;
+}
+
+.chaos-mobile-nav a[aria-current="page"] {
+  color: var(--cms-purple-deep);
+}
+
+.chaos-mobile-nav__icon {
+  font-size: 1.1rem;
+}
+
+.chaos-install-banner {
+  position: fixed;
+  left: max(0.65rem, var(--cms-safe-left));
+  right: max(0.65rem, var(--cms-safe-right));
+  bottom: calc(var(--cms-mobile-nav-h) + var(--cms-safe-bottom) + 0.65rem);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  background: var(--cms-purple-deep);
+  color: #fff;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2);
+}
+
+.chaos-install-banner[hidden] {
+  display: none !important;
+}
+
+.chaos-install-banner__install {
+  flex-shrink: 0;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.85rem;
+  border: none;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--cms-purple-deep);
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.chaos-install-banner__dismiss {
+  flex-shrink: 0;
+  min-width: var(--cms-touch-min);
+  min-height: var(--cms-touch-min);
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.chaos-publish-toast {
+  position: fixed;
+  left: max(0.75rem, var(--cms-safe-left));
+  right: max(0.75rem, var(--cms-safe-right));
+  bottom: calc(var(--cms-mobile-nav-h) + var(--cms-safe-bottom) + 0.75rem);
+  z-index: 10000;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  background: var(--cms-purple-deep);
+  color: #fff;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+body:not(.chaos-has-mobile-nav) .chaos-publish-toast {
+  bottom: calc(1rem + var(--cms-safe-bottom));
+}
+
+.chaos-editor-help {
+  margin: 0 0.75rem 0.75rem !important;
+  padding: 0.75rem 0.9rem !important;
+  border-radius: 10px !important;
+  background: var(--cms-purple-soft) !important;
+  border: 1px solid var(--cms-border) !important;
+  font-size: 0.9rem !important;
+  line-height: 1.5 !important;
+}
+
+/* Decap below fixed shell */
+body.chaos-admin-ready [class*="AppHeader"],
+body.chaos-admin-ready header[class*="css-"] {
+  top: calc(var(--cms-shell-h) + var(--cms-safe-top)) !important;
+}
+
+/* —— Mobile layout —— */
+@media (max-width: 768px) {
+  .chaos-admin-shell__nav {
+    display: none;
+  }
+
+  .chaos-admin-shell__menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .chaos-mobile-nav {
+    display: block;
+  }
+
   .chaos-cms-welcome {
-    margin: 0.75rem;
+    margin: 0.65rem;
     padding: 1rem;
+  }
+
+  .chaos-cms-welcome h1 {
+    font-size: 1.25rem;
   }
 
   .chaos-cms-cards {
     grid-template-columns: 1fr;
   }
 
-  .chaos-media-browser {
-    margin: 0.75rem;
+  .chaos-cms-card {
+    min-height: var(--cms-touch-min);
     padding: 1rem;
+  }
+
+  .chaos-media-browser {
+    margin: 0.65rem;
+    padding: 1rem;
+  }
+
+  .chaos-media-browser__head {
+    flex-direction: column;
+  }
+
+  .chaos-media-search,
+  .chaos-media-folder {
+    flex: 1 1 100%;
+    min-width: 0;
+    font-size: 16px !important;
+    min-height: var(--cms-touch-min);
+  }
+
+  .chaos-media-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    max-height: none;
+    gap: 0.5rem;
+  }
+
+  .chaos-media-item {
+    min-height: var(--cms-touch-min);
+  }
+
+  [class*="CollectionTop"],
+  [class*="ToolbarContainer"] {
+    margin: 0.5rem !important;
+    padding: 0.65rem !important;
+  }
+
+  [class*="AppHeader"] nav a,
+  [class*="AppHeader"] [role="tablist"] button {
+    min-height: var(--cms-touch-min) !important;
+    padding: 0.45rem 0.75rem !important;
+    font-size: 0.95rem !important;
+  }
+
+  [class*="SidebarNavLink"] {
+    min-height: var(--cms-touch-min) !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 1rem !important;
+  }
+
+  input[type="text"],
+  input[type="url"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px !important;
+    min-height: var(--cms-touch-min);
+    padding: 0.7rem 0.8rem !important;
+  }
+
+  button[class*="PublishedButton"],
+  button[class*="SaveButton"] {
+    min-height: var(--cms-touch-min) !important;
+    padding: 0.6rem 1.2rem !important;
+    font-size: 1rem !important;
+  }
+
+  /* Stack sidebar above editor on narrow screens */
+  [class*="WorkflowWrapper"],
+  [class*="EditorContainer"] {
+    flex-direction: column !important;
+  }
+
+  [class*="Sidebar"],
+  aside[class*="css-"] {
+    width: 100% !important;
+    max-width: none !important;
+    max-height: 38vh !important;
+    overflow-y: auto !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--cms-border) !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  [class*="PaneVertical"] {
+    flex-direction: column !important;
+  }
+
+  [class*="SplitPane"] {
+    flex-direction: column !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  [class*="SplitPane"] > * {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: none !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .chaos-admin-shell__brand strong {
+    font-size: 0.88rem;
+  }
+
+  .chaos-mobile-nav a {
+    font-size: 0.55rem;
+  }
+}
+
+@media (display-mode: standalone) {
+  .chaos-install-banner {
+    display: none !important;
   }
 }

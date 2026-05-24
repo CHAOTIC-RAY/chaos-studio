@@ -4,6 +4,15 @@ Edit portfolio text, campaign posts, and images through a browser UI. Changes ar
 
 **Admin URL (after deploy):** https://portfolio.chaoticstudio.workers.dev/admin/
 
+### Mobile & install (PWA)
+
+On a phone, open the admin URL in **Safari** (iOS) or **Chrome** (Android):
+
+- **iOS:** Share → **Add to Home Screen**
+- **Android:** Menu → **Install app** (or use the in-app **Install** banner)
+
+The CMS runs as a standalone app (`/admin/` scope) with a bottom tab bar, slide-out menu, and touch-friendly fields. Offline: shell and styles are cached; login and publish still need network.
+
 ---
 
 ## 1. One-time setup
