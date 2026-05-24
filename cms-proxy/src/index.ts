@@ -3,8 +3,6 @@ import { OAuthClient } from "./oauth";
 interface Env {
   GITHUB_OAUTH_ID: string;
   GITHUB_OAUTH_SECRET: string;
-  /** Set to "1" if the repo is public only (uses public_repo scope). Default: private repo scope. */
-  GITHUB_REPO_PUBLIC?: string;
 }
 
 function randomHex(bytes: number): string {
@@ -37,9 +35,9 @@ const handleAuth = (url: URL, env: Env) => {
     );
   }
 
-  const repoIsPrivate =
-    env.GITHUB_REPO_PRIVATE !== undefined && env.GITHUB_REPO_PRIVATE !== "0";
-  const repoScope = repoIsPrivate ? "repo,user" : "public_repo,user";
+  // CHAOTIC-RAY/portfolio is private — public_repo cannot read it (GitHub returns "not found").
+  const repoScope =
+    env.GITHUB_REPO_PUBLIC === "1" ? "public_repo,user" : "repo,user";
 
   const oauth2 = createOAuth(env);
   const authorizationUri = oauth2.authorizeURL({
