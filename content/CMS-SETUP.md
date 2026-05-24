@@ -23,8 +23,10 @@ In the repo → **Settings** → **Secrets and variables** → **Actions**, add:
 
 | Name | Value |
 |------|--------|
-| `GITHUB_OAUTH_ID` | OAuth Client ID |
-| `GITHUB_OAUTH_SECRET` | OAuth Client secret |
+| `CMS_OAUTH_CLIENT_ID` | OAuth Client ID |
+| `CMS_OAUTH_CLIENT_SECRET` | OAuth Client secret |
+
+(GitHub forbids secret names starting with `GITHUB_`.)
 
 Push to `main` (or re-run **Deploy Worker**). The workflow deploys the `cms-auth` worker in `cms-proxy/` with these secrets.
 

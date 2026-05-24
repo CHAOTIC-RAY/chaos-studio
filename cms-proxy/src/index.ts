@@ -32,7 +32,7 @@ const handleAuth = (url: URL, env: Env) => {
 
   if (!env.GITHUB_OAUTH_ID || !env.GITHUB_OAUTH_SECRET) {
     return new Response(
-      "CMS OAuth is not configured. Set GITHUB_OAUTH_ID and GITHUB_OAUTH_SECRET on the cms-auth worker.",
+      "CMS OAuth is not configured. Add CMS_OAUTH_CLIENT_ID and CMS_OAUTH_CLIENT_SECRET to GitHub Actions secrets, then redeploy.",
       { status: 503 },
     );
   }
