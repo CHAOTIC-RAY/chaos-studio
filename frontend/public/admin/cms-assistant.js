@@ -1,5 +1,5 @@
 /**
- * Chaos CMS — local AI assistant (Ollama-compatible)
+ * Chaos CMS — AI assistant (cloud models via worker proxy)
  * Chat + file attachments → structured site updates → GitHub commit
  */
 (function () {
@@ -7,6 +7,60 @@
   const BRANCH = "main";
   const SETTINGS_KEY = "chaos_ai_settings";
   const HISTORY_KEY = "chaos_ai_history_v1";
+
+  /** @type {Record<string, { label: string; hint: string; models: { id: string; label: string }[]; defaultModel: string }>} */
+  const PROVIDERS = {
+    openrouter: {
+      label: "OpenRouter (recommended)",
+      hint: "One API key, swap models anytime — openrouter.ai/keys",
+      defaultModel: "google/gemini-2.0-flash-001",
+      models: [
+        { id: "google/gemini-2.0-flash-001", label: "Gemini 2.0 Flash — fast, great for copy" },
+        { id: "anthropic/claude-sonnet-4", label: "Claude Sonnet 4 — best quality" },
+        { id: "openai/gpt-4o-mini", label: "GPT-4o mini — cheap & reliable" },
+        { id: "openai/gpt-4o", label: "GPT-4o — strongest OpenAI" },
+        { id: "meta-llama/llama-3.3-70b-instruct", label: "Llama 3.3 70B" },
+        { id: "deepseek/deepseek-chat", label: "DeepSeek V3" },
+      ],
+    },
+    openai: {
+      label: "OpenAI",
+      hint: "platform.openai.com/api-keys",
+      defaultModel: "gpt-4o-mini",
+      models: [
+        { id: "gpt-4o-mini", label: "GPT-4o mini" },
+        { id: "gpt-4o", label: "GPT-4o" },
+        { id: "gpt-4.1-mini", label: "GPT-4.1 mini" },
+      ],
+    },
+    groq: {
+      label: "Groq",
+      hint: "Very fast inference — console.groq.com/keys",
+      defaultModel: "llama-3.3-70b-versatile",
+      models: [
+        { id: "llama-3.3-70b-versatile", label: "Llama 3.3 70B" },
+        { id: "mixtral-8x7b-32768", label: "Mixtral 8x7B" },
+      ],
+    },
+    anthropic: {
+      label: "Anthropic Claude",
+      hint: "console.anthropic.com/settings/keys",
+      defaultModel: "claude-sonnet-4-20250514",
+      models: [
+        { id: "claude-sonnet-4-20250514", label: "Claude Sonnet 4" },
+        { id: "claude-3-5-haiku-20241022", label: "Claude 3.5 Haiku (fast)" },
+      ],
+    },
+    google: {
+      label: "Google Gemini",
+      hint: "aistudio.google.com/apikey",
+      defaultModel: "gemini-2.0-flash",
+      models: [
+        { id: "gemini-2.0-flash", label: "Gemini 2.0 Flash" },
+        { id: "gemini-1.5-pro", label: "Gemini 1.5 Pro" },
+      ],
+    },
+  };
 
   const CONTENT_FILES = {
     "campaign-meta": {
@@ -64,17 +118,48 @@ Rules:
   let pendingUpdates = null;
   let attachments = [];
 
+  function defaultSettings() {
+    return {
+      provider: "openrouter",
+      model: PROVIDERS.openrouter.defaultModel,
+      apiKey: "",
+      githubToken: "",
+    };
+  }
+
   function getSettings() {
     try {
+      const raw = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
+      if (raw.ollamaUrl && !raw.provider) {
+        return { ...defaultSettings(), githubToken: raw.githubToken || "" };
+      }
+      const provider = PROVIDERS[raw.provider] ? raw.provider : "openrouter";
+      const base = defaultSettings();
       return {
-        ollamaUrl: "http://127.0.0.1:11434",
-        model: "llama3.2",
-        githubToken: "",
-        ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}"),
+        ...base,
+        ...raw,
+        provider,
+        model: raw.model || PROVIDERS[provider].defaultModel,
       };
     } catch {
-      return { ollamaUrl: "http://127.0.0.1:11434", model: "llama3.2", githubToken: "" };
+      return defaultSettings();
     }
+  }
+
+  function modelOptionsHtml(provider, selected) {
+    const p = PROVIDERS[provider] || PROVIDERS.openrouter;
+    return p.models
+      .map((m) => `<option value="${escapeHtml(m.id)}"${m.id === selected ? " selected" : ""}>${escapeHtml(m.label)}</option>`)
+      .join("");
+  }
+
+  function providerOptionsHtml(selected) {
+    return Object.entries(PROVIDERS)
+      .map(
+        ([id, p]) =>
+          `<option value="${id}"${id === selected ? " selected" : ""}>${escapeHtml(p.label)}</option>`,
+      )
+      .join("");
   }
 
   function saveSettings(s) {
@@ -254,54 +339,22 @@ Rules:
     }
   }
 
-  async function callOllama(messages, settings) {
-    const base = settings.ollamaUrl.replace(/\/$/, "");
-    const url = `${base}/api/chat`;
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: settings.model || "llama3.2",
-        messages,
-        stream: false,
-      }),
-    });
-    if (!res.ok) {
-      const err = await res.text();
-      throw new Error(`Ollama ${res.status}: ${err.slice(0, 300)}`);
-    }
-    const data = await res.json();
-    return data.message?.content || "";
-  }
-
-  async function callProxyChat(messages, settings) {
+  async function chatComplete(messages, settings) {
     const res = await fetch("/api/admin/ai/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        provider: settings.provider,
         model: settings.model,
         messages,
-        ollamaUrl: settings.ollamaUrl,
+        apiKey: settings.apiKey?.trim() || undefined,
       }),
     });
+    const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      const err = await res.text();
-      throw new Error(`AI proxy ${res.status}: ${err.slice(0, 300)}`);
+      throw new Error(data.error || `AI request failed (${res.status})`);
     }
-    const data = await res.json();
-    return data.content || data.message || "";
-  }
-
-  async function chatComplete(messages, settings) {
-    try {
-      return await callOllama(messages, settings);
-    } catch (directErr) {
-      try {
-        return await callProxyChat(messages, settings);
-      } catch {
-        throw directErr;
-      }
-    }
+    return data.content || "";
   }
 
   function buildContextMessage(snap, attachText) {
@@ -488,11 +541,12 @@ Rules:
       saveHistory(history);
     } catch (e) {
       thinking?.remove();
-      const hint =
-        location.protocol === "https:" && settings.ollamaUrl.startsWith("http://")
-          ? "<br><br>Tip: HTTPS admin cannot call http://localhost. Use a tunnel URL (cloudflared) in settings, or open admin via local Vite."
-          : "";
-      appendMessage("assistant", `<strong>Error:</strong> ${escapeHtml(e.message)}${hint}`, messagesEl);
+      const prov = PROVIDERS[settings.provider] || PROVIDERS.openrouter;
+      appendMessage(
+        "assistant",
+        `<strong>Error:</strong> ${escapeHtml(e.message)}<br><br>Add your <strong>${escapeHtml(prov.label)}</strong> API key in Settings (${escapeHtml(prov.hint)}), or set a worker secret for deploy.`,
+        messagesEl,
+      );
     } finally {
       sendBtn.disabled = false;
       input.focus();
@@ -511,19 +565,51 @@ Rules:
     return escapeHtml(withoutBlock).replace(/\n/g, "<br>");
   }
 
+  function bindProviderModelSelects(root) {
+    const provEl = root.querySelector("[data-ai-provider]");
+    const modelEl = root.querySelector("[data-ai-model]");
+    const hintEl = root.querySelector("[data-ai-provider-hint]");
+    if (!provEl || !modelEl) return;
+
+    const refreshModels = () => {
+      const pid = provEl.value;
+      const p = PROVIDERS[pid] || PROVIDERS.openrouter;
+      const cur = modelEl.value;
+      modelEl.innerHTML = modelOptionsHtml(pid, cur);
+      if (![...modelEl.options].some((o) => o.value === cur)) {
+        modelEl.value = p.defaultModel;
+      }
+      if (hintEl) hintEl.textContent = p.hint;
+    };
+
+    provEl.addEventListener("change", refreshModels);
+    refreshModels();
+  }
+
   function renderAssistant(root) {
     const settings = getSettings();
+    const prov = PROVIDERS[settings.provider] || PROVIDERS.openrouter;
     root.innerHTML = `
       <div class="chaos-ai">
         <header class="chaos-ai__head">
           <h1>AI site assistant</h1>
-          <p>Chat with local Ollama, attach JSON/copy files, then apply changes to GitHub automatically.</p>
+          <p>Use Claude, GPT, Gemini, or Groq — attach files, edit copy, then apply to GitHub in one click.</p>
         </header>
-        <details class="chaos-ai-settings">
-          <summary>Settings</summary>
-          <label>Ollama URL <input type="url" data-ai-ollama value="${escapeHtml(settings.ollamaUrl)}" placeholder="http://127.0.0.1:11434" /></label>
-          <label>Model <input type="text" data-ai-model value="${escapeHtml(settings.model)}" placeholder="llama3.2" /></label>
-          <label>GitHub token (optional if logged into CMS) <input type="password" data-ai-token placeholder="ghp_… or use CMS login" autocomplete="off" /></label>
+        <details class="chaos-ai-settings" open>
+          <summary>AI settings</summary>
+          <label>Provider
+            <select data-ai-provider>${providerOptionsHtml(settings.provider)}</select>
+          </label>
+          <p class="chaos-ai-settings__hint" data-ai-provider-hint>${escapeHtml(prov.hint)}</p>
+          <label>Model
+            <select data-ai-model>${modelOptionsHtml(settings.provider, settings.model)}</select>
+          </label>
+          <label>API key
+            <input type="password" data-ai-api-key value="${escapeHtml(settings.apiKey)}" placeholder="sk-or-… / sk-… / AIza…" autocomplete="off" />
+          </label>
+          <label>GitHub token (optional if logged into CMS)
+            <input type="password" data-ai-token value="${escapeHtml(settings.githubToken)}" placeholder="ghp_… or use CMS login" autocomplete="off" />
+          </label>
           <button type="button" class="chaos-ai-btn" data-ai-save-settings>Save settings</button>
           <button type="button" class="chaos-ai-btn" data-ai-reload-context>Reload site content</button>
         </details>
@@ -546,13 +632,17 @@ Rules:
       appendMessage(m.role, formatReplyHtml(m.content), messagesEl);
     }
 
+    bindProviderModelSelects(root);
+
     root.querySelector("[data-ai-save-settings]")?.addEventListener("click", () => {
+      const provider = root.querySelector("[data-ai-provider]")?.value || "openrouter";
       saveSettings({
-        ollamaUrl: root.querySelector("[data-ai-ollama]")?.value?.trim() || "http://127.0.0.1:11434",
-        model: root.querySelector("[data-ai-model]")?.value?.trim() || "llama3.2",
+        provider,
+        model: root.querySelector("[data-ai-model]")?.value || PROVIDERS[provider].defaultModel,
+        apiKey: root.querySelector("[data-ai-api-key]")?.value?.trim() || "",
         githubToken: root.querySelector("[data-ai-token]")?.value?.trim() || "",
       });
-      alert("Settings saved.");
+      alert("Settings saved. API key stays in this browser only.");
     });
 
     root.querySelector("[data-ai-reload-context]")?.addEventListener("click", async () => {
@@ -578,7 +668,7 @@ Rules:
       if (!getHistory().length) {
         appendMessage(
           "assistant",
-          "Hi — I can update portfolio text, social posts, studio page, and SEO. Attach a JSON or brief, describe the change, then click <strong>Apply to GitHub</strong> when you see the preview.",
+          "Hi — pick a provider in Settings (OpenRouter recommended), add your API key, then describe changes. Attach JSON or briefs if helpful. Click <strong>Apply to GitHub</strong> when you see the preview.",
           messagesEl,
         );
       }

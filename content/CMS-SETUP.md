@@ -145,26 +145,35 @@ Normal workflow: edit **`content/portfolio.json`** only via CMS or git.
 
 ---
 
-## 7. AI site assistant (local Ollama)
+## 7. AI site assistant (cloud models)
 
 **URL:** https://portfolio.chaoticstudio.workers.dev/admin/#/assistant
 
-Chat with a **local** LLM (Ollama) to change site copy, posts, studio text, and SEO. Attach `.json`, `.md`, or `.txt` files as briefs. When the model proposes changes, click **Apply to GitHub** — same flow as Publish (commit to `main`, deploy ~2 min).
+Chat with **Claude, GPT, Gemini, or Groq** to change site copy, posts, studio text, and SEO. Attach `.json`, `.md`, or `.txt` files as briefs. When the model proposes changes, click **Apply to GitHub** — same flow as Publish (commit to `main`, deploy ~2 min).
 
-### Requirements
+### Recommended setup
 
-1. [Ollama](https://ollama.com) installed and running, e.g. `ollama pull llama3.2` then `ollama serve`
-2. **GitHub access:** log into the CMS with GitHub first, or paste a PAT (repo scope) in AI **Settings**
-3. **HTTPS admin + local Ollama:** browsers block `http://127.0.0.1` from `https://` pages. Use one of:
-   - **Cloudflare tunnel** to Ollama and set that HTTPS URL in Settings, or
-   - Optional worker secret `OLLAMA_BASE_URL` (tunnel URL) so `/api/admin/ai/chat` proxies requests
+1. **[OpenRouter](https://openrouter.ai/keys)** — one API key, switch models in the admin dropdown (default: **Gemini 2.0 Flash**).
+2. **GitHub access** — log into the CMS with GitHub, or paste a PAT (repo scope) in AI Settings.
 
-### Settings (in admin)
+Other providers (each needs its own key in Settings):
 
-| Field | Default |
-|--------|---------|
-| Ollama URL | `http://127.0.0.1:11434` |
-| Model | `llama3.2` |
-| GitHub token | Auto from CMS login if available |
+| Provider | Get a key |
+|----------|-----------|
+| OpenAI | https://platform.openai.com/api-keys |
+| Anthropic | https://console.anthropic.com/settings/keys |
+| Google Gemini | https://aistudio.google.com/apikey |
+| Groq | https://console.groq.com/keys |
+
+### Optional: worker secrets (no key in browser)
+
+Set on the Cloudflare Worker (Wrangler secrets) so the admin can call AI without storing a key locally:
+
+- `OPENROUTER_API_KEY` (recommended)
+- `OPENAI_API_KEY`
+- `ANTHROPIC_API_KEY`
+- `GOOGLE_AI_API_KEY`
+- `GROQ_API_KEY`
+- or generic `AI_API_KEY` as fallback
 
 Files the AI can update: `content/campaign-meta.json`, `content/campaign-posts.json`, `content/portfolio.json`, `content/chaos-studio.json`, `frontend/public/assets/site.config.json`.

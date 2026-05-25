@@ -46,7 +46,8 @@
   color: var(--app-muted);
 }
 
-.chaos-ai-settings input {
+.chaos-ai-settings input,
+.chaos-ai-settings select {
   display: block;
   width: 100%;
   margin-top: 0.25rem;
@@ -55,6 +56,13 @@
   border: 1px solid var(--app-border);
   border-radius: 8px;
   font: inherit;
+  background: var(--app-surface);
+}
+
+.chaos-ai-settings__hint {
+  margin: 0.35rem 0 0.75rem;
+  font-size: 0.78rem;
+  color: var(--app-muted);
 }
 
 .chaos-ai-settings .chaos-ai-btn {

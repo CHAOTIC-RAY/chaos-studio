@@ -247,7 +247,7 @@
       <a class="chaos-card chaos-card--ai" href="#/assistant">
         ${icon("chat")}
         <strong>AI site assistant</strong>
-        <span>Chat with local Ollama, attach JSON or copy files, apply text changes to GitHub automatically.</span>
+        <span>Claude, GPT, Gemini, or Groq — attach files and apply copy changes to GitHub automatically.</span>
         <span class="chaos-card__cta">Open AI ${ICONS.chevron}</span>
       </a>
       <div class="chaos-grid">${cards}</div>
