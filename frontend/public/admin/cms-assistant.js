@@ -105,7 +105,7 @@
   const SYSTEM_PROMPT = `You are the Chaos Studio CMS assistant. You edit the portfolio website JSON files in GitHub repo ${REPO} (branch ${BRANCH}).
 
 When the user asks to change site text, posts, studio copy, or SEO, respond with:
-1. A short plain-English summary of what you will change.
+1. A **detailed plain-English summary** (not one line): what file(s), which post IDs or sections, each field changing from → to, and anything left unchanged. Use bullet points.
 2. A fenced JSON block tagged chaos_cms_updates with this exact shape:
 \`\`\`chaos_cms_updates
 {
@@ -132,7 +132,7 @@ Rules:
 - If unsure, ask a clarifying question and omit the chaos_cms_updates block.
 - Attached files may be JSON exports, copy docs, or briefs — use them as source material.
 - When the user uploads images, describe what you see and use them for post copy, client names, slide folder ideas, or alt text. Match post id to image folder names when obvious.
-- After you return chaos_cms_updates (or a clear JSON patch), the admin **auto-publishes** to main using the user's existing CMS GitHub login.`;
+- The user must **review and click Publish** in the admin UI; nothing goes live until they approve.`;
 
   let siteSnapshot = null;
   let pendingUpdates = null;
@@ -514,6 +514,150 @@ Rules:
     return "";
   }
 
+  function getBaselineForPath(path) {
+    const entry = Object.entries(CONTENT_FILES).find(([, m]) => m.path === path);
+    if (!entry) return null;
+    return siteSnapshot?.files?.[entry[0]]?.data ?? null;
+  }
+
+  function formatDiffValue(v) {
+    if (v == null || v === "") return "(empty)";
+    if (Array.isArray(v)) return v.length ? v.join(", ") : "(empty)";
+    if (typeof v === "boolean") return v ? "yes" : "no";
+    return String(v);
+  }
+
+  function diffCampaignPosts(beforePosts, afterPosts) {
+    const beforeMap = new Map((beforePosts || []).map((p) => [p.id, p]));
+    const items = [];
+    for (const post of afterPosts || []) {
+      const prev = beforeMap.get(post.id);
+      if (!prev) {
+        items.push(
+          `<li class="chaos-ai-diff-item chaos-ai-diff-item--new"><strong>${escapeHtml(post.id)}</strong> (new post) — ${escapeHtml(post.client || "")}: “${escapeHtml(post.title || "")}”</li>`,
+        );
+        continue;
+      }
+      for (const field of [
+        "title",
+        "description",
+        "client",
+        "platform",
+        "accent",
+        "enabled",
+        "cardLayout",
+        "mediaAspect",
+      ]) {
+        if (JSON.stringify(prev[field]) === JSON.stringify(post[field])) continue;
+        items.push(
+          `<li class="chaos-ai-diff-item"><strong>${escapeHtml(post.id)}</strong> · ${escapeHtml(field)}: <span class="chaos-ai-diff-from">${escapeHtml(formatDiffValue(prev[field]))}</span> → <span class="chaos-ai-diff-to">${escapeHtml(formatDiffValue(post[field]))}</span></li>`,
+        );
+      }
+      if (JSON.stringify(prev.tags) !== JSON.stringify(post.tags)) {
+        items.push(
+          `<li class="chaos-ai-diff-item"><strong>${escapeHtml(post.id)}</strong> · tags: <span class="chaos-ai-diff-from">${escapeHtml(formatDiffValue(prev.tags))}</span> → <span class="chaos-ai-diff-to">${escapeHtml(formatDiffValue(post.tags))}</span></li>`,
+        );
+      }
+      if (JSON.stringify(prev.slides) !== JSON.stringify(post.slides)) {
+        items.push(
+          `<li class="chaos-ai-diff-item"><strong>${escapeHtml(post.id)}</strong> · slides: <span class="chaos-ai-diff-from">${escapeHtml(formatDiffValue(prev.slides))}</span> → <span class="chaos-ai-diff-to">${escapeHtml(formatDiffValue(post.slides))}</span></li>`,
+        );
+      }
+    }
+    return items;
+  }
+
+  function diffShallowObject(before, after, labelFields) {
+    const items = [];
+    for (const key of labelFields) {
+      if (JSON.stringify(before?.[key]) === JSON.stringify(after?.[key])) continue;
+      items.push(
+        `<li class="chaos-ai-diff-item"><strong>${escapeHtml(key)}</strong>: <span class="chaos-ai-diff-from">${escapeHtml(formatDiffValue(before?.[key]))}</span> → <span class="chaos-ai-diff-to">${escapeHtml(formatDiffValue(after?.[key]))}</span></li>`,
+      );
+    }
+    return items;
+  }
+
+  function buildDetailedChangeHtml(parsed) {
+    const sections = [];
+    for (const u of parsed.updates) {
+      const baseline = getBaselineForPath(u.path);
+      const label = Object.values(CONTENT_FILES).find((m) => m.path === u.path)?.label || u.path;
+      let items = [];
+
+      if (u.path === "content/campaign-posts.json") {
+        items = diffCampaignPosts(baseline?.posts, u.content?.posts);
+      } else if (u.path === "content/campaign-meta.json") {
+        items = diffShallowObject(baseline, u.content, ["subtitle"]);
+      } else if (u.path === "content/portfolio.json") {
+        if (baseline?.profile || u.content?.profile) {
+          items.push(
+            ...diffShallowObject(baseline?.profile, u.content?.profile, [
+              "name",
+              "role",
+              "tagline",
+              "location",
+            ]),
+          );
+        }
+        if (JSON.stringify(baseline?.objective) !== JSON.stringify(u.content?.objective)) {
+          items.push(
+            `<li class="chaos-ai-diff-item"><strong>objective</strong> text updated</li>`,
+          );
+        }
+      } else {
+        items.push(`<li class="chaos-ai-diff-item">Full file <code>${escapeHtml(u.path)}</code> will be replaced with the AI version.</li>`);
+      }
+
+      const body =
+        items.length > 0
+          ? `<ul class="chaos-ai-diff-list">${items.join("")}</ul>`
+          : `<p class="chaos-ai-diff-none">No field-level diff detected; file may still be updated.</p>`;
+      sections.push(
+        `<section class="chaos-ai-diff-section"><h4>${escapeHtml(label)} <span class="chaos-ai-diff-path">${escapeHtml(u.path)}</span></h4>${body}</section>`,
+      );
+    }
+    return sections.join("");
+  }
+
+  function extractAiSummary(reply) {
+    const stripped = String(reply || "")
+      .replace(/```[\s\S]*?```/g, "")
+      .trim();
+    return stripped;
+  }
+
+  function enrichPendingUpdates(parsed, reply) {
+    return {
+      ...parsed,
+      aiSummary: extractAiSummary(reply),
+      changeHtml: buildDetailedChangeHtml(parsed),
+      changeCount: countChanges(parsed),
+    };
+  }
+
+  function countChanges(parsed) {
+    let n = 0;
+    for (const u of parsed.updates) {
+      const baseline = getBaselineForPath(u.path);
+      if (u.path === "content/campaign-posts.json") {
+        n += diffCampaignPosts(baseline?.posts, u.content?.posts).length;
+      } else {
+        n += 1;
+      }
+    }
+    return n;
+  }
+
+  function bindApprovalActions(root) {
+    root.querySelector("[data-ai-apply]")?.addEventListener("click", () => applyPendingUpdates());
+    root.querySelector("[data-ai-dismiss-preview]")?.addEventListener("click", () => {
+      pendingUpdates = null;
+      renderPendingPreview();
+      renderPublishDock();
+    });
+  }
+
   function fixAndValidateUpdates(parsed) {
     const fixNotes = [];
     const updates = [];
@@ -728,23 +872,30 @@ Rules:
   function renderPublishDock() {
     let dock = document.querySelector("[data-ai-publish-dock]");
     if (!pendingUpdates?.updates?.length) {
+      document.body.classList.remove("chaos-ai-has-pending");
       if (dock) dock.remove();
       return;
     }
+    document.body.classList.add("chaos-ai-has-pending");
     if (!dock) {
       dock = document.createElement("div");
       dock.className = "chaos-ai-publish-dock";
       dock.setAttribute("data-ai-publish-dock", "");
       document.body.appendChild(dock);
     }
-    const paths = pendingUpdates.updates.map((u) => u.path).join(", ");
+    const n = pendingUpdates.changeCount || pendingUpdates.updates.length;
+    const files = pendingUpdates.updates.map((u) => u.path).join(", ");
     dock.innerHTML = `
       <div class="chaos-ai-publish-dock__inner">
-        <p><strong>Ready to publish</strong> — ${escapeHtml(paths)}</p>
-        <button type="button" class="chaos-ai-btn chaos-ai-btn--primary" data-ai-push-main>Push to main</button>
+        <div class="chaos-ai-publish-dock__text">
+          <p class="chaos-ai-publish-dock__title">${n} change${n === 1 ? "" : "s"} ready for your approval</p>
+          <p class="chaos-ai-publish-dock__files">${escapeHtml(files)}</p>
+        </div>
+        <button type="button" class="chaos-ai-btn chaos-ai-btn--publish" data-ai-push-main>Publish changes to main</button>
       </div>
     `;
-    dock.querySelector("[data-ai-push-main]")?.addEventListener("click", applyPendingUpdates);
+    dock.querySelector("[data-ai-push-main]")?.addEventListener("click", () => applyPendingUpdates());
+    dock.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
   async function chatComplete(messages, settings) {
@@ -870,38 +1021,39 @@ Rules:
     if (!el) return;
     if (!pendingUpdates?.updates?.length) {
       el.hidden = true;
+      el.classList.remove("chaos-ai-preview--active");
       el.innerHTML = "";
+      document.body.classList.remove("chaos-ai-has-pending");
       return;
     }
     el.hidden = false;
+    el.classList.add("chaos-ai-preview--active");
     const notes = (pendingUpdates.fixNotes || [])
       .map((n) => `<p class="chaos-ai-preview__warn">${escapeHtml(n)}</p>`)
       .join("");
-    const summaries = pendingUpdates.updates
-      .map((u) => {
-        const sum = summarizeUpdate(u);
-        return `<li><code>${escapeHtml(u.path)}</code>${sum ? `<div>${sum}</div>` : ""}</li>`;
-      })
-      .join("");
+    const aiBlock = pendingUpdates.aiSummary
+      ? `<div class="chaos-ai-preview__ai"><h4>AI summary</h4><div class="chaos-ai-preview__ai-text">${formatReplyHtml(pendingUpdates.aiSummary)}</div></div>`
+      : "";
     el.innerHTML = `
-      <h3>Publishing to GitHub…</h3>
-      <p class="chaos-ai-preview__lead">Using your CMS GitHub login. Live site updates in ~2 minutes after deploy.</p>
+      <h3 class="chaos-ai-preview__title">Review changes before publishing</h3>
+      <p class="chaos-ai-preview__lead">Nothing is live until you click <strong>Publish changes to main</strong>. Deploy takes ~2 minutes after publish.</p>
       ${notes}
-      <ul class="chaos-ai-preview__files">${summaries}</ul>
-      <p class="chaos-ai-preview__msg">${escapeHtml(pendingUpdates.commitMessage)}</p>
+      ${aiBlock}
+      <div class="chaos-ai-preview__diff">
+        <h4>What will change</h4>
+        ${pendingUpdates.changeHtml || ""}
+      </div>
+      <p class="chaos-ai-preview__msg"><strong>Commit message:</strong> ${escapeHtml(pendingUpdates.commitMessage)}</p>
       <div class="chaos-ai-preview__actions">
-        <button type="button" class="chaos-ai-btn chaos-ai-btn--primary" data-ai-apply>Apply to GitHub → live site in ~2 min</button>
+        <button type="button" class="chaos-ai-btn chaos-ai-btn--publish" data-ai-apply>Publish changes to main</button>
         <button type="button" class="chaos-ai-btn" data-ai-dismiss-preview>Dismiss</button>
       </div>
     `;
-    el.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    el.querySelector("[data-ai-apply]")?.addEventListener("click", applyPendingUpdates);
-    el.querySelector("[data-ai-dismiss-preview]")?.addEventListener("click", () => {
-      pendingUpdates = null;
-      renderPendingPreview();
-      renderPublishDock();
-    });
+    bindApprovalActions(el);
     renderPublishDock();
+    requestAnimationFrame(() => {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   }
 
   async function applyPendingUpdates(opts = {}) {
@@ -946,6 +1098,7 @@ Rules:
       pendingUpdates = null;
       renderPendingPreview();
       renderPublishDock();
+      document.body.classList.remove("chaos-ai-has-pending");
       await loadSiteSnapshot();
       return { ok: true };
     } catch (e) {
@@ -956,8 +1109,8 @@ Rules:
       buttons.forEach((b) => {
         b.disabled = false;
         b.textContent = b.hasAttribute("data-ai-push-main")
-          ? "Push to main"
-          : "Apply to GitHub → live site in ~2 min";
+          ? "Publish changes to main"
+          : "Publish changes to main";
       });
     }
   }
@@ -1019,26 +1172,22 @@ Rules:
       const reply = await chatComplete(apiMessages, settings);
       thinking.remove();
 
+      appendMessage("assistant", formatReplyHtml(reply), messagesEl);
+
       const parsed = collectParsedUpdates(reply, text);
       if (parsed) {
-        pendingUpdates = parsed;
+        pendingUpdates = enrichPendingUpdates(parsed, reply);
         renderPendingPreview();
         appendMessage(
           "assistant",
-          "<strong>Publishing to GitHub</strong> using your CMS login…",
+          `<div class="chaos-ai-approval-hint"><strong>Changes ready for approval.</strong> Review the green panel below (or the bar at the bottom), then click <strong>Publish changes to main</strong> when it looks right.</div>`,
           messagesEl,
         );
-        const pub = await applyPendingUpdates({ silent: true, messagesEl });
-        if (!pub?.ok) {
-          appendMessage(
-            "assistant",
-            `<strong>Could not publish:</strong> ${escapeHtml(pub?.error || "Unknown error")}. Open <strong>Content editor</strong> → log in with GitHub → send your message again.`,
-            messagesEl,
-          );
-        }
+      } else {
+        pendingUpdates = null;
+        renderPendingPreview();
+        renderPublishDock();
       }
-
-      appendMessage("assistant", formatReplyHtml(reply), messagesEl);
       history.push({ role: "assistant", content: reply });
       saveHistory(history);
     } catch (e) {
@@ -1064,7 +1213,11 @@ Rules:
   }
 
   function formatReplyHtml(text) {
-    const withoutBlock = text.replace(/```chaos_cms_updates[\s\S]*?```/gi, "").trim();
+    const withoutBlock = String(text || "")
+      .replace(/```chaos_cms_updates[\s\S]*?```/gi, "")
+      .replace(/```json[\s\S]*?```/gi, "")
+      .replace(/```[\s\S]*?```/g, "")
+      .trim();
     return escapeHtml(withoutBlock).replace(/\n/g, "<br>");
   }
 
@@ -1118,7 +1271,7 @@ Rules:
       <div class="chaos-ai">
         <header class="chaos-ai__head">
           <h1>AI site assistant</h1>
-          <p>Free Gemini or OpenRouter — paste your API key, chat, and changes auto-publish via your CMS GitHub login.</p>
+          <p>Free Gemini or OpenRouter — chat to propose edits, review the summary, then publish when you approve.</p>
         </header>
         <section class="chaos-ai-settings" aria-label="AI settings">
           <div class="chaos-ai-settings__grid">
@@ -1140,8 +1293,8 @@ Rules:
             <button type="button" class="chaos-ai-btn" data-ai-reload-context>Reload site</button>
           </div>
         </section>
-        <div class="chaos-ai-preview" data-ai-preview hidden></div>
         <div class="chaos-ai-messages" data-ai-messages role="log" aria-live="polite"></div>
+        <div class="chaos-ai-preview" data-ai-preview hidden></div>
         <div class="chaos-ai-attachments" data-ai-attachments></div>
         <div class="chaos-ai-compose">
           <label class="chaos-ai-file">
@@ -1209,7 +1362,7 @@ Rules:
       if (!getHistory().length) {
         appendMessage(
           "assistant",
-          "Paste your API key above, click <strong>Save API key</strong>, then chat. Changes <strong>auto-publish</strong> using your CMS GitHub login (use Content editor → Log in with GitHub first).",
+          "Paste your API key above, click <strong>Save API key</strong>, then chat. When the AI proposes edits, review the summary and click <strong>Publish changes to main</strong> (log in via Content editor → GitHub first).",
           messagesEl,
         );
       }

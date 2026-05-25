@@ -148,7 +148,7 @@
     if (viewMode === "assistant") renderAssistantView();
   }
 
-  const AI_UI_VERSION = "14";
+  const AI_UI_VERSION = "15";
 
   function renderAssistantView() {
     const el = document.getElementById("chaos-view-assistant");
