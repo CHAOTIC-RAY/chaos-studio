@@ -66,9 +66,12 @@
 
   let manifestCache = null;
   let dockTimer = null;
+  let chromeTimer = null;
+  let lastDockKey = "";
 
-  function icon(name) {
-    return `<span class="chaos-card__icon" aria-hidden="true">${ICONS[name] || ""}</span>`;
+  function icon(name, size) {
+    const cls = size === "sm" ? "chaos-icon chaos-icon--sm" : "chaos-icon";
+    return `<span class="${cls}" aria-hidden="true">${ICONS[name] || ""}</span>`;
   }
 
   function route() {
@@ -118,6 +121,7 @@
         <div id="chaos-view-media" class="chaos-view chaos-media-view"></div>
         <div id="chaos-view-editor" class="chaos-view chaos-editor-view">
           <div class="chaos-editor-bar" data-editor-bar></div>
+          <p class="chaos-editor-loading" data-editor-loading hidden>Loading editor… large files may take a moment.</p>
           <div id="chaos-decap-mount" class="chaos-decap-mount"></div>
         </div>
       </main>
@@ -169,7 +173,7 @@
           ${icon(e.icon)}
           <strong>${e.title}</strong>
           <span>${e.desc}</span>
-          <span class="chaos-card__cta">Open editor ${ICONS.chevron}</span>
+          <span class="chaos-card__cta">Open editor ${icon("chevron", "sm")}</span>
         </a>`;
     }).join("");
 
@@ -266,9 +270,24 @@
   function mountDecap() {
     const mount = document.getElementById("chaos-decap-mount");
     const nc = document.getElementById("nc-root");
-    if (mount && nc && nc.parentElement !== mount) {
-      mount.appendChild(nc);
-    }
+    if (!mount || !nc) return;
+    if (nc.parentElement !== mount) mount.appendChild(nc);
+  }
+
+  function setEditorLoading(show) {
+    const el = document.querySelector("[data-editor-loading]");
+    if (el) el.hidden = !show;
+  }
+
+  function dockSignature(buttons) {
+    return buttons.map((b) => `${(b.textContent || "").trim()}|${b.disabled}`).join(";");
+  }
+
+  function mutationInChrome(node) {
+    if (!(node instanceof Node)) return false;
+    const el = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+    if (!el || !(el instanceof Element)) return false;
+    return Boolean(el.closest("[data-save-dock], .chaos-toast, [data-editor-loading]"));
   }
 
   function renderEditorBar() {
@@ -293,10 +312,15 @@
     });
   }
 
-  function renderSaveDock() {
+  function renderSaveDock(force) {
     const dock = document.querySelector("[data-save-dock]");
     const ed = editorFromHash();
     if (!dock || !ed) return;
+
+    const buttons = findToolbarButtons();
+    const sig = dockSignature(buttons);
+
+    if (!force && sig && sig === lastDockKey) return;
 
     dock.replaceChildren();
     const label = document.createElement("span");
@@ -304,11 +328,17 @@
     label.textContent = ed.title;
     dock.appendChild(label);
 
-    const buttons = findToolbarButtons();
     if (!buttons.length) {
-      dock.innerHTML += `<span class="chaos-dock__label">Loading editor…</span>`;
+      const wait = document.createElement("span");
+      wait.className = "chaos-dock__label";
+      wait.textContent = "Loading editor…";
+      dock.appendChild(wait);
+      setEditorLoading(true);
       return;
     }
+
+    setEditorLoading(false);
+    lastDockKey = sig;
 
     for (const btn of buttons) {
       const text = (btn.textContent || "").trim();
@@ -326,10 +356,19 @@
           action.textContent = /publish/.test(lower) ? "Publishing…" : "Saving…";
         }
         btn.click();
-        setTimeout(renderSaveDock, 2000);
+        setTimeout(() => renderSaveDock(true), 2000);
       });
       dock.appendChild(action);
     }
+  }
+
+  function scheduleEditorChrome() {
+    if (mode() !== "editor") return;
+    clearTimeout(chromeTimer);
+    chromeTimer = setTimeout(() => {
+      mountDecap();
+      renderSaveDock();
+    }, 280);
   }
 
   function showToast(msg) {
@@ -362,12 +401,16 @@
     if (m === "dashboard") renderDashboard();
     if (m === "media") renderMedia();
     if (m === "editor") {
+      lastDockKey = "";
+      setEditorLoading(true);
       mountDecap();
       renderEditorBar();
-      renderSaveDock();
+      renderSaveDock(true);
       clearTimeout(dockTimer);
-      dockTimer = setTimeout(renderSaveDock, 500);
-      dockTimer = setTimeout(renderSaveDock, 2000);
+      dockTimer = setTimeout(() => renderSaveDock(true), 1200);
+      dockTimer = setTimeout(() => renderSaveDock(true), 4000);
+    } else {
+      setEditorLoading(false);
     }
   }
 
@@ -451,13 +494,31 @@
   }
 
   function watchDecapMount() {
-    const obs = new MutationObserver(() => {
-      if (mode() === "editor") {
-        mountDecap();
-        renderSaveDock();
-      }
+    const obs = new MutationObserver((records) => {
+      if (mode() !== "editor") return;
+      const relevant = records.some((r) => {
+        const nodes = [...(r.addedNodes || []), ...(r.removedNodes || []), r.target];
+        return nodes.some((n) => {
+          if (mutationInChrome(n)) return false;
+          const el = n instanceof Element ? n : n?.parentElement;
+          return el?.id === "nc-root" || el?.closest?.("#nc-root");
+        });
+      });
+      if (relevant) scheduleEditorChrome();
     });
-    obs.observe(document.body, { childList: true, subtree: true });
+    const mount = () => {
+      const root = document.getElementById("nc-root");
+      if (root) {
+        obs.observe(root, { childList: true, subtree: true });
+        return;
+      }
+      obs.observe(document.body, { childList: true, subtree: false });
+    };
+    mount();
+    window.addEventListener("load", () => {
+      obs.disconnect();
+      mount();
+    });
   }
 
   function boot() {

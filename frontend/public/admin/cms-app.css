@@ -261,20 +261,38 @@ body.chaos-mode-media #nc-root {
   padding: 1.35rem 1.5rem;
 }
 
+/* Icons — scoped so Decap global SVG rules cannot blow them up */
+.chaos-icon,
 .chaos-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
   width: 1.5rem;
   height: 1.5rem;
   color: var(--app-primary);
 }
 
-.chaos-card__icon svg {
-  width: 100%;
-  height: 100%;
+.chaos-icon--sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+#chaos-app svg {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100%;
+  max-height: 100%;
   stroke: currentColor;
-  fill: none;
+  fill: none !important;
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.chaos-app-header__nav .chaos-icon {
+  width: 1.15rem;
+  height: 1.15rem;
 }
 
 .chaos-card strong {
@@ -290,10 +308,26 @@ body.chaos-mode-media #nc-root {
 }
 
 .chaos-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   margin-top: auto;
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--app-primary);
+}
+
+.chaos-editor-loading {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0.5rem max(1rem, var(--app-safe-r)) 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--app-muted);
+}
+
+.chaos-editor-loading[hidden] {
+  display: none;
 }
 
 .chaos-dash__note {
