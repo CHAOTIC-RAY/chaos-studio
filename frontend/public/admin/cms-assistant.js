@@ -488,11 +488,9 @@ Rules:
     };
   }
 
-  function parseUpdates(text) {
-    const match = text.match(/```chaos_cms_updates\s*([\s\S]*?)```/i);
-    if (!match) return null;
+  function tryParseUpdatesJson(raw) {
     try {
-      const data = JSON.parse(match[1].trim());
+      const data = JSON.parse(raw.trim());
       if (!Array.isArray(data.updates)) return null;
       return fixAndValidateUpdates({
         updates: data.updates.map((u) => ({
@@ -504,6 +502,128 @@ Rules:
     } catch {
       return null;
     }
+  }
+
+  function parseUpdates(text) {
+    const fences = [
+      /```chaos_cms_updates\s*([\s\S]*?)```/i,
+      /```json\s*([\s\S]*?)```/i,
+      /```\s*([\s\S]*?)```/i,
+    ];
+    for (const re of fences) {
+      const blocks = [...text.matchAll(new RegExp(re.source, re.flags + "g"))];
+      for (const m of blocks) {
+        const parsed = tryParseUpdatesJson(m[1]);
+        if (parsed?.updates?.length) return parsed;
+      }
+    }
+    const loose = text.match(/\{[\s\S]*"updates"\s*:\s*\[[\s\S]*\][\s\S]*\}/);
+    if (loose) {
+      const parsed = tryParseUpdatesJson(loose[0]);
+      if (parsed?.updates?.length) return parsed;
+    }
+    return null;
+  }
+
+  /** Build updates from plain chat when the model omits chaos_cms_updates */
+  function buildUpdatesFromUserIntent(userText) {
+    const t = (userText || "").trim();
+    if (!t) return null;
+
+    const titleMatch =
+      t.match(
+        /(?:change|update|set)\s+(?:post\s+)?([a-z0-9_-]+)\s+title\s+to\s+["']([^"']+)["']/i,
+      ) ||
+      t.match(/(?:change|update|set)\s+([a-z0-9_-]+)\s+title\s+to\s+["']([^"']+)["']/i);
+    if (!titleMatch) return null;
+
+    const postId = titleMatch[1].toLowerCase();
+    const newTitle = titleMatch[2].trim();
+    const existing = siteSnapshot?.files?.["campaign-posts"]?.data?.posts || [];
+    if (!existing.some((p) => p.id === postId)) return null;
+
+    return fixAndValidateUpdates({
+      updates: [
+        {
+          path: "content/campaign-posts.json",
+          content: { posts: existing.map((p) => (p.id === postId ? { ...p, title: newTitle } : p)) },
+        },
+      ],
+      commitMessage: `CMS AI: update ${postId} title`,
+    });
+  }
+
+  function extractPostPatchFromReply(reply, userText) {
+    const idMatch =
+      (userText || "").match(/([a-z0-9]+-\d+)/i) || (reply || "").match(/([a-z0-9]+-\d+)/i);
+    if (!idMatch) return null;
+    const postId = idMatch[1].toLowerCase();
+    const titleInReply = (reply || "").match(/"title"\s*:\s*"([^"]+)"/i);
+    if (!titleInReply) return null;
+    const existing = siteSnapshot?.files?.["campaign-posts"]?.data?.posts || [];
+    if (!existing.some((p) => p.id === postId)) return null;
+    return fixAndValidateUpdates({
+      updates: [
+        {
+          path: "content/campaign-posts.json",
+          content: {
+            posts: existing.map((p) =>
+              p.id === postId ? { ...p, title: titleInReply[1] } : p,
+            ),
+          },
+        },
+      ],
+      commitMessage: `CMS AI: update ${postId}`,
+    });
+  }
+
+  async function applyViaWorker(updates, commitMessage, token) {
+    const res = await fetch("/api/admin/github/apply", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        updates,
+        commitMessage,
+        githubToken: token || undefined,
+      }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) {
+      throw new Error(data.error || `Apply failed (${res.status})`);
+    }
+    return data;
+  }
+
+  async function verifyGithubToken(token) {
+    const res = await fetch("/api/admin/github/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ githubToken: token || undefined }),
+    });
+    const data = await res.json().catch(() => ({}));
+    return { ok: res.ok && data.ok, canPush: data.canPush, error: data.error };
+  }
+
+  function renderPublishDock() {
+    let dock = document.querySelector("[data-ai-publish-dock]");
+    if (!pendingUpdates?.updates?.length) {
+      if (dock) dock.remove();
+      return;
+    }
+    if (!dock) {
+      dock = document.createElement("div");
+      dock.className = "chaos-ai-publish-dock";
+      dock.setAttribute("data-ai-publish-dock", "");
+      document.body.appendChild(dock);
+    }
+    const paths = pendingUpdates.updates.map((u) => u.path).join(", ");
+    dock.innerHTML = `
+      <div class="chaos-ai-publish-dock__inner">
+        <p><strong>Ready to publish</strong> — ${escapeHtml(paths)}</p>
+        <button type="button" class="chaos-ai-btn chaos-ai-btn--primary" data-ai-push-main>Push to main</button>
+      </div>
+    `;
+    dock.querySelector("[data-ai-push-main]")?.addEventListener("click", applyPendingUpdates);
   }
 
   async function chatComplete(messages, settings) {
@@ -658,43 +778,63 @@ Rules:
     el.querySelector("[data-ai-dismiss-preview]")?.addEventListener("click", () => {
       pendingUpdates = null;
       renderPendingPreview();
+      renderPublishDock();
     });
+    renderPublishDock();
   }
 
   async function applyPendingUpdates() {
     const token = findGithubToken();
     if (!token) {
-      alert("Add a GitHub token in settings (repo scope). Log into CMS via GitHub first, or paste a PAT.");
+      alert(
+        "Add a GitHub token in settings (repo scope: contents + workflow). Paste ghp_… and click Save API key, or log into CMS via GitHub first.",
+      );
       return;
     }
     if (!pendingUpdates?.updates?.length) return;
 
-    const btn = document.querySelector("[data-ai-apply]");
-    if (btn) {
-      btn.disabled = true;
-      btn.textContent = "Committing…";
-    }
+    const buttons = document.querySelectorAll("[data-ai-apply], [data-ai-push-main]");
+    buttons.forEach((b) => {
+      b.disabled = true;
+      b.textContent = "Pushing to main…";
+    });
 
     try {
-      for (const u of pendingUpdates.updates) {
-        await githubPutFile(u.path, u.content, pendingUpdates.commitMessage, token);
+      const verify = await verifyGithubToken(token);
+      if (!verify.ok) {
+        throw new Error(verify.error || "GitHub token rejected. Use a PAT with repo access.");
       }
+      if (!verify.canPush) {
+        throw new Error("Token cannot push to CHAOTIC-RAY/portfolio. Regenerate with repo scope.");
+      }
+
+      const data = await applyViaWorker(
+        pendingUpdates.updates,
+        pendingUpdates.commitMessage,
+        token,
+      );
       const paths = pendingUpdates.updates.map((u) => u.path).join(", ");
+      const commitUrl = data.commits?.[0]?.url
+        ? ` <a href="${escapeHtml(data.commits[0].url)}" target="_blank" rel="noopener">View commit</a>`
+        : "";
       appendMessage(
         "assistant",
-        `<strong>Applied to GitHub.</strong> Updated: ${escapeHtml(paths)}. Wait ~2 minutes for deploy, then hard-refresh the portfolio site.`,
+        `<strong>Pushed to main.</strong> Updated: ${escapeHtml(paths)}.${commitUrl} ${escapeHtml(data.message || "Redeploy in ~2 min.")}`,
         document.querySelector("[data-ai-messages]"),
       );
       pendingUpdates = null;
       renderPendingPreview();
+      renderPublishDock();
       await loadSiteSnapshot();
     } catch (e) {
       alert(e.message || String(e));
     } finally {
-      if (btn) {
-        btn.disabled = false;
-        btn.textContent = "Apply to GitHub (auto-deploy ~2 min)";
-      }
+      buttons.forEach((b) => {
+        b.disabled = false;
+        b.textContent = b.hasAttribute("data-ai-push-main")
+          ? "Push to main"
+          : "Apply to GitHub → live site in ~2 min";
+      });
     }
   }
 
@@ -755,13 +895,15 @@ Rules:
       const reply = await chatComplete(apiMessages, settings);
       thinking.remove();
 
-      const parsed = parseUpdates(reply);
+      let parsed = parseUpdates(reply);
+      if (!parsed) parsed = buildUpdatesFromUserIntent(text);
+      if (!parsed) parsed = extractPostPatchFromReply(reply, text);
       if (parsed) {
         pendingUpdates = parsed;
         renderPendingPreview();
         appendMessage(
           "assistant",
-          "<strong>Next step:</strong> Review the purple box above and click <strong>Apply to GitHub</strong> — that is what updates the real site.",
+          "<strong>Next step:</strong> Click <strong>Push to main</strong> (bottom bar or purple box) — that commits to GitHub and updates the live site in ~2 minutes.",
           messagesEl,
         );
       }
@@ -892,18 +1034,30 @@ Rules:
 
     bindProviderModelSelects(root);
 
-    root.querySelector("[data-ai-save-settings]")?.addEventListener("click", () => {
+    root.querySelector("[data-ai-save-settings]")?.addEventListener("click", async () => {
       const provider = root.querySelector("[data-ai-provider]")?.value || "google";
       const prev = getSettings();
       const apiKeys = { ...prev.apiKeys };
       apiKeys[provider] = root.querySelector("[data-ai-api-key]")?.value?.trim() || "";
+      const githubToken = root.querySelector("[data-ai-token]")?.value?.trim() || "";
       saveSettings({
         provider,
         model: root.querySelector("[data-ai-model]")?.value || PROVIDERS[provider].defaultModel,
         apiKeys,
-        githubToken: root.querySelector("[data-ai-token]")?.value?.trim() || "",
+        githubToken,
       });
-      alert(`Saved ${PROVIDERS[provider]?.label || provider} API key in this browser.`);
+      let msg = `Saved ${PROVIDERS[provider]?.label || provider} API key.`;
+      if (githubToken) {
+        const v = await verifyGithubToken(githubToken);
+        msg += v.ok
+          ? v.canPush
+            ? " GitHub token OK — can push to main."
+            : " GitHub token valid but cannot push — check repo permissions."
+          : ` GitHub token problem: ${v.error || "rejected"}`;
+      } else {
+        msg += " No GitHub token — log into CMS via GitHub or paste ghp_… to publish.";
+      }
+      alert(msg);
     });
 
     root.querySelector("[data-ai-reload-context]")?.addEventListener("click", async () => {

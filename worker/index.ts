@@ -1,7 +1,12 @@
 import { portfolio } from "./src/data/portfolio";
 import { handleAdminAiChat, type AdminAiEnv } from "./src/admin-ai";
+import {
+  handleGithubApply,
+  handleGithubVerify,
+  type GithubApplyEnv,
+} from "./src/admin-github";
 
-export interface Env extends AdminAiEnv {
+export interface Env extends AdminAiEnv, GithubApplyEnv {
   ASSETS: Fetcher;
 }
 
@@ -41,6 +46,14 @@ export default {
 
     if (url.pathname === "/api/admin/ai/chat") {
       return handleAdminAiChat(request, env);
+    }
+
+    if (url.pathname === "/api/admin/github/apply") {
+      return handleGithubApply(request, env);
+    }
+
+    if (url.pathname === "/api/admin/github/verify") {
+      return handleGithubVerify(request, env);
     }
 
     if (url.pathname === "/api/contact" && request.method === "POST") {
