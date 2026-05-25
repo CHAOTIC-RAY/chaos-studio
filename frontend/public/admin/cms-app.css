@@ -153,7 +153,18 @@ body {
   display: flex;
 }
 
-/* Hide Decap when not editing */
+/* Hide Decap + editor shell when not in entry editor */
+body.chaos-mode-dashboard #chaos-view-editor,
+body.chaos-mode-media #chaos-view-editor {
+  display: none !important;
+}
+
+body.chaos-mode-dashboard .chaos-dock,
+body.chaos-mode-media .chaos-dock {
+  display: none !important;
+}
+
+#chaos-decap-stash,
 body.chaos-mode-dashboard #nc-root,
 body.chaos-mode-media #nc-root {
   position: fixed !important;
@@ -427,15 +438,19 @@ body.chaos-mode-media #nc-root {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--app-border);
+  border-radius: 999px;
+  background: var(--app-surface);
+  font: inherit;
   font-size: 0.88rem;
   font-weight: 600;
   color: var(--app-primary);
-  text-decoration: none;
   cursor: pointer;
 }
 
 .chaos-editor-bar__back:hover {
-  text-decoration: underline;
+  background: var(--app-surface-2);
 }
 
 .chaos-editor-bar__title {

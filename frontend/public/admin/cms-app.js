@@ -91,9 +91,57 @@
 
   function isStrayDecapRoute() {
     const h = route();
-    if (h === "#/collections" || h === "") return true;
-    if (/^#\/collections\/[^/]+$/.test(h)) return true;
+    if (!h || h === "#" || h === "#/" || h === "#/collections") return true;
+    // Decap collection picker / folder views (not a direct entry editor)
+    if (/^#\/collections\/[^/]+(\/new)?$/.test(h)) return true;
+    if (/^#\/collections\/[^/]+\/entries$/.test(h)) return true;
     return false;
+  }
+
+  function isKnownEditorRoute() {
+    const h = route();
+    return EDITORS.some((e) => h.startsWith(e.hash));
+  }
+
+  function goToPortal() {
+    const target = `${location.pathname}${location.search}#/`;
+    if (route() !== "#/") history.replaceState(null, "", target);
+    forcePortalView("dashboard");
+  }
+
+  function ensureDecapStash() {
+    let stash = document.getElementById("chaos-decap-stash");
+    if (!stash) {
+      stash = document.createElement("div");
+      stash.id = "chaos-decap-stash";
+      stash.setAttribute("aria-hidden", "true");
+      document.body.appendChild(stash);
+    }
+    return stash;
+  }
+
+  function stashDecap() {
+    const nc = document.getElementById("nc-root");
+    if (!nc) return;
+    const stash = ensureDecapStash();
+    if (nc.parentElement !== stash) stash.appendChild(nc);
+  }
+
+  function forcePortalView(viewMode) {
+    document.body.className = `chaos-mode-${viewMode}`;
+    document.querySelectorAll(".chaos-view").forEach((v) => {
+      v.classList.toggle("is-active", v.id === `chaos-view-${viewMode}`);
+    });
+    document.querySelectorAll("[data-nav]").forEach((a) => {
+      a.classList.toggle("is-active", a.getAttribute("data-nav") === viewMode);
+    });
+    const bar = document.querySelector("[data-editor-bar]");
+    if (bar) bar.replaceChildren();
+    setEditorLoading(false);
+    lastDockKey = "";
+    stashDecap();
+    if (viewMode === "dashboard") renderDashboard();
+    if (viewMode === "media") renderMedia();
   }
 
   function buildShell() {
@@ -295,10 +343,28 @@
     const ed = editorFromHash();
     if (!bar || !ed) return;
     bar.innerHTML = `
-      <a class="chaos-editor-bar__back" href="#/">${icon("home")} Back to portal</a>
+      <button type="button" class="chaos-editor-bar__back" data-portal-back>${icon("home")} Back to portal</button>
       <span class="chaos-editor-bar__title">${ed.title}</span>
       <p class="chaos-editor-bar__hint">${ed.hint || "Edit fields below, then Publish."}</p>
     `;
+    bar.querySelector("[data-portal-back]")?.addEventListener("click", (e) => {
+      e.preventDefault();
+      goToPortal();
+    });
+  }
+
+  function bindPortalNavigation() {
+    if (window.__chaosPortalNav) return;
+    window.__chaosPortalNav = true;
+    document.body.addEventListener("click", (e) => {
+      const t = e.target instanceof Element ? e.target.closest("[data-portal-back], [data-nav='dashboard']") : null;
+      if (!t) return;
+      if (t.matches("[data-nav='dashboard']") && route() === "#/") return;
+      if (t.matches("[data-nav='dashboard']")) {
+        e.preventDefault();
+        goToPortal();
+      }
+    });
   }
 
   function findToolbarButtons() {
@@ -382,8 +448,8 @@
   }
 
   function applyMode() {
-    if (isStrayDecapRoute()) {
-      location.replace("#/");
+    if (isStrayDecapRoute() || (route().includes("/collections") && !isKnownEditorRoute())) {
+      goToPortal();
       return;
     }
 
@@ -411,7 +477,29 @@
       dockTimer = setTimeout(() => renderSaveDock(true), 4000);
     } else {
       setEditorLoading(false);
+      stashDecap();
     }
+  }
+
+  function watchHashGuard() {
+    let last = route();
+    const tick = () => {
+      const h = route();
+      if (h !== last) {
+        last = h;
+        applyMode();
+        return;
+      }
+      if (isStrayDecapRoute() && document.body.classList.contains("chaos-mode-editor")) {
+        goToPortal();
+      }
+    };
+    window.addEventListener("hashchange", () => {
+      last = route();
+      applyMode();
+    });
+    window.addEventListener("popstate", tick);
+    setInterval(tick, 400);
   }
 
   function normalizeListValue(val, prop) {
@@ -525,10 +613,10 @@
     buildShell();
     applyMode();
     bindPublishToast();
+    bindPortalNavigation();
     registerCmsHooks();
     watchDecapMount();
-
-    window.addEventListener("hashchange", applyMode);
+    watchHashGuard();
 
     window.addEventListener("load", () => {
       registerCmsHooks();
