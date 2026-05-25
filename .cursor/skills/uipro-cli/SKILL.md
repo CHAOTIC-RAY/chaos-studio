@@ -9,6 +9,10 @@ description: >-
 metadata:
   author: ui-ux-pro-max-skill
   version: "1.0.0"
+  surfaces: cloud
+environments:
+  - cloud
+  - local
 ---
 
 # UI/UX Pro Max CLI (uipro-cli)

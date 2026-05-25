@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "uipro-cli": {
+      "source": "/workspace",
+      "sourceType": "local",
+      "computedHash": "849c0fe5ecec2508d764670c2ca3ee08f2a70b4aec49599f7ebfc9eec3c4ea98"
+    }
+  }
+}
