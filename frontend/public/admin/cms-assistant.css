@@ -116,11 +116,52 @@
 }
 
 .chaos-ai-preview {
+  flex: 0 0 auto;
+  position: sticky;
+  top: 0;
+  z-index: 18;
   margin-bottom: 0.75rem;
   padding: 0.85rem 1rem;
   background: var(--app-surface-2);
-  border: 1px solid var(--app-primary);
+  border: 2px solid var(--app-cta);
   border-radius: var(--app-radius);
+  box-shadow: var(--app-shadow-lg);
+}
+
+.chaos-ai-preview__lead {
+  margin: 0 0 0.5rem;
+  font-size: 0.88rem;
+  color: var(--app-text);
+}
+
+.chaos-ai-preview__warn {
+  margin: 0 0 0.5rem;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #b45309;
+  background: #fffbeb;
+  border-radius: 8px;
+}
+
+.chaos-ai-preview__files {
+  margin: 0 0 0.5rem;
+  padding-left: 1.1rem;
+  font-size: 0.88rem;
+}
+
+.chaos-ai-preview__posts {
+  margin: 0.35rem 0 0;
+  padding-left: 1rem;
+  font-size: 0.82rem;
+  list-style: disc;
+}
+
+.chaos-ai-preview__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
 }
 
 .chaos-ai-preview h3 {

@@ -121,15 +121,17 @@ When the user asks to change site text, posts, studio copy, or SEO, respond with
 Rules:
 - "path" must be one of: content/campaign-meta.json, content/campaign-posts.json, content/portfolio.json, content/chaos-studio.json, frontend/public/assets/site.config.json
 - "content" is the COMPLETE file object after your edits (merge with current data; do not drop unrelated fields).
-- campaign-posts.json: { "posts": [ ... ] } — each post needs id, platform, client, title, description, tags (string[]), accent (purple|pink|gold|teal). Optional: slides (string[]), enabled, cardLayout, mediaAspect, video, poster, image.
+- **Social posts** (choparts-01, ayha-01, etc.): ALWAYS path **content/campaign-posts.json** with { "posts": [ ... ] }. Send the FULL posts array from the snapshot, editing only what changed. NEVER put posts in portfolio.json.
+- campaign-posts.json: each post needs id, platform, client, title, description, tags (string[]), accent (purple|pink|gold|teal). Optional: slides (string[]), enabled, cardLayout, mediaAspect, video, poster, image.
 - campaign-meta.json: { "subtitle": string }
-- portfolio.json: profile, objective, softSkills (string[]), experience, skills, education, contact, featuredWork — NO chaosStudio field.
+- portfolio.json: profile, objective, experience, skills, education, contact, featuredWork only — never a posts array.
 - chaos-studio.json: studio page only.
 - site.config.json: brand, meta, about, social, work, clients.
 - Keep tags/slides/bullets as string arrays, never { tag: "x" } objects.
 - If unsure, ask a clarifying question and omit the chaos_cms_updates block.
 - Attached files may be JSON exports, copy docs, or briefs — use them as source material.
-- When the user uploads images, describe what you see and use them for post copy, client names, slide folder ideas, or alt text. Match post id to image folder names when obvious.`;
+- When the user uploads images, describe what you see and use them for post copy, client names, slide folder ideas, or alt text. Match post id to image folder names when obvious.
+- The live site only changes after the user clicks **Apply to GitHub** in the admin UI.`;
 
   let siteSnapshot = null;
   let pendingUpdates = null;
@@ -426,19 +428,79 @@ Rules:
     return out;
   }
 
+  function mergePostsById(existing, incoming) {
+    const map = new Map((existing || []).map((p) => [p.id, { ...p }]));
+    for (const p of incoming || []) {
+      if (!p?.id) continue;
+      map.set(p.id, { ...(map.get(p.id) || {}), ...p });
+    }
+    return [...map.values()];
+  }
+
+  function summarizeUpdate(u) {
+    if (u.path === "content/campaign-posts.json" && u.content?.posts) {
+      const lines = u.content.posts
+        .slice(0, 8)
+        .map((p) => `<li><strong>${escapeHtml(p.id)}</strong> — ${escapeHtml(p.title || "")}</li>`)
+        .join("");
+      const more = u.content.posts.length > 8 ? `<li>…and ${u.content.posts.length - 8} more posts</li>` : "";
+      return `<ul class="chaos-ai-preview__posts">${lines}${more}</ul>`;
+    }
+    return "";
+  }
+
+  function fixAndValidateUpdates(parsed) {
+    const fixNotes = [];
+    const updates = [];
+
+    for (const raw of parsed.updates) {
+      let path = raw.path;
+      let content = normalizeListFields(raw.content);
+
+      const isPostPayload =
+        Array.isArray(content?.posts) ||
+        (content?.id && content?.title && !content?.profile && !content?.objective);
+
+      if (path === "content/portfolio.json" && isPostPayload) {
+        path = "content/campaign-posts.json";
+        fixNotes.push(
+          "Corrected: social posts must be saved to content/campaign-posts.json (not portfolio.json).",
+        );
+      }
+
+      if (path === "content/campaign-posts.json") {
+        const existing = siteSnapshot?.files?.["campaign-posts"]?.data?.posts || [];
+        const incoming = Array.isArray(content?.posts)
+          ? content.posts
+          : content?.id
+            ? [content]
+            : [];
+        content = { posts: mergePostsById(existing, incoming) };
+      }
+
+      updates.push({ path, content });
+    }
+
+    return {
+      commitMessage: parsed.commitMessage || "CMS AI: update site content",
+      updates,
+      fixNotes,
+    };
+  }
+
   function parseUpdates(text) {
     const match = text.match(/```chaos_cms_updates\s*([\s\S]*?)```/i);
     if (!match) return null;
     try {
       const data = JSON.parse(match[1].trim());
       if (!Array.isArray(data.updates)) return null;
-      return {
+      return fixAndValidateUpdates({
         updates: data.updates.map((u) => ({
           path: u.path,
-          content: normalizeListFields(u.content),
+          content: u.content,
         })),
-        commitMessage: data.commitMessage || "CMS AI: update site content",
-      };
+        commitMessage: data.commitMessage,
+      });
     } catch {
       return null;
     }
@@ -571,15 +633,27 @@ Rules:
       return;
     }
     el.hidden = false;
+    const notes = (pendingUpdates.fixNotes || [])
+      .map((n) => `<p class="chaos-ai-preview__warn">${escapeHtml(n)}</p>`)
+      .join("");
+    const summaries = pendingUpdates.updates
+      .map((u) => {
+        const sum = summarizeUpdate(u);
+        return `<li><code>${escapeHtml(u.path)}</code>${sum ? `<div>${sum}</div>` : ""}</li>`;
+      })
+      .join("");
     el.innerHTML = `
-      <h3>Proposed site updates</h3>
-      <ul>${pendingUpdates.updates
-        .map((u) => `<li><code>${u.path}</code></li>`)
-        .join("")}</ul>
-      <p class="chaos-ai-preview__msg">${pendingUpdates.commitMessage}</p>
-      <button type="button" class="chaos-ai-btn chaos-ai-btn--primary" data-ai-apply>Apply to GitHub (auto-deploy ~2 min)</button>
-      <button type="button" class="chaos-ai-btn" data-ai-dismiss-preview>Dismiss</button>
+      <h3>Ready to publish — click Apply below</h3>
+      <p class="chaos-ai-preview__lead">The chat preview alone does <strong>not</strong> update the live site until you commit to GitHub.</p>
+      ${notes}
+      <ul class="chaos-ai-preview__files">${summaries}</ul>
+      <p class="chaos-ai-preview__msg">${escapeHtml(pendingUpdates.commitMessage)}</p>
+      <div class="chaos-ai-preview__actions">
+        <button type="button" class="chaos-ai-btn chaos-ai-btn--primary" data-ai-apply>Apply to GitHub → live site in ~2 min</button>
+        <button type="button" class="chaos-ai-btn" data-ai-dismiss-preview>Dismiss</button>
+      </div>
     `;
+    el.scrollIntoView({ behavior: "smooth", block: "nearest" });
     el.querySelector("[data-ai-apply]")?.addEventListener("click", applyPendingUpdates);
     el.querySelector("[data-ai-dismiss-preview]")?.addEventListener("click", () => {
       pendingUpdates = null;
@@ -605,9 +679,10 @@ Rules:
       for (const u of pendingUpdates.updates) {
         await githubPutFile(u.path, u.content, pendingUpdates.commitMessage, token);
       }
+      const paths = pendingUpdates.updates.map((u) => u.path).join(", ");
       appendMessage(
         "assistant",
-        `<strong>Applied.</strong> ${pendingUpdates.updates.length} file(s) committed. Site redeploys in ~2 minutes.`,
+        `<strong>Applied to GitHub.</strong> Updated: ${escapeHtml(paths)}. Wait ~2 minutes for deploy, then hard-refresh the portfolio site.`,
         document.querySelector("[data-ai-messages]"),
       );
       pendingUpdates = null;
@@ -684,6 +759,11 @@ Rules:
       if (parsed) {
         pendingUpdates = parsed;
         renderPendingPreview();
+        appendMessage(
+          "assistant",
+          "<strong>Next step:</strong> Review the purple box above and click <strong>Apply to GitHub</strong> — that is what updates the real site.",
+          messagesEl,
+        );
       }
 
       appendMessage("assistant", formatReplyHtml(reply), messagesEl);
