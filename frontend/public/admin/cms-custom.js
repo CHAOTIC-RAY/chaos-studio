@@ -6,6 +6,7 @@
   const MOBILE_NAV_ID = "chaos-mobile-nav";
   const INSTALL_BANNER_ID = "chaos-install-banner";
   const SAVE_DOCK_ID = "chaos-save-dock";
+  const CONTEXT_BAR_ID = "chaos-context-bar";
   const MANIFEST_URL = "/admin/media-manifest.json";
   const SYNC_STATUS_URL = "/admin/sync-status.json";
   const SITE = "https://portfolio.chaoticstudio.workers.dev";
@@ -83,7 +84,89 @@
   ];
 
   let manifestCache = null;
+  let portalStatsCache = null;
   let deferredInstallPrompt = null;
+
+  const ROUTE_LABELS = {
+    "campaign-posts": "Social posts",
+    "campaign-meta": "Campaign heading",
+    "studio-page": "Chaos Studio page",
+    main: "Home page text",
+    "site-config": "SEO & project cards",
+  };
+
+  function getEntryLabel() {
+    const h = route();
+    for (const s of SECTIONS) {
+      if (h.includes(s.hash.replace("#", ""))) return s.title;
+    }
+    const m = h.match(/entries\/([^/?#]+)/);
+    if (m) {
+      return ROUTE_LABELS[m[1]] || m[1].replace(/-/g, " ");
+    }
+    if (h.includes("/media")) return "Media library";
+    if (h.includes("/collections")) return "Contents";
+    return "Editor";
+  }
+
+  function needsContextBar() {
+    return isEditor() || isCampaignPosts() || isMedia() || route().includes("/collections/");
+  }
+
+  async function fetchPortalStats() {
+    if (portalStatsCache) return portalStatsCache;
+    const stats = {
+      posts: 0,
+      images: 0,
+      syncOk: true,
+      sections: SECTIONS.length,
+    };
+    try {
+      const [portfolioRes, manifestRes, syncRes] = await Promise.all([
+        fetch(`${SITE}/api/portfolio`, { cache: "no-store" }),
+        fetch(MANIFEST_URL, { cache: "no-store" }),
+        fetch(SYNC_STATUS_URL, { cache: "no-store" }),
+      ]);
+      if (portfolioRes.ok) {
+        const p = await portfolioRes.json();
+        stats.posts = p.socialPosts?.items?.length ?? 0;
+      }
+      if (manifestRes.ok) {
+        const m = await manifestRes.json();
+        stats.images = m.files?.length ?? 0;
+      }
+      if (syncRes.ok) {
+        const s = await syncRes.json();
+        stats.syncOk = Boolean(s.ok && s.mirrors?.every((x) => x.inSync));
+      }
+    } catch {
+      /* keep defaults */
+    }
+    portalStatsCache = stats;
+    return stats;
+  }
+
+  function renderKpiRow(stats) {
+    return `
+      <div class="chaos-kpi-row" role="group" aria-label="Site overview">
+        <div class="chaos-kpi">
+          <span class="chaos-kpi__value">${stats.posts}</span>
+          <span class="chaos-kpi__label">Live posts</span>
+        </div>
+        <div class="chaos-kpi">
+          <span class="chaos-kpi__value">${stats.images}</span>
+          <span class="chaos-kpi__label">Images indexed</span>
+        </div>
+        <div class="chaos-kpi">
+          <span class="chaos-kpi__value">${stats.sections}</span>
+          <span class="chaos-kpi__label">Edit sections</span>
+        </div>
+        <div class="chaos-kpi ${stats.syncOk ? "chaos-kpi--ok" : "chaos-kpi--warn"}">
+          <span class="chaos-kpi__value">${stats.syncOk ? "OK" : "Pending"}</span>
+          <span class="chaos-kpi__label">GitHub sync</span>
+        </div>
+      </div>`;
+  }
 
   function route() {
     return location.hash || "#/";
@@ -325,14 +408,26 @@
     }
   }
 
-  function injectDashboard() {
+  function renderDashboardCards() {
+    return SECTIONS.map((s) => {
+      const featured = s.hash.includes("campaign-posts") ? " chaos-admin-card--featured" : "";
+      return `
+        <a class="chaos-admin-card${featured}" href="${s.hash}">
+          <span class="chaos-admin-card__step">${s.step}</span>
+          <span class="chaos-admin-card__icon">${icon(s.icon)}</span>
+          <strong>${s.title}</strong>
+          <span>${s.desc}</span>
+        </a>`;
+    }).join("");
+  }
+
+  async function injectDashboard() {
     if (!isHome()) {
       removeEl(DASHBOARD_ID);
       document.body.classList.remove("chaos-route-home");
       return;
     }
     document.body.classList.add("chaos-route-home");
-    if (document.getElementById(DASHBOARD_ID)) return;
 
     const host =
       document.querySelector('[class*="CollectionMain"]') ||
@@ -340,36 +435,70 @@
       document.querySelector("main");
     if (!host) return;
 
-    const panel = document.createElement("section");
-    panel.id = DASHBOARD_ID;
-    panel.className = "chaos-admin-dashboard";
+    let panel = document.getElementById(DASHBOARD_ID);
+    if (!panel) {
+      panel = document.createElement("section");
+      panel.id = DASHBOARD_ID;
+      panel.className = "chaos-admin-dashboard";
+      host.prepend(panel);
+    }
+
     panel.innerHTML = `
       <div class="chaos-admin-dashboard__hero">
-        <h1>What do you want to edit?</h1>
-        <p>Choose a section below. When you are done, click <strong>Publish</strong> (top right). Changes save to GitHub and the live site updates in about 2 minutes.</p>
-        <ol class="chaos-admin-dashboard__steps">
-          <li>Open a section</li>
-          <li>Edit the fields</li>
-          <li>Click <strong>Publish</strong></li>
-          <li>Wait for deploy, then refresh the site</li>
-        </ol>
+        <h1>Content portal</h1>
+        <p>Edit portfolio content, campaign posts, and media. Publish saves to GitHub — the live site updates in ~2 minutes.</p>
       </div>
-      <div class="chaos-admin-dashboard__grid">
-        ${SECTIONS.map(
-          (s) => `
-          <a class="chaos-admin-card" href="${s.hash}">
-            <span class="chaos-admin-card__step">${s.step}</span>
-            <span class="chaos-admin-card__icon">${icon(s.icon)}</span>
-            <strong>${s.title}</strong>
-            <span>${s.desc}</span>
-          </a>`,
-        ).join("")}
-      </div>
+      <div data-kpi-host><div class="chaos-kpi-row" aria-busy="true"><div class="chaos-kpi"><span class="chaos-kpi__value">…</span><span class="chaos-kpi__label">Loading</span></div></div></div>
+      <div class="chaos-admin-dashboard__grid">${renderDashboardCards()}</div>
       <aside class="chaos-admin-dashboard__note">
-        <strong>Tip:</strong> Carousel images live in folders (one folder per post ID). Use <strong>Pictures</strong> to see all images, not only the small Media grid.
+        <strong>Workflow:</strong> Open a section → edit fields → use the <strong>Publish</strong> bar at the bottom → hard-refresh the site after deploy.
       </aside>
     `;
-    host.prepend(panel);
+
+    portalStatsCache = null;
+    const stats = await fetchPortalStats();
+    panel.querySelector("[data-kpi-host]").innerHTML = renderKpiRow(stats);
+  }
+
+  function injectContextBar() {
+    if (!needsContextBar()) {
+      removeEl(CONTEXT_BAR_ID);
+      return;
+    }
+
+    const host =
+      document.querySelector('[class*="EditEntryMain"]') ||
+      document.querySelector('[class*="CollectionMain"]') ||
+      document.querySelector('[class*="AppMainContainer"]');
+    if (!host) {
+      setTimeout(injectContextBar, 200);
+      return;
+    }
+
+    let bar = document.getElementById(CONTEXT_BAR_ID);
+    if (!bar) {
+      bar = document.createElement("nav");
+      bar.id = CONTEXT_BAR_ID;
+      bar.className = "chaos-context-bar";
+      bar.setAttribute("aria-label", "Breadcrumb");
+      host.prepend(bar);
+    }
+
+    const current = getEntryLabel();
+    bar.innerHTML = `
+      <a href="#/">Dashboard</a>
+      <span class="chaos-context-bar__sep" aria-hidden="true">/</span>
+      <span class="chaos-context-bar__current">${escapeHtml(current)}</span>
+    `;
+  }
+
+  function enhanceSidebar() {
+    const sidebar = document.querySelector('[class*="Sidebar"]');
+    if (!sidebar || sidebar.querySelector(".chaos-sidebar-title")) return;
+    const title = document.createElement("p");
+    title.className = "chaos-sidebar-title";
+    title.textContent = "Content files";
+    sidebar.prepend(title);
   }
 
   let lastEditorHelpRoute = "";
@@ -393,7 +522,7 @@
     if (!toolbar) return;
 
     let text =
-      "Edit the fields below, then click Publish. Do not close the tab until you see “Changes saved”.";
+      "Edit the fields below, then tap Publish in the bar at the bottom. Wait for the saved confirmation before closing.";
     if (h.includes("campaign-meta")) {
       text = "Campaign section subtitle on the home page. Click Publish when done.";
     } else if (h.includes("campaign-posts")) {
@@ -424,17 +553,19 @@
         const btn = t.closest("button");
         if (!btn) return;
         const label = (btn.textContent || "").toLowerCase();
-        if (label.includes("publish") || label.includes("published")) {
+        if (label.includes("publish") || label.includes("published") || label.includes("save")) {
           setTimeout(() => {
             if (!document.querySelector(".chaos-publish-toast")) {
               const toast = document.createElement("div");
               toast.className = "chaos-publish-toast";
               toast.setAttribute("role", "status");
+              toast.setAttribute("aria-live", "polite");
               toast.innerHTML =
-                "<strong>Saved to GitHub.</strong> The live site updates in ~2 minutes. Hard-refresh the portfolio if you do not see changes.";
+                "<strong>Saved to GitHub.</strong> Deploy runs in ~2 minutes. Hard-refresh the portfolio to preview changes.";
               document.body.appendChild(toast);
               setTimeout(() => toast.remove(), 8000);
             }
+            injectSaveDock();
           }, 600);
         }
       },
@@ -878,7 +1009,7 @@
     dock.replaceChildren();
     const label = document.createElement("span");
     label.className = "chaos-save-dock__label";
-    label.textContent = "Save your changes";
+    label.textContent = `Editing: ${getEntryLabel()}`;
     dock.appendChild(label);
 
     for (const btn of buttons) {
@@ -895,7 +1026,15 @@
       if (lower.includes("delete")) {
         action.classList.add("chaos-save-dock__btn--danger");
       }
-      action.addEventListener("click", () => btn.click());
+      action.addEventListener("click", () => {
+        if (lower.includes("publish") || lower.includes("save")) {
+          action.classList.add("is-saving");
+          action.disabled = true;
+          action.textContent = lower.includes("publish") ? "Publishing…" : "Saving…";
+        }
+        btn.click();
+        setTimeout(() => injectSaveDock(), 2500);
+      });
       dock.appendChild(action);
     }
 
@@ -926,6 +1065,8 @@
     updateNavCurrent();
     updateChromeClasses();
     injectDashboard();
+    injectContextBar();
+    enhanceSidebar();
     injectEditorHelp();
     injectMediaBrowser();
     injectPostsStudio();
