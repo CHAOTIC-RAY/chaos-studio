@@ -142,3 +142,29 @@ node scripts/export-portfolio-json.mjs
 ```
 
 Normal workflow: edit **`content/portfolio.json`** only via CMS or git.
+
+---
+
+## 7. AI site assistant (local Ollama)
+
+**URL:** https://portfolio.chaoticstudio.workers.dev/admin/#/assistant
+
+Chat with a **local** LLM (Ollama) to change site copy, posts, studio text, and SEO. Attach `.json`, `.md`, or `.txt` files as briefs. When the model proposes changes, click **Apply to GitHub** — same flow as Publish (commit to `main`, deploy ~2 min).
+
+### Requirements
+
+1. [Ollama](https://ollama.com) installed and running, e.g. `ollama pull llama3.2` then `ollama serve`
+2. **GitHub access:** log into the CMS with GitHub first, or paste a PAT (repo scope) in AI **Settings**
+3. **HTTPS admin + local Ollama:** browsers block `http://127.0.0.1` from `https://` pages. Use one of:
+   - **Cloudflare tunnel** to Ollama and set that HTTPS URL in Settings, or
+   - Optional worker secret `OLLAMA_BASE_URL` (tunnel URL) so `/api/admin/ai/chat` proxies requests
+
+### Settings (in admin)
+
+| Field | Default |
+|--------|---------|
+| Ollama URL | `http://127.0.0.1:11434` |
+| Model | `llama3.2` |
+| GitHub token | Auto from CMS login if available |
+
+Files the AI can update: `content/campaign-meta.json`, `content/campaign-posts.json`, `content/portfolio.json`, `content/chaos-studio.json`, `frontend/public/assets/site.config.json`.

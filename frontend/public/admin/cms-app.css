@@ -162,6 +162,12 @@ body {
   display: flex;
 }
 
+.chaos-assistant-view.is-active {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
 /* Hide Decap + editor shell when not in entry editor */
 body.chaos-mode-dashboard #chaos-view-editor,
 body.chaos-mode-media #chaos-view-editor {
@@ -279,6 +285,14 @@ body.chaos-mode-media #nc-root {
   grid-column: span 8;
   grid-row: span 2;
   padding: 1.35rem 1.5rem;
+}
+
+.chaos-card--ai {
+  display: flex;
+  grid-column: 1 / -1;
+  margin-bottom: 0.75rem;
+  border-color: var(--app-primary);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.06), var(--app-surface));
 }
 
 /* Icons — scoped so Decap global SVG rules cannot blow them up */

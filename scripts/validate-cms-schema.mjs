@@ -89,6 +89,8 @@ function validateAdminAssets() {
     "sync-status.json",
     "manifest.webmanifest",
     "sw.js",
+    "cms-assistant.js",
+    "cms-assistant.css",
   ]) {
     assert(fs.existsSync(path.join(adminDir, f)), `Missing frontend/public/admin/${f}`);
   }

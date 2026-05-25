@@ -1,6 +1,7 @@
 import { portfolio } from "./src/data/portfolio";
+import { handleAdminAiChat, type AdminAiEnv } from "./src/admin-ai";
 
-export interface Env {
+export interface Env extends AdminAiEnv {
   ASSETS: Fetcher;
 }
 
@@ -38,6 +39,10 @@ export default {
       );
     }
 
+    if (url.pathname === "/api/admin/ai/chat") {
+      return handleAdminAiChat(request, env);
+    }
+
     if (url.pathname === "/api/contact" && request.method === "POST") {
       let body: { name?: string; email?: string; message?: string };
       try {
@@ -64,7 +69,7 @@ export default {
         headers: {
           ...JSON_HEADERS,
           "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
         },
       });
     }

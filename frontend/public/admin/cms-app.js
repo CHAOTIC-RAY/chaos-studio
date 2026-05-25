@@ -16,6 +16,7 @@
     file: '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>',
     external: '<svg viewBox="0 0 24 24"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v7H3V3h7"/></svg>',
     chevron: '<svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>',
+    chat: '<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
   };
 
   const EDITORS = [
@@ -84,7 +85,9 @@
   }
 
   function mode() {
-    if (route().includes("/media")) return "media";
+    const h = route();
+    if (h.includes("/assistant") || h === "#/assistant") return "assistant";
+    if (h.includes("/media")) return "media";
     if (editorFromHash()) return "editor";
     return "dashboard";
   }
@@ -142,6 +145,16 @@
     stashDecap();
     if (viewMode === "dashboard") renderDashboard();
     if (viewMode === "media") renderMedia();
+    if (viewMode === "assistant") renderAssistantView();
+  }
+
+  function renderAssistantView() {
+    const el = document.getElementById("chaos-view-assistant");
+    if (!el || !window.ChaosAssistant) return;
+    if (!el.dataset.mounted) {
+      window.ChaosAssistant.renderAssistant(el);
+      el.dataset.mounted = "1";
+    }
   }
 
   function buildShell() {
@@ -161,12 +174,14 @@
         <nav class="chaos-app-header__nav" aria-label="Main">
           <a href="#/" data-nav="dashboard">${icon("home")}<span class="chaos-nav-label">Home</span></a>
           <a href="#/media" data-nav="media">${icon("image")}<span class="chaos-nav-label">Media</span></a>
+          <a href="#/assistant" data-nav="assistant">${icon("chat")}<span class="chaos-nav-label">AI</span></a>
           <a href="${SITE}/" target="_blank" rel="noopener">${icon("external")}<span class="chaos-nav-label">Site</span></a>
         </nav>
       </header>
       <main class="chaos-app-main">
         <div id="chaos-view-dashboard" class="chaos-view chaos-dash"></div>
         <div id="chaos-view-media" class="chaos-view chaos-media-view"></div>
+        <div id="chaos-view-assistant" class="chaos-view chaos-assistant-view"></div>
         <div id="chaos-view-editor" class="chaos-view chaos-editor-view">
           <div class="chaos-editor-bar" data-editor-bar></div>
           <p class="chaos-editor-loading" data-editor-loading hidden>Loading editor… large files may take a moment.</p>
@@ -229,6 +244,12 @@
       <h1 class="chaos-dash__title">Content portal</h1>
       <p class="chaos-dash__lead">Pick what to edit. You never need Decap’s old collection screens — each card opens the editor directly.</p>
       <div data-kpis class="chaos-kpis"><div class="chaos-kpi"><span class="chaos-kpi__n">…</span><span class="chaos-kpi__l">Loading</span></div></div>
+      <a class="chaos-card chaos-card--ai" href="#/assistant">
+        ${icon("chat")}
+        <strong>AI site assistant</strong>
+        <span>Chat with local Ollama, attach JSON or copy files, apply text changes to GitHub automatically.</span>
+        <span class="chaos-card__cta">Open AI ${ICONS.chevron}</span>
+      </a>
       <div class="chaos-grid">${cards}</div>
       <p class="chaos-dash__note"><strong>Publish</strong> saves to GitHub. The live site updates in about two minutes after deploy.</p>
     `;
@@ -477,6 +498,10 @@
 
     if (m === "dashboard") renderDashboard();
     if (m === "media") renderMedia();
+    if (m === "assistant") {
+      stashDecap();
+      renderAssistantView();
+    }
     if (m === "editor") {
       lastDockKey = "";
       setEditorLoading(true);

@@ -50,6 +50,12 @@
       "short_name": "Media",
       "url": "/admin/#/media",
       "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "AI assistant",
+      "short_name": "AI",
+      "url": "/admin/#/assistant",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
