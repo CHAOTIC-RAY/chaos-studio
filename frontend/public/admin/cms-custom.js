@@ -13,7 +13,8 @@
 
   const ICONS = {
     home: '<svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/></svg>',
-    posts: '<svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>',
+    posts: '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="1"/><rect x="14" y="4" width="7" height="7" rx="1"/><rect x="3" y="13" width="7" height="7" rx="1"/><rect x="14" y="13" width="7" height="7" rx="1"/></svg>',
+    image: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>',
     studio: '<svg viewBox="0 0 24 24"><path d="m12 3 2.2 4.5 5 .7-3.6 3.5.9 5L12 14.8 7.5 16.7l.9-5L4.8 8.2l5-.7L12 3z"/></svg>',
     media: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10.5" r="1.5"/><path d="m21 15-5-5L5 19"/></svg>',
     search: '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
@@ -172,9 +173,37 @@
     return location.hash || "#/";
   }
 
-  function isHome() {
+  function isPortalHome() {
     const h = route();
     return h === "#/" || h === "" || h === "#/collections";
+  }
+
+  function isHome() {
+    return isPortalHome();
+  }
+
+  function isCollectionGroup() {
+    const h = route();
+    return /^#\/collections\/[^/]+$/.test(h);
+  }
+
+  function normalizeRoute() {
+    const h = location.hash || "";
+    if (h === "" || h === "#/collections") {
+      if (location.hash !== "#/") {
+        location.replace("#/");
+      }
+    }
+  }
+
+  function findMainPaneHost() {
+    const candidates = [
+      document.querySelector('[class*="EditEntryMain"]'),
+      ...[...document.querySelectorAll('[class*="CollectionMain"]')].filter(
+        (el) => !el.closest('[class*="Sidebar"]'),
+      ),
+    ].filter(Boolean);
+    return candidates[0] || null;
   }
 
   function isMedia() {
@@ -206,8 +235,8 @@
         active = h === "#/" || h === "" || h === "#/collections";
       } else if (target === "#/media") {
         active = h.includes("/media");
-      } else if (target === "#/collections") {
-        active = !h.includes("/media") && (h.includes("/collections") || h.includes("/entries"));
+      } else if (target === "#/" || target === "#/collections") {
+        active = h === "#/" || h === "" || h === "#/collections";
       } else {
         active = h.includes(target.replace("#", ""));
       }
@@ -278,10 +307,11 @@
 
   function updateChromeClasses() {
     const h = route();
-    document.body.classList.toggle("chaos-route-home", isHome());
+    document.body.classList.toggle("chaos-route-home", isPortalHome());
     document.body.classList.toggle("chaos-route-editor", isEditor());
     document.body.classList.toggle("chaos-route-posts-list", isCampaignPosts());
     document.body.classList.toggle("chaos-route-media", isMedia());
+    document.body.classList.toggle("chaos-route-collection", isCollectionGroup());
 
     const banner = document.getElementById(INSTALL_BANNER_ID);
     const bannerVisible =
@@ -304,7 +334,7 @@
         </div>
       </div>
       <nav class="chaos-admin-shell__tabs" aria-label="CMS mode">
-        <a href="#/collections" data-nav-hash="#/collections">${icon("file")} Contents</a>
+        <a href="#/" data-nav-hash="#/">${icon("file")} Contents</a>
         <a href="#/media" data-nav-hash="#/media">${icon("media")} Media</a>
       </nav>
       <nav class="chaos-admin-shell__nav" aria-label="Quick links">
@@ -421,19 +451,19 @@
     }).join("");
   }
 
-  async function injectDashboard() {
-    if (!isHome()) {
+  async   function injectDashboard() {
+    if (!isPortalHome()) {
       removeEl(DASHBOARD_ID);
       document.body.classList.remove("chaos-route-home");
       return;
     }
     document.body.classList.add("chaos-route-home");
 
-    const host =
-      document.querySelector('[class*="CollectionMain"]') ||
-      document.querySelector('[class*="Main"]') ||
-      document.querySelector("main");
-    if (!host) return;
+    const host = findMainPaneHost();
+    if (!host) {
+      setTimeout(() => injectDashboard(), 300);
+      return;
+    }
 
     let panel = document.getElementById(DASHBOARD_ID);
     if (!panel) {
@@ -461,15 +491,12 @@
   }
 
   function injectContextBar() {
-    if (!needsContextBar()) {
+    if (!needsContextBar() || isPortalHome()) {
       removeEl(CONTEXT_BAR_ID);
       return;
     }
 
-    const host =
-      document.querySelector('[class*="EditEntryMain"]') ||
-      document.querySelector('[class*="CollectionMain"]') ||
-      document.querySelector('[class*="AppMainContainer"]');
+    const host = findMainPaneHost();
     if (!host) {
       setTimeout(injectContextBar, 200);
       return;
@@ -731,11 +758,33 @@
     }, 180);
   }
 
+  function isCampaignPostRow(li) {
+    const meta = li.querySelector("[class*='ListItemMeta']");
+    if (!meta) return false;
+    return / — /.test(meta.textContent || "");
+  }
+
+  function stripBadListEnhancements() {
+    document.querySelectorAll("[class*='ListItem'].chaos-list-item--enhanced").forEach((li) => {
+      if (!isCampaignPostRow(li)) {
+        li.classList.remove("chaos-list-item--enhanced");
+        li.querySelector(".chaos-list-item__thumb-wrap")?.remove();
+        delete li.dataset.chaosPostId;
+      }
+    });
+  }
+
   async function enhancePostLists() {
-    if (!isCampaignPosts()) return;
+    if (!isCampaignPosts()) {
+      stripBadListEnhancements();
+      return;
+    }
+    stripBadListEnhancements();
     const index = await loadPostThumbIndex();
     document.querySelectorAll("[class*='ListItem']").forEach((li) => {
       if (li.closest(`#${POSTS_STUDIO_ID}`)) return;
+      if (!isCampaignPostRow(li)) return;
+
       const id = extractPostIdFromListItem(li);
       const entry = id ? index.byId.get(id) : null;
       const thumb = entry?.thumb;
@@ -744,18 +793,19 @@
       if (!wrap) {
         wrap = document.createElement("div");
         wrap.className = "chaos-list-item__thumb-wrap";
-        const header =
-          li.querySelector("[class*='ListItemHeader']") ||
-          li.querySelector("button[aria-expanded]")?.parentElement;
-        if (header) header.prepend(wrap);
-        else li.prepend(wrap);
+        const header = li.querySelector("[class*='ListItemHeader']");
+        if (header) {
+          header.insertBefore(wrap, header.firstChild);
+        } else {
+          li.prepend(wrap);
+        }
         li.classList.add("chaos-list-item--enhanced");
       }
 
       if (thumb) {
         wrap.innerHTML = `<img class="chaos-list-item__thumb" src="${thumb}" alt="" loading="lazy" />`;
       } else {
-        wrap.innerHTML = `<div class="chaos-list-item__thumb chaos-list-item__thumb--empty">${icon("posts")}</div>`;
+        wrap.innerHTML = `<div class="chaos-list-item__thumb chaos-list-item__thumb--empty">${icon("image")}</div>`;
       }
       if (id) li.dataset.chaosPostId = id;
     });
@@ -790,7 +840,7 @@
       ${
         thumb
           ? `<img class="chaos-post-edit-preview__img" src="${thumb}" alt="" />`
-          : `<div class="chaos-post-edit-preview__img chaos-list-item__thumb--empty">${icon("posts")}</div>`
+          : `<div class="chaos-post-edit-preview__img chaos-list-item__thumb--empty">${icon("image")}</div>`
       }
       <div class="chaos-post-edit-preview__meta">
         <strong>${escapeHtml(client ? `${client} — ${title}` : title)}</strong>
@@ -821,7 +871,7 @@
       return;
     }
 
-    const host = document.querySelector('[class*="CollectionMain"]');
+    const host = findMainPaneHost();
     if (!host) return;
 
     let studio = document.getElementById(POSTS_STUDIO_ID);
@@ -1061,10 +1111,38 @@
     attach();
   }
 
+  const COLLECTION_HUB_ID = "chaos-collection-hub";
+
+  function injectCollectionHub() {
+    if (!isCollectionGroup()) {
+      removeEl(COLLECTION_HUB_ID);
+      return;
+    }
+    const host = findMainPaneHost();
+    if (!host) return;
+
+    let hub = document.getElementById(COLLECTION_HUB_ID);
+    if (!hub) {
+      hub = document.createElement("section");
+      hub.id = COLLECTION_HUB_ID;
+      hub.className = "chaos-collection-hub";
+      host.prepend(hub);
+    }
+
+    const label = getEntryLabel();
+    hub.innerHTML = `
+      <a class="chaos-collection-hub__back" href="#/">${icon("home")} Portal home</a>
+      <h2>${escapeHtml(label)}</h2>
+      <p>Choose a file below to edit. For all campaign posts at once, open <strong>All posts</strong>.</p>
+    `;
+  }
+
   function onRouteChange() {
+    normalizeRoute();
     updateNavCurrent();
     updateChromeClasses();
     injectDashboard();
+    injectCollectionHub();
     injectContextBar();
     enhanceSidebar();
     injectEditorHelp();
@@ -1160,6 +1238,7 @@
   }
 
   function boot() {
+    normalizeRoute();
     bindCmsErrorToast();
     registerServiceWorker();
     setupInstallPrompt();

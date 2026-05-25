@@ -681,14 +681,72 @@ body.chaos-banner-visible:not(.chaos-route-editor) {
   color: var(--cms-text);
 }
 
-/* Hide default Decap collection list on dashboard (we replace it) */
-.chaos-route-home [class*="CollectionMain"] > ul,
-.chaos-route-home [class*="CollectionMain"] > div > ul {
+/* Portal home — custom dashboard in main pane only */
+.chaos-route-home [class*="SplitPane"] > *:last-child [class*="CollectionMain"] > ul,
+.chaos-route-home [class*="SplitPane"] > *:last-child [class*="CollectionMain"] > div > ul,
+.chaos-route-home [class*="AppMainContainer"] > [class*="CollectionMain"] > ul {
   display: none !important;
 }
 
-.chaos-route-home [class*="SidebarHeading"] {
+.chaos-route-home [class*="SplitPane"] > *:last-child [class*="SidebarHeading"] {
   display: none !important;
+}
+
+/* Collection folder (e.g. Social posts → pick file) */
+.chaos-collection-hub {
+  margin: 0 var(--cms-space-md) var(--cms-space-md);
+  padding: var(--cms-card-padding) 1.1rem;
+  border-radius: var(--cms-radius);
+  background: var(--cms-surface);
+  border: 1px solid var(--cms-border);
+  box-shadow: var(--cms-shadow-md);
+  max-width: 40rem;
+}
+
+.chaos-collection-hub__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--cms-purple);
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+}
+
+.chaos-collection-hub__back:hover {
+  text-decoration: underline;
+}
+
+.chaos-collection-hub h2 {
+  margin: 0 0 0.35rem;
+  font-family: var(--cms-display);
+  font-size: 1.25rem;
+  color: var(--cms-purple-deep);
+}
+
+.chaos-collection-hub p {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  color: var(--cms-muted);
+  line-height: 1.45;
+}
+
+body.chaos-route-collection [class*="SplitPane"] > *:last-child,
+body.chaos-route-collection [class*="CollectionMain"] {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
+body.chaos-route-collection [class*="SplitPane"] > *:last-child [class*="CollectionMain"] {
+  padding: 0 var(--cms-space-md) var(--cms-space-md) !important;
+}
+
+body.chaos-route-collection [class*="CollectionMain"] a {
+  cursor: pointer;
 }
 
 /* —— Editor help —— */
@@ -811,25 +869,46 @@ body:not(.chaos-has-mobile-nav) .chaos-publish-toast {
   display: none;
 }
 
-/* —— Post list thumbnails —— */
-[class*="ListItem"].chaos-list-item--enhanced [class*="ListItemHeader"],
-[class*="ListItem"].chaos-list-item--enhanced > button:first-child {
-  display: flex !important;
+/* —— Post list thumbnails (campaign-posts editor only) —— */
+body.chaos-route-posts-list [class*="ListItem"] {
+  margin-bottom: 0.5rem !important;
+}
+
+body.chaos-route-posts-list [class*="ListItem"].chaos-list-item--enhanced [class*="ListItemHeader"] {
+  display: grid !important;
+  grid-template-columns: auto 1fr auto !important;
   align-items: center !important;
-  gap: 0.65rem !important;
+  gap: 0.5rem 0.65rem !important;
+  min-height: 3.25rem !important;
+  padding: 0.45rem 0.65rem !important;
   width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+body.chaos-route-posts-list [class*="ListItem"].chaos-list-item--enhanced [class*="ListItemHeader"] img:not(.chaos-list-item__thumb),
+body.chaos-route-posts-list [class*="ListItem"].chaos-list-item--enhanced [class*="ListItemHeader"] [class*="ImagePreview"],
+body.chaos-route-posts-list [class*="ListItem"].chaos-list-item--enhanced [class*="ListItemHeader"] > div:not(.chaos-list-item__thumb-wrap):not([class*="ListItemMeta"]) {
+  display: none !important;
 }
 
 .chaos-list-item__thumb-wrap {
   flex-shrink: 0;
-  width: 3.25rem;
-  height: 3.25rem;
-  border-radius: 10px;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 8px;
   overflow: hidden;
   border: 1px solid var(--cms-border);
   background: var(--cms-surface-2);
   display: grid;
   place-items: center;
+  grid-row: 1;
+  grid-column: 1;
+}
+
+body.chaos-route-posts-list [class*="ListItemMeta"] {
+  grid-column: 2 !important;
+  align-self: center !important;
+  padding: 0 !important;
 }
 
 .chaos-list-item__thumb {
@@ -840,9 +919,16 @@ body:not(.chaos-has-mobile-nav) .chaos-publish-toast {
 }
 
 .chaos-list-item__thumb--empty {
-  font-size: 1.25rem;
-  line-height: 3.25rem;
-  text-align: center;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.chaos-list-item__thumb--empty .chaos-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  opacity: 0.5;
 }
 
 .chaos-post-edit-preview {
@@ -1056,6 +1142,7 @@ aside[class*="css-"] {
   min-width: 11rem !important;
   height: auto !important;
   max-height: none !important;
+  overflow-x: hidden !important;
   overflow-y: auto !important;
   transform: none !important;
   box-shadow: none !important;
@@ -1063,6 +1150,14 @@ aside[class*="css-"] {
   border-right: 1px solid var(--cms-border) !important;
   padding-top: 0.5rem !important;
   z-index: 1 !important;
+}
+
+[class*="SplitPane"] > *:last-child {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 [class*="CollectionMain"],
