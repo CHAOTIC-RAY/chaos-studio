@@ -54,6 +54,9 @@ body {
 }
 
 .chaos-app-header {
+  position: sticky;
+  top: 0;
+  z-index: 120;
   flex: 0 0 auto;
   display: flex;
   align-items: center;
@@ -63,6 +66,12 @@ body {
   background: var(--app-surface);
   border-bottom: 1px solid var(--app-border);
   box-shadow: var(--app-shadow);
+}
+
+.chaos-app--editing .chaos-app-header__nav a[data-nav="dashboard"]::after {
+  content: " · back";
+  font-weight: 700;
+  color: var(--app-primary);
 }
 
 .chaos-app-header__brand {
@@ -421,9 +430,14 @@ body.chaos-mode-media #nc-root {
   flex-direction: column;
   min-height: 0;
   padding-bottom: var(--app-dock-h);
+  position: relative;
+  isolation: isolate;
 }
 
 .chaos-editor-bar {
+  position: sticky;
+  top: var(--app-header-h);
+  z-index: 110;
   flex: 0 0 auto;
   display: flex;
   align-items: center;
@@ -432,6 +446,7 @@ body.chaos-mode-media #nc-root {
   padding: 0.65rem max(1rem, var(--app-safe-r)) 0.65rem max(1rem, var(--app-safe-l));
   background: var(--app-surface);
   border-bottom: 1px solid var(--app-border);
+  box-shadow: var(--app-shadow);
 }
 
 .chaos-editor-bar__back {
@@ -469,17 +484,23 @@ body.chaos-mode-media #nc-root {
 }
 
 .chaos-decap-mount {
+  position: relative;
+  z-index: 1;
   flex: 1 1 auto;
   min-height: 0;
-  overflow: hidden;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
   background: var(--app-bg);
 }
 
-/* Decap: editor-only chrome */
+/* Decap: editor-only chrome — stay inside mount, never cover app chrome */
 body.chaos-mode-editor #nc-root {
-  height: 100% !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
+  position: relative !important;
+  inset: auto !important;
+  height: auto !important;
+  min-height: 100% !important;
+  max-height: none !important;
+  overflow: visible !important;
 }
 
 body.chaos-mode-editor [class*="AppHeader"],
@@ -492,7 +513,10 @@ body.chaos-mode-editor [class*="WorkflowWrapper"],
 body.chaos-mode-editor [class*="AppMainContainer"],
 body.chaos-mode-editor [class*="SplitPane"] {
   display: block !important;
-  height: 100% !important;
+  position: relative !important;
+  inset: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
   width: 100% !important;
   max-width: 100% !important;
 }
@@ -558,10 +582,18 @@ body.chaos-mode-editor .chaos-dock {
 }
 
 .chaos-dock__label {
-  margin-right: auto;
+  flex: 1 1 auto;
+  min-width: 0;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--app-muted);
+}
+
+.chaos-dock__btn--back {
+  flex-shrink: 0;
+  border-color: var(--app-primary);
+  color: var(--app-primary-dark);
+  background: var(--app-surface-2);
 }
 
 .chaos-dock__btn {

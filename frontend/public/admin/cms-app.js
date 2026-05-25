@@ -378,6 +378,15 @@
     });
   }
 
+  function appendDockBack(dock) {
+    const back = document.createElement("button");
+    back.type = "button";
+    back.className = "chaos-dock__btn chaos-dock__btn--back";
+    back.setAttribute("data-portal-back", "");
+    back.textContent = "← Portal";
+    dock.appendChild(back);
+  }
+
   function renderSaveDock(force) {
     const dock = document.querySelector("[data-save-dock]");
     const ed = editorFromHash();
@@ -389,6 +398,7 @@
     if (!force && sig && sig === lastDockKey) return;
 
     dock.replaceChildren();
+    appendDockBack(dock);
     const label = document.createElement("span");
     label.className = "chaos-dock__label";
     label.textContent = ed.title;
@@ -400,6 +410,7 @@
       wait.textContent = "Loading editor…";
       dock.appendChild(wait);
       setEditorLoading(true);
+      lastDockKey = "";
       return;
     }
 
@@ -471,12 +482,14 @@
       setEditorLoading(true);
       mountDecap();
       renderEditorBar();
+      document.getElementById("chaos-app")?.classList.add("chaos-app--editing");
       renderSaveDock(true);
       clearTimeout(dockTimer);
       dockTimer = setTimeout(() => renderSaveDock(true), 1200);
       dockTimer = setTimeout(() => renderSaveDock(true), 4000);
     } else {
       setEditorLoading(false);
+      document.getElementById("chaos-app")?.classList.remove("chaos-app--editing");
       stashDecap();
     }
   }
