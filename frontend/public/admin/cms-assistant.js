@@ -133,11 +133,50 @@ Rules:
   let pendingUpdates = null;
   let attachments = [];
 
+  const API_KEY_META = {
+    google: {
+      label: "Google Gemini API key",
+      placeholder: "AIzaSy…",
+      url: "https://aistudio.google.com/apikey",
+      linkText: "Get free Gemini key",
+    },
+    "openrouter-free": {
+      label: "OpenRouter API key",
+      placeholder: "sk-or-v1-…",
+      url: "https://openrouter.ai/keys",
+      linkText: "Get free OpenRouter key",
+    },
+    openrouter: {
+      label: "OpenRouter API key",
+      placeholder: "sk-or-v1-…",
+      url: "https://openrouter.ai/keys",
+      linkText: "Get OpenRouter key",
+    },
+    openai: {
+      label: "OpenAI API key",
+      placeholder: "sk-…",
+      url: "https://platform.openai.com/api-keys",
+      linkText: "OpenAI keys",
+    },
+    anthropic: {
+      label: "Anthropic API key",
+      placeholder: "sk-ant-…",
+      url: "https://console.anthropic.com/settings/keys",
+      linkText: "Anthropic keys",
+    },
+    groq: {
+      label: "Groq API key",
+      placeholder: "gsk_…",
+      url: "https://console.groq.com/keys",
+      linkText: "Groq keys",
+    },
+  };
+
   function defaultSettings() {
     return {
       provider: "google",
       model: PROVIDERS.google.defaultModel,
-      apiKey: "",
+      apiKeys: {},
       githubToken: "",
     };
   }
@@ -149,16 +188,26 @@ Rules:
         return { ...defaultSettings(), githubToken: raw.githubToken || "" };
       }
       const provider = PROVIDERS[raw.provider] ? raw.provider : "google";
-      const base = defaultSettings();
+      const apiKeys = { ...(raw.apiKeys || {}) };
+      if (raw.apiKey && !apiKeys[provider]) apiKeys[provider] = raw.apiKey;
       return {
-        ...base,
-        ...raw,
+        ...defaultSettings(),
         provider,
         model: raw.model || PROVIDERS[provider].defaultModel,
+        apiKeys,
+        githubToken: raw.githubToken || "",
       };
     } catch {
       return defaultSettings();
     }
+  }
+
+  function apiKeyForProvider(settings, provider) {
+    return settings.apiKeys?.[provider]?.trim() || "";
+  }
+
+  function activeApiKey(settings) {
+    return apiKeyForProvider(settings, settings.provider);
   }
 
   function providerSupportsVision(provider) {
@@ -393,7 +442,7 @@ Rules:
         provider: settings.provider,
         model: settings.model,
         messages,
-        apiKey: settings.apiKey?.trim() || undefined,
+        apiKey: activeApiKey(settings) || undefined,
       }),
     });
     const data = await res.json().catch(() => ({}));
@@ -653,6 +702,9 @@ Rules:
     const provEl = root.querySelector("[data-ai-provider]");
     const modelEl = root.querySelector("[data-ai-model]");
     const hintEl = root.querySelector("[data-ai-provider-hint]");
+    const keyLabel = root.querySelector("[data-ai-key-label]");
+    const keyInput = root.querySelector("[data-ai-api-key]");
+    const keyLink = root.querySelector("[data-ai-key-link]");
     if (!provEl || !modelEl) return;
 
     const refreshModels = () => {
@@ -664,39 +716,63 @@ Rules:
         modelEl.value = p.defaultModel;
       }
       if (hintEl) hintEl.textContent = p.hint;
+
+      const meta = API_KEY_META[pid] || API_KEY_META.google;
+      if (keyLabel) keyLabel.textContent = meta.label;
+      if (keyInput) {
+        keyInput.placeholder = meta.placeholder;
+        if (document.activeElement !== keyInput) {
+          keyInput.value = apiKeyForProvider(getSettings(), pid);
+        }
+      }
+      if (keyLink) {
+        keyLink.href = meta.url;
+        keyLink.textContent = meta.linkText;
+      }
     };
 
     provEl.addEventListener("change", refreshModels);
+    keyInput?.addEventListener("focus", () => {
+      const pid = provEl.value;
+      keyInput.value = apiKeyForProvider(getSettings(), pid);
+    });
     refreshModels();
   }
 
   function renderAssistant(root) {
     const settings = getSettings();
-    const prov = PROVIDERS[settings.provider] || PROVIDERS.openrouter;
+    const prov = PROVIDERS[settings.provider] || PROVIDERS.google;
+    const keyMeta = API_KEY_META[settings.provider] || API_KEY_META.google;
+    const keyVal = apiKeyForProvider(settings, settings.provider);
     root.innerHTML = `
       <div class="chaos-ai">
         <header class="chaos-ai__head">
           <h1>AI site assistant</h1>
-          <p><strong>Free:</strong> Google Gemini key (vision + images). Attach photos, JSON, or briefs — apply to GitHub in one click.</p>
+          <p>Free Gemini or OpenRouter — paste your API key below, attach images, apply to GitHub.</p>
         </header>
-        <details class="chaos-ai-settings" open>
-          <summary>AI settings (free Gemini recommended)</summary>
-          <label>Provider
-            <select data-ai-provider>${providerOptionsHtml(settings.provider)}</select>
-          </label>
+        <section class="chaos-ai-settings" aria-label="AI settings">
+          <div class="chaos-ai-settings__grid">
+            <label class="chaos-ai-settings__field">Provider
+              <select data-ai-provider>${providerOptionsHtml(settings.provider)}</select>
+            </label>
+            <label class="chaos-ai-settings__field">Model
+              <select data-ai-model>${modelOptionsHtml(settings.provider, settings.model)}</select>
+            </label>
+          </div>
           <p class="chaos-ai-settings__hint" data-ai-provider-hint>${escapeHtml(prov.hint)}</p>
-          <label>Model
-            <select data-ai-model>${modelOptionsHtml(settings.provider, settings.model)}</select>
+          <label class="chaos-ai-settings__field chaos-ai-settings__field--key">
+            <span data-ai-key-label>${escapeHtml(keyMeta.label)}</span>
+            <a class="chaos-ai-settings__link" data-ai-key-link href="${keyMeta.url}" target="_blank" rel="noopener">${escapeHtml(keyMeta.linkText)}</a>
+            <input type="text" data-ai-api-key value="${escapeHtml(keyVal)}" placeholder="${escapeHtml(keyMeta.placeholder)}" autocomplete="off" spellcheck="false" />
           </label>
-          <label>API key (free at aistudio.google.com/apikey)
-            <input type="password" data-ai-api-key value="${escapeHtml(settings.apiKey)}" placeholder="AIza…" autocomplete="off" />
-          </label>
-          <label>GitHub token (optional if logged into CMS)
+          <label class="chaos-ai-settings__field">GitHub token <span class="chaos-ai-settings__optional">(optional if logged into CMS)</span>
             <input type="password" data-ai-token value="${escapeHtml(settings.githubToken)}" placeholder="ghp_… or use CMS login" autocomplete="off" />
           </label>
-          <button type="button" class="chaos-ai-btn" data-ai-save-settings>Save settings</button>
-          <button type="button" class="chaos-ai-btn" data-ai-reload-context>Reload site content</button>
-        </details>
+          <div class="chaos-ai-settings__actions">
+            <button type="button" class="chaos-ai-btn chaos-ai-btn--primary" data-ai-save-settings>Save API key</button>
+            <button type="button" class="chaos-ai-btn" data-ai-reload-context>Reload site</button>
+          </div>
+        </section>
         <div class="chaos-ai-preview" data-ai-preview hidden></div>
         <div class="chaos-ai-messages" data-ai-messages role="log" aria-live="polite"></div>
         <div class="chaos-ai-attachments" data-ai-attachments></div>
@@ -719,14 +795,17 @@ Rules:
     bindProviderModelSelects(root);
 
     root.querySelector("[data-ai-save-settings]")?.addEventListener("click", () => {
-      const provider = root.querySelector("[data-ai-provider]")?.value || "openrouter";
+      const provider = root.querySelector("[data-ai-provider]")?.value || "google";
+      const prev = getSettings();
+      const apiKeys = { ...prev.apiKeys };
+      apiKeys[provider] = root.querySelector("[data-ai-api-key]")?.value?.trim() || "";
       saveSettings({
         provider,
         model: root.querySelector("[data-ai-model]")?.value || PROVIDERS[provider].defaultModel,
-        apiKey: root.querySelector("[data-ai-api-key]")?.value?.trim() || "",
+        apiKeys,
         githubToken: root.querySelector("[data-ai-token]")?.value?.trim() || "",
       });
-      alert("Settings saved. API key stays in this browser only.");
+      alert(`Saved ${PROVIDERS[provider]?.label || provider} API key in this browser.`);
     });
 
     root.querySelector("[data-ai-reload-context]")?.addEventListener("click", async () => {
@@ -752,7 +831,7 @@ Rules:
       if (!getHistory().length) {
         appendMessage(
           "assistant",
-          "Get a <strong>free</strong> key at <a href=\"https://aistudio.google.com/apikey\" target=\"_blank\" rel=\"noopener\">Google AI Studio</a>, paste it above, save. Upload images (screenshots, post art) or JSON — ask for copy or new posts. Click <strong>Apply to GitHub</strong> when ready.",
+          "Paste your API key in the <strong>settings box above</strong> (Gemini or OpenRouter), click <strong>Save API key</strong>, then chat. Upload images or JSON — <strong>Apply to GitHub</strong> when you see a preview.",
           messagesEl,
         );
       }

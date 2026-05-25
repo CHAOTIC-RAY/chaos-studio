@@ -4,10 +4,12 @@
   flex-direction: column;
   flex: 1 1 auto;
   min-height: 0;
-  max-width: 48rem;
+  max-width: 56rem;
   margin: 0 auto;
   width: 100%;
-  padding: 1rem max(1rem, var(--app-safe-r)) calc(1rem + var(--app-safe-b)) max(1rem, var(--app-safe-l));
+  padding: 0.75rem max(1rem, var(--app-safe-r)) calc(0.75rem + var(--app-safe-b)) max(1rem, var(--app-safe-l));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .chaos-ai__head h1 {
@@ -25,49 +27,92 @@
 }
 
 .chaos-ai-settings {
+  flex: 0 0 auto;
+  position: sticky;
+  top: 0;
+  z-index: 20;
   margin-bottom: 0.75rem;
-  padding: 0.75rem 1rem;
+  padding: 0.85rem 1rem;
   background: var(--app-surface);
-  border: 1px solid var(--app-border);
+  border: 2px solid var(--app-primary);
   border-radius: var(--app-radius);
+  box-shadow: var(--app-shadow-lg);
 }
 
-.chaos-ai-settings summary {
-  font-weight: 700;
-  cursor: pointer;
-  color: var(--app-primary-dark);
+.chaos-ai-settings__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
 }
 
-.chaos-ai-settings label {
+.chaos-ai-settings__field {
   display: block;
-  margin-top: 0.6rem;
+  margin-top: 0.55rem;
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--app-muted);
+}
+
+.chaos-ai-settings__field--key {
+  margin-top: 0.65rem;
+}
+
+.chaos-ai-settings__field--key > span[data-ai-key-label] {
+  display: inline;
+  margin-right: 0.35rem;
+}
+
+.chaos-ai-settings__link {
+  display: inline-block;
+  margin-left: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--app-primary);
+}
+
+.chaos-ai-settings__optional {
+  font-weight: 500;
+  font-size: 0.75rem;
 }
 
 .chaos-ai-settings input,
 .chaos-ai-settings select {
   display: block;
   width: 100%;
-  margin-top: 0.25rem;
-  min-height: 2.5rem;
-  padding: 0.45rem 0.65rem;
+  margin-top: 0.3rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.7rem;
   border: 1px solid var(--app-border);
   border-radius: 8px;
   font: inherit;
-  background: var(--app-surface);
+  font-size: 0.95rem;
+  background: #fff;
+}
+
+.chaos-ai-settings input[data-ai-api-key] {
+  font-family: var(--app-mono);
+  font-size: 0.88rem;
+  letter-spacing: 0.02em;
 }
 
 .chaos-ai-settings__hint {
-  margin: 0.35rem 0 0.75rem;
+  margin: 0.4rem 0 0;
   font-size: 0.78rem;
   color: var(--app-muted);
+  line-height: 1.4;
 }
 
-.chaos-ai-settings .chaos-ai-btn {
+.chaos-ai-settings__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   margin-top: 0.65rem;
-  margin-right: 0.5rem;
+}
+
+@media (max-width: 520px) {
+  .chaos-ai-settings__grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .chaos-ai-preview {
@@ -97,8 +142,8 @@
 
 .chaos-ai-messages {
   flex: 1 1 auto;
-  min-height: 12rem;
-  max-height: min(50vh, 28rem);
+  min-height: 10rem;
+  max-height: min(42vh, 22rem);
   overflow-y: auto;
   padding: 0.75rem;
   margin-bottom: 0.75rem;
@@ -207,9 +252,15 @@
 }
 
 .chaos-ai-compose {
+  flex: 0 0 auto;
+  position: sticky;
+  bottom: 0;
+  z-index: 15;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  padding-top: 0.5rem;
+  background: linear-gradient(transparent, var(--app-bg) 12%, var(--app-bg));
 }
 
 .chaos-ai-file input {
