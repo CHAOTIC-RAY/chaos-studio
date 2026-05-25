@@ -83,8 +83,8 @@ function validateAdminAssets() {
   for (const f of [
     "index.html",
     "config.yml",
-    "cms-custom.css",
-    "cms-custom.js",
+    "cms-app.css",
+    "cms-app.js",
     "media-manifest.json",
     "sync-status.json",
     "manifest.webmanifest",

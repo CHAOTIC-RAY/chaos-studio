@@ -158,7 +158,7 @@ function verifyMediaManifest() {
 }
 
 function verifyAdminBundle() {
-  const required = ["index.html", "config.yml", "cms-custom.css", "cms-custom.js", "media-manifest.json"];
+  const required = ["index.html", "config.yml", "cms-app.css", "cms-app.js", "media-manifest.json"];
   for (const f of required) {
     const rel = `frontend/public/admin/${f}`;
     if (!fs.existsSync(path.join(root, rel))) {
@@ -170,7 +170,7 @@ function verifyAdminBundle() {
 function verifyDistAdminIfPresent() {
   const distAdmin = path.join(root, "frontend/dist/admin");
   if (!fs.existsSync(distAdmin)) return;
-  for (const f of ["config.yml", "cms-custom.js", "media-manifest.json"]) {
+  for (const f of ["config.yml", "cms-app.js", "media-manifest.json"]) {
     if (!filesEqual(`frontend/public/admin/${f}`, `frontend/dist/admin/${f}`)) {
       fail(`frontend/dist/admin/${f} is out of sync with frontend/public/admin/${f} — rebuild required`);
     }

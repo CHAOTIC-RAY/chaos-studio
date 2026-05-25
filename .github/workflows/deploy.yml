@@ -67,8 +67,8 @@ jobs:
       - name: Verify CMS assets in build output
         run: |
           test -f frontend/dist/admin/config.yml
-          test -f frontend/dist/admin/cms-custom.css
-          test -f frontend/dist/admin/cms-custom.js
+          test -f frontend/dist/admin/cms-app.css
+          test -f frontend/dist/admin/cms-app.js
           test -f frontend/dist/admin/media-manifest.json
           test -f frontend/dist/admin/sync-status.json
 
