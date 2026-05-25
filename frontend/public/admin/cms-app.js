@@ -148,12 +148,15 @@
     if (viewMode === "assistant") renderAssistantView();
   }
 
+  const AI_UI_VERSION = "11";
+
   function renderAssistantView() {
     const el = document.getElementById("chaos-view-assistant");
     if (!el || !window.ChaosAssistant) return;
-    if (!el.dataset.mounted) {
+    if (!el.dataset.mounted || el.dataset.uiVersion !== AI_UI_VERSION) {
       window.ChaosAssistant.renderAssistant(el);
       el.dataset.mounted = "1";
+      el.dataset.uiVersion = AI_UI_VERSION;
     }
   }
 

@@ -26,13 +26,15 @@
     },
     "openrouter-free": {
       label: "OpenRouter FREE models",
-      hint: "Free key — openrouter.ai/keys · pick :free models only",
+      hint: "Free key — openrouter.ai/keys · use models below (old :free IDs expire)",
       vision: true,
-      defaultModel: "google/gemini-2.0-flash-exp:free",
+      defaultModel: "openrouter/free",
       models: [
-        { id: "google/gemini-2.0-flash-exp:free", label: "Gemini 2.0 Flash (free, vision)" },
-        { id: "meta-llama/llama-3.2-11b-vision-instruct:free", label: "Llama 3.2 Vision (free)" },
-        { id: "qwen/qwen-2-vl-7b-instruct:free", label: "Qwen2 VL 7B (free, vision)" },
+        { id: "openrouter/free", label: "Free router (recommended — auto-picks free model)" },
+        { id: "nvidia/nemotron-nano-12b-v2-vl:free", label: "Nemotron Nano 12B VL (free, vision)" },
+        { id: "google/gemma-4-26b-a4b-it:free", label: "Gemma 4 26B (free, vision)" },
+        { id: "google/gemma-4-31b-it:free", label: "Gemma 4 31B (free, vision)" },
+        { id: "deepseek/deepseek-v4-flash:free", label: "DeepSeek V4 Flash (free, text)" },
       ],
     },
     openrouter: {
@@ -181,6 +183,13 @@ Rules:
     };
   }
 
+  function normalizeModel(provider, model) {
+    const p = PROVIDERS[provider] || PROVIDERS.google;
+    const id = (model || "").trim();
+    if (p.models.some((m) => m.id === id)) return id;
+    return p.defaultModel;
+  }
+
   function getSettings() {
     try {
       const raw = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
@@ -190,10 +199,11 @@ Rules:
       const provider = PROVIDERS[raw.provider] ? raw.provider : "google";
       const apiKeys = { ...(raw.apiKeys || {}) };
       if (raw.apiKey && !apiKeys[provider]) apiKeys[provider] = raw.apiKey;
+      const model = normalizeModel(provider, raw.model);
       return {
         ...defaultSettings(),
         provider,
-        model: raw.model || PROVIDERS[provider].defaultModel,
+        model,
         apiKeys,
         githubToken: raw.githubToken || "",
       };
@@ -447,7 +457,14 @@ Rules:
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      throw new Error(data.error || `AI request failed (${res.status})`);
+      const err = String(data.error || `AI request failed (${res.status})`);
+      if (/404|no endpoints found/i.test(err)) {
+        const p = PROVIDERS[settings.provider] || PROVIDERS.google;
+        throw new Error(
+          `${err}\n\nThat model is no longer on OpenRouter. In Settings, set Model to "${p.defaultModel}" (or use Google Gemini FREE with a key from aistudio.google.com/apikey).`,
+        );
+      }
+      throw new Error(err);
     }
     return data.content || "";
   }
@@ -675,9 +692,10 @@ Rules:
     } catch (e) {
       thinking?.remove();
       const prov = PROVIDERS[settings.provider] || PROVIDERS.google;
+      const msg = escapeHtml(e.message).replace(/\n/g, "<br>");
       appendMessage(
         "assistant",
-        `<strong>Error:</strong> ${escapeHtml(e.message)}<br><br>Add your <strong>${escapeHtml(prov.label)}</strong> API key in Settings (${escapeHtml(prov.hint)}), or set a worker secret for deploy.`,
+        `<strong>Error:</strong> ${msg}<br><br>Check your <strong>${escapeHtml(prov.label)}</strong> API key (${escapeHtml(prov.hint)}). For OpenRouter, set Model to <strong>Free router</strong>.`,
         messagesEl,
       );
     } finally {

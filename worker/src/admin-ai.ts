@@ -292,7 +292,11 @@ export async function handleAdminAiChat(
   const provider = (body.provider || "google") as Provider;
   const model =
     body.model?.trim() ||
-    (provider === "google" ? "gemini-2.0-flash" : "google/gemini-2.0-flash-exp:free");
+    (provider === "google"
+      ? "gemini-2.0-flash"
+      : provider === "openrouter-free"
+        ? "openrouter/free"
+        : "google/gemini-2.0-flash-001");
   const messages = body.messages || [];
 
   const apiKey = body.apiKey?.trim() || envKeyForProvider(env, provider);
