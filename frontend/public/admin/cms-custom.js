@@ -10,12 +10,38 @@
   const SYNC_STATUS_URL = "/admin/sync-status.json";
   const SITE = "https://portfolio.chaoticstudio.workers.dev";
 
+  const ICONS = {
+    home: '<svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/></svg>',
+    posts: '<svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>',
+    studio: '<svg viewBox="0 0 24 24"><path d="m12 3 2.2 4.5 5 .7-3.6 3.5.9 5L12 14.8 7.5 16.7l.9-5L4.8 8.2l5-.7L12 3z"/></svg>',
+    media: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10.5" r="1.5"/><path d="m21 15-5-5L5 19"/></svg>',
+    search: '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+    menu: '<svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
+    more: '<svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="18" cy="12" r="1.5"/></svg>',
+    file: '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>',
+    external: '<svg viewBox="0 0 24 24"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v7H3V3h7"/></svg>',
+  };
+
+  function icon(name) {
+    return `<span class="chaos-icon" aria-hidden="true">${ICONS[name] || ""}</span>`;
+  }
+
   const MOBILE_TABS = [
-    { hash: "#/", label: "Home", icon: "⌂", isMenu: false },
-    { hash: "#/collections/campaign/entries/campaign-posts", label: "Posts", icon: "📱", isMenu: false },
-    { hash: "#/collections/chaos-studio/entries/studio-page", label: "Studio", icon: "✦", isMenu: false },
-    { hash: "#/media", label: "Media", icon: "🖼", isMenu: false },
-    { hash: "", label: "More", icon: "⋯", isMenu: true },
+    { hash: "#/", label: "Home", icon: "home", isMenu: false },
+    {
+      hash: "#/collections/campaign/entries/campaign-posts",
+      label: "Posts",
+      icon: "posts",
+      isMenu: false,
+    },
+    {
+      hash: "#/collections/chaos-studio/entries/studio-page",
+      label: "Studio",
+      icon: "studio",
+      isMenu: false,
+    },
+    { hash: "#/media", label: "Media", icon: "media", isMenu: false },
+    { hash: "", label: "More", icon: "more", isMenu: true },
   ];
 
   const SECTIONS = [
@@ -24,35 +50,35 @@
       title: "Social posts",
       desc: "Edit campaign cards, titles, tags, and which posts are visible.",
       hash: "#/collections/campaign/entries/campaign-posts",
-      icon: "📱",
+      icon: "posts",
     },
     {
       step: "2",
       title: "Chaos Studio page",
       desc: "Packages, prices, services, and studio contact info.",
       hash: "#/collections/chaos-studio/entries/studio-page",
-      icon: "✦",
+      icon: "studio",
     },
     {
       step: "3",
       title: "Home page text",
       desc: "Profile, experience, skills, and contact — not the Studio tab.",
       hash: "#/collections/portfolio/entries/main",
-      icon: "🏠",
+      icon: "home",
     },
     {
       step: "4",
       title: "SEO & project cards",
       desc: "Browser title, work thumbnails, and client logos.",
       hash: "#/collections/site/entries/site-config",
-      icon: "🔍",
+      icon: "search",
     },
     {
       step: "5",
       title: "Pictures",
       desc: "Upload images and browse every post folder.",
       hash: "#/media",
-      icon: "🖼",
+      icon: "media",
     },
   ];
 
@@ -195,14 +221,14 @@
         </div>
       </div>
       <nav class="chaos-admin-shell__tabs" aria-label="CMS mode">
-        <a href="#/collections" data-nav-hash="#/collections">Contents</a>
-        <a href="#/media" data-nav-hash="#/media">Media</a>
+        <a href="#/collections" data-nav-hash="#/collections">${icon("file")} Contents</a>
+        <a href="#/media" data-nav-hash="#/media">${icon("media")} Media</a>
       </nav>
       <nav class="chaos-admin-shell__nav" aria-label="Quick links">
         <a href="#/" data-nav-hash="#/">Dashboard</a>
         <a href="${SITE}/" target="_blank" rel="noopener">View site</a>
       </nav>
-      <button type="button" class="chaos-admin-shell__menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="${DRAWER_ID}-panel">☰</button>
+      <button type="button" class="chaos-admin-shell__menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="${DRAWER_ID}-panel">${icon("menu")}</button>
     `;
     document.body.prepend(shell);
     document.body.classList.add("chaos-admin-ready");
@@ -228,8 +254,8 @@
         <h2>Sections</h2>
         <div class="chaos-admin-drawer__links">
           <a href="#/" data-nav-hash="#/">Dashboard</a>
-          ${SECTIONS.map((s) => `<a href="${s.hash}" data-nav-hash="${s.hash}">${s.icon} ${s.title}</a>`).join("")}
-          <a href="${SITE}/" target="_blank" rel="noopener">View live site ↗</a>
+          ${SECTIONS.map((s) => `<a href="${s.hash}" data-nav-hash="${s.hash}">${icon(s.icon)} ${s.title}</a>`).join("")}
+          <a href="${SITE}/" target="_blank" rel="noopener">${icon("external")} View live site</a>
           <button type="button" data-install-from-menu>Install app</button>
         </div>
       </nav>
@@ -261,10 +287,10 @@
         ${MOBILE_TABS.map((t) =>
           t.isMenu
             ? `<button type="button" class="chaos-mobile-nav__more" data-open-drawer aria-label="More sections">
-            <span class="chaos-mobile-nav__icon" aria-hidden="true">${t.icon}</span>${t.label}
+            ${icon(t.icon)}${t.label}
           </button>`
             : `<a href="${t.hash}" data-nav-hash="${t.hash}">
-            <span class="chaos-mobile-nav__icon" aria-hidden="true">${t.icon}</span>${t.label}
+            ${icon(t.icon)}${t.label}
           </a>`,
         ).join("")}
       </div>
@@ -333,7 +359,7 @@
           (s) => `
           <a class="chaos-admin-card" href="${s.hash}">
             <span class="chaos-admin-card__step">${s.step}</span>
-            <span class="chaos-admin-card__icon" aria-hidden="true">${s.icon}</span>
+            <span class="chaos-admin-card__icon">${icon(s.icon)}</span>
             <strong>${s.title}</strong>
             <span>${s.desc}</span>
           </a>`,
@@ -598,7 +624,7 @@
       if (thumb) {
         wrap.innerHTML = `<img class="chaos-list-item__thumb" src="${thumb}" alt="" loading="lazy" />`;
       } else {
-        wrap.innerHTML = `<div class="chaos-list-item__thumb chaos-list-item__thumb--empty" aria-hidden="true">📱</div>`;
+        wrap.innerHTML = `<div class="chaos-list-item__thumb chaos-list-item__thumb--empty">${icon("posts")}</div>`;
       }
       if (id) li.dataset.chaosPostId = id;
     });
@@ -633,7 +659,7 @@
       ${
         thumb
           ? `<img class="chaos-post-edit-preview__img" src="${thumb}" alt="" />`
-          : `<div class="chaos-post-edit-preview__img chaos-list-item__thumb--empty">📱</div>`
+          : `<div class="chaos-post-edit-preview__img chaos-list-item__thumb--empty">${icon("posts")}</div>`
       }
       <div class="chaos-post-edit-preview__meta">
         <strong>${escapeHtml(client ? `${client} — ${title}` : title)}</strong>

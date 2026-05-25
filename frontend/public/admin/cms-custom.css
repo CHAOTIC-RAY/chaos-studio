@@ -1,35 +1,41 @@
-/* Chaos Studio — beginner-friendly admin */
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Syne:wght@600;700&display=swap");
+/* Chaos Studio CMS — UI/UX Pro Max design system */
+@import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@500;600&family=Fira+Sans:wght@400;500;600;700&display=swap");
 
 :root {
-  --cms-bg: #f4f0f8;
+  --cms-bg: #faf5ff;
   --cms-surface: #ffffff;
-  --cms-surface-2: #ebe4f2;
-  --cms-purple: #8b3dad;
-  --cms-purple-deep: #5c2480;
-  --cms-purple-soft: #e8d4f5;
-  --cms-text: #1a1520;
-  --cms-muted: #5c5468;
-  --cms-border: rgba(92, 36, 128, 0.14);
-  --cms-radius: 14px;
-  --cms-shadow: 0 4px 24px rgba(60, 20, 90, 0.07);
-  --cms-shell-h: 3.5rem;
+  --cms-surface-2: #f3e8ff;
+  --cms-purple: #7c3aed;
+  --cms-purple-deep: #4c1d95;
+  --cms-purple-soft: #ede9fe;
+  --cms-cta: #f97316;
+  --cms-text: #4c1d95;
+  --cms-muted: #6b5b7a;
+  --cms-border: rgba(76, 29, 149, 0.12);
+  --cms-radius: 12px;
+  --cms-shadow: 0 4px 20px rgba(76, 29, 149, 0.08);
+  --cms-shell-h: 3.25rem;
   --cms-decap-header-h: 0px;
-  --cms-save-dock-h: 3.75rem;
+  --cms-save-dock-h: 4rem;
   --cms-mobile-nav-h: 3.5rem;
   --cms-install-banner-h: 3.75rem;
   --cms-posts-studio-h: 0px;
-  --cms-chrome-top: calc(var(--cms-shell-h) + var(--cms-decap-header-h) + var(--cms-safe-top));
-  --cms-chrome-bottom: calc(
-    var(--cms-mobile-nav-h) + var(--cms-safe-bottom) + 0.5rem
-  );
+  --cms-app-top: calc(var(--cms-shell-h) + var(--cms-safe-top));
+  --cms-app-bottom: 0px;
+  --cms-z-base: 1;
+  --cms-z-banner: 30;
+  --cms-z-shell: 40;
+  --cms-z-toast: 45;
+  --cms-z-dock: 50;
+  --cms-z-drawer: 60;
   --cms-safe-top: env(safe-area-inset-top, 0px);
   --cms-safe-bottom: env(safe-area-inset-bottom, 0px);
   --cms-safe-left: env(safe-area-inset-left, 0px);
   --cms-safe-right: env(safe-area-inset-right, 0px);
   --cms-touch-min: 44px;
-  --cms-font: "DM Sans", system-ui, sans-serif;
-  --cms-display: "Syne", system-ui, sans-serif;
+  --cms-font: "Fira Sans", system-ui, sans-serif;
+  --cms-display: "Fira Code", ui-monospace, monospace;
+  --cms-transition: 180ms ease;
 }
 
 html {
@@ -50,19 +56,17 @@ body {
 }
 
 body.chaos-admin-ready {
-  padding-top: calc(var(--cms-shell-h) + var(--cms-safe-top)) !important;
+  padding-top: var(--cms-app-top) !important;
 }
 
 body.chaos-has-mobile-nav:not(.chaos-route-editor) {
-  padding-bottom: calc(var(--cms-chrome-bottom) + var(--cms-install-banner-h) * 0.35) !important;
+  --cms-app-bottom: calc(var(--cms-mobile-nav-h) + var(--cms-safe-bottom));
+  padding-bottom: calc(var(--cms-app-bottom) + var(--cms-install-banner-h) * 0.35) !important;
 }
 
 body.chaos-route-editor {
-  padding-bottom: calc(var(--cms-save-dock-h) + var(--cms-safe-bottom) + 0.5rem) !important;
-}
-
-body.chaos-has-save-dock.chaos-route-editor {
-  --cms-save-dock-h: 4rem;
+  --cms-app-bottom: calc(var(--cms-save-dock-h) + var(--cms-safe-bottom));
+  padding-bottom: var(--cms-app-bottom) !important;
 }
 
 body.chaos-route-posts-list,
@@ -80,18 +84,39 @@ body.chaos-route-posts-list.chaos-posts-studio-expanded {
 
 #nc-root {
   position: relative !important;
-  min-height: calc(100dvh - var(--cms-shell-h) - var(--cms-safe-top)) !important;
+  height: calc(100dvh - var(--cms-app-top) - var(--cms-app-bottom)) !important;
+  max-height: calc(100dvh - var(--cms-app-top) - var(--cms-app-bottom)) !important;
+  overflow: hidden !important;
   box-sizing: border-box;
 }
 
-body:not(.chaos-route-editor) #nc-root,
-body:not(.chaos-route-editor) [class*="CollectionMain"] {
-  padding-bottom: calc(var(--cms-chrome-bottom) + var(--cms-install-banner-h) + 1rem) !important;
+[class*="App"],
+[class*="WorkflowWrapper"],
+[class*="AppMainContainer"] {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
 }
 
-body.chaos-route-editor [class*="EditEntryMain"],
-body.chaos-route-editor [class*="EditorContainer"] {
-  padding-bottom: calc(var(--cms-save-dock-h) + 1rem) !important;
+[class*="SplitPane"] {
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+[class*="CollectionMain"],
+[class*="EditEntryMain"],
+[class*="EditorContainer"] {
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+body:not(.chaos-route-editor) [class*="CollectionMain"] {
+  padding-bottom: 1rem !important;
 }
 
 /* —— App shell —— */
@@ -100,7 +125,7 @@ body.chaos-route-editor [class*="EditorContainer"] {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 9999;
+  z-index: var(--cms-z-shell);
   height: calc(var(--cms-shell-h) + var(--cms-safe-top));
   padding: var(--cms-safe-top) max(0.75rem, var(--cms-safe-right)) 0 max(0.75rem, var(--cms-safe-left));
   display: flex;
@@ -166,10 +191,38 @@ body.chaos-route-editor [class*="EditorContainer"] {
   min-height: var(--cms-touch-min);
   display: inline-flex;
   align-items: center;
+  cursor: pointer;
+  transition: color var(--cms-transition);
 }
 
 .chaos-admin-shell__nav a:hover {
-  text-decoration: underline;
+  color: var(--cms-purple-deep);
+}
+
+.chaos-admin-shell__nav a:focus-visible,
+.chaos-admin-shell__tabs a:focus-visible,
+.chaos-save-dock__btn:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--cms-purple);
+  outline-offset: 2px;
+}
+
+.chaos-icon {
+  display: inline-flex;
+  width: 1.15rem;
+  height: 1.15rem;
+  flex-shrink: 0;
+}
+
+.chaos-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .chaos-admin-shell__tabs {
@@ -183,6 +236,7 @@ body.chaos-route-editor [class*="EditorContainer"] {
 .chaos-admin-shell__tabs a {
   display: inline-flex;
   align-items: center;
+  gap: 0.35rem;
   min-height: 2rem;
   padding: 0.3rem 0.7rem;
   border-radius: 999px;
@@ -191,6 +245,8 @@ body.chaos-route-editor [class*="EditorContainer"] {
   color: var(--cms-muted);
   text-decoration: none;
   white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--cms-transition), color var(--cms-transition);
 }
 
 .chaos-admin-shell__tabs a:hover {
@@ -205,21 +261,27 @@ body.chaos-route-editor [class*="EditorContainer"] {
 
 .chaos-admin-shell__menu-btn {
   display: none;
+  align-items: center;
+  justify-content: center;
   min-width: var(--cms-touch-min);
   min-height: var(--cms-touch-min);
   border: none;
   border-radius: 12px;
   background: var(--cms-purple-soft);
   color: var(--cms-purple-deep);
-  font-size: 1.3rem;
   cursor: pointer;
   flex-shrink: 0;
+}
+
+.chaos-admin-shell__menu-btn .chaos-icon {
+  width: 1.35rem;
+  height: 1.35rem;
 }
 
 .chaos-admin-drawer {
   position: fixed;
   inset: 0;
-  z-index: 10001;
+  z-index: var(--cms-z-drawer);
   pointer-events: none;
   visibility: hidden;
 }
@@ -303,7 +365,7 @@ body.chaos-route-editor [class*="EditorContainer"] {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 9999;
+  z-index: var(--cms-z-shell);
   height: calc(var(--cms-mobile-nav-h) + var(--cms-safe-bottom));
   padding: 0 var(--cms-safe-right) var(--cms-safe-bottom) var(--cms-safe-left);
   background: var(--cms-surface);
@@ -344,8 +406,10 @@ body.chaos-route-editor [class*="EditorContainer"] {
   color: var(--cms-purple-deep);
 }
 
-.chaos-mobile-nav__icon {
-  font-size: 1.1rem;
+.chaos-mobile-nav .chaos-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-bottom: 0.1rem;
 }
 
 .chaos-install-banner {
@@ -353,7 +417,7 @@ body.chaos-route-editor [class*="EditorContainer"] {
   left: max(0.65rem, var(--cms-safe-left));
   right: max(0.65rem, var(--cms-safe-right));
   bottom: calc(var(--cms-mobile-nav-h) + var(--cms-safe-bottom) + 0.65rem);
-  z-index: 9998;
+  z-index: var(--cms-z-banner);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -380,9 +444,8 @@ body.chaos-banner-visible {
   --cms-install-banner-h: 3.75rem;
 }
 
-body.chaos-banner-visible.chaos-has-mobile-nav #nc-root,
-body.chaos-banner-visible.chaos-has-mobile-nav [class*="CollectionMain"] {
-  padding-bottom: calc(var(--cms-chrome-bottom) + var(--cms-install-banner-h) + 1.25rem) !important;
+body.chaos-banner-visible:not(.chaos-route-editor) {
+  --cms-app-bottom: calc(var(--cms-mobile-nav-h) + var(--cms-install-banner-h) + var(--cms-safe-bottom));
 }
 
 .chaos-install-banner__install {
@@ -454,13 +517,14 @@ body.chaos-banner-visible.chaos-has-mobile-nav [class*="CollectionMain"] {
   text-decoration: none;
   color: inherit;
   box-shadow: var(--cms-shadow);
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  cursor: pointer;
+  transition: border-color var(--cms-transition), box-shadow var(--cms-transition);
   min-height: 7.5rem;
 }
 
 .chaos-admin-card:hover {
   border-color: var(--cms-purple);
-  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(76, 29, 149, 0.12);
 }
 
 .chaos-admin-card__step {
@@ -533,7 +597,7 @@ body.chaos-banner-visible.chaos-has-mobile-nav [class*="CollectionMain"] {
   left: max(0.75rem, var(--cms-safe-left));
   right: max(0.75rem, var(--cms-safe-right));
   bottom: calc(var(--cms-mobile-nav-h) + var(--cms-safe-bottom) + 0.75rem);
-  z-index: 10000;
+  z-index: var(--cms-z-toast);
   padding: 0.9rem 1rem;
   border-radius: 12px;
   background: var(--cms-purple-deep);
@@ -747,7 +811,7 @@ body.chaos-posts-grid-view .chaos-list-item__thumb-wrap {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 10002;
+  z-index: var(--cms-z-dock);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -782,8 +846,28 @@ body.chaos-posts-grid-view .chaos-list-item__thumb-wrap {
 
 .chaos-save-dock__btn--primary {
   border: none;
-  background: linear-gradient(135deg, var(--cms-purple), var(--cms-purple-deep));
+  background: linear-gradient(135deg, var(--cms-purple), #6d28d9);
   color: #fff;
+  cursor: pointer;
+  transition: filter var(--cms-transition), transform var(--cms-transition);
+}
+
+.chaos-save-dock__btn--primary:hover {
+  filter: brightness(1.05);
+}
+
+.chaos-save-dock__btn {
+  cursor: pointer;
+  transition: background var(--cms-transition), border-color var(--cms-transition);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 .chaos-save-dock__btn--danger {
@@ -921,9 +1005,10 @@ button[class*="SaveButton"] {
   border-radius: 999px !important;
   padding: 0.55rem 1.25rem !important;
   font-weight: 700 !important;
-  background: linear-gradient(135deg, var(--cms-purple), var(--cms-purple-deep)) !important;
+  background: linear-gradient(135deg, var(--cms-purple), #6d28d9) !important;
   color: #fff !important;
   border: none !important;
+  cursor: pointer !important;
 }
 
 [class*="ListItem"] {

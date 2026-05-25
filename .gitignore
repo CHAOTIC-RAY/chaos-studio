@@ -20,3 +20,4 @@ MDP_extract/
 .tmp-mdp-pdf/
 .tmp-posts-import-*
 artifacts/
+.cursor/skills/**/__pycache__/
