@@ -96,6 +96,15 @@
     "site-config": "SEO & project cards",
   };
 
+  const COLLECTION_LABELS = {
+    campaign: "Social posts",
+    portfolio: "Site content",
+    "chaos-studio": "Chaos Studio tab",
+    site: "SEO & projects",
+  };
+
+  const MAIN_SLOT_ID = "chaos-main-slot";
+
   function getEntryLabel() {
     const h = route();
     for (const s of SECTIONS) {
@@ -105,9 +114,43 @@
     if (m) {
       return ROUTE_LABELS[m[1]] || m[1].replace(/-/g, " ");
     }
+    const coll = h.match(/^#\/collections\/([^/]+)/);
+    if (coll && !h.includes("/entries/")) {
+      return COLLECTION_LABELS[coll[1]] || coll[1].replace(/-/g, " ");
+    }
     if (h.includes("/media")) return "Media library";
-    if (h.includes("/collections")) return "Contents";
-    return "Editor";
+    if (isPortalHome()) return "Portal home";
+    return "Contents";
+  }
+
+  function getMainPane() {
+    const split = document.querySelector('[class*="SplitPane"]');
+    if (split && split.children.length >= 1) {
+      return split.children[split.children.length - 1];
+    }
+    const wf = document.querySelector('[class*="WorkflowWrapper"]');
+    if (wf) {
+      for (let i = wf.children.length - 1; i >= 0; i--) {
+        const child = wf.children[i];
+        if (!child.className || !String(child.className).includes("Sidebar")) {
+          return child;
+        }
+      }
+    }
+    return document.querySelector('[class*="AppMainContainer"]');
+  }
+
+  function getMainSlot() {
+    const pane = getMainPane();
+    if (!pane) return null;
+    let slot = document.getElementById(MAIN_SLOT_ID);
+    if (!slot) {
+      slot = document.createElement("div");
+      slot.id = MAIN_SLOT_ID;
+      slot.className = "chaos-main-slot";
+      pane.insertBefore(slot, pane.firstChild);
+    }
+    return slot;
   }
 
   function needsContextBar() {
@@ -194,16 +237,6 @@
         location.replace("#/");
       }
     }
-  }
-
-  function findMainPaneHost() {
-    const candidates = [
-      document.querySelector('[class*="EditEntryMain"]'),
-      ...[...document.querySelectorAll('[class*="CollectionMain"]')].filter(
-        (el) => !el.closest('[class*="Sidebar"]'),
-      ),
-    ].filter(Boolean);
-    return candidates[0] || null;
   }
 
   function isMedia() {
@@ -459,8 +492,8 @@
     }
     document.body.classList.add("chaos-route-home");
 
-    const host = findMainPaneHost();
-    if (!host) {
+    const slot = getMainSlot();
+    if (!slot) {
       setTimeout(() => injectDashboard(), 300);
       return;
     }
@@ -470,7 +503,9 @@
       panel = document.createElement("section");
       panel.id = DASHBOARD_ID;
       panel.className = "chaos-admin-dashboard";
-      host.prepend(panel);
+      slot.appendChild(panel);
+    } else if (panel.parentElement !== slot) {
+      slot.appendChild(panel);
     }
 
     panel.innerHTML = `
@@ -496,8 +531,8 @@
       return;
     }
 
-    const host = findMainPaneHost();
-    if (!host) {
+    const slot = getMainSlot();
+    if (!slot) {
       setTimeout(injectContextBar, 200);
       return;
     }
@@ -508,8 +543,8 @@
       bar.id = CONTEXT_BAR_ID;
       bar.className = "chaos-context-bar";
       bar.setAttribute("aria-label", "Breadcrumb");
-      host.prepend(bar);
     }
+    slot.insertBefore(bar, slot.firstChild);
 
     const current = getEntryLabel();
     bar.innerHTML = `
@@ -871,15 +906,31 @@
       return;
     }
 
-    const host = findMainPaneHost();
-    if (!host) return;
+    const slot = getMainSlot();
+    if (!slot) return;
 
     let studio = document.getElementById(POSTS_STUDIO_ID);
     if (!studio) {
       studio = document.createElement("section");
       studio.id = POSTS_STUDIO_ID;
       studio.className = "chaos-posts-studio";
-      studio.innerHTML = `
+    }
+    const hub = document.getElementById(COLLECTION_HUB_ID);
+    const bar = document.getElementById(CONTEXT_BAR_ID);
+    if (bar && bar.parentElement === slot) {
+      slot.insertBefore(studio, bar.nextSibling);
+    } else if (hub && hub.parentElement === slot) {
+      slot.insertBefore(studio, hub.nextSibling);
+    } else {
+      slot.insertBefore(studio, slot.firstChild);
+    }
+    if (studio.dataset.built === "1") {
+      refreshPostsStudioCounts();
+      filterPostListItems(studio);
+      return;
+    }
+    studio.dataset.built = "1";
+    studio.innerHTML = `
         <div class="chaos-posts-studio__head">
           <div>
             <h2>Posts studio</h2>
@@ -900,8 +951,6 @@
           Large file — first load can take 30–60s on mobile. Thumbnails appear as items render.
         </p>
       `;
-      host.prepend(studio);
-
       const search = studio.querySelector(".chaos-posts-studio__search");
       const filter = studio.querySelector(".chaos-posts-studio__filter");
       const view = studio.querySelector(".chaos-posts-studio__view");
@@ -1118,15 +1167,20 @@
       removeEl(COLLECTION_HUB_ID);
       return;
     }
-    const host = findMainPaneHost();
-    if (!host) return;
+    const slot = getMainSlot();
+    if (!slot) return;
 
     let hub = document.getElementById(COLLECTION_HUB_ID);
     if (!hub) {
       hub = document.createElement("section");
       hub.id = COLLECTION_HUB_ID;
       hub.className = "chaos-collection-hub";
-      host.prepend(hub);
+    }
+    const bar = document.getElementById(CONTEXT_BAR_ID);
+    if (bar && bar.parentElement === slot) {
+      slot.insertBefore(hub, bar.nextSibling);
+    } else {
+      slot.insertBefore(hub, slot.firstChild);
     }
 
     const label = getEntryLabel();

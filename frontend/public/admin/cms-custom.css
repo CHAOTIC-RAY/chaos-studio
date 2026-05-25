@@ -90,41 +90,21 @@ body.chaos-route-posts-list.chaos-posts-studio-expanded {
   --cms-posts-studio-h: 11rem;
 }
 
+/* Let Decap manage its own layout — only reserve space for our chrome */
 #nc-root {
   position: relative !important;
-  height: calc(100dvh - var(--cms-app-top) - var(--cms-app-bottom)) !important;
-  max-height: calc(100dvh - var(--cms-app-top) - var(--cms-app-bottom)) !important;
-  overflow: hidden !important;
+  min-height: calc(100dvh - var(--cms-app-top) - var(--cms-app-bottom)) !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
   box-sizing: border-box;
 }
 
-[class*="App"],
-[class*="WorkflowWrapper"],
-[class*="AppMainContainer"] {
-  height: 100% !important;
-  min-height: 0 !important;
-  max-height: 100% !important;
-  overflow: hidden !important;
-}
-
-[class*="SplitPane"] {
-  height: 100% !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-}
-
-[class*="CollectionMain"],
-[class*="EditEntryMain"],
-[class*="EditorContainer"] {
-  height: 100% !important;
-  min-height: 0 !important;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
-  -webkit-overflow-scrolling: touch;
-}
-
-body:not(.chaos-route-editor) [class*="CollectionMain"] {
-  padding-bottom: 1rem !important;
+.chaos-main-slot {
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* —— App shell —— */
@@ -681,14 +661,13 @@ body.chaos-banner-visible:not(.chaos-route-editor) {
   color: var(--cms-text);
 }
 
-/* Portal home — custom dashboard in main pane only */
-.chaos-route-home [class*="SplitPane"] > *:last-child [class*="CollectionMain"] > ul,
-.chaos-route-home [class*="SplitPane"] > *:last-child [class*="CollectionMain"] > div > ul,
-.chaos-route-home [class*="AppMainContainer"] > [class*="CollectionMain"] > ul {
+/* Portal home — hide Decap’s empty collection pane; show only our dashboard slot */
+body.chaos-route-home [class*="SplitPane"] > *:last-child [class*="CollectionMain"],
+body.chaos-route-home [class*="SplitPane"] > *:last-child [class*="CollectionPage"] {
   display: none !important;
 }
 
-.chaos-route-home [class*="SplitPane"] > *:last-child [class*="SidebarHeading"] {
+body.chaos-route-home [class*="SidebarHeading"] {
   display: none !important;
 }
 
@@ -733,15 +712,7 @@ body.chaos-banner-visible:not(.chaos-route-editor) {
   line-height: 1.45;
 }
 
-body.chaos-route-collection [class*="SplitPane"] > *:last-child,
 body.chaos-route-collection [class*="CollectionMain"] {
-  flex: 1 1 auto !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  min-width: 0 !important;
-}
-
-body.chaos-route-collection [class*="SplitPane"] > *:last-child [class*="CollectionMain"] {
   padding: 0 var(--cms-space-md) var(--cms-space-md) !important;
 }
 
@@ -1103,43 +1074,39 @@ header[class*="css-"]:has([role="tablist"]) {
 [class*="WorkflowWrapper"] {
   margin-top: 0 !important;
   padding-top: 0 !important;
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: stretch !important;
   width: 100% !important;
-  min-height: calc(100dvh - var(--cms-shell-h) - var(--cms-safe-top)) !important;
   position: relative !important;
 }
 
 [class*="SplitPane"] {
   display: flex !important;
   flex-direction: row !important;
-  flex: 1 1 auto !important;
+  align-items: flex-start !important;
   width: 100% !important;
-  min-width: 0 !important;
-  height: auto !important;
   min-height: 0 !important;
   position: relative !important;
 }
 
-[class*="SplitPane"] > * {
-  position: relative !important;
-  top: auto !important;
-  left: auto !important;
-  transform: none !important;
+[class*="SplitPane"] > *:first-child {
+  flex: 0 0 var(--cms-sidebar-width) !important;
+  width: var(--cms-sidebar-width) !important;
+  max-width: var(--cms-sidebar-width) !important;
+  min-width: 11rem !important;
+}
+
+[class*="SplitPane"] > *:last-child {
   flex: 1 1 auto !important;
   min-width: 0 !important;
+  width: auto !important;
+  display: block !important;
 }
 
 [class*="Sidebar"],
 aside[class*="css-"] {
   position: relative !important;
-  top: auto !important;
-  left: auto !important;
-  flex: 0 0 var(--cms-sidebar-width) !important;
-  width: var(--cms-sidebar-width) !important;
-  max-width: var(--cms-sidebar-width) !important;
-  min-width: 11rem !important;
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
   height: auto !important;
   max-height: none !important;
   overflow-x: hidden !important;
@@ -1149,25 +1116,16 @@ aside[class*="css-"] {
   background: var(--cms-surface) !important;
   border-right: 1px solid var(--cms-border) !important;
   padding-top: 0.5rem !important;
-  z-index: 1 !important;
-}
-
-[class*="SplitPane"] > *:last-child {
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
-  width: auto !important;
-  display: flex !important;
-  flex-direction: column !important;
 }
 
 [class*="CollectionMain"],
 [class*="EditEntryMain"],
 [class*="EditorContainer"] {
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
-  width: auto !important;
+  width: 100% !important;
   max-width: 100% !important;
+  min-width: 0 !important;
   position: relative !important;
+  box-sizing: border-box !important;
 }
 
 body.chaos-has-save-dock [class*="ToolbarContainer"] {
@@ -1181,16 +1139,21 @@ body.chaos-has-save-dock [class*="ToolbarContainer"] {
 }
 
 [class*="SidebarNavLink"] {
-  border-radius: 10px !important;
+  border: none !important;
+  border-radius: 8px !important;
   margin: 3px 10px !important;
   padding: 0.75rem 1rem !important;
   font-size: 0.95rem !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 [class*="SidebarNavLink--active"] {
   background: var(--cms-purple-soft) !important;
   color: var(--cms-purple-deep) !important;
   font-weight: 700 !important;
+  border-left: 3px solid var(--cms-purple) !important;
+  border-radius: 0 8px 8px 0 !important;
 }
 
 [class*="CollectionMain"],
