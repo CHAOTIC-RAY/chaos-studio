@@ -5,6 +5,7 @@
   const DRAWER_ID = "chaos-admin-drawer";
   const MOBILE_NAV_ID = "chaos-mobile-nav";
   const INSTALL_BANNER_ID = "chaos-install-banner";
+  const SAVE_DOCK_ID = "chaos-save-dock";
   const MANIFEST_URL = "/admin/media-manifest.json";
   const SYNC_STATUS_URL = "/admin/sync-status.json";
   const SITE = "https://portfolio.chaoticstudio.workers.dev";
@@ -91,10 +92,16 @@
     const h = route();
     document.querySelectorAll("[data-nav-hash]").forEach((el) => {
       const target = el.getAttribute("data-nav-hash") || "";
-      const active =
-        target === "#/"
-          ? h === "#/" || h === "" || h === "#/collections"
-          : h.includes(target.replace("#", ""));
+      let active = false;
+      if (target === "#/") {
+        active = h === "#/" || h === "" || h === "#/collections";
+      } else if (target === "#/media") {
+        active = h.includes("/media");
+      } else if (target === "#/collections") {
+        active = !h.includes("/media") && (h.includes("/collections") || h.includes("/entries"));
+      } else {
+        active = h.includes(target.replace("#", ""));
+      }
       el.setAttribute("aria-current", active ? "page" : "false");
     });
   }
@@ -187,6 +194,10 @@
           <span data-sync-badge class="chaos-admin-shell__badge">Checking sync…</span>
         </div>
       </div>
+      <nav class="chaos-admin-shell__tabs" aria-label="CMS mode">
+        <a href="#/collections" data-nav-hash="#/collections">Contents</a>
+        <a href="#/media" data-nav-hash="#/media">Media</a>
+      </nav>
       <nav class="chaos-admin-shell__nav" aria-label="Quick links">
         <a href="#/" data-nav-hash="#/">Dashboard</a>
         <a href="${SITE}/" target="_blank" rel="noopener">View site</a>
@@ -789,6 +800,102 @@
     attach();
   }
 
+  function findEditorToolbar() {
+    return (
+      document.querySelector('[class*="ToolbarContainer"]') ||
+      document.querySelector('[class*="EditorControlBar"]') ||
+      document.querySelector('[class*="EditEntryMain"] [class*="Toolbar"]')
+    );
+  }
+
+  function isActionButton(btn) {
+    const label = (btn.textContent || "").trim().toLowerCase();
+    if (!label) return false;
+    return (
+      label.includes("publish") ||
+      label.includes("save") ||
+      label.includes("delete") ||
+      label.includes("status") ||
+      label.includes("draft")
+    );
+  }
+
+  function injectSaveDock() {
+    if (!isEditor()) {
+      removeEl(SAVE_DOCK_ID);
+      document.body.classList.remove("chaos-has-save-dock");
+      return;
+    }
+
+    const toolbar = findEditorToolbar();
+    if (!toolbar) {
+      setTimeout(injectSaveDock, 250);
+      return;
+    }
+
+    const buttons = [...toolbar.querySelectorAll("button")].filter(isActionButton);
+    if (!buttons.length) {
+      setTimeout(injectSaveDock, 400);
+      return;
+    }
+
+    let dock = document.getElementById(SAVE_DOCK_ID);
+    if (!dock) {
+      dock = document.createElement("div");
+      dock.id = SAVE_DOCK_ID;
+      dock.className = "chaos-save-dock";
+      dock.setAttribute("role", "toolbar");
+      dock.setAttribute("aria-label", "Save and publish");
+      document.body.appendChild(dock);
+    }
+
+    dock.replaceChildren();
+    const label = document.createElement("span");
+    label.className = "chaos-save-dock__label";
+    label.textContent = "Save your changes";
+    dock.appendChild(label);
+
+    for (const btn of buttons) {
+      const text = (btn.textContent || "").trim();
+      const lower = text.toLowerCase();
+      const action = document.createElement("button");
+      action.type = "button";
+      action.className = "chaos-save-dock__btn";
+      action.textContent = text;
+      action.disabled = btn.disabled;
+      if (lower.includes("publish") || lower.includes("save")) {
+        action.classList.add("chaos-save-dock__btn--primary");
+      }
+      if (lower.includes("delete")) {
+        action.classList.add("chaos-save-dock__btn--danger");
+      }
+      action.addEventListener("click", () => btn.click());
+      dock.appendChild(action);
+    }
+
+    document.body.classList.add("chaos-has-save-dock");
+  }
+
+  function setupSaveDockObserver() {
+    if (window.__chaosSaveDockObserver) return;
+    const attach = () => {
+      const root = document.getElementById("nc-root");
+      if (!root) {
+        setTimeout(attach, 400);
+        return;
+      }
+      window.__chaosSaveDockObserver = true;
+      let dockTimer = null;
+      const obs = new MutationObserver(() => {
+        if (!isEditor()) return;
+        clearTimeout(dockTimer);
+        dockTimer = setTimeout(injectSaveDock, 120);
+      });
+      obs.observe(root, { childList: true, subtree: true });
+    };
+    attach();
+  }
+
   function onRouteChange() {
     updateNavCurrent();
     updateChromeClasses();
@@ -796,6 +903,7 @@
     injectEditorHelp();
     injectMediaBrowser();
     injectPostsStudio();
+    injectSaveDock();
     scheduleEnhancePosts();
   }
 
@@ -890,6 +998,7 @@
     setupInstallPrompt();
     initChrome();
     setupPostListObserver();
+    setupSaveDockObserver();
     onRouteChange();
     window.addEventListener("hashchange", () => {
       closeDrawer();
@@ -899,6 +1008,7 @@
       setTimeout(() => {
         registerCmsHooks();
         onRouteChange();
+        injectSaveDock();
         scheduleEnhancePosts();
       }, 1500);
       setTimeout(scheduleEnhancePosts, 3500);

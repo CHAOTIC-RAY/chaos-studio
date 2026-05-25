@@ -13,8 +13,9 @@
   --cms-border: rgba(92, 36, 128, 0.14);
   --cms-radius: 14px;
   --cms-shadow: 0 4px 24px rgba(60, 20, 90, 0.07);
-  --cms-shell-h: 3.75rem;
-  --cms-decap-header-h: 3.25rem;
+  --cms-shell-h: 3.5rem;
+  --cms-decap-header-h: 0px;
+  --cms-save-dock-h: 3.75rem;
   --cms-mobile-nav-h: 3.5rem;
   --cms-install-banner-h: 3.75rem;
   --cms-posts-studio-h: 0px;
@@ -52,8 +53,16 @@ body.chaos-admin-ready {
   padding-top: calc(var(--cms-shell-h) + var(--cms-safe-top)) !important;
 }
 
-body.chaos-has-mobile-nav {
+body.chaos-has-mobile-nav:not(.chaos-route-editor) {
   padding-bottom: calc(var(--cms-chrome-bottom) + var(--cms-install-banner-h) * 0.35) !important;
+}
+
+body.chaos-route-editor {
+  padding-bottom: calc(var(--cms-save-dock-h) + var(--cms-safe-bottom) + 0.5rem) !important;
+}
+
+body.chaos-has-save-dock.chaos-route-editor {
+  --cms-save-dock-h: 4rem;
 }
 
 body.chaos-route-posts-list,
@@ -69,17 +78,20 @@ body.chaos-route-posts-list.chaos-posts-studio-expanded {
   --cms-posts-studio-h: 11rem;
 }
 
-#nc-root,
-[class*="AppMainContainer"],
-[class*="CollectionMain"],
-[class*="EditEntryMain"] {
-  padding-bottom: calc(var(--cms-chrome-bottom) + var(--cms-install-banner-h) + 1rem) !important;
+#nc-root {
+  position: relative !important;
+  min-height: calc(100dvh - var(--cms-shell-h) - var(--cms-safe-top)) !important;
   box-sizing: border-box;
 }
 
-body:not(.chaos-has-mobile-nav) #nc-root,
-body:not(.chaos-has-mobile-nav) [class*="CollectionMain"] {
-  padding-bottom: calc(1.5rem + var(--cms-install-banner-h)) !important;
+body:not(.chaos-route-editor) #nc-root,
+body:not(.chaos-route-editor) [class*="CollectionMain"] {
+  padding-bottom: calc(var(--cms-chrome-bottom) + var(--cms-install-banner-h) + 1rem) !important;
+}
+
+body.chaos-route-editor [class*="EditEntryMain"],
+body.chaos-route-editor [class*="EditorContainer"] {
+  padding-bottom: calc(var(--cms-save-dock-h) + 1rem) !important;
 }
 
 /* —— App shell —— */
@@ -158,6 +170,37 @@ body:not(.chaos-has-mobile-nav) [class*="CollectionMain"] {
 
 .chaos-admin-shell__nav a:hover {
   text-decoration: underline;
+}
+
+.chaos-admin-shell__tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  margin: 0 0.25rem;
+}
+
+.chaos-admin-shell__tabs a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--cms-muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.chaos-admin-shell__tabs a:hover {
+  background: var(--cms-purple-soft);
+  color: var(--cms-purple-deep);
+}
+
+.chaos-admin-shell__tabs a[aria-current="page"] {
+  background: var(--cms-purple-soft);
+  color: var(--cms-purple-deep);
 }
 
 .chaos-admin-shell__menu-btn {
@@ -698,42 +741,146 @@ body.chaos-posts-grid-view .chaos-list-item__thumb-wrap {
   display: none !important;
 }
 
-/* —— Decap overrides —— */
+/* —— Fixed save dock (editor) —— */
+.chaos-save-dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10002;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.6rem max(0.85rem, var(--cms-safe-right)) calc(0.6rem + var(--cms-safe-bottom))
+    max(0.85rem, var(--cms-safe-left));
+  background: var(--cms-surface);
+  border-top: 1px solid var(--cms-border);
+  box-shadow: 0 -8px 28px rgba(60, 20, 90, 0.14);
+}
+
+.chaos-save-dock__label {
+  margin-right: auto;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--cms-muted);
+}
+
+.chaos-save-dock__btn {
+  min-height: var(--cms-touch-min);
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid var(--cms-border);
+  background: var(--cms-surface);
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--cms-text);
+  cursor: pointer;
+}
+
+.chaos-save-dock__btn--primary {
+  border: none;
+  background: linear-gradient(135deg, var(--cms-purple), var(--cms-purple-deep));
+  color: #fff;
+}
+
+.chaos-save-dock__btn--danger {
+  color: #a32b2b;
+  border-color: rgba(163, 43, 43, 0.35);
+}
+
+body.chaos-route-editor .chaos-mobile-nav {
+  display: none !important;
+}
+
+body.chaos-route-editor.chaos-has-mobile-nav {
+  padding-bottom: calc(var(--cms-save-dock-h) + var(--cms-safe-bottom) + 0.5rem) !important;
+}
+
+/* Hide Decap duplicate header (Contents/Media) — tabs live in chaos shell */
 [class*="AppHeader"],
-header[class*="css-"] {
-  position: sticky !important;
-  top: calc(var(--cms-shell-h) + var(--cms-safe-top)) !important;
-  z-index: 9000 !important;
-  min-height: var(--cms-decap-header-h) !important;
-  background: var(--cms-surface) !important;
-  border-bottom: 1px solid var(--cms-border) !important;
-  box-shadow: 0 2px 12px rgba(60, 20, 90, 0.06) !important;
+header[class*="css-"]:has([role="tablist"]) {
+  display: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
 }
 
 [class*="AppMainContainer"],
 [class*="WorkflowWrapper"] {
   margin-top: 0 !important;
   padding-top: 0 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  min-height: calc(100dvh - var(--cms-shell-h) - var(--cms-safe-top)) !important;
+  position: relative !important;
 }
 
-[class*="AppHeader"] a,
-[class*="AppHeader"] button {
-  font-size: 0.95rem !important;
-  font-weight: 600 !important;
+[class*="SplitPane"] {
+  display: flex !important;
+  flex-direction: row !important;
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  position: relative !important;
 }
 
-/* Bigger Contents / Media tabs */
-[class*="AppHeader"] nav a,
-[class*="AppHeader"] [role="tablist"] button {
-  padding: 0.5rem 1rem !important;
-  font-size: 1rem !important;
+[class*="SplitPane"] > * {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
 }
 
 [class*="Sidebar"],
 aside[class*="css-"] {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  flex: 0 0 min(15rem, 26vw) !important;
+  width: min(15rem, 26vw) !important;
+  max-width: 16rem !important;
+  min-width: 11rem !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+  transform: none !important;
+  box-shadow: none !important;
   background: var(--cms-surface) !important;
   border-right: 1px solid var(--cms-border) !important;
   padding-top: 0.5rem !important;
+  z-index: 1 !important;
+}
+
+[class*="CollectionMain"],
+[class*="EditEntryMain"],
+[class*="EditorContainer"] {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: auto !important;
+  max-width: 100% !important;
+  position: relative !important;
+}
+
+body.chaos-has-save-dock [class*="ToolbarContainer"] {
+  visibility: hidden !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
 }
 
 [class*="SidebarNavLink"] {
@@ -935,12 +1082,6 @@ button[class*="SaveButton"] {
     margin: 0.5rem !important;
   }
 
-  [class*="AppHeader"] nav a,
-  [class*="AppHeader"] [role="tablist"] button {
-    min-height: var(--cms-touch-min) !important;
-    padding: 0.45rem 0.75rem !important;
-  }
-
   [class*="SidebarNavLink"] {
     min-height: var(--cms-touch-min) !important;
     padding: 0.75rem 1rem !important;
@@ -960,20 +1101,13 @@ button[class*="SaveButton"] {
     padding: 0.6rem 1.2rem !important;
   }
 
-  [class*="WorkflowWrapper"],
-  [class*="EditorContainer"] {
-    flex-direction: column !important;
+  .chaos-admin-shell__tabs {
+    display: none;
   }
 
-  [class*="Sidebar"],
-  aside[class*="css-"] {
-    width: 100% !important;
-    max-width: none !important;
-    max-height: 38vh !important;
-    overflow-y: auto !important;
-    border-right: none !important;
-    border-bottom: 1px solid var(--cms-border) !important;
-    -webkit-overflow-scrolling: touch;
+  [class*="WorkflowWrapper"] {
+    flex-direction: column !important;
+    min-height: 0 !important;
   }
 
   [class*="SplitPane"] {
@@ -981,10 +1115,40 @@ button[class*="SaveButton"] {
     height: auto !important;
   }
 
+  [class*="Sidebar"],
+  aside[class*="css-"] {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    max-height: 32vh !important;
+    overflow-y: auto !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--cms-border) !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
   [class*="SplitPane"] > * {
     width: 100% !important;
     max-width: 100% !important;
-    flex: none !important;
+    flex: 1 1 auto !important;
+  }
+
+  .chaos-save-dock {
+    justify-content: stretch;
+  }
+
+  .chaos-save-dock__label {
+    width: 100%;
+    margin-bottom: 0.15rem;
+  }
+
+  .chaos-save-dock__btn {
+    flex: 1 1 auto;
+  }
+
+  .chaos-save-dock__btn--primary {
+    flex: 1.4 1 auto;
   }
 
   /* Contain Decap layout — no horizontal overflow on phones */
@@ -1021,10 +1185,6 @@ button[class*="SaveButton"] {
     box-sizing: border-box !important;
   }
 
-  :root {
-    --cms-decap-header-h: 2.75rem;
-  }
-
   body.chaos-route-posts-list {
     --cms-posts-studio-h: 10.5rem;
   }
@@ -1038,39 +1198,6 @@ button[class*="SaveButton"] {
   .chaos-posts-studio__filter,
   .chaos-posts-studio__view {
     flex: 1 1 100%;
-  }
-
-  [class*="AppHeader"] {
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    gap: 0.25rem !important;
-    padding: 0.35rem 0.5rem !important;
-    min-height: var(--cms-decap-header-h) !important;
-    overflow: hidden !important;
-  }
-
-  /* Hide backend URL chip — it was overlapping Contents / Media tabs */
-  [class*="AppHeader"] > div:not(nav):not([role="tablist"]),
-  [class*="AppHeader"] a[href*="chaoticstudio"],
-  [class*="AppHeader"] a[href*="workers.dev"],
-  [class*="AppHeader"] [class*="SiteLink"],
-  [class*="AppHeader"] [class*="Backstage"] {
-    display: none !important;
-  }
-
-  [class*="AppHeader"] nav,
-  [class*="AppHeader"] [role="tablist"] {
-    flex: 1 1 auto !important;
-    min-width: 0 !important;
-    justify-content: flex-start !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-
-  [class*="AppHeader"] nav::-webkit-scrollbar,
-  [class*="AppHeader"] [role="tablist"]::-webkit-scrollbar {
-    display: none;
   }
 
   [class*="CollectionTop"],
