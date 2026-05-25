@@ -1,4 +1,4 @@
-/** Admin AI — cloud providers (no Ollama). Keys via worker secrets or request body. */
+/** Admin AI — free-tier friendly providers + image (vision) support */
 
 export interface AdminAiEnv {
   AI_API_KEY?: string;
@@ -9,11 +9,32 @@ export interface AdminAiEnv {
   GROQ_API_KEY?: string;
 }
 
-type Provider = "openrouter" | "openai" | "anthropic" | "google" | "groq";
+type Provider =
+  | "google"
+  | "openrouter-free"
+  | "openrouter"
+  | "openai"
+  | "anthropic"
+  | "groq";
+
+interface TextPart {
+  type: "text";
+  text: string;
+}
+
+interface ImagePart {
+  type: "image";
+  mimeType: string;
+  data: string;
+}
+
+type ContentPart = TextPart | ImagePart;
+
+type MessageContent = string | ContentPart[] | { parts: ContentPart[] };
 
 interface ChatMessage {
   role: string;
-  content: string;
+  content: MessageContent;
 }
 
 interface ChatBody {
@@ -33,6 +54,7 @@ const CORS: HeadersInit = {
 function envKeyForProvider(env: AdminAiEnv, provider: Provider): string | undefined {
   switch (provider) {
     case "openrouter":
+    case "openrouter-free":
       return env.OPENROUTER_API_KEY || env.AI_API_KEY;
     case "openai":
       return env.OPENAI_API_KEY || env.AI_API_KEY;
@@ -47,6 +69,31 @@ function envKeyForProvider(env: AdminAiEnv, provider: Provider): string | undefi
   }
 }
 
+function flattenParts(content: MessageContent): ContentPart[] {
+  if (typeof content === "string") return [{ type: "text", text: content }];
+  if (Array.isArray(content)) return content;
+  if (content && typeof content === "object" && "parts" in content) return content.parts;
+  return [{ type: "text", text: String(content) }];
+}
+
+function openAiMessageContent(parts: ContentPart[]): string | object[] {
+  const hasImage = parts.some((p) => p.type === "image");
+  if (!hasImage) {
+    return parts.map((p) => (p.type === "text" ? p.text : "")).join("\n");
+  }
+  const blocks: object[] = [];
+  for (const p of parts) {
+    if (p.type === "text" && p.text) blocks.push({ type: "text", text: p.text });
+    if (p.type === "image") {
+      blocks.push({
+        type: "image_url",
+        image_url: { url: `data:${p.mimeType};base64,${p.data}` },
+      });
+    }
+  }
+  return blocks;
+}
+
 async function openAiCompatibleChat(
   url: string,
   apiKey: string,
@@ -54,6 +101,11 @@ async function openAiCompatibleChat(
   messages: ChatMessage[],
   extraHeaders: Record<string, string> = {},
 ): Promise<string> {
+  const payload = messages.map((m) => ({
+    role: m.role,
+    content: openAiMessageContent(flattenParts(m.content)),
+  }));
+
   const res = await fetch(url, {
     method: "POST",
     headers: {
@@ -61,7 +113,7 @@ async function openAiCompatibleChat(
       "Content-Type": "application/json",
       ...extraHeaders,
     },
-    body: JSON.stringify({ model, messages, temperature: 0.3 }),
+    body: JSON.stringify({ model, messages: payload, temperature: 0.3 }),
   });
   if (!res.ok) {
     const err = await res.text();
@@ -78,8 +130,10 @@ async function anthropicChat(
   model: string,
   messages: ChatMessage[],
 ): Promise<string> {
-  const system = messages.find((m) => m.role === "system")?.content || "";
+  const system = messages.find((m) => m.role === "system");
+  const systemText = system ? flattenParts(system.content).map((p) => (p.type === "text" ? p.text : "")).join("\n") : "";
   const turns = messages.filter((m) => m.role !== "system");
+
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -90,11 +144,28 @@ async function anthropicChat(
     body: JSON.stringify({
       model,
       max_tokens: 8192,
-      system,
-      messages: turns.map((m) => ({
-        role: m.role === "assistant" ? "assistant" : "user",
-        content: m.content,
-      })),
+      system: systemText,
+      messages: turns.map((m) => {
+        const parts = flattenParts(m.content);
+        const blocks: object[] = [];
+        for (const p of parts) {
+          if (p.type === "text" && p.text) blocks.push({ type: "text", text: p.text });
+          if (p.type === "image") {
+            blocks.push({
+              type: "image",
+              source: {
+                type: "base64",
+                media_type: p.mimeType,
+                data: p.data,
+              },
+            });
+          }
+        }
+        return {
+          role: m.role === "assistant" ? "assistant" : "user",
+          content: blocks.length === 1 && blocks[0] && "text" in (blocks[0] as object) ? (blocks[0] as { text: string }).text : blocks,
+        };
+      }),
     }),
   });
   if (!res.ok) {
@@ -107,17 +178,34 @@ async function anthropicChat(
   return data.content?.map((c) => c.text || "").join("") || "";
 }
 
+function geminiParts(parts: ContentPart[]): object[] {
+  const out: object[] = [];
+  for (const p of parts) {
+    if (p.type === "text" && p.text) out.push({ text: p.text });
+    if (p.type === "image") {
+      out.push({ inline_data: { mime_type: p.mimeType, data: p.data } });
+    }
+  }
+  return out;
+}
+
 async function googleChat(
   apiKey: string,
   model: string,
   messages: ChatMessage[],
 ): Promise<string> {
-  const system = messages.find((m) => m.role === "system")?.content;
+  const system = messages.find((m) => m.role === "system");
+  const systemText = system
+    ? flattenParts(system.content)
+        .map((p) => (p.type === "text" ? p.text : ""))
+        .join("\n")
+    : "";
+
   const contents = messages
     .filter((m) => m.role !== "system")
     .map((m) => ({
       role: m.role === "assistant" ? "model" : "user",
-      parts: [{ text: m.content }],
+      parts: geminiParts(flattenParts(m.content)),
     }));
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
@@ -125,7 +213,7 @@ async function googleChat(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      ...(system ? { systemInstruction: { parts: [{ text: system }] } } : {}),
+      ...(systemText ? { systemInstruction: { parts: [{ text: systemText }] } } : {}),
       contents,
       generationConfig: { temperature: 0.3 },
     }),
@@ -148,6 +236,7 @@ async function runChat(
 ): Promise<string> {
   switch (provider) {
     case "openrouter":
+    case "openrouter-free":
       return openAiCompatibleChat(
         "https://openrouter.ai/api/v1/chat/completions",
         apiKey,
@@ -200,15 +289,17 @@ export async function handleAdminAiChat(
     return Response.json({ error: "Invalid JSON" }, { status: 400, headers: CORS });
   }
 
-  const provider = (body.provider || "openrouter") as Provider;
-  const model = body.model?.trim() || "google/gemini-2.0-flash-001";
+  const provider = (body.provider || "google") as Provider;
+  const model =
+    body.model?.trim() ||
+    (provider === "google" ? "gemini-2.0-flash" : "google/gemini-2.0-flash-exp:free");
   const messages = body.messages || [];
 
   const apiKey = body.apiKey?.trim() || envKeyForProvider(env, provider);
   if (!apiKey) {
     return Response.json(
       {
-        error: `No API key for ${provider}. Add it in admin AI Settings, or set ${provider.toUpperCase()}_API_KEY on the worker.`,
+        error: `No API key. For free Gemini: aistudio.google.com/apikey — then paste in admin Settings.`,
       },
       { status: 401, headers: CORS },
     );

@@ -145,25 +145,23 @@ Normal workflow: edit **`content/portfolio.json`** only via CMS or git.
 
 ---
 
-## 7. AI site assistant (cloud models)
+## 7. AI site assistant (free + images)
 
 **URL:** https://portfolio.chaoticstudio.workers.dev/admin/#/assistant
 
-Chat with **Claude, GPT, Gemini, or Groq** to change site copy, posts, studio text, and SEO. Attach `.json`, `.md`, or `.txt` files as briefs. When the model proposes changes, click **Apply to GitHub** — same flow as Publish (commit to `main`, deploy ~2 min).
+Chat with **free Google Gemini** (or OpenRouter free models) to change site copy, posts, studio text, and SEO. **Upload images** (PNG/JPG/WebP) — the model can read screenshots, post art, and briefs. Attach `.json`, `.md`, or `.txt` too. Click **Apply to GitHub** when you see the preview (deploy ~2 min).
 
-### Recommended setup
+### Recommended setup (100% free)
 
-1. **[OpenRouter](https://openrouter.ai/keys)** — one API key, switch models in the admin dropdown (default: **Gemini 2.0 Flash**).
-2. **GitHub access** — log into the CMS with GitHub, or paste a PAT (repo scope) in AI Settings.
+1. **Free Gemini API key:** https://aistudio.google.com/apikey (no credit card for the free tier).
+2. In admin **AI → Settings:** provider **Google Gemini (FREE)**, model **Gemini 2.0 Flash**, paste `AIza…` key → Save.
+3. **GitHub:** log into CMS with GitHub, or paste a PAT in AI Settings.
 
-Other providers (each needs its own key in Settings):
+### Also free (with vision)
 
-| Provider | Get a key |
-|----------|-----------|
-| OpenAI | https://platform.openai.com/api-keys |
-| Anthropic | https://console.anthropic.com/settings/keys |
-| Google Gemini | https://aistudio.google.com/apikey |
-| Groq | https://console.groq.com/keys |
+- **OpenRouter FREE models** — key at https://openrouter.ai/keys, choose models ending in `:free` (e.g. Gemini Flash free, Llama Vision free).
+
+Paid providers (OpenAI, Anthropic, etc.) remain available in the dropdown if you add keys later.
 
 ### Optional: worker secrets (no key in browser)
 

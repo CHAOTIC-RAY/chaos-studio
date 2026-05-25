@@ -8,19 +8,42 @@
   const SETTINGS_KEY = "chaos_ai_settings";
   const HISTORY_KEY = "chaos_ai_history_v1";
 
-  /** @type {Record<string, { label: string; hint: string; models: { id: string; label: string }[]; defaultModel: string }>} */
+  const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
+  const MAX_IMAGES = 6;
+
+  /** @type {Record<string, { label: string; hint: string; vision?: boolean; models: { id: string; label: string }[]; defaultModel: string }>} */
   const PROVIDERS = {
+    google: {
+      label: "Google Gemini (FREE)",
+      hint: "Free key — aistudio.google.com/apikey · reads images + JSON",
+      vision: true,
+      defaultModel: "gemini-2.0-flash",
+      models: [
+        { id: "gemini-2.0-flash", label: "Gemini 2.0 Flash (free, vision)" },
+        { id: "gemini-2.0-flash-lite", label: "Gemini 2.0 Flash Lite (free, faster)" },
+        { id: "gemini-1.5-flash", label: "Gemini 1.5 Flash (free, vision)" },
+      ],
+    },
+    "openrouter-free": {
+      label: "OpenRouter FREE models",
+      hint: "Free key — openrouter.ai/keys · pick :free models only",
+      vision: true,
+      defaultModel: "google/gemini-2.0-flash-exp:free",
+      models: [
+        { id: "google/gemini-2.0-flash-exp:free", label: "Gemini 2.0 Flash (free, vision)" },
+        { id: "meta-llama/llama-3.2-11b-vision-instruct:free", label: "Llama 3.2 Vision (free)" },
+        { id: "qwen/qwen-2-vl-7b-instruct:free", label: "Qwen2 VL 7B (free, vision)" },
+      ],
+    },
     openrouter: {
-      label: "OpenRouter (recommended)",
-      hint: "One API key, swap models anytime — openrouter.ai/keys",
+      label: "OpenRouter (paid models)",
+      hint: "openrouter.ai/keys",
+      vision: true,
       defaultModel: "google/gemini-2.0-flash-001",
       models: [
-        { id: "google/gemini-2.0-flash-001", label: "Gemini 2.0 Flash — fast, great for copy" },
-        { id: "anthropic/claude-sonnet-4", label: "Claude Sonnet 4 — best quality" },
-        { id: "openai/gpt-4o-mini", label: "GPT-4o mini — cheap & reliable" },
-        { id: "openai/gpt-4o", label: "GPT-4o — strongest OpenAI" },
-        { id: "meta-llama/llama-3.3-70b-instruct", label: "Llama 3.3 70B" },
-        { id: "deepseek/deepseek-chat", label: "DeepSeek V3" },
+        { id: "google/gemini-2.0-flash-001", label: "Gemini 2.0 Flash" },
+        { id: "openai/gpt-4o-mini", label: "GPT-4o mini" },
+        { id: "anthropic/claude-sonnet-4", label: "Claude Sonnet 4" },
       ],
     },
     openai: {
@@ -49,15 +72,6 @@
       models: [
         { id: "claude-sonnet-4-20250514", label: "Claude Sonnet 4" },
         { id: "claude-3-5-haiku-20241022", label: "Claude 3.5 Haiku (fast)" },
-      ],
-    },
-    google: {
-      label: "Google Gemini",
-      hint: "aistudio.google.com/apikey",
-      defaultModel: "gemini-2.0-flash",
-      models: [
-        { id: "gemini-2.0-flash", label: "Gemini 2.0 Flash" },
-        { id: "gemini-1.5-pro", label: "Gemini 1.5 Pro" },
       ],
     },
   };
@@ -112,7 +126,8 @@ Rules:
 - site.config.json: brand, meta, about, social, work, clients.
 - Keep tags/slides/bullets as string arrays, never { tag: "x" } objects.
 - If unsure, ask a clarifying question and omit the chaos_cms_updates block.
-- Attached files may be JSON exports, copy docs, or briefs — use them as source material.`;
+- Attached files may be JSON exports, copy docs, or briefs — use them as source material.
+- When the user uploads images, describe what you see and use them for post copy, client names, slide folder ideas, or alt text. Match post id to image folder names when obvious.`;
 
   let siteSnapshot = null;
   let pendingUpdates = null;
@@ -120,8 +135,8 @@ Rules:
 
   function defaultSettings() {
     return {
-      provider: "openrouter",
-      model: PROVIDERS.openrouter.defaultModel,
+      provider: "google",
+      model: PROVIDERS.google.defaultModel,
       apiKey: "",
       githubToken: "",
     };
@@ -133,7 +148,7 @@ Rules:
       if (raw.ollamaUrl && !raw.provider) {
         return { ...defaultSettings(), githubToken: raw.githubToken || "" };
       }
-      const provider = PROVIDERS[raw.provider] ? raw.provider : "openrouter";
+      const provider = PROVIDERS[raw.provider] ? raw.provider : "google";
       const base = defaultSettings();
       return {
         ...base,
@@ -146,8 +161,39 @@ Rules:
     }
   }
 
+  function providerSupportsVision(provider) {
+    return Boolean(PROVIDERS[provider]?.vision);
+  }
+
+  function buildApiUserMessage(text, attachText, images, provider) {
+    let body = [text, attachText].filter(Boolean).join("\n\n");
+    const imgs = images.filter((a) => a.type === "image" && a.data);
+
+    if (imgs.length && !providerSupportsVision(provider)) {
+      body += "\n\n[Images attached — switch to Google Gemini (FREE) or OpenRouter FREE for vision]";
+      for (const img of imgs) body += `\n- ${img.name}`;
+      return { role: "user", content: body };
+    }
+
+    if (!imgs.length) return { role: "user", content: body || "(no text)" };
+
+    return {
+      role: "user",
+      content: {
+        parts: [
+          { type: "text", text: body || "Use the attached image(s) for the site update." },
+          ...imgs.map((img) => ({
+            type: "image",
+            mimeType: img.mimeType,
+            data: img.data,
+          })),
+        ],
+      },
+    };
+  }
+
   function modelOptionsHtml(provider, selected) {
-    const p = PROVIDERS[provider] || PROVIDERS.openrouter;
+    const p = PROVIDERS[provider] || PROVIDERS.google;
     return p.models
       .map((m) => `<option value="${escapeHtml(m.id)}"${m.id === selected ? " selected" : ""}>${escapeHtml(m.label)}</option>`)
       .join("");
@@ -157,7 +203,7 @@ Rules:
     return Object.entries(PROVIDERS)
       .map(
         ([id, p]) =>
-          `<option value="${id}"${id === selected ? " selected" : ""}>${escapeHtml(p.label)}</option>`,
+          `<option value="${id}"${id === selected ? " selected" : ""}>${escapeHtml(p.label)}${p.vision ? " 📷" : ""}</option>`,
       )
       .join("");
   }
@@ -375,6 +421,15 @@ Rules:
     });
   }
 
+  function readFileAsDataUrl(file) {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result);
+      r.onerror = reject;
+      r.readAsDataURL(file);
+    });
+  }
+
   async function handleFiles(fileList) {
     for (const file of fileList) {
       const name = file.name;
@@ -383,10 +438,25 @@ Rules:
         const text = await readFileAsText(file);
         attachments.push({ name, type: "text", text: text.slice(0, 50000) });
       } else if (lower.match(/\.(png|jpe?g|webp|gif)$/)) {
+        if (attachments.filter((a) => a.type === "image").length >= MAX_IMAGES) {
+          alert(`Max ${MAX_IMAGES} images per message.`);
+          continue;
+        }
+        if (file.size > MAX_IMAGE_BYTES) {
+          alert(`${name} is too large (max ${MAX_IMAGE_BYTES / 1024 / 1024} MB).`);
+          continue;
+        }
+        const dataUrl = await readFileAsDataUrl(file);
+        const comma = String(dataUrl).indexOf(",");
+        const header = String(dataUrl).slice(0, comma);
+        const data = String(dataUrl).slice(comma + 1);
+        const mimeType = header.match(/data:([^;]+)/)?.[1] || file.type || "image/jpeg";
         attachments.push({
           name,
           type: "image",
-          note: `Image attached: ${name} (${Math.round(file.size / 1024)} KB). Describe how to use it in posts if needed.`,
+          mimeType,
+          data,
+          preview: String(dataUrl),
         });
       } else {
         attachments.push({ name, type: "other", note: `File: ${name} (${file.type || "unknown"})` });
@@ -403,10 +473,12 @@ Rules:
       return;
     }
     el.innerHTML = attachments
-      .map(
-        (a, i) =>
-          `<span class="chaos-ai-attach-chip">${a.name} <button type="button" data-rm-attach="${i}" aria-label="Remove">×</button></span>`,
-      )
+      .map((a, i) => {
+        if (a.type === "image" && a.preview) {
+          return `<span class="chaos-ai-attach-chip chaos-ai-attach-chip--img"><img src="${a.preview}" alt="" /><span>${a.name}</span><button type="button" data-rm-attach="${i}" aria-label="Remove">×</button></span>`;
+        }
+        return `<span class="chaos-ai-attach-chip">${a.name} <button type="button" data-rm-attach="${i}" aria-label="Remove">×</button></span>`;
+      })
       .join("");
     el.querySelectorAll("[data-rm-attach]").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -498,20 +570,29 @@ Rules:
     input.value = "";
     sendBtn.disabled = true;
 
+    const batch = [...attachments];
     let attachText = "";
-    if (attachments.length) {
-      attachText = attachments
-        .map((a) => {
-          if (a.text) return `### ${a.name}\n${a.text}`;
-          return `### ${a.name}\n${a.note || ""}`;
-        })
-        .join("\n\n");
+    const textFiles = batch.filter((a) => a.type === "text");
+    const images = batch.filter((a) => a.type === "image");
+    if (textFiles.length) {
+      attachText = textFiles.map((a) => `### ${a.name}\n${a.text}`).join("\n\n");
     }
 
-    appendMessage("user", escapeHtml(text) + (attachText ? `<pre class="chaos-ai-attach-preview">${escapeHtml(attachText.slice(0, 2000))}${attachText.length > 2000 ? "…" : ""}</pre>` : ""), messagesEl);
+    let userHtml = escapeHtml(text);
+    if (images.length) {
+      userHtml += `<div class="chaos-ai-user-images">${images.map((img) => `<img src="${img.preview}" alt="${escapeHtml(img.name)}" />`).join("")}</div>`;
+    }
+    if (attachText) {
+      userHtml += `<pre class="chaos-ai-attach-preview">${escapeHtml(attachText.slice(0, 2000))}${attachText.length > 2000 ? "…" : ""}</pre>`;
+    }
+    appendMessage("user", userHtml, messagesEl);
 
     const history = getHistory();
-    history.push({ role: "user", content: text + (attachText ? "\n\n" + attachText : "") });
+    const historyLine =
+      text +
+      (attachText ? `\n\n${attachText}` : "") +
+      (images.length ? `\n\n[${images.length} image(s) attached]` : "");
+    history.push({ role: "user", content: historyLine });
     attachments = [];
     renderAttachments();
 
@@ -520,11 +601,14 @@ Rules:
 
     try {
       if (!siteSnapshot) await loadSiteSnapshot();
-      const context = buildContextMessage(siteSnapshot, attachText);
+      const context = buildContextMessage(siteSnapshot, "");
+      const prior = history.slice(0, -1).slice(-10).map((m) => ({ role: m.role, content: m.content }));
+      const lastUser = buildApiUserMessage(text, attachText, images, settings.provider);
       const apiMessages = [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: context },
-        ...history.slice(-12).map((m) => ({ role: m.role, content: m.content })),
+        ...prior,
+        lastUser,
       ];
 
       const reply = await chatComplete(apiMessages, settings);
@@ -541,7 +625,7 @@ Rules:
       saveHistory(history);
     } catch (e) {
       thinking?.remove();
-      const prov = PROVIDERS[settings.provider] || PROVIDERS.openrouter;
+      const prov = PROVIDERS[settings.provider] || PROVIDERS.google;
       appendMessage(
         "assistant",
         `<strong>Error:</strong> ${escapeHtml(e.message)}<br><br>Add your <strong>${escapeHtml(prov.label)}</strong> API key in Settings (${escapeHtml(prov.hint)}), or set a worker secret for deploy.`,
@@ -573,7 +657,7 @@ Rules:
 
     const refreshModels = () => {
       const pid = provEl.value;
-      const p = PROVIDERS[pid] || PROVIDERS.openrouter;
+      const p = PROVIDERS[pid] || PROVIDERS.google;
       const cur = modelEl.value;
       modelEl.innerHTML = modelOptionsHtml(pid, cur);
       if (![...modelEl.options].some((o) => o.value === cur)) {
@@ -593,10 +677,10 @@ Rules:
       <div class="chaos-ai">
         <header class="chaos-ai__head">
           <h1>AI site assistant</h1>
-          <p>Use Claude, GPT, Gemini, or Groq — attach files, edit copy, then apply to GitHub in one click.</p>
+          <p><strong>Free:</strong> Google Gemini key (vision + images). Attach photos, JSON, or briefs — apply to GitHub in one click.</p>
         </header>
         <details class="chaos-ai-settings" open>
-          <summary>AI settings</summary>
+          <summary>AI settings (free Gemini recommended)</summary>
           <label>Provider
             <select data-ai-provider>${providerOptionsHtml(settings.provider)}</select>
           </label>
@@ -604,8 +688,8 @@ Rules:
           <label>Model
             <select data-ai-model>${modelOptionsHtml(settings.provider, settings.model)}</select>
           </label>
-          <label>API key
-            <input type="password" data-ai-api-key value="${escapeHtml(settings.apiKey)}" placeholder="sk-or-… / sk-… / AIza…" autocomplete="off" />
+          <label>API key (free at aistudio.google.com/apikey)
+            <input type="password" data-ai-api-key value="${escapeHtml(settings.apiKey)}" placeholder="AIza…" autocomplete="off" />
           </label>
           <label>GitHub token (optional if logged into CMS)
             <input type="password" data-ai-token value="${escapeHtml(settings.githubToken)}" placeholder="ghp_… or use CMS login" autocomplete="off" />
@@ -668,7 +752,7 @@ Rules:
       if (!getHistory().length) {
         appendMessage(
           "assistant",
-          "Hi — pick a provider in Settings (OpenRouter recommended), add your API key, then describe changes. Attach JSON or briefs if helpful. Click <strong>Apply to GitHub</strong> when you see the preview.",
+          "Get a <strong>free</strong> key at <a href=\"https://aistudio.google.com/apikey\" target=\"_blank\" rel=\"noopener\">Google AI Studio</a>, paste it above, save. Upload images (screenshots, post art) or JSON — ask for copy or new posts. Click <strong>Apply to GitHub</strong> when ready.",
           messagesEl,
         );
       }
