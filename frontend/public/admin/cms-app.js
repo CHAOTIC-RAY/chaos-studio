@@ -564,13 +564,23 @@
   function registerCmsHooks() {
     if (window.__chaosAppHooks || !window.CMS?.registerEventListener) return;
     window.__chaosAppHooks = true;
+    // Decap 3.x: preSave/postSave only (no preLoad). Normalize list shapes on save.
     try {
       window.CMS.registerEventListener({
-        name: "preLoad",
-        handler: ({ entry }) => normalizeEntry(entry),
+        name: "preSave",
+        handler: ({ entry }) => {
+          if (!entry?.get) return entry;
+          const data = entry.get("data");
+          if (!data?.toJS) return entry;
+          const plain = data.toJS();
+          normalizeEntry({ data: plain });
+          const Map = data.constructor;
+          if (Map?.fromJS) return entry.set("data", Map.fromJS(plain));
+          return entry;
+        },
       });
     } catch (e) {
-      console.warn("[CMS] preLoad", e);
+      console.warn("[CMS] preSave hook skipped", e);
     }
   }
 

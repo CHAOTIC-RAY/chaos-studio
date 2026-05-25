@@ -487,20 +487,20 @@ body.chaos-mode-media #nc-root {
   position: relative;
   z-index: 1;
   flex: 1 1 auto;
-  min-height: 0;
+  min-height: calc(100dvh - var(--app-header-h) - 6rem - var(--app-dock-h));
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   background: var(--app-bg);
 }
 
-/* Decap: editor-only chrome — stay inside mount, never cover app chrome */
+/* Decap: editor-only chrome — fill mount, do not cover app header/bar */
 body.chaos-mode-editor #nc-root {
   position: relative !important;
   inset: auto !important;
-  height: auto !important;
-  min-height: 100% !important;
-  max-height: none !important;
-  overflow: visible !important;
+  display: block !important;
+  height: 100% !important;
+  min-height: calc(100dvh - var(--app-header-h) - 6rem - var(--app-dock-h)) !important;
+  overflow: hidden !important;
 }
 
 body.chaos-mode-editor [class*="AppHeader"],
@@ -515,8 +515,8 @@ body.chaos-mode-editor [class*="SplitPane"] {
   display: block !important;
   position: relative !important;
   inset: auto !important;
-  height: auto !important;
-  min-height: 0 !important;
+  height: 100% !important;
+  min-height: 100% !important;
   width: 100% !important;
   max-width: 100% !important;
 }
