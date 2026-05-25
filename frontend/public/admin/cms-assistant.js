@@ -7,6 +7,7 @@
   const BRANCH = "main";
   const SETTINGS_KEY = "chaos_ai_settings";
   const HISTORY_KEY = "chaos_ai_history_v1";
+  const CMS_TOKEN_CACHE = "chaos_cms_github_token";
 
   const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
   const MAX_IMAGES = 6;
@@ -131,7 +132,7 @@ Rules:
 - If unsure, ask a clarifying question and omit the chaos_cms_updates block.
 - Attached files may be JSON exports, copy docs, or briefs — use them as source material.
 - When the user uploads images, describe what you see and use them for post copy, client names, slide folder ideas, or alt text. Match post id to image folder names when obvious.
-- The live site only changes after the user clicks **Apply to GitHub** in the admin UI.`;
+- After you return chaos_cms_updates (or a clear JSON patch), the admin **auto-publishes** to main using the user's existing CMS GitHub login.`;
 
   let siteSnapshot = null;
   let pendingUpdates = null;
@@ -287,6 +288,19 @@ Rules:
   }
 
   function findGithubToken() {
+    const cached = sessionStorage.getItem(CMS_TOKEN_CACHE);
+    if (cached?.trim()) return cached.trim();
+
+    try {
+      const decap = JSON.parse(localStorage.getItem("decap-cms-user") || "null");
+      if (decap?.token) {
+        sessionStorage.setItem(CMS_TOKEN_CACHE, decap.token);
+        return decap.token;
+      }
+    } catch {
+      /* ignore */
+    }
+
     const s = getSettings();
     if (s.githubToken?.trim()) return s.githubToken.trim();
 
@@ -318,6 +332,57 @@ Rules:
     return "";
   }
 
+  async function findGithubTokenAsync() {
+    const sync = findGithubToken();
+    if (sync) return sync;
+    try {
+      const cms = window.CMS;
+      const backend =
+        cms?.getBackend?.() ||
+        cms?.backend?.getBackend?.() ||
+        (typeof cms?.backend === "object" ? cms.backend : null);
+      if (backend?.getToken) {
+        const t = await backend.getToken();
+        if (t) {
+          sessionStorage.setItem(CMS_TOKEN_CACHE, t);
+          return t;
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+    return "";
+  }
+
+  function resolvePostIdFromHint(hint, userText) {
+    const posts = siteSnapshot?.files?.["campaign-posts"]?.data?.posts || [];
+    const h = `${hint || ""} ${userText || ""}`.toLowerCase();
+    const explicit = h.match(/\b([a-z][a-z0-9]*-\d{2})\b/);
+    if (explicit) {
+      const id = explicit[1].toLowerCase();
+      if (posts.some((p) => p.id === id)) return id;
+    }
+    let best = null;
+    let bestScore = 0;
+    for (const p of posts) {
+      let score = 0;
+      const client = (p.client || "").toLowerCase();
+      if (client && h.includes(client)) score += 14;
+      const idSp = p.id.replace(/-/g, " ");
+      if (h.includes(p.id) || h.includes(idSp)) score += 22;
+      const title = (p.title || "").toLowerCase();
+      for (const w of ["women", "wommen", "fixture", "futsal", "poster", "champion"]) {
+        const norm = w === "wommen" ? "women" : w;
+        if (h.includes(w) && title.includes(norm)) score += 4;
+      }
+      if (score > bestScore) {
+        bestScore = score;
+        best = p.id;
+      }
+    }
+    return bestScore >= 10 ? best : null;
+  }
+
   async function loadSiteSnapshot() {
     const snap = { loadedAt: new Date().toISOString(), files: {}, live: null };
     try {
@@ -327,7 +392,7 @@ Rules:
       /* ignore */
     }
 
-    const token = findGithubToken();
+    const token = await findGithubTokenAsync();
     for (const [id, meta] of Object.entries(CONTENT_FILES)) {
       if (token) {
         try {
@@ -525,20 +590,65 @@ Rules:
     return null;
   }
 
+  function parseLooseJsonBlocks(text, userText) {
+    for (const m of text.matchAll(/```(?:json|chaos_cms_updates)?\s*([\s\S]*?)```/gi)) {
+      try {
+        const data = JSON.parse(m[1].trim());
+        if (Array.isArray(data.updates)) {
+          const parsed = tryParseUpdatesJson(m[1]);
+          if (parsed?.updates?.length) return parsed;
+        }
+        if (Array.isArray(data.posts)) {
+          return fixAndValidateUpdates({
+            updates: [{ path: "content/campaign-posts.json", content: data }],
+            commitMessage: data.commitMessage || "CMS AI: update posts",
+          });
+        }
+        const postId = data.id || resolvePostIdFromHint("", userText);
+        if (
+          postId &&
+          (data.title != null || data.description != null || data.tags || data.slides)
+        ) {
+          const existing = siteSnapshot?.files?.["campaign-posts"]?.data?.posts || [];
+          if (!existing.some((p) => p.id === postId)) continue;
+          const merged = existing.map((p) =>
+            p.id === postId ? { ...p, ...data, id: postId } : p,
+          );
+          return fixAndValidateUpdates({
+            updates: [{ path: "content/campaign-posts.json", content: { posts: merged } }],
+            commitMessage: data.commitMessage || `CMS AI: update ${postId}`,
+          });
+        }
+      } catch {
+        /* try next block */
+      }
+    }
+    return null;
+  }
+
   /** Build updates from plain chat when the model omits chaos_cms_updates */
   function buildUpdatesFromUserIntent(userText) {
     const t = (userText || "").trim();
     if (!t) return null;
 
-    const titleMatch =
-      t.match(
-        /(?:change|update|set)\s+(?:post\s+)?([a-z0-9_-]+)\s+title\s+to\s+["']([^"']+)["']/i,
-      ) ||
-      t.match(/(?:change|update|set)\s+([a-z0-9_-]+)\s+title\s+to\s+["']([^"']+)["']/i);
-    if (!titleMatch) return null;
+    const titleTo = t.match(/\btitle\s+to\s+["']([^"']+)["']/i);
+    if (!titleTo) return null;
+    const newTitle = titleTo[1].trim();
 
-    const postId = titleMatch[1].toLowerCase();
-    const newTitle = titleMatch[2].trim();
+    let postId = null;
+    const idMatch = t.match(
+      /(?:change|update|set)\s+(?:post\s+)?([a-z0-9_-]+)\s+title\s+to/i,
+    );
+    if (idMatch) postId = idMatch[1].toLowerCase();
+
+    if (!postId) {
+      const hintMatch = t.match(
+        /(?:change|update|set)\s+(?:the\s+)?(.+?)\s+title\s+to\s+["']/i,
+      );
+      postId = resolvePostIdFromHint(hintMatch?.[1] || "", t);
+    }
+
+    if (!postId) return null;
     const existing = siteSnapshot?.files?.["campaign-posts"]?.data?.posts || [];
     if (!existing.some((p) => p.id === postId)) return null;
 
@@ -554,12 +664,16 @@ Rules:
   }
 
   function extractPostPatchFromReply(reply, userText) {
-    const idMatch =
-      (userText || "").match(/([a-z0-9]+-\d+)/i) || (reply || "").match(/([a-z0-9]+-\d+)/i);
-    if (!idMatch) return null;
-    const postId = idMatch[1].toLowerCase();
-    const titleInReply = (reply || "").match(/"title"\s*:\s*"([^"]+)"/i);
+    const postId =
+      resolvePostIdFromHint(reply, userText) ||
+      (userText || "").match(/([a-z0-9]+-\d{2})/i)?.[1]?.toLowerCase() ||
+      (reply || "").match(/([a-z0-9]+-\d{2})/i)?.[1]?.toLowerCase();
+    if (!postId) return null;
+    const titleInReply =
+      (reply || "").match(/"title"\s*:\s*"((?:\\.|[^"\\])*)"/i) ||
+      (reply || "").match(/'title'\s*:\s*'([^']+)'/i);
     if (!titleInReply) return null;
+    const newTitle = titleInReply[1].replace(/\\"/g, '"');
     const existing = siteSnapshot?.files?.["campaign-posts"]?.data?.posts || [];
     if (!existing.some((p) => p.id === postId)) return null;
     return fixAndValidateUpdates({
@@ -567,14 +681,21 @@ Rules:
         {
           path: "content/campaign-posts.json",
           content: {
-            posts: existing.map((p) =>
-              p.id === postId ? { ...p, title: titleInReply[1] } : p,
-            ),
+            posts: existing.map((p) => (p.id === postId ? { ...p, title: newTitle } : p)),
           },
         },
       ],
       commitMessage: `CMS AI: update ${postId}`,
     });
+  }
+
+  function collectParsedUpdates(reply, userText) {
+    return (
+      parseUpdates(reply) ||
+      parseLooseJsonBlocks(reply, userText) ||
+      buildUpdatesFromUserIntent(userText) ||
+      extractPostPatchFromReply(reply, userText)
+    );
   }
 
   async function applyViaWorker(updates, commitMessage, token) {
@@ -763,8 +884,8 @@ Rules:
       })
       .join("");
     el.innerHTML = `
-      <h3>Ready to publish — click Apply below</h3>
-      <p class="chaos-ai-preview__lead">The chat preview alone does <strong>not</strong> update the live site until you commit to GitHub.</p>
+      <h3>Publishing to GitHub…</h3>
+      <p class="chaos-ai-preview__lead">Using your CMS GitHub login. Live site updates in ~2 minutes after deploy.</p>
       ${notes}
       <ul class="chaos-ai-preview__files">${summaries}</ul>
       <p class="chaos-ai-preview__msg">${escapeHtml(pendingUpdates.commitMessage)}</p>
@@ -783,15 +904,16 @@ Rules:
     renderPublishDock();
   }
 
-  async function applyPendingUpdates() {
-    const token = findGithubToken();
+  async function applyPendingUpdates(opts = {}) {
+    const messagesEl = opts.messagesEl || document.querySelector("[data-ai-messages]");
+    const token = await findGithubTokenAsync();
     if (!token) {
-      alert(
-        "Add a GitHub token in settings (repo scope: contents + workflow). Paste ghp_… and click Save API key, or log into CMS via GitHub first.",
-      );
-      return;
+      const err =
+        "Not logged into GitHub. Open Content editor, click Log in with GitHub, then try AI again.";
+      if (!opts.silent) alert(err);
+      return { ok: false, error: err };
     }
-    if (!pendingUpdates?.updates?.length) return;
+    if (!pendingUpdates?.updates?.length) return { ok: false, error: "No updates" };
 
     const buttons = document.querySelectorAll("[data-ai-apply], [data-ai-push-main]");
     buttons.forEach((b) => {
@@ -802,10 +924,7 @@ Rules:
     try {
       const verify = await verifyGithubToken(token);
       if (!verify.ok) {
-        throw new Error(verify.error || "GitHub token rejected. Use a PAT with repo access.");
-      }
-      if (!verify.canPush) {
-        throw new Error("Token cannot push to CHAOTIC-RAY/portfolio. Regenerate with repo scope.");
+        throw new Error(verify.error || "GitHub login expired. Log in again from Content editor.");
       }
 
       const data = await applyViaWorker(
@@ -817,17 +936,22 @@ Rules:
       const commitUrl = data.commits?.[0]?.url
         ? ` <a href="${escapeHtml(data.commits[0].url)}" target="_blank" rel="noopener">View commit</a>`
         : "";
-      appendMessage(
-        "assistant",
-        `<strong>Pushed to main.</strong> Updated: ${escapeHtml(paths)}.${commitUrl} ${escapeHtml(data.message || "Redeploy in ~2 min.")}`,
-        document.querySelector("[data-ai-messages]"),
-      );
+      if (messagesEl) {
+        appendMessage(
+          "assistant",
+          `<strong>Pushed to main.</strong> Updated: ${escapeHtml(paths)}.${commitUrl} ${escapeHtml(data.message || "Redeploy in ~2 min.")}`,
+          messagesEl,
+        );
+      }
       pendingUpdates = null;
       renderPendingPreview();
       renderPublishDock();
       await loadSiteSnapshot();
+      return { ok: true };
     } catch (e) {
-      alert(e.message || String(e));
+      const err = e.message || String(e);
+      if (!opts.silent) alert(err);
+      return { ok: false, error: err };
     } finally {
       buttons.forEach((b) => {
         b.disabled = false;
@@ -895,17 +1019,23 @@ Rules:
       const reply = await chatComplete(apiMessages, settings);
       thinking.remove();
 
-      let parsed = parseUpdates(reply);
-      if (!parsed) parsed = buildUpdatesFromUserIntent(text);
-      if (!parsed) parsed = extractPostPatchFromReply(reply, text);
+      const parsed = collectParsedUpdates(reply, text);
       if (parsed) {
         pendingUpdates = parsed;
         renderPendingPreview();
         appendMessage(
           "assistant",
-          "<strong>Next step:</strong> Click <strong>Push to main</strong> (bottom bar or purple box) — that commits to GitHub and updates the live site in ~2 minutes.",
+          "<strong>Publishing to GitHub</strong> using your CMS login…",
           messagesEl,
         );
+        const pub = await applyPendingUpdates({ silent: true, messagesEl });
+        if (!pub?.ok) {
+          appendMessage(
+            "assistant",
+            `<strong>Could not publish:</strong> ${escapeHtml(pub?.error || "Unknown error")}. Open <strong>Content editor</strong> → log in with GitHub → send your message again.`,
+            messagesEl,
+          );
+        }
       }
 
       appendMessage("assistant", formatReplyHtml(reply), messagesEl);
@@ -988,7 +1118,7 @@ Rules:
       <div class="chaos-ai">
         <header class="chaos-ai__head">
           <h1>AI site assistant</h1>
-          <p>Free Gemini or OpenRouter — paste your API key below, attach images, apply to GitHub.</p>
+          <p>Free Gemini or OpenRouter — paste your API key, chat, and changes auto-publish via your CMS GitHub login.</p>
         </header>
         <section class="chaos-ai-settings" aria-label="AI settings">
           <div class="chaos-ai-settings__grid">
@@ -1004,9 +1134,6 @@ Rules:
             <span data-ai-key-label>${escapeHtml(keyMeta.label)}</span>
             <a class="chaos-ai-settings__link" data-ai-key-link href="${keyMeta.url}" target="_blank" rel="noopener">${escapeHtml(keyMeta.linkText)}</a>
             <input type="text" data-ai-api-key value="${escapeHtml(keyVal)}" placeholder="${escapeHtml(keyMeta.placeholder)}" autocomplete="off" spellcheck="false" />
-          </label>
-          <label class="chaos-ai-settings__field">GitHub token <span class="chaos-ai-settings__optional">(optional if logged into CMS)</span>
-            <input type="password" data-ai-token value="${escapeHtml(settings.githubToken)}" placeholder="ghp_… or use CMS login" autocomplete="off" />
           </label>
           <div class="chaos-ai-settings__actions">
             <button type="button" class="chaos-ai-btn chaos-ai-btn--primary" data-ai-save-settings>Save API key</button>
@@ -1039,24 +1166,23 @@ Rules:
       const prev = getSettings();
       const apiKeys = { ...prev.apiKeys };
       apiKeys[provider] = root.querySelector("[data-ai-api-key]")?.value?.trim() || "";
-      const githubToken = root.querySelector("[data-ai-token]")?.value?.trim() || "";
       saveSettings({
         provider,
         model: root.querySelector("[data-ai-model]")?.value || PROVIDERS[provider].defaultModel,
         apiKeys,
-        githubToken,
+        githubToken: prev.githubToken || "",
       });
-      let msg = `Saved ${PROVIDERS[provider]?.label || provider} API key.`;
-      if (githubToken) {
-        const v = await verifyGithubToken(githubToken);
-        msg += v.ok
-          ? v.canPush
-            ? " GitHub token OK — can push to main."
-            : " GitHub token valid but cannot push — check repo permissions."
-          : ` GitHub token problem: ${v.error || "rejected"}`;
-      } else {
-        msg += " No GitHub token — log into CMS via GitHub or paste ghp_… to publish.";
+      try {
+        const decap = JSON.parse(localStorage.getItem("decap-cms-user") || "null");
+        if (decap?.token) sessionStorage.setItem(CMS_TOKEN_CACHE, decap.token);
+      } catch {
+        /* ignore */
       }
+      const gh = await findGithubTokenAsync();
+      let msg = `Saved ${PROVIDERS[provider]?.label || provider} API key.`;
+      msg += gh
+        ? " CMS GitHub login detected — AI can publish."
+        : " Log in via Content editor (GitHub) before publishing.";
       alert(msg);
     });
 
@@ -1083,7 +1209,7 @@ Rules:
       if (!getHistory().length) {
         appendMessage(
           "assistant",
-          "Paste your API key in the <strong>settings box above</strong> (Gemini or OpenRouter), click <strong>Save API key</strong>, then chat. Upload images or JSON — <strong>Apply to GitHub</strong> when you see a preview.",
+          "Paste your API key above, click <strong>Save API key</strong>, then chat. Changes <strong>auto-publish</strong> using your CMS GitHub login (use Content editor → Log in with GitHub first).",
           messagesEl,
         );
       }

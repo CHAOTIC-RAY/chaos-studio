@@ -148,7 +148,7 @@
     if (viewMode === "assistant") renderAssistantView();
   }
 
-  const AI_UI_VERSION = "13";
+  const AI_UI_VERSION = "14";
 
   function renderAssistantView() {
     const el = document.getElementById("chaos-view-assistant");
@@ -660,17 +660,56 @@
     });
   }
 
+  const CMS_TOKEN_CACHE = "chaos_cms_github_token";
+
+  function cacheCmsGithubToken(token) {
+    if (token && typeof token === "string") {
+      sessionStorage.setItem(CMS_TOKEN_CACHE, token);
+    }
+  }
+
+  function syncDecapGithubToken() {
+    try {
+      const raw = localStorage.getItem("decap-cms-user");
+      if (!raw) return;
+      const user = JSON.parse(raw);
+      if (user?.token) cacheCmsGithubToken(user.token);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  function bindCmsOAuthTokenCache() {
+    if (window.__chaosCmsOAuthCache) return;
+    window.__chaosCmsOAuthCache = true;
+    window.addEventListener("message", (e) => {
+      if (typeof e.data !== "string") return;
+      const okPrefix = "authorization:github:success:";
+      if (!e.data.startsWith(okPrefix)) return;
+      try {
+        const payload = JSON.parse(e.data.slice(okPrefix.length));
+        if (payload?.token) cacheCmsGithubToken(payload.token);
+      } catch {
+        /* ignore */
+      }
+    });
+    syncDecapGithubToken();
+    setInterval(syncDecapGithubToken, 8000);
+  }
+
   function boot() {
     buildShell();
     applyMode();
     bindPublishToast();
     bindPortalNavigation();
+    bindCmsOAuthTokenCache();
     registerCmsHooks();
     watchDecapMount();
     watchHashGuard();
 
     window.addEventListener("load", () => {
       registerCmsHooks();
+      syncDecapGithubToken();
       applyMode();
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("/admin/sw.js", { scope: "/admin/" }).catch(() => {});

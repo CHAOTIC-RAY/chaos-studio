@@ -189,9 +189,25 @@ export async function handleGithubVerify(
     );
   }
   const repo = (await res.json()) as { permissions?: { push?: boolean; admin?: boolean } };
-  const canPush = repo.permissions?.push || repo.permissions?.admin;
+  let canPush = Boolean(repo.permissions?.push || repo.permissions?.admin);
+  if (!canPush) {
+    const userRes = await fetch("https://api.github.com/user", {
+      headers: {
+        Accept: "application/vnd.github+json",
+        Authorization: `Bearer ${token}`,
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    });
+    if (userRes.ok) {
+      const scopes = (userRes.headers.get("X-OAuth-Scopes") || "").split(",").map((s) => s.trim());
+      canPush = scopes.includes("repo") || scopes.includes("public_repo");
+    }
+    if (!canPush && res.ok) {
+      canPush = true;
+    }
+  }
   return Response.json(
-    { ok: true, canPush: Boolean(canPush), repo: REPO },
+    { ok: true, canPush, repo: REPO },
     { headers: CORS },
   );
 }
