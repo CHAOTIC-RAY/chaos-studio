@@ -126,7 +126,7 @@ const PORTFOLIO_NAV: NavItem[] = [
 ];
 
 const STUDIO_NAV: NavItem[] = [
-  { href: portfolioUrl(), label: "Portfolio", route: true },
+  { href: galleryUrl(), label: "Gallery", route: true },
   { href: "#packages", label: "Packages" },
   { href: "#studio-contact", label: "Contact" },
 ];
@@ -400,6 +400,49 @@ export function renderStudioPage(p: Portfolio): string {
       </section>
       <div class="studio-page-body section section--studio">
         ${renderStudioContent(studio, { omitHero: true })}
+      </div>
+      ${renderStudioFinale(studio)}
+    </main>
+    <footer class="site-footer site-footer--studio">
+      <p>© ${new Date().getFullYear()} ${esc(studio.title)} · Malé, Maldives</p>
+    </footer>
+  `;
+}
+
+export function renderGalleryPage(p: Portfolio): string {
+  const studio = p.chaosStudio;
+  return `
+    ${renderSiteChrome(p, { mode: "studio", logoHref: portfolioUrl(), nav: STUDIO_NAV, showPrint: false })}
+    <main id="main" class="page-gallery">
+      <section class="studio-page-hero studio-page-hero--gallery" aria-labelledby="gallery-page-title">
+        <div class="studio-page-hero__frame" data-reveal>
+          <div class="studio-page-logo" aria-hidden="true">
+            <div class="studio-page-logo__dither-ring" aria-hidden="true"></div>
+            <div class="studio-page-logo__mark">${CHAOS_LOGO_SVG_HERO}</div>
+          </div>
+          <p class="eyebrow studio-page-hero__eyebrow">${esc(studio.tagline)}</p>
+          <h1 id="gallery-page-title" class="studio-page-hero__title">Gallery</h1>
+          <p class="studio-page-hero__headline">Campaign posts and studio designs, organized like the expanded portfolio gallery.</p>
+          <p class="studio-page-hero__pitch lead">Browse my latest media, campaigns, and selected design work in one dedicated showcase.</p>
+          <div class="studio-page-hero__actions">
+            <a class="btn btn-primary" href="#posts" data-magnetic>Browse posts</a>
+            <a class="btn btn-ghost" href="#work" data-magnetic>Browse designs</a>
+          </div>
+        </div>
+      </section>
+      <div class="gallery-page-body section section--studio">
+        <section id="posts" class="section section--posts">
+          ${renderPostsSection(p.socialPosts)}
+        </section>
+        <section id="work" class="section">
+          <div class="section-head" data-reveal>
+            <p class="eyebrow">Design showcase</p>
+            <h2>Featured studio work</h2>
+          </div>
+          <div class="work-stack">
+            ${p.featuredWork.projects.map((proj, i) => renderProject(proj, i)).join("")}
+          </div>
+        </section>
       </div>
       ${renderStudioFinale(studio)}
     </main>

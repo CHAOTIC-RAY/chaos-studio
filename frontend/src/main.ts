@@ -8,7 +8,7 @@ import { onVisibilityChange } from "./motion/perf";
 import { initHeaderScroll, initScrollAnimations } from "./motion/scroll";
 import { initWorkMarquee } from "./motion/work-marquee";
 import { downloadPortfolioPdf } from "./pdf-export";
-import { renderPage, renderStudioPage } from "./render";
+import { renderPage, renderStudioPage, renderGalleryPage } from "./render";
 import { getRoute, navigateTo, type AppRoute } from "./router";
 import type { Portfolio } from "./types/portfolio";
 import { initTheme } from "./theme";
@@ -35,6 +35,9 @@ async function mount(route: AppRoute): Promise<void> {
   if (route === "studio") {
     document.title = `${portfolio.chaosStudio.title} · Packages & Services`;
     app.innerHTML = renderStudioPage(portfolio);
+  } else if (route === "gallery") {
+    document.title = `${portfolio.chaosStudio.title} · Gallery`;
+    app.innerHTML = renderGalleryPage(portfolio);
   } else {
     document.title = `${portfolio.profile.name} · Graphic Design Portfolio`;
     app.innerHTML = renderPage(portfolio);
@@ -74,7 +77,11 @@ function bindRouteLinks(): () => void {
     if (!href) return;
     e.preventDefault();
     const route: AppRoute =
-      href === "/studio" || href.endsWith("/studio") ? "studio" : "portfolio";
+      href === "/studio" || href.endsWith("/studio")
+        ? "studio"
+        : href === "/gallery" || href.endsWith("/gallery")
+        ? "gallery"
+        : "portfolio";
     navigateTo(route);
     void mount(route);
     closeMobileNav();
