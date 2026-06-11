@@ -651,7 +651,7 @@
         obs.observe(root, { childList: true, subtree: true });
         return;
       }
-      obs.observe(document.body, { childList: true, subtree: false });
+      obs.observe(document.body, { childList: true, subtree: true });
     };
     mount();
     window.addEventListener("load", () => {
@@ -688,9 +688,12 @@
       if (!e.data.startsWith(okPrefix)) return;
       try {
         const payload = JSON.parse(e.data.slice(okPrefix.length));
-        if (payload?.token) cacheCmsGithubToken(payload.token);
-      } catch {
-        /* ignore */
+        if (payload?.token) {
+          console.debug("Decap OAuth token received");
+          cacheCmsGithubToken(payload.token);
+        }
+      } catch (err) {
+        console.warn("Failed to parse OAuth payload", err);
       }
     });
     syncDecapGithubToken();

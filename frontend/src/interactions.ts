@@ -272,6 +272,7 @@ function initPostsRail(): () => void {
       !hoverPause &&
       !isDown &&
       !isExpanded() &&
+      !document.body.classList.contains("lightbox-open") &&
       !animating &&
       loopHalf() > 1
     ) {
