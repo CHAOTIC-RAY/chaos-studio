@@ -1,6 +1,6 @@
 import type { Portfolio } from "./types/portfolio";
 import { CHAOS_LOGO_SVG, CHAOS_LOGO_SVG_HERO } from "./brand/logo";
-import { portfolioUrl, studioUrl } from "./router";
+import { portfolioUrl, studioUrl, galleryUrl } from "./router";
 import {
   ICON_CHECK,
   ICON_CHEVRON_DOWN,
