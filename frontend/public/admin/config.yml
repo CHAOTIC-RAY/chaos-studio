@@ -214,6 +214,14 @@ collections:
               - { label: Telegram, name: telegram, widget: string }
               - { label: Telegram URL, name: telegramUrl, widget: string }
               - { label: WhatsApp URL, name: whatsappUrl, widget: string }
+      - name: gallery
+        label: Gallery page
+        file: content/gallery.json
+        fields:
+          - { label: Title, name: title, widget: string }
+          - { label: Tagline, name: tagline, widget: string }
+          - { label: Headline, name: headline, widget: string }
+          - { label: Pitch, name: pitch, widget: text }
 
   - name: chaos-studio
     label: Chaos Studio tab

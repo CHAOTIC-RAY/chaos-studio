@@ -1,11 +1,16 @@
 {
-  "checkedAt": "2026-05-25T11:20:26.478Z",
+  "checkedAt": "2026-06-11T21:14:17.646Z",
   "branch": "main",
   "ok": true,
   "mirrors": [
     {
       "source": "content/campaign-meta.json + campaign-posts.json",
       "mirror": "frontend/public/content/campaign-posts.json",
+      "inSync": true
+    },
+    {
+      "source": "content/gallery.json",
+      "mirror": "frontend/public/content/gallery.json",
       "inSync": true
     }
   ],
@@ -24,6 +29,10 @@
     },
     {
       "path": "content/chaos-studio.json",
+      "exists": true
+    },
+    {
+      "path": "content/gallery.json",
       "exists": true
     },
     {

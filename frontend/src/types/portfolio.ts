@@ -35,6 +35,12 @@ export interface Portfolio {
       email: string;
     };
   };
+  gallery: {
+    title: string;
+    tagline: string;
+    headline: string;
+    pitch: string;
+  };
   experience: {
     subtitle: string;
     items: {

@@ -411,6 +411,7 @@ export function renderStudioPage(p: Portfolio): string {
 
 export function renderGalleryPage(p: Portfolio): string {
   const studio = p.chaosStudio;
+  const gallery = p.gallery;
   return `
     ${renderSiteChrome(p, { mode: "studio", logoHref: portfolioUrl(), nav: STUDIO_NAV, showPrint: false })}
     <main id="main" class="page-gallery">
@@ -420,10 +421,10 @@ export function renderGalleryPage(p: Portfolio): string {
             <div class="studio-page-logo__dither-ring" aria-hidden="true"></div>
             <div class="studio-page-logo__mark">${CHAOS_LOGO_SVG_HERO}</div>
           </div>
-          <p class="eyebrow studio-page-hero__eyebrow">${esc(studio.tagline)}</p>
-          <h1 id="gallery-page-title" class="studio-page-hero__title">Gallery</h1>
-          <p class="studio-page-hero__headline">Campaign posts and studio designs, organized like the expanded portfolio gallery.</p>
-          <p class="studio-page-hero__pitch lead">Browse my latest media, campaigns, and selected design work in one dedicated showcase.</p>
+          <p class="eyebrow studio-page-hero__eyebrow">${esc(gallery.tagline)}</p>
+          <h1 id="gallery-page-title" class="studio-page-hero__title">${esc(gallery.title)}</h1>
+          <p class="studio-page-hero__headline">${esc(gallery.headline)}</p>
+          <p class="studio-page-hero__pitch lead">${esc(gallery.pitch)}</p>
           <div class="studio-page-hero__actions">
             <a class="btn btn-primary" href="#posts" data-magnetic>Browse posts</a>
             <a class="btn btn-ghost" href="#work" data-magnetic>Browse designs</a>

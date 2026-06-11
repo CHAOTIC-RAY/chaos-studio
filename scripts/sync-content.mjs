@@ -23,3 +23,13 @@ fs.writeFileSync(
   `${JSON.stringify({ subtitle: meta.subtitle, posts: posts.posts }, null, 2)}\n`,
 );
 console.log("Synced campaign meta + posts → frontend/public/content/campaign-posts.json");
+
+// Also mirror gallery.json (if present) to the site's public content folder
+const galleryPath = path.join(root, "content", "gallery.json");
+const galleryDest = path.join(root, "frontend", "public", "content", "gallery.json");
+if (fs.existsSync(galleryPath)) {
+  const gallery = JSON.parse(fs.readFileSync(galleryPath, "utf8"));
+  fs.mkdirSync(path.dirname(galleryDest), { recursive: true });
+  fs.writeFileSync(galleryDest, `${JSON.stringify(gallery, null, 2)}\n`);
+  console.log("Synced gallery → frontend/public/content/gallery.json");
+}

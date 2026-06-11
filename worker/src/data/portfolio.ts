@@ -1,5 +1,6 @@
 import portfolioBase from "../../../content/portfolio.json";
 import chaosStudioRaw from "../../../content/chaos-studio.json";
+import galleryRaw from "../../../content/gallery.json";
 import { getSocialPosts } from "./campaign-posts";
 import { toStringList } from "./cms-list-shape";
 
@@ -44,9 +45,16 @@ function normalizeChaosStudio<T extends typeof chaosStudioRaw>(studio: T): T {
   } as T;
 }
 
+function normalizeGallery<T extends typeof galleryRaw>(gallery: T): T {
+  return {
+    ...gallery,
+  } as T;
+}
+
 export const portfolio = {
   ...normalizePortfolioBase(portfolioBase),
   chaosStudio: normalizeChaosStudio(chaosStudioRaw),
+  gallery: normalizeGallery(galleryRaw),
   socialPosts: getSocialPosts(),
 };
 

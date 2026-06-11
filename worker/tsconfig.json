@@ -15,6 +15,7 @@
     "../content/campaign-posts.json",
     "../content/campaign-meta.json",
     "../content/portfolio.json",
-    "../content/chaos-studio.json"
+    "../content/chaos-studio.json",
+    "../content/gallery.json"
   ]
 }

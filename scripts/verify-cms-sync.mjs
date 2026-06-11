@@ -37,7 +37,9 @@ function readText(rel) {
 }
 
 /** Pairs that must be byte-identical before deploy (CMS edits content/, build copies to public/). */
-const MIRROR_PAIRS = [];
+const MIRROR_PAIRS = [
+  ["content/gallery.json", "frontend/public/content/gallery.json"],
+];
 
 function readCampaignPublicMerged() {
   const posts = JSON.parse(readText("content/campaign-posts.json"));
@@ -51,6 +53,7 @@ const CMS_REPO_FILES = [
   "content/campaign-posts.json",
   "content/portfolio.json",
   "content/chaos-studio.json",
+  "content/gallery.json",
   "frontend/public/assets/site.config.json",
 ];
 

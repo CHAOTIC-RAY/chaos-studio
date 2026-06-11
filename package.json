@@ -9,6 +9,7 @@
     "migrate:cms-lists": "node scripts/migrate-cms-list-shapes.mjs",
     "revert:cms-lists": "node scripts/revert-cms-list-shapes.mjs",
     "verify:cms-sync": "node scripts/verify-cms-sync.mjs",
+    "test:cms": "node scripts/test-cms.mjs",
     "import:posts": "node scripts/import-posts-zip.mjs",
     "apply:post-copy": "node scripts/apply-post-copy.mjs && npm run sync:content",
     "import:faisa": "node scripts/import-faisa-zip.mjs",
