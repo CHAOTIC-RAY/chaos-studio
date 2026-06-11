@@ -381,10 +381,6 @@ export function renderStudioPage(p: Portfolio): string {
     <main id="main" class="page-studio">
       <section class="studio-page-hero" aria-labelledby="studio-page-title">
         <div class="studio-page-hero__frame" data-reveal>
-          <a class="studio-page-back" href="${portfolioUrl()}" data-route-link>
-            ${ICON_CHEVRON_LEFT}
-            <span>Back to portfolio</span>
-          </a>
           <div class="studio-page-logo" aria-hidden="true">
             <div class="studio-page-logo__dither-ring" aria-hidden="true"></div>
             <div class="studio-page-logo__mark">${CHAOS_LOGO_SVG_HERO}</div>
