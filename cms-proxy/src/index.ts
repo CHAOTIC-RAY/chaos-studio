@@ -48,23 +48,34 @@ const handleAuth = (url: URL, env: Env) => {
   return Response.redirect(authorizationUri, 302);
 };
 
-const callbackScriptResponse = (status: string, token: string) =>
-  new Response(
+const callbackScriptResponse = (status: string, token: string) => {
+  const payload = JSON.stringify({ token }).replace(/</g, "\\u003c");
+  return new Response(
     `<!DOCTYPE html><html><body><script>
-(function() {
-  const receiveMessage = (message) => {
-    window.opener.postMessage(
-      'authorization:github:${status}:${JSON.stringify({ token })}',
-      '*'
-    );
-    window.removeEventListener("message", receiveMessage, false);
+(function () {
+  const message = "authorization:github:${status}:" + JSON.stringify(${payload});
+  const send = () => {
+    if (!window.opener || window.opener.closed) {
+      document.body.textContent = "Unable to complete login: opener window is closed.";
+      return;
+    }
+    window.opener.postMessage(message, "*");
+    try {
+      window.close();
+    } catch (e) {
+      // ignore
+    }
   };
-  window.addEventListener("message", receiveMessage, false);
-  window.opener.postMessage("authorizing:github", "*");
+  if (document.readyState === "complete") {
+    send();
+  } else {
+    window.addEventListener("load", send, false);
+  }
 })();
 </script><p>Authorizing Decap…</p></body></html>`,
     { headers: { "Content-Type": "text/html; charset=utf-8" } },
   );
+};
 
 const handleCallback = async (url: URL, env: Env) => {
   const provider = url.searchParams.get("provider");
