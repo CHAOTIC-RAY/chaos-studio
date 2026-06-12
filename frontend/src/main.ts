@@ -8,6 +8,8 @@ import { onVisibilityChange } from "./motion/perf";
 import { initHeaderScroll, initScrollAnimations } from "./motion/scroll";
 import { initWorkMarquee } from "./motion/work-marquee";
 import { downloadPortfolioPdf } from "./pdf-export";
+import { initPostLightbox } from "./post-lightbox";
+import { initGalleryPanorama } from "./gallery-panorama";
 import { renderPage, renderStudioPage, renderGalleryPage } from "./render";
 import { getRoute, navigateTo, type AppRoute } from "./router";
 import type { Portfolio } from "./types/portfolio";
@@ -31,6 +33,7 @@ async function mount(route: AppRoute): Promise<void> {
 
   app.classList.toggle("app--studio", route === "studio");
   document.body.classList.toggle("route-studio", route === "studio");
+  document.body.classList.toggle("route-gallery", route === "gallery");
 
   if (route === "studio") {
     document.title = `${portfolio.chaosStudio.title} · Packages & Services`;
@@ -63,6 +66,11 @@ async function mount(route: AppRoute): Promise<void> {
     cleanups.push(initInteractions());
     cleanups.push(bindNav());
     cleanups.push(bindPrintPortfolio(portfolio.profile.name));
+  } else if (route === "gallery") {
+    cleanups.push(initStudioInteractions());
+    cleanups.push(initPostLightbox());
+    cleanups.push(initGalleryPanorama(portfolio));
+    cleanups.push(bindNav());
   } else {
     cleanups.push(initStudioInteractions());
     cleanups.push(bindNav());

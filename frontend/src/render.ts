@@ -7,6 +7,9 @@ import {
   ICON_CHEVRON_LEFT,
   ICON_CHEVRON_RIGHT,
   ICON_CLOSE,
+  ICON_FILTER,
+  ICON_GRID,
+  ICON_LIST,
   ICON_MENU,
   ICON_MOON,
   ICON_PRINT,
@@ -121,6 +124,7 @@ const PORTFOLIO_NAV: NavItem[] = [
   { href: "#posts", label: "Posts" },
   { href: "#work", label: "Work" },
   { href: "#skills", label: "Skills" },
+  { href: galleryUrl(), label: "Gallery", route: true },
   { href: studioUrl(), label: "Studio", route: true },
   { href: "#contact", label: "Contact" },
 ];
@@ -219,6 +223,7 @@ export function renderPage(p: Portfolio): string {
         <p class="hero-sub">${esc(p.profile.role)} · ${esc(p.objective.body.slice(0, 120))}…</p>
         <div class="hero-actions" data-parallax="8">
           <a class="btn btn-primary" href="#work" data-magnetic>View featured work</a>
+          <a class="btn btn-ghost" href="${galleryUrl()}" data-route-link data-magnetic>Gallery</a>
           <a class="btn btn-ghost" href="#contact" data-magnetic>Get in touch</a>
         </div>
         <div class="print-clients" hidden>
@@ -410,46 +415,40 @@ export function renderStudioPage(p: Portfolio): string {
 }
 
 export function renderGalleryPage(p: Portfolio): string {
-  const studio = p.chaosStudio;
   const gallery = p.gallery;
   return `
     ${renderSiteChrome(p, { mode: "studio", logoHref: portfolioUrl(), nav: STUDIO_NAV, showPrint: false })}
     <main id="main" class="page-gallery">
-      <section class="studio-page-hero studio-page-hero--gallery" aria-labelledby="gallery-page-title">
-        <div class="studio-page-hero__frame" data-reveal>
-          <div class="studio-page-logo" aria-hidden="true">
-            <div class="studio-page-logo__dither-ring" aria-hidden="true"></div>
-            <div class="studio-page-logo__mark">${CHAOS_LOGO_SVG_HERO}</div>
+      <div class="pano" data-pano-root data-view="grid">
+        <div class="pano__stage" data-pano-stage aria-label="Panoramic gallery — drag to explore">
+          <div class="pano__plane" data-pano-plane></div>
+        </div>
+        <div class="pano__fx" aria-hidden="true">
+          <div class="pano__edge-blur"></div>
+          <div class="pano__vignette"></div>
+        </div>
+        <div class="pano__corner">
+          <p class="eyebrow">${esc(gallery.tagline)}</p>
+          <h1 class="pano__title">${esc(gallery.title)}</h1>
+        </div>
+        <div class="pano__list" data-pano-list role="list"></div>
+        <div class="pano__hint" data-pano-hint aria-hidden="true">
+          <span class="pano__hint-dot"></span> Drag to explore · click to open
+        </div>
+        <div class="pano__controls">
+          <div class="pano__views" role="group" aria-label="Gallery layout">
+            <button type="button" class="pano__view" data-pano-view="grid" aria-pressed="true" aria-label="Panoramic view">${ICON_GRID}</button>
+            <button type="button" class="pano__view" data-pano-view="list" aria-pressed="false" aria-label="List view">${ICON_LIST}</button>
           </div>
-          <p class="eyebrow studio-page-hero__eyebrow">${esc(gallery.tagline)}</p>
-          <h1 id="gallery-page-title" class="studio-page-hero__title">${esc(gallery.title)}</h1>
-          <p class="studio-page-hero__headline">${esc(gallery.headline)}</p>
-          <p class="studio-page-hero__pitch lead">${esc(gallery.pitch)}</p>
-          <div class="studio-page-hero__actions">
-            <a class="btn btn-primary" href="#posts" data-magnetic>Browse posts</a>
-            <a class="btn btn-ghost" href="#work" data-magnetic>Browse designs</a>
+          <div class="pano__filter-wrap">
+            <button type="button" class="pano__filter-btn" data-pano-filter-btn aria-expanded="false" aria-haspopup="menu">
+              ${ICON_FILTER}<span data-pano-filter-label>Filter</span>
+            </button>
+            <div class="pano__filter" data-pano-filter role="menu"></div>
           </div>
         </div>
-      </section>
-      <div class="gallery-page-body section section--studio">
-        <section id="posts" class="section section--posts">
-          ${renderPostsSection(p.socialPosts)}
-        </section>
-        <section id="work" class="section">
-          <div class="section-head" data-reveal>
-            <p class="eyebrow">Design showcase</p>
-            <h2>Featured studio work</h2>
-          </div>
-          <div class="work-stack">
-            ${p.featuredWork.projects.map((proj, i) => renderProject(proj, i)).join("")}
-          </div>
-        </section>
       </div>
-      ${renderStudioFinale(studio)}
     </main>
-    <footer class="site-footer site-footer--studio">
-      <p>© ${new Date().getFullYear()} ${esc(studio.title)} · Malé, Maldives</p>
-    </footer>
   `;
 }
 
