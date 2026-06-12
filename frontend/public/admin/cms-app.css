@@ -2,18 +2,19 @@
 @import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@500;600&family=Fira+Sans:wght@400;500;600;700&display=swap");
 
 :root {
-  --app-bg: #f5f3ff;
-  --app-surface: #ffffff;
-  --app-surface-2: #eef2ff;
-  --app-primary: #6366f1;
-  --app-primary-dark: #4338ca;
-  --app-cta: #10b981;
-  --app-text: #1e1b4b;
-  --app-muted: #64748b;
-  --app-border: rgba(99, 102, 241, 0.14);
-  --app-radius: 14px;
-  --app-shadow: 0 1px 3px rgba(30, 27, 75, 0.06);
-  --app-shadow-lg: 0 12px 32px rgba(99, 102, 241, 0.12);
+  --app-bg: #060409;
+  --app-bg-2: #0c0716;
+  --app-surface: rgba(255, 255, 255, 0.045);
+  --app-surface-2: rgba(213, 119, 237, 0.09);
+  --app-primary: #d577ed;
+  --app-primary-dark: #e8a0f5;
+  --app-cta: #4ade80;
+  --app-text: #f4ecfb;
+  --app-muted: #b6a6c6;
+  --app-border: rgba(213, 119, 237, 0.18);
+  --app-radius: 16px;
+  --app-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --app-shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(213, 119, 237, 0.12);
   --app-header-h: 3.5rem;
   --app-dock-h: 4rem;
   --app-safe-t: env(safe-area-inset-top, 0px);
@@ -39,7 +40,12 @@ body {
   font-family: var(--app-font);
   font-size: 16px;
   color: var(--app-text);
-  background: var(--app-bg);
+  background:
+    radial-gradient(1100px 700px at 12% -8%, rgba(213, 119, 237, 0.16), transparent 60%),
+    radial-gradient(900px 600px at 110% 0%, rgba(120, 80, 200, 0.14), transparent 55%),
+    linear-gradient(180deg, var(--app-bg-2), var(--app-bg) 60%);
+  background-attachment: fixed;
+  color-scheme: dark;
   overflow-x: hidden;
 }
 
@@ -63,7 +69,9 @@ body {
   gap: 0.75rem;
   height: var(--app-header-h);
   padding: 0 max(1rem, var(--app-safe-r)) 0 max(1rem, var(--app-safe-l));
-  background: var(--app-surface);
+  background: rgba(10, 7, 18, 0.72);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
   border-bottom: 1px solid var(--app-border);
   box-shadow: var(--app-shadow);
 }
@@ -229,6 +237,8 @@ body.chaos-mode-media #nc-root {
 .chaos-kpi {
   padding: 0.85rem 1rem;
   background: var(--app-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--app-border);
   border-radius: var(--app-radius);
   box-shadow: var(--app-shadow);
@@ -263,18 +273,21 @@ body.chaos-mode-media #nc-root {
   gap: 0.35rem;
   padding: 1.1rem 1.15rem;
   background: var(--app-surface);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--app-border);
   border-radius: var(--app-radius);
   box-shadow: var(--app-shadow);
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  transition: border-color var(--app-ease), box-shadow var(--app-ease), transform var(--app-ease);
+  transition: border-color var(--app-ease), box-shadow var(--app-ease), transform var(--app-ease), background var(--app-ease);
 }
 
 .chaos-card:hover {
   border-color: var(--app-primary);
   box-shadow: var(--app-shadow-lg);
+  background: var(--app-surface-2);
   transform: translateY(-2px);
 }
 
@@ -293,8 +306,8 @@ body.chaos-mode-media #nc-root {
   display: flex;
   grid-column: 1 / -1;
   margin-bottom: 0.75rem;
-  border-color: var(--app-primary);
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.06), var(--app-surface));
+  border-color: rgba(213, 119, 237, 0.35);
+  background: linear-gradient(135deg, rgba(213, 119, 237, 0.16), rgba(120, 80, 200, 0.06) 60%, var(--app-surface));
 }
 
 /* Icons — scoped so Decap global SVG rules cannot blow them up */
@@ -314,16 +327,26 @@ body.chaos-mode-media #nc-root {
   height: 1rem;
 }
 
+/* Only icons inside a sizing wrapper fill it; stray svgs stay capped so a
+   missing wrapper can never blow an icon up to fill its card. */
+.chaos-icon svg,
+.chaos-card__icon svg {
+  width: 100%;
+  height: 100%;
+}
 #chaos-app svg {
-  width: 100% !important;
-  height: 100% !important;
-  max-width: 100%;
-  max-height: 100%;
+  max-width: 1.5rem;
+  max-height: 1.5rem;
   stroke: currentColor;
   fill: none !important;
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+.chaos-icon svg,
+.chaos-card__icon svg {
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .chaos-app-header__nav .chaos-icon {
@@ -506,7 +529,11 @@ body.chaos-mode-media #nc-root {
   min-height: calc(100dvh - var(--app-header-h) - 6rem - var(--app-dock-h));
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-  background: var(--app-bg);
+  /* Decap's editor ships its own light UI — keep it on a light surface so the
+     embedded form stays readable inside the dark portal shell. */
+  background: #f7f5fb;
+  color: #1e1b3b;
+  border-radius: var(--app-radius) var(--app-radius) 0 0;
 }
 
 /* Decap: editor-only chrome — fill mount, do not cover app header/bar */
@@ -588,9 +615,11 @@ body.chaos-mode-editor [class*="ListItem"] {
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem max(1rem, var(--app-safe-r)) calc(0.6rem + var(--app-safe-b)) max(1rem, var(--app-safe-l));
-  background: var(--app-surface);
+  background: rgba(10, 7, 18, 0.82);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
   border-top: 1px solid var(--app-border);
-  box-shadow: 0 -8px 24px rgba(30, 27, 75, 0.1);
+  box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.5);
 }
 
 body.chaos-mode-editor .chaos-dock {
@@ -617,7 +646,8 @@ body.chaos-mode-editor .chaos-dock {
   padding: 0.45rem 1.15rem;
   border-radius: 999px;
   border: 1px solid var(--app-border);
-  background: var(--app-surface);
+  background: var(--app-surface-2);
+  color: var(--app-text);
   font: inherit;
   font-weight: 700;
   font-size: 0.9rem;
@@ -631,7 +661,7 @@ body.chaos-mode-editor .chaos-dock {
 }
 
 .chaos-dock__btn--danger {
-  color: #b91c1c;
+  color: #ff8a9b;
 }
 
 .chaos-toast {

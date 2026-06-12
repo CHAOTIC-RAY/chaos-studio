@@ -251,7 +251,7 @@
         ${icon("chat")}
         <strong>AI site assistant</strong>
         <span>Free Gemini AI with image uploads — attach files and apply site changes to GitHub.</span>
-        <span class="chaos-card__cta">Open AI ${ICONS.chevron}</span>
+        <span class="chaos-card__cta">Open AI ${icon("chevron", "sm")}</span>
       </a>
       <div class="chaos-grid">${cards}</div>
       <p class="chaos-dash__note"><strong>Publish</strong> saves to GitHub. The live site updates in about two minutes after deploy.</p>

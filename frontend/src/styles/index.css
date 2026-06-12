@@ -1520,18 +1520,25 @@ main { padding-top: var(--header-h); }
   text-align: left;
   font-family: var(--font-body);
   color: var(--text);
+  /* Solid glass fill (no live backdrop-filter): blurring dozens of moving
+     tiles every frame tanks the framerate, so the panorama fakes the glass
+     look with an opaque gradient instead. */
   background:
-    linear-gradient(165deg, rgba(213, 119, 237, 0.12) 0%, transparent 45%),
-    var(--card);
+    linear-gradient(165deg, rgba(213, 119, 237, 0.16) 0%, transparent 45%),
+    var(--pano-tile-bg, #140b1f);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform;
+  contain: layout paint;
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
   cursor: pointer;
   overflow: hidden;
+}
+[data-theme="light"] .pano-tile {
+  --pano-tile-bg: #fbf6ff;
 }
 .pano-tile:hover,
 .pano-tile:focus-visible {
@@ -1606,6 +1613,207 @@ main { padding-top: var(--header-h); }
   color: var(--purple-bright);
   background: var(--tool-tag-bg);
   border: 1px solid var(--tool-tag-border);
+}
+
+/* Product / web-app tiles — optimized for showing off full app screenshots */
+.pano-tile--app {
+  --pano-tile-bg: #0d0a16;
+  border-color: rgba(213, 119, 237, 0.34);
+}
+.pano-tile--app .pano-tile__media {
+  background:
+    radial-gradient(120% 100% at 50% 0%, rgba(213, 119, 237, 0.22), transparent 60%),
+    linear-gradient(180deg, #15101f, #0a0710);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem;
+}
+/* Desktop captures are wide — contain them so the whole UI is legible. */
+.pano-tile--app-desktop .pano-tile__img {
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
+}
+/* Phone captures are tall — let them fill the frame for a device-shot look. */
+.pano-tile--app-mobile .pano-tile__media {
+  padding: 0.45rem 0;
+}
+.pano-tile--app-mobile .pano-tile__img {
+  object-fit: contain;
+  filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.5));
+}
+.pano-tile--app .pano-tile__kind {
+  color: var(--purple-bright);
+}
+
+/* ============================================================
+   Home-page mini panoramic gallery (preview of the full /gallery)
+   ============================================================ */
+.section--mini-pano {
+  overflow: clip;
+}
+.section-head--mini-pano {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.mini-pano__cta {
+  flex: 0 0 auto;
+}
+.mini-pano__cta svg {
+  width: 1.05em;
+  height: 1.05em;
+}
+
+.mini-pano {
+  position: relative;
+  margin-top: 2.25rem;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  padding: 1.6rem 0;
+  perspective: 1500px;
+  background:
+    radial-gradient(120% 140% at 50% -20%, rgba(213, 119, 237, 0.1), transparent 55%),
+    var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.mini-pano__viewport {
+  overflow: hidden;
+}
+.mini-pano__track {
+  display: flex;
+  gap: 1rem;
+  width: max-content;
+  padding: 0 1rem;
+  will-change: transform;
+  animation: mini-pano-scroll calc(var(--mini-count, 12) * 3.4s) linear infinite;
+}
+.mini-pano:hover .mini-pano__track,
+.mini-pano:focus-within .mini-pano__track {
+  animation-play-state: paused;
+}
+@keyframes mini-pano-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.mini-pano__tile {
+  flex: 0 0 auto;
+  width: 224px;
+  height: 296px;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  background:
+    linear-gradient(165deg, rgba(213, 119, 237, 0.14) 0%, transparent 45%),
+    var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  transform: translateZ(0);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.mini-pano__tile:hover {
+  transform: translateY(-6px);
+  border-color: rgba(213, 119, 237, 0.4);
+  box-shadow: var(--shadow-lg, 0 18px 40px rgba(0, 0, 0, 0.35));
+}
+.mini-pano__media {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background: var(--post-media-bg);
+}
+.mini-pano__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.mini-pano__tile--app .mini-pano__media {
+  background:
+    radial-gradient(120% 100% at 50% 0%, rgba(213, 119, 237, 0.22), transparent 60%),
+    linear-gradient(180deg, #15101f, #0a0710);
+}
+.mini-pano__meta {
+  padding: 0.6rem 0.75rem 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+.mini-pano__client {
+  font-weight: 700;
+  font-size: 0.82rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mini-pano__kind {
+  font-size: 0.7rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* edge fade so tiles dissolve into the page on both sides */
+.mini-pano__edge {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    var(--card) 0%,
+    transparent 9%,
+    transparent 91%,
+    var(--card) 100%
+  );
+}
+.mini-pano__open {
+  position: absolute;
+  left: 50%;
+  bottom: 1.4rem;
+  transform: translateX(-50%);
+  z-index: 4;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+@media (max-width: 720px) {
+  .mini-pano__tile {
+    width: 168px;
+    height: 230px;
+  }
+  .mini-pano__open {
+    position: static;
+    transform: none;
+    display: inline-flex;
+    margin: 1.2rem auto 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mini-pano__track {
+    animation: none;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    width: 100%;
+  }
+  .mini-pano__tile {
+    scroll-snap-align: start;
+  }
 }
 
 /* Panoramic edge treatment — blur + darken toward the four corners */

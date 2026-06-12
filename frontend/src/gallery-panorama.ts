@@ -1,6 +1,7 @@
 import { openLightbox, type LightboxItem } from "./post-lightbox";
 import { prefersReducedMotion } from "./motion/reduced-motion";
 import type { Portfolio } from "./types/portfolio";
+import { PROJECT_MEDIA, type DeviceMedia } from "./project-media";
 
 type SocialPost = Portfolio["socialPosts"]["items"][0];
 
@@ -13,6 +14,8 @@ interface PanoTile {
   kind: string;
   tags: string[];
   items: LightboxItem[];
+  /** Set for product / web-app tiles so they render with a screenshot-optimized layout. */
+  variant?: "app-desktop" | "app-mobile";
 }
 
 const POSTS_DIR = "/images/posts";
@@ -78,6 +81,40 @@ function tileFromPost(post: SocialPost): PanoTile {
   };
 }
 
+/**
+ * Product / web-app tiles — shown in the panorama alongside the social posts
+ * but styled to show off full app screenshots (contained, branded backdrop).
+ */
+function appTilesFromPortfolio(portfolio: Portfolio): PanoTile[] {
+  const tiles: PanoTile[] = [];
+  for (const proj of portfolio.featuredWork.projects) {
+    const media = PROJECT_MEDIA[proj.id];
+    if (!media) continue;
+    const tags = (proj.tags ?? []).slice(0, 3);
+    const devices: ["desktop" | "mobile", DeviceMedia | undefined][] = [
+      ["desktop", media.desktop],
+      ["mobile", media.mobile],
+    ];
+    for (const [device, dm] of devices) {
+      if (!dm) continue;
+      const alt = `${proj.name} \u2014 ${device} UI`;
+      const frames = dm.frames?.length ? dm.frames : [dm.image];
+      tiles.push({
+        id: `app-${proj.id}-${device}`,
+        cover: dm.image,
+        alt,
+        client: proj.name,
+        title: proj.tagline,
+        kind: device === "desktop" ? "Web app" : "App design",
+        tags: tags.length ? tags : ["UI/UX", device === "desktop" ? "Web" : "Mobile"],
+        items: frames.map((src) => ({ type: "image", src, alt })),
+        variant: device === "desktop" ? "app-desktop" : "app-mobile",
+      });
+    }
+  }
+  return tiles;
+}
+
 /** Layout + curvature constants */
 const GAP = 26;
 const MARGIN = 1; // extra ring of cells around viewport for the curved edges
@@ -96,9 +133,11 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
   const plane = document.querySelector<HTMLElement>("[data-pano-plane]");
   if (!stage || !plane) return () => {};
 
-  const allTiles = portfolio.socialPosts.items
+  const postTiles = portfolio.socialPosts.items
     .filter((p) => !p.id.startsWith("_"))
     .map(tileFromPost);
+  // App designs lead the grid so they're the first thing the eye lands on.
+  const allTiles = [...appTilesFromPortfolio(portfolio), ...postTiles];
   if (!allTiles.length) return () => {};
 
   let tiles = allTiles;
@@ -122,15 +161,22 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
   let downTile: string | null = null;
   let interacted = reduced;
 
-  const pool = new Map<string, HTMLElement>();
+  // Fixed cell pool: the DOM grid is allocated once (and only on resize), and
+  // panning just re-points each cell at a new world coordinate. This avoids the
+  // per-frame createElement/remove churn that made dragging janky.
+  let cellEls: HTMLElement[] = [];
+  const cellState: { id: string; op: number; z: number }[] = [];
+  let cellsX = 0;
+  let cellsY = 0;
   let raf = 0;
   let running = false;
+  let dirty = true;
 
   function mod(n: number, m: number): number {
     return ((n % m) + m) % m;
   }
 
-  function buildCell(): HTMLElement {
+  function buildCell(parent: ParentNode): HTMLElement {
     const el = document.createElement("button");
     el.type = "button";
     el.className = "pano-tile";
@@ -146,13 +192,33 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
         <span class="pano-tile__tags" data-tags></span>
         <span class="pano-tile__kind" data-kind></span>
       </span>`;
-    plane!.appendChild(el);
+    parent.appendChild(el);
     return el;
+  }
+
+  function buildGrid(): void {
+    plane!.textContent = "";
+    cellEls = [];
+    cellState.length = 0;
+    const vw = stage!.clientWidth || window.innerWidth;
+    const vh = stage!.clientHeight || window.innerHeight;
+    cellsX = Math.ceil(vw / cellW) + MARGIN * 2 + 2;
+    cellsY = Math.ceil(vh / cellH) + MARGIN * 2 + 2;
+    const frag = document.createDocumentFragment();
+    const total = cellsX * cellsY;
+    for (let i = 0; i < total; i++) {
+      cellEls.push(buildCell(frag));
+      cellState.push({ id: "", op: -1, z: -1 });
+    }
+    plane!.appendChild(frag);
   }
 
   function fillCell(el: HTMLElement, tile: PanoTile): void {
     if (el.dataset.tileId === tile.id) return;
     el.dataset.tileId = tile.id;
+    el.classList.toggle("pano-tile--app", !!tile.variant);
+    el.classList.toggle("pano-tile--app-desktop", tile.variant === "app-desktop");
+    el.classList.toggle("pano-tile--app-mobile", tile.variant === "app-mobile");
     const img = el.querySelector<HTMLImageElement>(".pano-tile__img")!;
     img.src = tile.cover;
     img.alt = tile.alt;
@@ -171,35 +237,34 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
     const cx = vw / 2;
     const cy = vh / 2;
     const n = tiles.length;
-
-    const colStart = Math.floor((ox - tileW) / cellW) - MARGIN;
-    const colEnd = Math.ceil((ox + vw) / cellW) + MARGIN;
-    const rowStart = Math.floor((oy - tileH) / cellH) - MARGIN;
-    const rowEnd = Math.ceil((oy + vh) / cellH) + MARGIN;
-
-    const seen = new Set<string>();
     // normalized curvature radius
     const maxR = Math.hypot(vw, vh) / 2 || 1;
 
-    for (let r = rowStart; r <= rowEnd; r++) {
-      for (let c = colStart; c <= colEnd; c++) {
-        const key = `${c},${r}`;
-        seen.add(key);
-        let el = pool.get(key);
-        if (!el) {
-          el = buildCell();
-          pool.set(key, el);
-        }
-        // Sheared indexing so rows don't line up into obvious vertical repeats.
-        const idx = mod(r * (cols + 1) + c, n);
-        fillCell(el, tiles[idx]);
+    const baseCol = Math.floor(ox / cellW) - MARGIN - 1;
+    const baseRow = Math.floor(oy / cellH) - MARGIN - 1;
 
-        const sx = c * cellW - ox;
-        const sy = r * cellH - oy;
+    let k = 0;
+    for (let lj = 0; lj < cellsY; lj++) {
+      const worldRow = baseRow + lj;
+      const sy = worldRow * cellH - oy;
+      const tileCy = sy + tileH / 2;
+      const ny = (tileCy - cy) / maxR;
+      for (let li = 0; li < cellsX; li++, k++) {
+        const worldCol = baseCol + li;
+        const el = cellEls[k];
+        const st = cellState[k];
+
+        // Sheared indexing so rows don't line up into obvious vertical repeats.
+        const idx = mod(worldRow * (cols + 1) + worldCol, n);
+        const tile = tiles[idx];
+        if (st.id !== tile.id) {
+          fillCell(el, tile);
+          st.id = tile.id;
+        }
+
+        const sx = worldCol * cellW - ox;
         const tileCx = sx + tileW / 2;
-        const tileCy = sy + tileH / 2;
         const nx = (tileCx - cx) / maxR;
-        const ny = (tileCy - cy) / maxR;
         const dist = Math.min(1.25, Math.hypot(nx, ny));
 
         let transform = `translate3d(${sx.toFixed(1)}px, ${sy.toFixed(1)}px, 0)`;
@@ -210,21 +275,25 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
           transform += ` rotateY(${rotY.toFixed(2)}deg) rotateX(${rotX.toFixed(2)}deg) translateZ(${tz.toFixed(1)}px)`;
         }
         el.style.transform = transform;
-        el.style.opacity = (1 - dist * 0.35).toFixed(3);
-        el.style.zIndex = String(1000 - Math.round(dist * 1000));
-      }
-    }
 
-    for (const [key, el] of pool) {
-      if (!seen.has(key)) {
-        el.remove();
-        pool.delete(key);
+        // opacity / z-index only repaint when they actually change
+        const op = Math.round((1 - dist * 0.35) * 100) / 100;
+        if (op !== st.op) {
+          el.style.opacity = String(op);
+          st.op = op;
+        }
+        const z = 1000 - Math.round(dist * 1000);
+        if (z !== st.z) {
+          el.style.zIndex = String(z);
+          st.z = z;
+        }
       }
     }
   }
 
   function tick(): void {
-    let needs = false;
+    let needs = dirty;
+    dirty = false;
     if (!dragging && (Math.abs(vx) > 0.05 || Math.abs(vy) > 0.05)) {
       ox += vx;
       oy += vy;
@@ -279,7 +348,7 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
     vx = -dx;
     vy = -dy;
     moved += Math.abs(dx) + Math.abs(dy);
-    render();
+    dirty = true;
   }
 
   function onPointerUp(e: PointerEvent): void {
@@ -303,7 +372,7 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
     oy += horizontal ? 0 : e.deltaY;
     vx = 0;
     vy = 0;
-    render();
+    dirty = true;
   }
 
   function markInteracted(): void {
@@ -316,6 +385,8 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
     cellH = tileH + GAP;
     stage!.style.setProperty("--tile-w", `${tileW}px`);
     stage!.style.setProperty("--tile-h", `${tileH}px`);
+    buildGrid();
+    dirty = true;
     render();
   }
 
@@ -382,11 +453,11 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
   function applyFilter(client: string): void {
     tiles = client ? allTiles.filter((t) => t.client === client) : allTiles;
     if (!tiles.length) tiles = allTiles;
-    pool.forEach((el) => el.remove());
-    pool.clear();
     ox = 0;
     oy = 0;
+    for (const st of cellState) st.id = "";
     buildList();
+    dirty = true;
     render();
     if (filterBtn) {
       const labelEl = filterBtn.querySelector("[data-pano-filter-label]");
@@ -424,9 +495,30 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
   // --- wire up ---
   stage.style.setProperty("--tile-w", `${tileW}px`);
   stage.style.setProperty("--tile-h", `${tileH}px`);
+  buildGrid();
   buildList();
   render();
   startLoop();
+
+  // Pause the rAF loop whenever the stage scrolls out of view or the tab is
+  // hidden, so the gallery never burns CPU in the background.
+  let visible = true;
+  const inView = (): boolean =>
+    visible && !document.hidden && root?.getAttribute("data-view") !== "list";
+  const io = new IntersectionObserver(
+    (entries) => {
+      visible = entries[0]?.isIntersecting ?? true;
+      if (inView()) startLoop();
+      else stopLoop();
+    },
+    { threshold: 0 },
+  );
+  io.observe(stage);
+  const onVisibility = (): void => {
+    if (inView()) startLoop();
+    else stopLoop();
+  };
+  document.addEventListener("visibilitychange", onVisibility);
 
   stage.addEventListener("pointerdown", onPointerDown);
   window.addEventListener("pointermove", onPointerMove);
@@ -451,8 +543,11 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
     filterPanel?.removeEventListener("click", onFilterClick);
     filterBtn?.removeEventListener("click", toggleFilter);
     document.removeEventListener("click", onDocClick);
+    document.removeEventListener("visibilitychange", onVisibility);
     viewHandlers.forEach(([b, h]) => b.removeEventListener("click", h));
-    pool.forEach((el) => el.remove());
-    pool.clear();
+    io.disconnect();
+    cellEls.forEach((el) => el.remove());
+    cellEls = [];
+    cellState.length = 0;
   };
 }
