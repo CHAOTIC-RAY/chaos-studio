@@ -121,9 +121,11 @@
 
   function ensureDecapMounted() {
     const mount = document.getElementById("chaos-decap-mount");
+    const slot = document.querySelector("[data-decap-slot]");
     const nc = document.getElementById("nc-root");
-    if (!mount || !nc) return false;
+    if (!mount || !slot || !nc) return false;
     if (nc.parentElement !== mount) mount.appendChild(nc);
+    if (mount.parentElement !== slot) slot.appendChild(mount);
     return true;
   }
 
@@ -198,12 +200,13 @@
         <div id="chaos-view-editor" class="chaos-view chaos-editor-view">
           <div class="chaos-editor-bar" data-editor-bar></div>
           <p class="chaos-editor-loading" data-editor-loading hidden>Loading editor… large files may take a moment.</p>
-          <div id="chaos-decap-mount" class="chaos-decap-mount"></div>
+          <div class="chaos-decap-slot" data-decap-slot></div>
         </div>
       </main>
       <footer class="chaos-dock" data-save-dock role="toolbar" aria-label="Publish"></footer>
     `;
     document.body.prepend(app);
+    ensureDecapMounted();
 
     loadSyncBadge();
   }
@@ -418,10 +421,26 @@
     dock.appendChild(back);
   }
 
+  function isDecapLoginScreen() {
+    return Boolean(document.querySelector('#nc-root [class*="AuthenticationPage"]'));
+  }
+
   function renderSaveDock(force) {
     const dock = document.querySelector("[data-save-dock]");
     const ed = editorFromHash();
     if (!dock || !ed) return;
+
+    if (isDecapLoginScreen()) {
+      dock.replaceChildren();
+      appendDockBack(dock);
+      const label = document.createElement("span");
+      label.className = "chaos-dock__label";
+      label.textContent = "Sign in with GitHub to load this editor";
+      dock.appendChild(label);
+      setEditorLoading(false);
+      lastDockKey = "login";
+      return;
+    }
 
     const buttons = findToolbarButtons();
     const sig = dockSignature(buttons);

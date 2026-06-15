@@ -521,62 +521,85 @@ body.chaos-mode-assistant .chaos-dock {
   line-height: 1.4;
 }
 
+.chaos-decap-slot {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .chaos-decap-mount {
   position: relative;
   z-index: 1;
   flex: 1 1 auto;
-  min-height: calc(100dvh - var(--app-header-h) - 6rem - var(--app-dock-h));
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-  /* Decap's editor ships its own light UI — keep it on a light surface so the
-     embedded form stays readable inside the dark portal shell. */
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
   background: #f7f5fb;
   color: #1e1b3b;
   border-radius: var(--app-radius) var(--app-radius) 0 0;
 }
 
-/* Decap: editor-only chrome — fill mount, do not cover app header/bar */
+/* Decap expects a full-height chain — do not set height:auto on EditorContainer */
 body.chaos-mode-editor #nc-root {
-  position: relative !important;
-  inset: auto !important;
-  display: block !important;
-  height: auto !important;
-  min-height: calc(100dvh - var(--app-header-h) - 6rem - var(--app-dock-h)) !important;
-  overflow: visible !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  width: 100% !important;
+  overflow: hidden !important;
 }
 
-body.chaos-mode-editor [class*="AppHeader"],
-body.chaos-mode-editor [class*="Sidebar"],
-body.chaos-mode-editor [class*="SidebarContainer"] {
+body.chaos-mode-editor #nc-root [class*="AppMainContainer"],
+body.chaos-mode-editor #nc-root [class*="WorkflowWrapper"],
+body.chaos-mode-editor #nc-root [class*="NoPreviewContainer"],
+body.chaos-mode-editor #nc-root [class*="StyledSplitPane"],
+body.chaos-mode-editor #nc-root [class*="Editor"] {
+  height: 100% !important;
+  min-height: 0 !important;
+}
+
+body.chaos-mode-editor #nc-root [class*="AppHeader"],
+body.chaos-mode-editor #nc-root [class*="Sidebar"],
+body.chaos-mode-editor #nc-root [class*="SidebarContainer"],
+body.chaos-mode-editor #nc-root > header {
   display: none !important;
 }
 
-body.chaos-mode-editor [class*="SplitPane"] {
-  display: flex !important;
-  flex-direction: column !important;
-  position: relative !important;
-  inset: auto !important;
-  height: auto !important;
-  min-height: min(100%, 100%) !important;
-  width: 100% !important;
-  max-width: 100% !important;
-}
-
-/* preview:false — only hide preview pane, never the control/editor pane */
-body.chaos-mode-editor [class*="PreviewPane"],
-body.chaos-mode-editor [class*="PreviewPaneFrame"] {
+body.chaos-mode-editor #nc-root [class*="PreviewPane"],
+body.chaos-mode-editor #nc-root [class*="PreviewPaneFrame"] {
   display: none !important;
 }
 
-body.chaos-mode-editor [class*="SplitPane"] > * {
+/* Header hidden — drop Decap's 66px top pad; use normal flow + scroll */
+body.chaos-mode-editor #nc-root [class*="EditorContainer"] {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
   width: 100% !important;
-  max-width: 100% !important;
-  flex: 1 1 auto !important;
-  min-height: auto !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  padding-top: 0 !important;
+  overflow: auto !important;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Decap list + form widgets must not inherit portal icon sizing */
-#nc-root svg {
+body.chaos-mode-editor #nc-root [class*="ControlPaneContainer"] {
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0.75rem 1rem 2rem !important;
+}
+
+body.chaos-mode-editor #nc-root [class*="ToolbarContainer"] {
+  position: fixed !important;
+  left: -9999px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+body.chaos-mode-editor #nc-root svg {
   max-width: none !important;
   max-height: none !important;
   fill: initial !important;
@@ -584,46 +607,32 @@ body.chaos-mode-editor [class*="SplitPane"] > * {
   stroke-width: initial !important;
 }
 
-body.chaos-mode-editor [class*="WorkflowWrapper"],
-body.chaos-mode-editor [class*="AppMainContainer"] {
-  display: block !important;
-  position: relative !important;
-  inset: auto !important;
-  height: auto !important;
-  min-height: 100% !important;
-  width: 100% !important;
-  max-width: 100% !important;
-}
-
-body.chaos-mode-editor [class*="CollectionMain"],
-body.chaos-mode-editor [class*="EditEntryMain"],
-body.chaos-mode-editor [class*="EditorContainer"],
-body.chaos-mode-editor [class*="EditorControlPane"] {
-  height: auto !important;
-  max-height: none !important;
-  overflow: visible !important;
-  padding: 0.75rem 1rem 1rem !important;
-}
-
-body.chaos-mode-editor [class*="ToolbarContainer"] {
-  position: fixed !important;
-  left: -9999px !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  height: 0 !important;
-}
-
-body.chaos-mode-editor input,
-body.chaos-mode-editor textarea,
-body.chaos-mode-editor select {
+body.chaos-mode-editor #nc-root input,
+body.chaos-mode-editor #nc-root textarea,
+body.chaos-mode-editor #nc-root select {
   font-size: 1rem !important;
   border-radius: 10px !important;
-  border: 1px solid var(--app-border) !important;
 }
 
-body.chaos-mode-editor [class*="ListItem"] {
+body.chaos-mode-editor #nc-root [class*="ListItem"] {
   border-radius: 10px !important;
   margin-bottom: 0.5rem !important;
+}
+
+/* GitHub login screen must stay visible when session expired */
+body.chaos-mode-editor #nc-root [class*="AuthenticationPage"] {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 100% !important;
+  padding: 2rem 1rem !important;
+  overflow: auto !important;
+}
+
+body.chaos-mode-editor #nc-root [class*="LoginButton"] {
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
 /* Save dock */

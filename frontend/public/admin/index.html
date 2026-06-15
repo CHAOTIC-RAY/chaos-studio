@@ -22,6 +22,8 @@
     <link rel="stylesheet" href="/admin/cms-assistant.css" />
   </head>
   <body>
+    <!-- Decap must mount here before decap-cms.js runs — never reparent #nc-root after React init -->
+    <div id="chaos-decap-mount" class="chaos-decap-mount"><div id="nc-root"></div></div>
     <script src="/admin/decap-cms.js"></script>
     <script src="/admin/cms-assistant.js" defer></script>
     <script src="/admin/cms-app.js" defer></script>
