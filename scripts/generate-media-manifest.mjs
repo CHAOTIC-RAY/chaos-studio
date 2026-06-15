@@ -2,6 +2,7 @@
 /**
  * Decap CMS only lists media_folder at depth 1 (root files).
  * This manifest powers the "All post images" browser in /admin/.
+ * Skips build-time pano thumbs (*.pano.webp) and preview.mp4.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -13,6 +14,9 @@ const outPath = process.env.CMS_MANIFEST_OUT
   : path.join(root, "frontend/public/admin/media-manifest.json");
 
 const MEDIA_RE = /\.(webp|jpe?g|png|gif|svg|mp4)$/i;
+/** Build-time gallery assets — not CMS-editable media */
+const SKIP_RE = /\.pano\.webp$/i;
+const SKIP_NAMES = new Set(["preview.mp4"]);
 
 function walk(dir, relBase = "") {
   const files = [];
@@ -26,7 +30,7 @@ function walk(dir, relBase = "") {
 
     if (name.isDirectory()) {
       files.push(...walk(abs, rel));
-    } else if (MEDIA_RE.test(name.name)) {
+    } else if (MEDIA_RE.test(name.name) && !SKIP_RE.test(name.name) && !SKIP_NAMES.has(name.name)) {
       const folder = relBase || "";
       const slideMatch = name.name.match(/^(slide-\d+)/i);
       files.push({
