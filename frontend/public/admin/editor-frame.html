@@ -7,6 +7,14 @@
     <title>CMS Editor</title>
     <link rel="cms-config-url" type="text/yaml" href="/admin/config.yml" />
     <link rel="stylesheet" href="/admin/editor-frame.css" />
+    <script>
+      (function () {
+        var h = location.hash || "";
+        if (!/\/entries\/[^/?#]+/.test(h)) {
+          location.replace("/admin/#/");
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="nc-root"></div>

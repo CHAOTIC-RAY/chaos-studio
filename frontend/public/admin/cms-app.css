@@ -534,30 +534,124 @@ body.chaos-mode-assistant .chaos-dock {
   line-height: 1.4;
 }
 
+.chaos-editor-bar__open {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--app-primary);
+  text-decoration: none;
+}
+
+.chaos-editor-bar__open:hover {
+  text-decoration: underline;
+}
+
 .chaos-decap-slot {
   position: relative;
   flex: 1 1 auto;
-  min-height: 12rem;
+  min-height: 16rem;
+  pointer-events: none;
+  background: transparent;
+  border-radius: 0;
+}
+
+/* Single Decap instance — fixed over editor slot (never reparent #nc-root) */
+body.chaos-mode-editor #chaos-decap-mount {
+  display: flex !important;
+  flex-direction: column;
+  position: fixed;
+  z-index: 105;
+  top: calc(var(--app-header-h) + var(--chaos-editor-bar-h) + var(--app-safe-t));
+  right: 0;
+  bottom: calc(var(--app-dock-h) + var(--app-safe-b));
+  left: 0;
   overflow: hidden;
   background: #f7f5fb;
   color: #1e1b3b;
-  border-radius: var(--app-radius) var(--app-radius) 0 0;
+  pointer-events: auto;
 }
 
-.chaos-decap-frame {
-  display: block;
-  width: 100%;
+body.chaos-mode-editor #nc-root {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  min-height: 20rem;
-  border: 0;
-  background: #f7f5fb;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
 }
 
-/* Parent Decap mount — login only; editor runs in iframe */
-body.chaos-mode-editor #chaos-decap-mount {
+body.chaos-mode-editor #nc-root [class*="AppMainContainer"] {
+  position: relative !important;
+  flex: 1 1 auto;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+body.chaos-mode-editor #nc-root [class*="AppHeader"],
+body.chaos-mode-editor #nc-root [class*="Sidebar"],
+body.chaos-mode-editor #nc-root [class*="SidebarContainer"],
+body.chaos-mode-editor #nc-root > header,
+body.chaos-mode-editor #nc-root [class*="ToolbarContainer"],
+body.chaos-mode-editor #nc-root [class*="PreviewPane"],
+body.chaos-mode-editor #nc-root [class*="PreviewPaneFrame"] {
   display: none !important;
 }
 
+body.chaos-mode-editor #nc-root [class*="EditorContainer"] {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  padding-top: 0 !important;
+  overflow: auto !important;
+  -webkit-overflow-scrolling: touch;
+  background: #f7f5fb;
+}
+
+body.chaos-mode-editor #nc-root [class*="Editor"] {
+  position: relative !important;
+  height: auto !important;
+  min-height: 100% !important;
+}
+
+body.chaos-mode-editor #nc-root [class*="NoPreviewContainer"],
+body.chaos-mode-editor #nc-root [class*="StyledSplitPane"] {
+  height: auto !important;
+  min-height: 100% !important;
+}
+
+body.chaos-mode-editor #nc-root [class*="ControlPaneContainer"] {
+  max-width: 48rem;
+  margin: 0 auto !important;
+  padding: 1rem 1.25rem 3rem !important;
+  overflow: visible !important;
+}
+
+body.chaos-mode-editor #nc-root input,
+body.chaos-mode-editor #nc-root textarea,
+body.chaos-mode-editor #nc-root select {
+  font-size: 1rem !important;
+  border-radius: 10px !important;
+}
+
+body.chaos-mode-editor #nc-root [class*="Loader"] {
+  min-height: 8rem !important;
+}
+
+body.chaos-mode-editor #nc-root svg {
+  max-width: none !important;
+  max-height: none !important;
+  fill: initial !important;
+  stroke: initial !important;
+  stroke-width: initial !important;
+}
+
+/* Parent Decap mount — hidden except login + editor */
 body:not(.chaos-mode-editor):not(.chaos-mode-login) #chaos-decap-mount {
   position: fixed;
   width: 1px;
