@@ -121,9 +121,17 @@
 
   function ensureDecapMounted() {
     const mount = document.getElementById("chaos-decap-mount");
+    const slot = document.querySelector("[data-decap-slot]");
     const nc = document.getElementById("nc-root");
     if (!mount || !nc) return false;
     if (nc.parentElement !== mount) mount.appendChild(nc);
+    if (mode() === "editor" && slot) {
+      if (mount.parentElement !== slot) slot.appendChild(mount);
+      slot.removeAttribute("aria-hidden");
+    } else if (mount.parentElement !== document.body) {
+      document.body.appendChild(mount);
+      if (slot) slot.setAttribute("aria-hidden", "true");
+    }
     return true;
   }
 
@@ -207,7 +215,7 @@
         <div id="chaos-view-editor" class="chaos-view chaos-editor-view">
           <div class="chaos-editor-bar" data-editor-bar></div>
           <p class="chaos-editor-loading" data-editor-loading hidden>Loading editor… large files may take a moment.</p>
-          <div class="chaos-decap-slot" data-decap-slot aria-hidden="true"></div>
+          <div class="chaos-decap-slot" data-decap-slot></div>
         </div>
       </main>
       <footer class="chaos-dock" data-save-dock role="toolbar" aria-label="Publish"></footer>
@@ -554,7 +562,7 @@
         nudgeDecapLayout();
         renderSaveDock(true);
       }, 1200);
-      dockTimer = setTimeout(() => {
+      setTimeout(() => {
         ensureDecapMounted();
         syncEditorLayoutVars();
         nudgeDecapLayout();
@@ -562,6 +570,7 @@
       }, 4000);
     } else {
       setEditorLoading(false);
+      ensureDecapMounted();
       document.getElementById("chaos-app")?.classList.remove("chaos-app--editing");
     }
   }

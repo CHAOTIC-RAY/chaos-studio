@@ -470,7 +470,6 @@ body.chaos-mode-assistant .chaos-dock {
   min-height: 0;
   padding-bottom: var(--app-dock-h);
   position: relative;
-  isolation: isolate;
 }
 
 .chaos-editor-bar {
@@ -523,12 +522,16 @@ body.chaos-mode-assistant .chaos-dock {
 }
 
 .chaos-decap-slot {
+  position: relative;
   flex: 1 1 auto;
   min-height: 0;
-  pointer-events: none;
+  overflow: hidden;
+  background: #f7f5fb;
+  color: #1e1b3b;
+  border-radius: var(--app-radius) var(--app-radius) 0 0;
 }
 
-/* Decap mount stays on <body> — never reparent #nc-root after React init */
+/* Mount lives inside the slot in editor mode — only stash on body when dashboard */
 body:not(.chaos-mode-editor) #chaos-decap-mount {
   position: fixed;
   width: 1px;
@@ -539,20 +542,15 @@ body:not(.chaos-mode-editor) #chaos-decap-mount {
   opacity: 0;
 }
 
-body.chaos-mode-editor #chaos-decap-mount {
-  position: fixed;
-  z-index: 95;
-  top: calc(var(--app-safe-t) + var(--app-header-h) + var(--chaos-editor-bar-h, 4.25rem));
-  left: max(0px, var(--app-safe-l));
-  right: max(0px, var(--app-safe-r));
-  bottom: calc(var(--app-dock-h) + var(--app-safe-b));
+body.chaos-mode-editor .chaos-decap-mount {
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
   background: #f7f5fb;
   color: #1e1b3b;
-  border-radius: var(--app-radius) var(--app-radius) 0 0;
 }
 
 body.chaos-mode-editor #nc-root {
@@ -563,7 +561,6 @@ body.chaos-mode-editor #nc-root {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Decap editor routes hide AppHeader; establish height for absolute EditorContainer */
 body.chaos-mode-editor #nc-root [class*="AppMainContainer"] {
   position: relative !important;
   min-height: 100% !important;
@@ -583,10 +580,7 @@ body.chaos-mode-editor #nc-root [class*="PreviewPaneFrame"] {
   display: none !important;
 }
 
-/*
- * EditorContainer defaults to position:absolute;height:100% with a 66px toolbar pad.
- * AppMainContainer has no explicit height, so height:100% collapses to 0 after load.
- */
+/* Decap EditorContainer is absolute+height:100% — breaks when parent has no height */
 body.chaos-mode-editor #nc-root [class*="EditorContainer"] {
   position: relative !important;
   top: auto !important;
@@ -594,22 +588,28 @@ body.chaos-mode-editor #nc-root [class*="EditorContainer"] {
   width: 100% !important;
   min-width: 0 !important;
   height: auto !important;
-  min-height: 100% !important;
+  min-height: 0 !important;
   padding-top: 0 !important;
   overflow: visible !important;
 }
 
+/* Inner editor stack — all default to height:100% which collapses after load */
+body.chaos-mode-editor #nc-root [class*="EditorContainer"] > [class*="Editor"],
 body.chaos-mode-editor #nc-root [class*="NoPreviewContainer"],
-body.chaos-mode-editor #nc-root [class*="ControlPaneContainer"] {
+body.chaos-mode-editor #nc-root [class*="StyledSplitPane"],
+body.chaos-mode-editor #nc-root [class*="ControlPaneContainer"],
+body.chaos-mode-editor #nc-root [class*="EditorControlPane"] {
   height: auto !important;
   min-height: 0 !important;
   max-width: 100% !important;
+  overflow: visible !important;
 }
 
 body.chaos-mode-editor #nc-root [class*="ControlPaneContainer"] {
-  margin: 0 !important;
+  margin: 0 auto !important;
   padding: 0.75rem 1rem 2rem !important;
-  overflow-y: visible !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
 }
 
 body.chaos-mode-editor #nc-root [class*="ToolbarContainer"] {
@@ -624,6 +624,10 @@ body.chaos-mode-editor #nc-root [class*="ToolbarContainer"] {
   margin: -1px !important;
   opacity: 0 !important;
   pointer-events: none !important;
+}
+
+body.chaos-mode-editor #nc-root [class*="Loader"] {
+  min-height: 8rem !important;
 }
 
 body.chaos-mode-editor #nc-root [class*="ErrorBoundary"],
