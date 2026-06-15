@@ -544,8 +544,8 @@ body.chaos-mode-assistant .chaos-dock {
   border-radius: var(--app-radius) var(--app-radius) 0 0;
 }
 
-/* Mount lives inside the slot in editor mode — only stash on body when dashboard */
-body:not(.chaos-mode-editor) #chaos-decap-mount {
+/* Mount lives inside the slot in editor mode — stash only when portal is active */
+body:not(.chaos-mode-editor):not(.chaos-mode-login) #chaos-decap-mount {
   position: fixed;
   width: 1px;
   height: 1px;
@@ -683,6 +683,61 @@ body.chaos-mode-editor #nc-root [class*="AuthenticationPage"] {
 body.chaos-mode-editor #nc-root [class*="LoginButton"] {
   opacity: 1 !important;
   pointer-events: auto !important;
+}
+
+/* —— Login view (logged out) —— */
+.chaos-login-view {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0 max(1rem, var(--app-safe-r)) 1rem max(1rem, var(--app-safe-l));
+}
+
+.chaos-login-slot {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: calc(100dvh - var(--app-header-h) - var(--app-safe-t) - 1.5rem);
+  overflow: hidden;
+  background: #f7f5fb;
+  color: #1e1b3b;
+  border-radius: var(--app-radius);
+}
+
+body.chaos-mode-login .chaos-decap-mount {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #f7f5fb;
+  color: #1e1b3b;
+}
+
+body.chaos-mode-login #nc-root {
+  flex: 1 1 auto;
+  min-height: 100%;
+  width: 100%;
+}
+
+body.chaos-mode-login #nc-root [class*="AuthenticationPage"] {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 100% !important;
+  padding: 2rem 1rem !important;
+}
+
+body.chaos-mode-login #nc-root [class*="LoginButton"] {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+body.chaos-mode-login .chaos-dock {
+  display: none !important;
 }
 
 /* Save dock */

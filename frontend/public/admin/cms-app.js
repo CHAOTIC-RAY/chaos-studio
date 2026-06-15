@@ -122,10 +122,18 @@
 
   function ensureDecapMounted() {
     const mount = document.getElementById("chaos-decap-mount");
+    const loginSlot = document.querySelector("[data-login-slot]");
     const slot = document.querySelector("[data-decap-slot]");
     const nc = document.getElementById("nc-root");
     if (!mount || !nc) return false;
     if (nc.parentElement !== mount) mount.appendChild(nc);
+
+    if (!isLoggedIn() && loginSlot) {
+      if (mount.parentElement !== loginSlot) loginSlot.appendChild(mount);
+      if (slot) slot.setAttribute("aria-hidden", "true");
+      return true;
+    }
+
     if (mode() === "editor" && slot) {
       if (mount.parentElement !== slot) slot.appendChild(mount);
       slot.removeAttribute("aria-hidden");
@@ -211,6 +219,9 @@
         </nav>
       </header>
       <main class="chaos-app-main">
+        <div id="chaos-view-login" class="chaos-view chaos-login-view">
+          <div class="chaos-login-slot" data-login-slot></div>
+        </div>
         <div id="chaos-view-dashboard" class="chaos-view chaos-dash"></div>
         <div id="chaos-view-media" class="chaos-view chaos-media-view"></div>
         <div id="chaos-view-assistant" class="chaos-view chaos-assistant-view"></div>
@@ -226,6 +237,7 @@
     ensureDecapMounted();
 
     loadSyncBadge();
+    lastLoginState = isLoggedIn();
     updateLogoutButton();
   }
 
@@ -527,7 +539,31 @@
     setTimeout(() => t.remove(), 8000);
   }
 
+  function applyLoginMode() {
+    document.body.className = "chaos-mode-login";
+    document.querySelectorAll(".chaos-view").forEach((v) => {
+      v.classList.toggle("is-active", v.id === "chaos-view-login");
+    });
+    document.querySelectorAll("[data-nav]").forEach((a) => {
+      a.hidden = true;
+    });
+    document.getElementById("chaos-app")?.classList.remove("chaos-app--editing");
+    setEditorLoading(false);
+    ensureDecapMounted();
+    updateLogoutButton();
+    nudgeDecapLayout();
+  }
+
   function applyMode() {
+    if (!isLoggedIn()) {
+      applyLoginMode();
+      return;
+    }
+
+    document.querySelectorAll("[data-nav]").forEach((a) => {
+      a.hidden = false;
+    });
+
     if (isStrayDecapRoute() || (route().includes("/collections") && !isKnownEditorRoute())) {
       goToPortal();
       return;
@@ -674,6 +710,9 @@
 
   function watchDecapMount() {
     const obs = new MutationObserver((records) => {
+      if (!isLoggedIn() && document.querySelector('#nc-root [class*="AuthenticationPage"]')) {
+        onAuthChange();
+      }
       if (mode() !== "editor") return;
       const relevant = records.some((r) => {
         const nodes = [...(r.addedNodes || []), ...(r.removedNodes || []), r.target];
@@ -701,6 +740,7 @@
   }
 
   const CMS_TOKEN_CACHE = "chaos_cms_github_token";
+  let lastLoginState = null;
 
   function getCmsUser() {
     try {
@@ -713,6 +753,14 @@
 
   function isLoggedIn() {
     return Boolean(getCmsUser()?.token);
+  }
+
+  function onAuthChange() {
+    const loggedIn = isLoggedIn();
+    updateLogoutButton();
+    if (lastLoginState === loggedIn) return;
+    lastLoginState = loggedIn;
+    applyMode();
   }
 
   function updateLogoutButton() {
@@ -757,7 +805,7 @@
     try {
       const raw = localStorage.getItem("decap-cms-user");
       if (!raw) {
-        updateLogoutButton();
+        onAuthChange();
         return;
       }
       const user = JSON.parse(raw);
@@ -765,7 +813,7 @@
     } catch {
       /* ignore */
     }
-    updateLogoutButton();
+    onAuthChange();
   }
 
   function bindCmsOAuthTokenCache() {
@@ -780,7 +828,7 @@
         if (payload?.token) {
           console.debug("Decap OAuth token received");
           cacheCmsGithubToken(payload.token);
-          updateLogoutButton();
+          onAuthChange();
         }
       } catch (err) {
         console.warn("Failed to parse OAuth payload", err);
