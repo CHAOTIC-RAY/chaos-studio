@@ -10,6 +10,26 @@ export interface Env extends AdminAiEnv, GithubApplyEnv {
   ASSETS: Fetcher;
 }
 
+/** Client-side routes that must serve index.html on direct navigation */
+const SPA_ROUTES = new Set(["/studio", "/gallery"]);
+
+function isAssetPath(pathname: string): boolean {
+  return /\.[a-zA-Z0-9]+$/.test(pathname);
+}
+
+async function serveSpaDocument(request: Request, env: Env): Promise<Response | null> {
+  const url = new URL(request.url);
+  if (request.method !== "GET" && request.method !== "HEAD") return null;
+  if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/admin")) return null;
+  if (isAssetPath(url.pathname)) return null;
+
+  const path = url.pathname.replace(/\/$/, "") || "/";
+  if (!SPA_ROUTES.has(path)) return null;
+
+  const indexUrl = new URL("/index.html", url.origin);
+  return env.ASSETS.fetch(new Request(indexUrl.toString(), request));
+}
+
 const JSON_HEADERS: HeadersInit = {
   "Content-Type": "application/json; charset=utf-8",
   "Cache-Control": "public, max-age=300",
@@ -94,6 +114,9 @@ export default {
     if (url.pathname.startsWith("/admin/")) {
       return env.ASSETS.fetch(request);
     }
+
+    const spa = await serveSpaDocument(request, env);
+    if (spa) return spa;
 
     return env.ASSETS.fetch(request);
   },

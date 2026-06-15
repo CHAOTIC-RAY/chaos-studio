@@ -31,7 +31,7 @@
     "export:portfolio-json": "node scripts/export-portfolio-json.mjs",
     "validate:cms": "node scripts/validate-cms-schema.mjs",
     "media:manifest": "node scripts/generate-media-manifest.mjs",
-    "build": "npm run sync:cms && node scripts/verify-cms-sync.mjs && node scripts/validate-cms-schema.mjs && node scripts/check-post-image-dupes.mjs && node scripts/generate-icons.mjs && npm run build --workspace=frontend && node scripts/verify-cms-sync.mjs --dist",
+    "build": "npm run sync:cms && node scripts/verify-cms-sync.mjs && node scripts/validate-cms-schema.mjs && node scripts/check-post-image-dupes.mjs && node scripts/generate-icons.mjs && npm run build --workspace=frontend && node scripts/copy-spa-routes.mjs && node scripts/verify-cms-sync.mjs --dist",
     "icons": "node scripts/generate-icons.mjs",
     "build:frontend": "npm run build --workspace=frontend",
     "dev": "wrangler dev",

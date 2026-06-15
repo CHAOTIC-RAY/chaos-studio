@@ -1,5 +1,24 @@
-import { defineConfig } from "vite";
+import { copyFileSync, mkdirSync } from "node:fs";
+import { join } from "node:path";
+import { defineConfig, type Plugin } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
+
+const SPA_ROUTES = ["studio", "gallery"];
+
+function copySpaRoutes(): Plugin {
+  return {
+    name: "copy-spa-routes",
+    writeBundle(options) {
+      const outDir = options.dir ?? "dist";
+      const index = join(outDir, "index.html");
+      for (const route of SPA_ROUTES) {
+        const dir = join(outDir, route);
+        mkdirSync(dir, { recursive: true });
+        copyFileSync(index, join(dir, "index.html"));
+      }
+    },
+  };
+}
 
 export default defineConfig({
   build: {
@@ -7,6 +26,7 @@ export default defineConfig({
     emptyOutDir: true,
   },
   plugins: [
+    copySpaRoutes(),
     VitePWA({
       registerType: "autoUpdate",
       injectRegister: "auto",
@@ -61,6 +81,10 @@ export default defineConfig({
         globIgnores: ["**/admin/**"],
         navigateFallback: "/index.html",
         navigateFallbackDenylist: [/^\/api\//, /^\/admin(\/|$)/],
+        additionalManifestEntries: [
+          { url: "/studio/", revision: null },
+          { url: "/gallery/", revision: null },
+        ],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
