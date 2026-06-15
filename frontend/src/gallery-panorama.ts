@@ -23,6 +23,9 @@ interface PanoTile {
 }
 
 const POSTS_DIR = "/images/posts";
+const PRELOAD_CONCURRENCY = 6;
+const MOBILE_PRIORITY_COUNT = 14;
+const MOBILE_LOADER_MAX_MS = 1400;
 
 /** Lighter assets for panorama tiles (full res kept for lightbox). */
 function toPanoThumb(src: string): string {
@@ -31,6 +34,50 @@ function toPanoThumb(src: string): string {
 
 function toPanoPreview(src: string): string {
   return src.replace(/\/video\.mp4$/i, "/preview.mp4");
+}
+
+/** Deduped cover loads — tries pano thumb first, falls back to full res. */
+const coverLoadCache = new Map<string, Promise<string>>();
+
+function loadCover(panoUrl: string, fullUrl: string): Promise<string> {
+  const cached = coverLoadCache.get(panoUrl);
+  if (cached) return cached;
+
+  const promise = new Promise<string>((resolve) => {
+    const tryUrl = (url: string, fallback?: string) => {
+      const img = new Image();
+      img.onload = () => resolve(url);
+      img.onerror = () => {
+        if (fallback) tryUrl(fallback);
+        else resolve(fullUrl);
+      };
+      img.src = url;
+    };
+    tryUrl(panoUrl, fullUrl);
+  });
+  coverLoadCache.set(panoUrl, promise);
+  return promise;
+}
+
+async function preloadTiles(
+  tileList: PanoTile[],
+  onProgress?: (done: number, total: number) => void,
+): Promise<void> {
+  const queue = [...tileList];
+  const total = queue.length;
+  let done = 0;
+  const bump = () => {
+    done += 1;
+    onProgress?.(done, total);
+  };
+  const workers = Array.from({ length: Math.min(PRELOAD_CONCURRENCY, queue.length) }, async () => {
+    while (queue.length) {
+      const tile = queue.shift()!;
+      await loadCover(tile.cover, tile.coverFull).catch(() => tile.coverFull);
+      bump();
+    }
+  });
+  await Promise.all(workers);
 }
 
 type CellRefs = {
@@ -236,7 +283,7 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
         <span class="pano-tile__name" data-name></span>
       </span>
       <span class="pano-tile__media">
-        <img class="pano-tile__img" alt="" loading="lazy" decoding="async" draggable="false" />
+        <img class="pano-tile__img" alt="" loading="eager" decoding="async" draggable="false" />
         <video class="pano-tile__video" muted loop playsinline preload="none" hidden></video>
         <button type="button" class="pano-tile__play" hidden aria-label="Play reel">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
@@ -293,11 +340,7 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
 
     if (tile.videoSrc) {
       img.hidden = false;
-      img.src = tile.cover;
       img.alt = tile.alt;
-      img.onerror = () => {
-        if (img.src !== tile.coverFull) img.src = tile.coverFull;
-      };
       video.hidden = true;
       video.pause();
       video.removeAttribute("src");
@@ -309,12 +352,13 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
       badge.hidden = true;
       video.pause();
       video.removeAttribute("src");
-      img.src = tile.cover;
       img.alt = tile.alt;
-      img.onerror = () => {
-        if (img.src !== tile.coverFull) img.src = tile.coverFull;
-      };
     }
+    const tileId = tile.id;
+    void loadCover(tile.cover, tile.coverFull).then((url) => {
+      if (el.dataset.tileId !== tileId) return;
+      img.src = url;
+    });
     el.querySelector("[data-client]")!.textContent = tile.client;
     el.querySelector("[data-name]")!.textContent = tile.title;
     el.querySelector("[data-kind]")!.textContent = tile.kind;
@@ -543,32 +587,12 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
     document.querySelector("[data-pano-hint]")?.setAttribute("hidden", "");
   }
 
-  function preloadTileAssets(urls: string[]): Promise<void> {
-    let done = 0;
-    const total = urls.length;
+  function preloadTileAssets(tileList: PanoTile[]): Promise<void> {
     const loader = document.querySelector<HTMLElement>("[data-pano-loader]");
     const bar = loader?.querySelector<HTMLElement>("[data-pano-loader-bar]");
-    const bump = () => {
-      done += 1;
+    return preloadTiles(tileList, (done, total) => {
       if (bar && total) bar.style.width = `${Math.round((done / total) * 100)}%`;
-    };
-    return Promise.all(
-      urls.map(
-        (url) =>
-          new Promise<void>((resolve) => {
-            const img = new Image();
-            img.onload = () => {
-              bump();
-              resolve();
-            };
-            img.onerror = () => {
-              bump();
-              resolve();
-            };
-            img.src = url;
-          }),
-      ),
-    ).then(() => undefined);
+    });
   }
 
   async function dismissLoader(): Promise<void> {
@@ -703,18 +727,20 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
   buildList();
 
   const isMobile = window.matchMedia("(max-width: 900px)").matches;
-  const uniqueCovers = [...new Set(allTiles.map((t) => t.cover))];
+  const priorityTiles = allTiles.slice(0, MOBILE_PRIORITY_COUNT);
+  const restTiles = allTiles.slice(MOBILE_PRIORITY_COUNT);
 
   const boot = async (): Promise<void> => {
     if (isMobile) {
       await Promise.race([
-        preloadTileAssets(uniqueCovers),
-        new Promise<void>((r) => setTimeout(r, 4800)),
+        preloadTileAssets(priorityTiles),
+        new Promise<void>((r) => setTimeout(r, MOBILE_LOADER_MAX_MS)),
       ]);
       await dismissLoader();
+      if (restTiles.length) void preloadTileAssets(restTiles);
     } else {
       document.querySelector("[data-pano-loader]")?.remove();
-      void preloadTileAssets(uniqueCovers);
+      void preloadTileAssets(allTiles);
     }
     dirty = true;
     render();

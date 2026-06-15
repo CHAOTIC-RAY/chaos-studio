@@ -1490,8 +1490,8 @@ main { padding-top: var(--header-h); }
   align-items: center;
   justify-content: center;
   gap: 0.85rem;
-  background: linear-gradient(180deg, #0c2a56 0%, #061428 100%);
-  color: #93c5fd;
+  background: var(--bg);
+  color: var(--muted);
   transition: opacity 0.4s ease, visibility 0.4s ease;
 }
 .pano__loader.is-done {
@@ -1509,7 +1509,7 @@ main { padding-top: var(--header-h); }
   width: min(70vw, 280px);
   aspect-ratio: 1;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(96, 165, 250, 0.35) 0%, rgba(20, 61, 122, 0.2) 45%, transparent 70%);
+  background: radial-gradient(circle, rgba(213, 119, 237, 0.45) 0%, rgba(78, 19, 112, 0.12) 42%, transparent 70%);
   animation: loading-glow-pulse 2.4s ease-in-out infinite;
   pointer-events: none;
 }
@@ -1517,8 +1517,8 @@ main { padding-top: var(--header-h); }
   position: relative;
   z-index: 1;
   width: clamp(3.5rem, 16vw, 5.5rem);
-  color: #93c5fd;
-  filter: drop-shadow(0 0 24px rgba(96, 165, 250, 0.45));
+  color: var(--purple);
+  filter: drop-shadow(0 0 28px rgba(213, 119, 237, 0.35));
   animation: loading-logo-reveal 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .pano__loader-logo .logo-mark-svg {
@@ -1535,7 +1535,7 @@ main { padding-top: var(--header-h); }
   font-weight: 700;
   letter-spacing: 0.26em;
   text-transform: uppercase;
-  color: #bfdbfe;
+  color: var(--purple);
 }
 .pano__loader-track {
   position: relative;
@@ -1543,7 +1543,7 @@ main { padding-top: var(--header-h); }
   width: min(12rem, 52vw);
   height: 3px;
   border-radius: 999px;
-  background: rgba(147, 197, 253, 0.18);
+  background: rgba(213, 119, 237, 0.18);
   overflow: hidden;
 }
 .pano__loader-bar {
@@ -1551,7 +1551,7 @@ main { padding-top: var(--header-h); }
   width: 0;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #60a5fa, #93c5fd);
+  background: linear-gradient(90deg, var(--purple), var(--purple-bright));
   transition: width 0.25s ease;
 }
 .pano {
@@ -1689,8 +1689,8 @@ main { padding-top: var(--header-h); }
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #fff;
-  background: rgba(15, 45, 92, 0.82);
-  border: 1px solid rgba(147, 197, 253, 0.45);
+  background: rgba(78, 19, 112, 0.82);
+  border: 1px solid rgba(213, 119, 237, 0.45);
   border-radius: 999px;
   pointer-events: none;
 }
@@ -2509,48 +2509,20 @@ body.route-gallery {
   color: var(--purple-bright);
 }
 
-/* Gallery — solid blue header bar; tiles stay beneath it */
+/* Gallery — solid studio header so panorama tiles don't show through */
 .route-gallery .site-header--studio {
-  background: linear-gradient(180deg, #164a8f 0%, #0f3568 100%);
-  border-bottom: 1px solid rgba(147, 197, 253, 0.28);
-  box-shadow: 0 6px 28px rgba(6, 20, 48, 0.42);
+  background: var(--header-scrolled-bg);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 6px 28px rgba(4, 3, 8, 0.35);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   z-index: 120;
 }
 .route-gallery .site-header--studio.is-scrolled {
-  background: linear-gradient(180deg, #164a8f 0%, #0f3568 100%);
+  background: var(--header-scrolled-bg);
 }
 .route-gallery .site-header--studio .logo-text {
-  color: #dbeafe;
-}
-.route-gallery .site-header--studio .logo-mark-svg {
-  color: #93c5fd;
-  filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.5));
-}
-.route-gallery .site-header--studio .nav a {
-  color: rgba(219, 234, 254, 0.78);
-}
-.route-gallery .site-header--studio .nav a:hover,
-.route-gallery .site-header--studio .nav__link--active {
-  color: #fff;
-}
-.route-gallery .site-header--studio .nav-cta {
-  background: rgba(96, 165, 250, 0.2);
-  border-color: rgba(147, 197, 253, 0.45);
-  color: #eff6ff;
-}
-.route-gallery .site-header--studio .btn-icon {
-  border-color: rgba(147, 197, 253, 0.28);
-  color: #dbeafe;
-}
-.route-gallery .pano__title {
-  background: linear-gradient(125deg, #dbeafe, #93c5fd 55%, #60a5fa);
-  -webkit-background-clip: text;
-  background-clip: text;
-}
-.route-gallery .pano__corner .eyebrow {
-  color: #93c5fd;
+  color: var(--purple-bright);
 }
 .route-studio .studio-page-hero__frame,
 .route-studio .studio-page-body {
