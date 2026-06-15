@@ -6,7 +6,6 @@
   const SITE = "https://portfolio.chaoticstudio.workers.dev";
   const MANIFEST = "/admin/media-manifest.json";
   const SYNC_URL = "/admin/sync-status.json";
-  const EDITOR_FRAME = "/admin/editor-frame";
 
   const ICONS = {
     home: '<svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/></svg>',
@@ -117,83 +116,10 @@
     const target = `${location.pathname}${location.search}#/`;
     if (h !== "#/") history.replaceState(null, "", target);
     forcePortalView("dashboard");
-    syncEditorFrame();
     ensureDecapMounted();
     setTimeout(() => {
       window.__chaosPortalRedirect = false;
     }, 300);
-  }
-
-  function getEditorFrame() {
-    return document.querySelector("[data-decap-frame]");
-  }
-
-  /** Decap runs in an iframe while editing; login uses the parent mount. */
-  function decapDocument() {
-    const frame = getEditorFrame();
-    if (mode() === "editor" && frame?.contentDocument?.body) {
-      return frame.contentDocument;
-    }
-    return document;
-  }
-
-  function decapQuery(sel) {
-    return decapDocument().querySelector(sel);
-  }
-
-  function syncEditorFrame() {
-    const slot = document.querySelector("[data-decap-slot]");
-    const mount = document.getElementById("chaos-decap-mount");
-    if (!slot) return;
-
-    if (mode() !== "editor" || !isLoggedIn()) {
-      const frame = getEditorFrame();
-      if (frame) {
-        frame.hidden = true;
-        if (frame.src && frame.src !== "about:blank") frame.src = "about:blank";
-      }
-      if (mount) mount.style.removeProperty("display");
-      return;
-    }
-
-    let frame = getEditorFrame();
-    if (!frame) {
-      frame = document.createElement("iframe");
-      frame.className = "chaos-decap-frame";
-      frame.setAttribute("data-decap-frame", "");
-      frame.title = "Decap CMS editor";
-      frame.setAttribute(
-        "sandbox",
-        "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox",
-      );
-      slot.appendChild(frame);
-      frame.addEventListener("load", () => {
-        const root = frame.contentDocument?.getElementById("nc-root");
-        if (root) delete root.dataset.chaosObserved;
-        nudgeDecapLayout();
-        renderSaveDock(true);
-        watchIframeDecap();
-      });
-    }
-
-    frame.hidden = false;
-    if (mount) mount.style.display = "none";
-
-    const hash = route();
-    const target = `${EDITOR_FRAME}${hash}`;
-    const current = frame.getAttribute("src") || "";
-    if (!current.includes("editor-frame")) {
-      frame.src = target;
-      return;
-    }
-    try {
-      const win = frame.contentWindow;
-      if (win && win.location.pathname.includes("editor-frame") && win.location.hash !== hash) {
-        win.location.replace(target);
-      }
-    } catch {
-      frame.src = target;
-    }
   }
 
   function ensureDecapMounted() {
@@ -201,17 +127,29 @@
     const nc = document.getElementById("nc-root");
     if (!mount || !nc) return false;
     if (nc.parentElement !== mount) mount.appendChild(nc);
-    if (mount.parentElement !== document.body) document.body.appendChild(mount);
+
+    const m = mode();
+    const slot = document.querySelector("[data-decap-slot]");
+
+    if (m === "editor" && slot) {
+      if (mount.parentElement !== slot) slot.appendChild(mount);
+    } else if (mount.parentElement !== document.body) {
+      document.body.appendChild(mount);
+    }
+    mount.style.removeProperty("display");
     return true;
   }
 
-  function syncEditorLayoutVars() {
-    const bar = document.querySelector("[data-editor-bar]");
-    if (!bar) return;
-    document.documentElement.style.setProperty(
-      "--chaos-editor-bar-h",
-      `${Math.ceil(bar.getBoundingClientRect().height)}px`,
-    );
+  function updateEditorContext() {
+    const el = document.querySelector("[data-editor-title]");
+    const ed = editorFromHash();
+    if (!el) return;
+    if (mode() === "editor" && ed) {
+      el.textContent = ed.title;
+      el.hidden = false;
+    } else {
+      el.hidden = true;
+    }
   }
 
   function waitForDecapRoot() {
@@ -237,14 +175,12 @@
       a.hidden = false;
       a.classList.toggle("is-active", a.getAttribute("data-nav") === viewMode);
     });
-    const bar = document.querySelector("[data-editor-bar]");
-    if (bar) bar.replaceChildren();
     setEditorLoading(false);
     lastDockKey = "";
     if (viewMode === "dashboard") renderDashboard();
     if (viewMode === "media") renderMedia();
     if (viewMode === "assistant") renderAssistantView();
-    if (viewMode !== "editor") syncEditorFrame();
+    if (viewMode !== "editor") ensureDecapMounted();
   }
 
   const AI_UI_VERSION = "15";
@@ -272,9 +208,10 @@
             <strong>Chaos Studio CMS</strong>
             <span data-sync-badge>Checking sync…</span>
           </div>
+          <span class="chaos-app-header__context" data-editor-title hidden></span>
         </div>
         <nav class="chaos-app-header__nav" aria-label="Main">
-          <a href="#/" data-nav="dashboard">${icon("home")}<span class="chaos-nav-label">Home</span></a>
+          <a href="#/" data-nav="dashboard">${icon("home")}<span class="chaos-nav-label">Dashboard</span></a>
           <a href="#/media" data-nav="media">${icon("image")}<span class="chaos-nav-label">Media</span></a>
           <a href="#/assistant" data-nav="assistant">${icon("chat")}<span class="chaos-nav-label">AI</span></a>
           <a href="${SITE}/" target="_blank" rel="noopener">${icon("external")}<span class="chaos-nav-label">Site</span></a>
@@ -289,7 +226,6 @@
         <div id="chaos-view-media" class="chaos-view chaos-media-view"></div>
         <div id="chaos-view-assistant" class="chaos-view chaos-assistant-view"></div>
         <div id="chaos-view-editor" class="chaos-view chaos-editor-view">
-          <div class="chaos-editor-bar" data-editor-bar></div>
           <p class="chaos-editor-loading" data-editor-loading hidden>Loading editor… large files may take a moment.</p>
           <div class="chaos-decap-slot" data-decap-slot></div>
         </div>
@@ -446,7 +382,6 @@
   }
 
   function mountDecap() {
-    syncEditorFrame();
     ensureDecapMounted();
     nudgeDecapLayout();
   }
@@ -467,21 +402,15 @@
     return Boolean(el.closest("[data-save-dock], .chaos-toast, [data-editor-loading]"));
   }
 
-  function renderEditorBar() {
-    const bar = document.querySelector("[data-editor-bar]");
-    const ed = editorFromHash();
-    if (!bar || !ed) return;
-    bar.innerHTML = `
-      <button type="button" class="chaos-editor-bar__back" data-portal-back>${icon("home")} Back to portal</button>
-      <span class="chaos-editor-bar__title">${ed.title}</span>
-      <p class="chaos-editor-bar__hint">${ed.hint || "Edit fields below, then Publish."}</p>
-      <a class="chaos-editor-bar__open" href="/admin/editor-frame${route()}" target="_blank" rel="noopener">Open full screen</a>
-    `;
-    bar.querySelector("[data-portal-back]")?.addEventListener("click", (e) => {
-      e.preventDefault();
-      goToPortal();
+  function findToolbarButtons() {
+    const toolbar =
+      document.querySelector('[class*="ToolbarContainer"]') ||
+      document.querySelector('[class*="EditorControlBar"]');
+    if (!toolbar) return [];
+    return [...toolbar.querySelectorAll("button")].filter((btn) => {
+      const t = (btn.textContent || "").toLowerCase();
+      return /publish|save|delete|status|draft/.test(t);
     });
-    syncEditorLayoutVars();
   }
 
   function bindPortalNavigation() {
@@ -498,34 +427,21 @@
     });
   }
 
-  function findToolbarButtons() {
-    const doc = decapDocument();
-    const toolbar =
-      doc.querySelector('[class*="ToolbarContainer"]') ||
-      doc.querySelector('[class*="EditorControlBar"]');
-    if (!toolbar) return [];
-    return [...toolbar.querySelectorAll("button")].filter((btn) => {
-      const t = (btn.textContent || "").toLowerCase();
-      return /publish|save|delete|status|draft/.test(t);
-    });
-  }
-
   function appendDockBack(dock) {
     const back = document.createElement("button");
     back.type = "button";
     back.className = "chaos-dock__btn chaos-dock__btn--back";
     back.setAttribute("data-portal-back", "");
-    back.textContent = "← Portal";
+    back.textContent = "← Home";
     dock.appendChild(back);
   }
 
   function isDecapLoginScreen() {
-    return Boolean(decapQuery('[class*="AuthenticationPage"]'));
+    return Boolean(document.querySelector('#nc-root [class*="AuthenticationPage"]'));
   }
 
   function editorFieldsReady() {
-    const doc = decapDocument();
-    return doc.querySelectorAll("#nc-root input, #nc-root textarea, #nc-root select").length > 0;
+    return document.querySelectorAll("#nc-root input, #nc-root textarea, #nc-root select").length > 0;
   }
 
   function renderSaveDock(force) {
@@ -658,6 +574,8 @@
       a.classList.toggle("is-active", a.getAttribute("data-nav") === m);
     });
 
+    updateEditorContext();
+
     if (m === "dashboard") renderDashboard();
     if (m === "media") renderMedia();
     if (m === "assistant") {
@@ -666,22 +584,19 @@
     if (m === "editor") {
       lastDockKey = "";
       setEditorLoading(true);
-      syncEditorFrame();
-      renderEditorBar();
-      syncEditorLayoutVars();
+      ensureDecapMounted();
+      updateEditorContext();
       document.getElementById("chaos-app")?.classList.add("chaos-app--editing");
       nudgeDecapLayout();
       renderSaveDock(true);
       clearTimeout(dockTimer);
       dockTimer = setTimeout(() => {
         ensureDecapMounted();
-        syncEditorLayoutVars();
         nudgeDecapLayout();
         renderSaveDock(true);
       }, 1200);
       setTimeout(() => {
         ensureDecapMounted();
-        syncEditorLayoutVars();
         nudgeDecapLayout();
         renderSaveDock(true);
       }, 4000);
@@ -719,26 +634,6 @@
       },
       true,
     );
-  }
-
-  function watchIframeDecap() {
-    const frame = getEditorFrame();
-    const doc = frame?.contentDocument;
-    const root = doc?.getElementById("nc-root");
-    if (!root || root.dataset.chaosObserved) return;
-    root.dataset.chaosObserved = "1";
-    const obs = new MutationObserver((records) => {
-      if (mode() !== "editor") return;
-      const relevant = records.some((r) => {
-        const nodes = [...(r.addedNodes || []), ...(r.removedNodes || []), r.target];
-        return nodes.some((n) => {
-          const el = n instanceof Element ? n : n?.parentElement;
-          return el?.id === "nc-root" || el?.closest?.("#nc-root");
-        });
-      });
-      if (relevant) scheduleEditorChrome();
-    });
-    obs.observe(root, { childList: true, subtree: true });
   }
 
   function watchDecapMount() {
@@ -915,19 +810,8 @@
     if (window.__chaosEditorLayout) return;
     window.__chaosEditorLayout = true;
     window.addEventListener("resize", () => {
-      if (mode() === "editor") syncEditorLayoutVars();
+      if (mode() === "editor") nudgeDecapLayout();
     });
-    const obs = new MutationObserver(() => {
-      const bar = document.querySelector("[data-editor-bar]");
-      if (!bar || bar.dataset.layoutObserved) return;
-      bar.dataset.layoutObserved = "1";
-      syncEditorLayoutVars();
-      if (typeof ResizeObserver !== "undefined") {
-        const ro = new ResizeObserver(() => syncEditorLayoutVars());
-        ro.observe(bar);
-      }
-    });
-    obs.observe(document.body, { childList: true, subtree: true });
   }
 
   function boot() {
