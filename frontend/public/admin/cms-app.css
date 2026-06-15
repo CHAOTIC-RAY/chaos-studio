@@ -550,93 +550,27 @@ body.chaos-mode-assistant .chaos-dock {
 .chaos-decap-slot {
   position: relative;
   flex: 1 1 auto;
-  min-height: 16rem;
-  pointer-events: none;
-  background: transparent;
-  border-radius: 0;
-}
-
-/* Single Decap instance — fixed over editor slot (never reparent #nc-root) */
-body.chaos-mode-editor #chaos-decap-mount {
-  display: flex !important;
-  flex-direction: column;
-  position: fixed;
-  z-index: 105;
-  top: calc(var(--app-header-h) + var(--chaos-editor-bar-h) + var(--app-safe-t));
-  right: 0;
-  bottom: calc(var(--app-dock-h) + var(--app-safe-b));
-  left: 0;
+  min-height: 12rem;
   overflow: hidden;
   background: #f7f5fb;
   color: #1e1b3b;
-  pointer-events: auto;
+  border-radius: var(--app-radius) var(--app-radius) 0 0;
 }
 
-body.chaos-mode-editor #nc-root {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0;
+.chaos-decap-frame {
+  display: block;
   width: 100%;
-  overflow: hidden;
-}
-
-body.chaos-mode-editor #nc-root [class*="AppMainContainer"] {
-  position: relative !important;
-  flex: 1 1 auto;
-  height: 100% !important;
-  min-height: 0 !important;
-  max-width: none !important;
-  margin: 0 !important;
-}
-
-body.chaos-mode-editor #nc-root [class*="AppHeader"],
-body.chaos-mode-editor #nc-root [class*="Sidebar"],
-body.chaos-mode-editor #nc-root [class*="SidebarContainer"],
-body.chaos-mode-editor #nc-root > header,
-body.chaos-mode-editor #nc-root [class*="ToolbarContainer"],
-body.chaos-mode-editor #nc-root [class*="PreviewPane"],
-body.chaos-mode-editor #nc-root [class*="PreviewPaneFrame"] {
-  display: none !important;
-}
-
-/* Do not use [class*="Editor"] — it also matches EditorContainer and breaks layout */
-body.chaos-mode-editor #nc-root [class*="EditorContainer"] {
-  min-width: 0 !important;
-  padding-top: 0 !important;
-  overflow: auto !important;
-  -webkit-overflow-scrolling: touch;
+  height: 100%;
+  min-height: 20rem;
+  border: 0;
   background: #f7f5fb;
 }
 
-body.chaos-mode-editor #nc-root [class*="ControlPaneContainer"] {
-  max-width: 48rem;
-  margin: 0 auto !important;
-  padding: 1rem 1.25rem 3rem !important;
-  overflow: visible !important;
+/* Parent Decap mount — login only; editor runs in iframe */
+body.chaos-mode-editor #chaos-decap-mount {
+  display: none !important;
 }
 
-body.chaos-mode-editor #nc-root input,
-body.chaos-mode-editor #nc-root textarea,
-body.chaos-mode-editor #nc-root select {
-  font-size: 1rem !important;
-  border-radius: 10px !important;
-}
-
-body.chaos-mode-editor #nc-root [class*="Loader"] {
-  min-height: 8rem !important;
-}
-
-body.chaos-mode-editor #nc-root svg {
-  max-width: none !important;
-  max-height: none !important;
-  fill: initial !important;
-  stroke: initial !important;
-  stroke-width: initial !important;
-}
-
-/* Parent Decap mount — hidden except login + editor */
 body:not(.chaos-mode-editor):not(.chaos-mode-login) #chaos-decap-mount {
   position: fixed;
   width: 1px;

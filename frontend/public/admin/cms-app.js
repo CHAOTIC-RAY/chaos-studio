@@ -6,6 +6,7 @@
   const SITE = "https://portfolio.chaoticstudio.workers.dev";
   const MANIFEST = "/admin/media-manifest.json";
   const SYNC_URL = "/admin/sync-status.json";
+  const EDITOR_FRAME = "/admin/editor-frame";
 
   const ICONS = {
     home: '<svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/></svg>',
@@ -28,7 +29,7 @@
       hash: "#/collections/campaign/entries/campaign-posts",
       icon: "grid",
       hero: true,
-      hint: "Each post needs a Post ID matching its image folder. Use Publish when finished.",
+      hint: "Tap a post to edit it. Use Publish at the bottom when you're done.",
     },
     {
       id: "campaign-meta",
@@ -116,14 +117,86 @@
     const target = `${location.pathname}${location.search}#/`;
     if (h !== "#/") history.replaceState(null, "", target);
     forcePortalView("dashboard");
+    syncEditorFrame();
     ensureDecapMounted();
     setTimeout(() => {
       window.__chaosPortalRedirect = false;
     }, 300);
   }
 
+  function getEditorFrame() {
+    return document.querySelector("[data-decap-frame]");
+  }
+
+  /** Decap runs in an iframe while editing; login uses the parent mount. */
+  function decapDocument() {
+    const frame = getEditorFrame();
+    if (mode() === "editor" && frame?.contentDocument?.body) {
+      return frame.contentDocument;
+    }
+    return document;
+  }
+
+  function decapQuery(sel) {
+    return decapDocument().querySelector(sel);
+  }
+
+  function syncEditorFrame() {
+    const slot = document.querySelector("[data-decap-slot]");
+    const mount = document.getElementById("chaos-decap-mount");
+    if (!slot) return;
+
+    if (mode() !== "editor" || !isLoggedIn()) {
+      const frame = getEditorFrame();
+      if (frame) {
+        frame.hidden = true;
+        if (frame.src && frame.src !== "about:blank") frame.src = "about:blank";
+      }
+      if (mount) mount.style.removeProperty("display");
+      return;
+    }
+
+    let frame = getEditorFrame();
+    if (!frame) {
+      frame = document.createElement("iframe");
+      frame.className = "chaos-decap-frame";
+      frame.setAttribute("data-decap-frame", "");
+      frame.title = "Decap CMS editor";
+      frame.setAttribute(
+        "sandbox",
+        "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox",
+      );
+      slot.appendChild(frame);
+      frame.addEventListener("load", () => {
+        const root = frame.contentDocument?.getElementById("nc-root");
+        if (root) delete root.dataset.chaosObserved;
+        nudgeDecapLayout();
+        renderSaveDock(true);
+        watchIframeDecap();
+      });
+    }
+
+    frame.hidden = false;
+    if (mount) mount.style.display = "none";
+
+    const hash = route();
+    const target = `${EDITOR_FRAME}${hash}`;
+    const current = frame.getAttribute("src") || "";
+    if (!current.includes("editor-frame")) {
+      frame.src = target;
+      return;
+    }
+    try {
+      const win = frame.contentWindow;
+      if (win && win.location.pathname.includes("editor-frame") && win.location.hash !== hash) {
+        win.location.replace(target);
+      }
+    } catch {
+      frame.src = target;
+    }
+  }
+
   function ensureDecapMounted() {
-    document.querySelector("[data-decap-frame]")?.remove();
     const mount = document.getElementById("chaos-decap-mount");
     const nc = document.getElementById("nc-root");
     if (!mount || !nc) return false;
@@ -171,7 +244,7 @@
     if (viewMode === "dashboard") renderDashboard();
     if (viewMode === "media") renderMedia();
     if (viewMode === "assistant") renderAssistantView();
-    if (viewMode !== "editor") ensureDecapMounted();
+    if (viewMode !== "editor") syncEditorFrame();
   }
 
   const AI_UI_VERSION = "15";
@@ -373,6 +446,7 @@
   }
 
   function mountDecap() {
+    syncEditorFrame();
     ensureDecapMounted();
     nudgeDecapLayout();
   }
@@ -425,9 +499,10 @@
   }
 
   function findToolbarButtons() {
+    const doc = decapDocument();
     const toolbar =
-      document.querySelector('[class*="ToolbarContainer"]') ||
-      document.querySelector('[class*="EditorControlBar"]');
+      doc.querySelector('[class*="ToolbarContainer"]') ||
+      doc.querySelector('[class*="EditorControlBar"]');
     if (!toolbar) return [];
     return [...toolbar.querySelectorAll("button")].filter((btn) => {
       const t = (btn.textContent || "").toLowerCase();
@@ -445,11 +520,12 @@
   }
 
   function isDecapLoginScreen() {
-    return Boolean(document.querySelector('#nc-root [class*="AuthenticationPage"]'));
+    return Boolean(decapQuery('[class*="AuthenticationPage"]'));
   }
 
   function editorFieldsReady() {
-    return document.querySelectorAll("#nc-root input, #nc-root textarea, #nc-root select").length > 0;
+    const doc = decapDocument();
+    return doc.querySelectorAll("#nc-root input, #nc-root textarea, #nc-root select").length > 0;
   }
 
   function renderSaveDock(force) {
@@ -590,7 +666,7 @@
     if (m === "editor") {
       lastDockKey = "";
       setEditorLoading(true);
-      ensureDecapMounted();
+      syncEditorFrame();
       renderEditorBar();
       syncEditorLayoutVars();
       document.getElementById("chaos-app")?.classList.add("chaos-app--editing");
@@ -643,6 +719,26 @@
       },
       true,
     );
+  }
+
+  function watchIframeDecap() {
+    const frame = getEditorFrame();
+    const doc = frame?.contentDocument;
+    const root = doc?.getElementById("nc-root");
+    if (!root || root.dataset.chaosObserved) return;
+    root.dataset.chaosObserved = "1";
+    const obs = new MutationObserver((records) => {
+      if (mode() !== "editor") return;
+      const relevant = records.some((r) => {
+        const nodes = [...(r.addedNodes || []), ...(r.removedNodes || []), r.target];
+        return nodes.some((n) => {
+          const el = n instanceof Element ? n : n?.parentElement;
+          return el?.id === "nc-root" || el?.closest?.("#nc-root");
+        });
+      });
+      if (relevant) scheduleEditorChrome();
+    });
+    obs.observe(root, { childList: true, subtree: true });
   }
 
   function watchDecapMount() {
