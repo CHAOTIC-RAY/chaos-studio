@@ -1,18 +1,9 @@
 #!/usr/bin/env node
-/** Sync all CMS mirrors and generated admin assets. */
+/** Build standalone CMS app (alias for build-cms.mjs). */
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-
-for (const args of [
-  ["scripts/vendor-decap.mjs"],
-  ["scripts/sync-content.mjs"],
-  ["scripts/generate-media-manifest.mjs"],
-]) {
-  const r = spawnSync("node", args, { cwd: root, stdio: "inherit" });
-  if (r.status !== 0) process.exit(r.status ?? 1);
-}
-
-console.log("CMS sync complete (social/gallery posts mirrors + media manifest).");
+const r = spawnSync("node", ["scripts/build-cms.mjs"], { cwd: root, stdio: "inherit" });
+process.exit(r.status ?? 1);

@@ -11,7 +11,7 @@ const root = path.resolve(import.meta.dirname, "..");
 const postsDir = path.join(root, "frontend/public/images/posts");
 const outPath = process.env.CMS_MANIFEST_OUT
   ? path.resolve(process.env.CMS_MANIFEST_OUT)
-  : path.join(root, "frontend/public/admin/media-manifest.json");
+  : path.join(root, "cms/dist/media-manifest.json");
 
 const MEDIA_RE = /\.(webp|jpe?g|png|gif|svg|mp4)$/i;
 /** Build-time gallery assets — not CMS-editable media */

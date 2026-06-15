@@ -1,10 +1,10 @@
 {
-  "id": "/admin/",
+  "id": "/",
   "name": "Chaos Studio CMS",
   "short_name": "CMS Admin",
   "description": "Edit portfolio content, posts, and media from your phone.",
-  "start_url": "/admin/",
-  "scope": "/admin/",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui", "browser"],
   "orientation": "any",
@@ -36,31 +36,31 @@
     {
       "name": "Dashboard",
       "short_name": "Home",
-      "url": "/admin/#/",
+      "url": "/#/",
       "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Portfolio feed",
       "short_name": "Feed",
-      "url": "/admin/#/collections/campaign/entries/social-posts",
+      "url": "/#/collections/campaign/entries/social-posts",
       "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Gallery posts",
       "short_name": "Gallery",
-      "url": "/admin/#/collections/campaign/entries/gallery-posts",
+      "url": "/#/collections/campaign/entries/gallery-posts",
       "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Pictures",
       "short_name": "Media",
-      "url": "/admin/#/media",
+      "url": "/#/media",
       "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "AI assistant",
       "short_name": "AI",
-      "url": "/admin/#/assistant",
+      "url": "/#/assistant",
       "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     }
   ]

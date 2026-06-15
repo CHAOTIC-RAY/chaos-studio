@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const src = path.join(root, "node_modules/decap-cms/dist/decap-cms.js");
-const dest = path.join(root, "frontend/public/admin/decap-cms.js");
+const dest = path.join(root, "cms/dist/decap-cms.js");
 
 if (!fs.existsSync(src)) {
   console.error("decap-cms not installed — run npm ci");
@@ -14,4 +14,4 @@ if (!fs.existsSync(src)) {
 }
 
 fs.copyFileSync(src, dest);
-console.log("Vendored decap-cms → frontend/public/admin/decap-cms.js");
+console.log("Vendored decap-cms → cms/dist/decap-cms.js");

@@ -8,7 +8,7 @@ import { readFile } from "node:fs/promises";
 import { join, extname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = join(fileURLToPath(new URL(".", import.meta.url)), "../frontend/public");
+const ROOT = join(fileURLToPath(new URL(".", import.meta.url)), "../cms/dist");
 const PORT = 4173;
 const HASH = "#/collections/campaign/entries/campaign-meta";
 const CAMPAIGN_META = JSON.stringify({ subtitle: "Test subtitle" });
@@ -25,7 +25,7 @@ const MIME = {
 function serve(req, res) {
   const url = new URL(req.url || "/", `http://127.0.0.1:${PORT}`);
   let path = url.pathname;
-  if (path === "/admin/editor-frame") path = "/admin/editor-frame.html";
+  if (path === "/editor-frame") path = "/editor-frame.html";
   const filePath = join(ROOT, path.replace(/^\//, ""));
   readFile(filePath)
     .then((buf) => {
@@ -76,7 +76,7 @@ const decapUser = JSON.stringify({
   name: "Test User",
 });
 
-for (const path of ["/admin/editor-frame", "/admin/"]) {
+for (const path of ["/editor-frame", "/"]) {
   await page.goto(`http://127.0.0.1:${PORT}${path}`, { waitUntil: "domcontentloaded" });
   await page.evaluate((user) => localStorage.setItem("decap-cms-user", user), decapUser);
   await page.goto(`http://127.0.0.1:${PORT}${path}${HASH}`, { waitUntil: "networkidle" });

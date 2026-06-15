@@ -5,13 +5,14 @@ on:
     branches: [main]
     paths:
       - "content/**"
+      - "cms/**"
       - "frontend/public/**"
-      - "frontend/public/admin/**"
       - "scripts/verify-cms-sync.mjs"
-      - "scripts/sync-cms.mjs"
+      - "scripts/build-cms.mjs"
   pull_request:
     paths:
       - "content/**"
+      - "cms/**"
       - "frontend/public/**"
       - "scripts/**"
 
@@ -28,8 +29,5 @@ jobs:
 
       - run: npm ci
 
-      - name: Vendor CMS assets (decap-cms.js is gitignored)
-        run: npm run sync:cms
-
-      - name: Verify CMS ↔ GitHub ↔ site mirrors
-        run: npm run verify:cms-sync
+      - name: Build CMS + verify mirrors
+        run: npm run build:cms && npm run verify:cms-sync -- --dist

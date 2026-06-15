@@ -6,8 +6,11 @@ import {
   type GithubApplyEnv,
 } from "./src/admin-github";
 
+const CMS_APP_URL = "https://cms.chaoticstudio.workers.dev";
+
 export interface Env extends AdminAiEnv, GithubApplyEnv {
   ASSETS: Fetcher;
+  CMS_APP_URL?: string;
 }
 
 /** Client-side routes that must serve index.html on direct navigation */
@@ -107,12 +110,13 @@ export default {
       });
     }
 
-    // CMS admin is static under /admin/ — must not fall through to portfolio SPA index.html
-    if (url.pathname === "/admin") {
-      return Response.redirect(`${url.origin}/admin/`, 301);
-    }
-    if (url.pathname.startsWith("/admin/")) {
-      return env.ASSETS.fetch(request);
+    // Legacy /admin URLs → standalone CMS app
+    if (url.pathname === "/admin" || url.pathname.startsWith("/admin/")) {
+      const cmsBase = env.CMS_APP_URL || CMS_APP_URL;
+      const suffix = url.pathname.replace(/^\/admin\/?/, "") || "";
+      const dest = new URL(suffix, cmsBase.endsWith("/") ? cmsBase : `${cmsBase}/`);
+      if (url.hash) dest.hash = url.hash;
+      return Response.redirect(dest.toString(), 302);
     }
 
     const spa = await serveSpaDocument(request, env);

@@ -97,8 +97,11 @@ function verifyMirrors() {
   }
 }
 
+const CMS_PUBLIC = "cms/public";
+const CMS_DIST = "cms/dist";
+
 function verifyCmsConfigPaths() {
-  const configPath = "frontend/public/admin/config.yml";
+  const configPath = `${CMS_PUBLIC}/config.yml`;
   if (!fs.existsSync(path.join(root, configPath))) {
     fail(`Missing ${configPath}`);
     return;
@@ -135,14 +138,13 @@ function manifestFingerprint(rel) {
 }
 
 function verifyMediaManifest() {
-  const manifestRel = "frontend/public/admin/media-manifest.json";
+  const manifestRel = `${CMS_DIST}/media-manifest.json`;
   if (!fs.existsSync(path.join(root, manifestRel))) {
-    fail(`Missing ${manifestRel} (run: npm run media:manifest)`);
+    fail(`Missing ${manifestRel} (run: npm run build:cms)`);
     return;
   }
   const committedFp = manifestFingerprint(manifestRel);
-  const tmpRel = "frontend/public/admin/.media-manifest-check.json";
-  const tmpAbs = path.join(root, tmpRel);
+  const tmpAbs = path.join(root, `${CMS_DIST}/.media-manifest-check.json`);
   const env = { ...process.env, CMS_MANIFEST_OUT: tmpAbs };
   const r = spawnSync("node", ["scripts/generate-media-manifest.mjs"], {
     cwd: root,
@@ -153,7 +155,7 @@ function verifyMediaManifest() {
     fail("Could not regenerate media manifest for verification");
     return;
   }
-  const freshFp = manifestFingerprint(tmpRel);
+  const freshFp = manifestFingerprint(path.relative(root, tmpAbs));
   fs.unlinkSync(tmpAbs);
   if (committedFp !== freshFp) {
     fail(
@@ -164,34 +166,53 @@ function verifyMediaManifest() {
 }
 
 function ensureDecapVendored() {
-  const dest = "frontend/public/admin/decap-cms.js";
+  const dest = `${CMS_DIST}/decap-cms.js`;
   if (fs.existsSync(path.join(root, dest))) return;
-  const r = spawnSync("node", ["scripts/vendor-decap.mjs"], { cwd: root, stdio: "pipe" });
-  if (r.status !== 0) {
-    fail(
-      "Missing admin asset: frontend/public/admin/decap-cms.js\n" +
-        "  Run: npm run sync:cms  (vendors decap-cms from node_modules)",
-    );
+  const r = spawnSync("node", ["scripts/build-cms.mjs"], { cwd: root, stdio: "pipe" });
+  if (r.status !== 0 || !fs.existsSync(path.join(root, dest))) {
+    fail(`Missing CMS asset: ${dest}\n  Run: npm run build:cms`);
   }
 }
 
-function verifyAdminBundle() {
-  ensureDecapVendored();
-  const required = ["index.html", "config.yml", "decap-cms.js", "cms-app.css", "cms-app.js", "media-manifest.json"];
+function verifyCmsSourceBundle() {
+  const required = [
+    "index.html",
+    "config.yml",
+    "cms-app.css",
+    "cms-app.js",
+    "cms-hooks.js",
+    "cms-assistant.js",
+    "sw.js",
+    "manifest.webmanifest",
+  ];
   for (const f of required) {
-    const rel = `frontend/public/admin/${f}`;
+    const rel = `${CMS_PUBLIC}/${f}`;
     if (!fs.existsSync(path.join(root, rel))) {
-      fail(`Missing admin asset: ${rel}`);
+      fail(`Missing CMS source: ${rel}`);
     }
   }
 }
 
-function verifyDistAdminIfPresent() {
-  const distAdmin = path.join(root, "frontend/dist/admin");
-  if (!fs.existsSync(distAdmin)) return;
-  for (const f of ["config.yml", "cms-app.js", "media-manifest.json"]) {
-    if (!filesEqual(`frontend/public/admin/${f}`, `frontend/dist/admin/${f}`)) {
-      fail(`frontend/dist/admin/${f} is out of sync with frontend/public/admin/${f} — rebuild required`);
+function verifyDistCmsIfPresent() {
+  const distDir = path.join(root, CMS_DIST);
+  if (!fs.existsSync(distDir)) return;
+  const required = [
+    "index.html",
+    "config.yml",
+    "decap-cms.js",
+    "cms-app.js",
+    "media-manifest.json",
+    "sync-status.json",
+  ];
+  for (const f of required) {
+    const rel = `${CMS_DIST}/${f}`;
+    if (!fs.existsSync(path.join(root, rel))) {
+      fail(`Missing CMS build output: ${rel}`);
+    }
+  }
+  for (const f of ["config.yml", "cms-app.js"]) {
+    if (!filesEqual(`${CMS_PUBLIC}/${f}`, `${CMS_DIST}/${f}`)) {
+      fail(`${CMS_DIST}/${f} is out of sync with ${CMS_PUBLIC}/${f} — run: npm run build:cms`);
     }
   }
 }
@@ -218,13 +239,15 @@ function writeSyncStatus() {
     ],
     cmsFiles: CMS_REPO_FILES.map((f) => ({ path: f, exists: fs.existsSync(path.join(root, f)) })),
   };
-  const out = path.join(root, "frontend/public/admin/sync-status.json");
+  const out =
+    process.env.CMS_SYNC_STATUS_OUT || path.join(root, CMS_DIST, "sync-status.json");
+  fs.mkdirSync(path.dirname(out), { recursive: true });
   fs.writeFileSync(out, `${JSON.stringify(status, null, 2)}\n`);
 }
 
 function runFix() {
-  console.log("Fixing CMS sync (copy content → public, refresh media manifest)…");
-  const r = spawnSync("node", ["scripts/sync-cms.mjs"], { cwd: root, stdio: "inherit" });
+  console.log("Fixing CMS sync (content mirrors + CMS build)…");
+  const r = spawnSync("node", ["scripts/build-cms.mjs"], { cwd: root, stdio: "inherit" });
   if (r.status !== 0) process.exit(r.status ?? 1);
 }
 
@@ -234,10 +257,13 @@ async function main() {
   verifyMirrors();
   verifyCmsConfigPaths();
   verifyCmsSourceFiles();
-  verifyMediaManifest();
-  verifyAdminBundle();
-
-  if (checkDist) verifyDistAdminIfPresent();
+  if (checkDist) {
+    verifyDistCmsIfPresent();
+    verifyMediaManifest();
+    ensureDecapVendored();
+  } else {
+    verifyCmsSourceBundle();
+  }
 
   writeSyncStatus();
 
@@ -253,7 +279,7 @@ async function main() {
     process.exit(1);
   }
 
-  console.log("CMS sync check passed (GitHub content ↔ site mirrors ↔ admin assets).");
+  console.log("CMS sync check passed (GitHub content ↔ site mirrors ↔ CMS app).");
 }
 
 main().catch((e) => {

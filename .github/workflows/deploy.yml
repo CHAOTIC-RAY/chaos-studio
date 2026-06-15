@@ -58,36 +58,37 @@ jobs:
       - name: Install ffmpeg (pano preview videos)
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
-      - name: Vendor CMS assets (decap-cms.js is gitignored)
-        run: npm run sync:cms
-
-      - name: Verify CMS sync (GitHub content ↔ site mirrors)
-        run: npm run verify:cms-sync
-
-      - name: Build site
+      - name: Build site + CMS app
         run: npm run build
 
-      - name: Verify admin bundle deployed in dist
-        run: node scripts/verify-cms-sync.mjs --dist
-
-      - name: Verify CMS assets in build output
+      - name: Verify CMS build output
         run: |
-          test -f frontend/dist/admin/decap-cms.js
-          test -f frontend/dist/admin/config.yml
-          test -f frontend/dist/admin/cms-app.css
-          test -f frontend/dist/admin/cms-app.js
-          test -f frontend/dist/admin/cms-hooks.js
-          test -f frontend/dist/admin/editor-frame.html
-          test -f frontend/dist/admin/cms-assistant.js
-          test -f frontend/dist/admin/media-manifest.json
-          test -f frontend/dist/admin/sync-status.json
+          test -f cms/dist/decap-cms.js
+          test -f cms/dist/config.yml
+          test -f cms/dist/cms-app.css
+          test -f cms/dist/cms-app.js
+          test -f cms/dist/cms-hooks.js
+          test -f cms/dist/editor-frame.html
+          test -f cms/dist/cms-assistant.js
+          test -f cms/dist/media-manifest.json
+          test -f cms/dist/sync-status.json
 
-      - name: Deploy to Cloudflare Workers
+      - name: Deploy portfolio to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
+          wranglerVersion: "4.93.0"
+        env:
+          WRANGLER_SKIP_BUILD: "1"
+
+      - name: Deploy CMS app to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --config cms/wrangler.jsonc
           wranglerVersion: "4.93.0"
         env:
           WRANGLER_SKIP_BUILD: "1"

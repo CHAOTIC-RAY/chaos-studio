@@ -84,20 +84,19 @@ function validateSiteConfig() {
 }
 
 function validateAdminAssets() {
-  const adminDir = path.join(root, "frontend/public/admin");
+  const adminDir = path.join(root, "cms/public");
   for (const f of [
     "index.html",
     "config.yml",
     "cms-app.css",
     "cms-app.js",
-    "media-manifest.json",
-    "sync-status.json",
-    "manifest.webmanifest",
-    "sw.js",
+    "cms-hooks.js",
     "cms-assistant.js",
     "cms-assistant.css",
+    "sw.js",
+    "manifest.webmanifest",
   ]) {
-    assert(fs.existsSync(path.join(adminDir, f)), `Missing frontend/public/admin/${f}`);
+    assert(fs.existsSync(path.join(adminDir, f)), `Missing cms/public/${f}`);
   }
 }
 

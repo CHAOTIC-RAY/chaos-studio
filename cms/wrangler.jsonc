@@ -1,0 +1,17 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "cms",
+  "compatibility_date": "2026-05-18",
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "build": {
+    "command": "sh -c 'test -n \"$WRANGLER_SKIP_BUILD\" || npm run build:cms'"
+  },
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  }
+}

@@ -4,8 +4,8 @@
  */
 (function () {
   const SITE = "https://portfolio.chaoticstudio.workers.dev";
-  const MANIFEST = "/admin/media-manifest.json";
-  const SYNC_URL = "/admin/sync-status.json";
+  const MANIFEST = "/media-manifest.json";
+  const SYNC_URL = "/sync-status.json";
 
   const ICONS = {
     home: '<svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/></svg>',
@@ -114,6 +114,27 @@
   function isKnownEditorRoute() {
     const h = route();
     return EDITORS.some((e) => h === e.hash || h.startsWith(`${e.hash}/`));
+  }
+
+  function syncDecapEditorRoute() {
+    const ed = editorFromHash();
+    if (!ed) return;
+    const target = ed.hash;
+    if (location.hash !== target) {
+      location.hash = target;
+      return;
+    }
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
+    nudgeDecapLayout();
+  }
+
+  function postLoginView() {
+    if (editorFromHash()) {
+      forcePortalView("editor");
+      syncDecapEditorRoute();
+    } else {
+      forcePortalView("dashboard");
+    }
   }
 
   function goToPortal() {
@@ -566,7 +587,7 @@
     });
 
     if (document.body.classList.contains("chaos-mode-login")) {
-      forcePortalView("dashboard");
+      postLoginView();
       ensureDecapMounted();
       return;
     }
@@ -597,6 +618,7 @@
     if (m === "editor") {
       lastDockKey = "";
       setEditorLoading(true);
+      syncDecapEditorRoute();
       ensureDecapMounted();
       updateEditorContext();
       document.getElementById("chaos-app")?.classList.add("chaos-app--editing");
@@ -845,7 +867,7 @@
       syncDecapGithubToken();
       applyMode();
       if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/admin/sw.js", { scope: "/admin/" }).catch(() => {});
+        navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {});
       }
     });
   }

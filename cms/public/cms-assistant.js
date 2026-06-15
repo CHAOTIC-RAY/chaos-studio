@@ -3,6 +3,7 @@
  * Chat + file attachments → structured site updates → GitHub commit
  */
 (function () {
+  const SITE = "https://portfolio.chaoticstudio.workers.dev";
   const REPO = "CHAOTIC-RAY/portfolio";
   const BRANCH = "main";
   const SETTINGS_KEY = "chaos_ai_settings";
@@ -415,7 +416,7 @@ Rules:
   async function loadSiteSnapshot() {
     const snap = { loadedAt: new Date().toISOString(), files: {}, live: null };
     try {
-      const res = await fetch("/api/portfolio", { cache: "no-store" });
+      const res = await fetch(`${SITE}/api/portfolio`, { cache: "no-store" });
       if (res.ok) snap.live = await res.json();
     } catch {
       /* ignore */
@@ -898,7 +899,7 @@ Rules:
   }
 
   async function applyViaWorker(updates, commitMessage, token) {
-    const res = await fetch("/api/admin/github/apply", {
+    const res = await fetch(`${SITE}/api/admin/github/apply`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -915,7 +916,7 @@ Rules:
   }
 
   async function verifyGithubToken(token) {
-    const res = await fetch("/api/admin/github/verify", {
+    const res = await fetch(`${SITE}/api/admin/github/verify`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ githubToken: token || undefined }),
@@ -954,7 +955,7 @@ Rules:
   }
 
   async function chatComplete(messages, settings) {
-    const res = await fetch("/api/admin/ai/chat", {
+    const res = await fetch(`${SITE}/api/admin/ai/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

@@ -17,17 +17,18 @@
     <title>Chaos Studio CMS</title>
     <link rel="icon" href="/icons/icon-192.png" type="image/png" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-    <link rel="cms-config-url" type="text/yaml" href="/admin/config.yml" />
-    <link rel="stylesheet" href="/admin/editor-frame.css" />
-    <link rel="stylesheet" href="/admin/cms-app.css" />
-    <link rel="stylesheet" href="/admin/cms-assistant.css" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="cms-config-url" type="text/yaml" href="/config.yml" />
+    <link rel="stylesheet" href="/editor-frame.css" />
+    <link rel="stylesheet" href="/cms-app.css" />
+    <link rel="stylesheet" href="/cms-assistant.css" />
   </head>
   <body>
     <!-- Decap must mount on body before decap-cms.js — never reparent #nc-root after React init -->
     <div id="chaos-decap-mount" class="chaos-decap-mount"><div id="nc-root"></div></div>
-    <script src="/admin/decap-cms.js"></script>
-    <script src="/admin/cms-hooks.js"></script>
-    <script src="/admin/cms-assistant.js" defer></script>
-    <script src="/admin/cms-app.js" defer></script>
+    <script src="/decap-cms.js"></script>
+    <script src="/cms-hooks.js"></script>
+    <script src="/cms-assistant.js" defer></script>
+    <script src="/cms-app.js" defer></script>
   </body>
 </html>
