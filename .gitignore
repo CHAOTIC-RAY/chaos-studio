@@ -22,3 +22,6 @@ MDP_extract/
 artifacts/
 .cursor/skills/**/__pycache__/
 frontend/public/admin/decap-cms.js
+# Generated at build time by scripts/generate-pano-thumbs.mjs
+*.pano.webp
+**/preview.mp4

@@ -8,6 +8,7 @@ type SocialPost = Portfolio["socialPosts"]["items"][0];
 interface PanoTile {
   id: string;
   cover: string;
+  coverFull: string;
   alt: string;
   client: string;
   title: string;
@@ -16,11 +17,32 @@ interface PanoTile {
   items: LightboxItem[];
   /** Set for product / web-app tiles so they render with a screenshot-optimized layout. */
   variant?: "app-desktop" | "app-mobile";
-  /** Autoplaying reel in the tile when near centre */
+  /** Preview reel for the tile (full video in lightbox items) */
   videoSrc?: string;
+  videoSrcFull?: string;
 }
 
 const POSTS_DIR = "/images/posts";
+
+/** Lighter assets for panorama tiles (full res kept for lightbox). */
+function toPanoThumb(src: string): string {
+  return src.replace(/\.webp$/i, ".pano.webp");
+}
+
+function toPanoPreview(src: string): string {
+  return src.replace(/\/video\.mp4$/i, "/preview.mp4");
+}
+
+type CellRefs = {
+  img: HTMLImageElement;
+  video: HTMLVideoElement;
+  play: HTMLButtonElement;
+  badge: HTMLElement;
+};
+
+function cellRefs(el: HTMLElement): CellRefs {
+  return (el as HTMLElement & { _panoRefs?: CellRefs })._panoRefs!;
+}
 
 function postCardLayout(post: SocialPost): "poster" | "media-kit" | null {
   if (post.cardLayout === "poster" || post.cardLayout === "media-kit") return post.cardLayout;
@@ -58,29 +80,35 @@ function postSlideSrc(post: SocialPost, slide: string): string {
 
 function tileFromPost(post: SocialPost): PanoTile {
   const alt = `${post.title} — ${post.client}`;
-  let cover: string;
   let items: LightboxItem[];
+  const coverFull = post.video
+    ? `${POSTS_DIR}/${post.id}/${post.poster ?? "poster.webp"}`
+    : post.slides?.length
+      ? postSlideSrc(post, post.slides[0])
+      : `${POSTS_DIR}/${postImageBase(post)}.webp`;
+
   if (post.video) {
     const src = `${POSTS_DIR}/${post.id}/${post.video}`;
-    cover = `${POSTS_DIR}/${post.id}/${post.poster ?? "poster.webp"}`;
-    items = [{ type: "video", src, poster: cover, alt }];
+    items = [{ type: "video", src, poster: coverFull, alt }];
   } else if (post.slides?.length) {
-    cover = postSlideSrc(post, post.slides[0]);
     items = post.slides.map((s) => ({ type: "image", src: postSlideSrc(post, s), alt }));
   } else {
-    cover = `${POSTS_DIR}/${postImageBase(post)}.webp`;
-    items = [{ type: "image", src: cover, alt }];
+    items = [{ type: "image", src: coverFull, alt }];
   }
+
+  const videoFull = post.video ? `${POSTS_DIR}/${post.id}/${post.video}` : undefined;
   return {
     id: post.id,
-    cover,
+    cover: toPanoThumb(coverFull),
+    coverFull,
     alt,
     client: post.client,
     title: post.title,
     kind: postKindLabel(post),
     tags: post.tags.slice(0, 3),
     items,
-    videoSrc: post.video ? `${POSTS_DIR}/${post.id}/${post.video}` : undefined,
+    videoSrc: videoFull ? toPanoPreview(videoFull) : undefined,
+    videoSrcFull: videoFull,
   };
 }
 
@@ -104,7 +132,8 @@ function appTilesFromPortfolio(portfolio: Portfolio): PanoTile[] {
       const frames = dm.frames?.length ? dm.frames : [dm.image];
       tiles.push({
         id: `app-${proj.id}-${device}`,
-        cover: dm.image,
+        cover: toPanoThumb(dm.image),
+        coverFull: dm.image,
         alt,
         client: proj.name,
         title: proj.tagline,
@@ -120,8 +149,10 @@ function appTilesFromPortfolio(portfolio: Portfolio): PanoTile[] {
 
 /** Layout + curvature constants */
 const GAP = 26;
-const MARGIN = 1; // extra ring of cells around viewport for the curved edges
+const MARGIN = 0;
 const DRAG_THRESHOLD = 7;
+const VIDEO_NEAR = 0.44;
+const VIDEO_FAR = 0.58;
 
 function tileMetrics(): { tileW: number; tileH: number; cols: number } {
   const vw = window.innerWidth;
@@ -167,12 +198,21 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
   // panning just re-points each cell at a new world coordinate. This avoids the
   // per-frame createElement/remove churn that made dragging janky.
   let cellEls: HTMLElement[] = [];
-  const cellState: { id: string; op: number; z: number; scale: number }[] = [];
+  const cellState: {
+    id: string;
+    op: number;
+    z: number;
+    scale: number;
+    transform: string;
+    videoZone: "" | "near" | "far";
+  }[] = [];
   let cellsX = 0;
   let cellsY = 0;
   let raf = 0;
   let running = false;
   let dirty = true;
+  let activeVideo: HTMLVideoElement | null = null;
+  let frame = 0;
 
   function mod(n: number, m: number): number {
     return ((n % m) + m) % m;
@@ -189,13 +229,28 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
       </span>
       <span class="pano-tile__media">
         <img class="pano-tile__img" alt="" loading="lazy" decoding="async" draggable="false" />
-        <video class="pano-tile__video" muted loop playsinline preload="metadata" hidden></video>
+        <video class="pano-tile__video" muted loop playsinline preload="none" hidden></video>
+        <button type="button" class="pano-tile__play" hidden aria-label="Play reel">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+        </button>
         <span class="pano-tile__reel-badge" hidden>Reel</span>
       </span>
       <span class="pano-tile__foot">
         <span class="pano-tile__tags" data-tags></span>
         <span class="pano-tile__kind" data-kind></span>
       </span>`;
+    const refs: CellRefs = {
+      img: el.querySelector(".pano-tile__img")!,
+      video: el.querySelector(".pano-tile__video")!,
+      play: el.querySelector(".pano-tile__play")!,
+      badge: el.querySelector(".pano-tile__reel-badge")!,
+    };
+    (el as HTMLElement & { _panoRefs?: CellRefs })._panoRefs = refs;
+    refs.play.addEventListener("pointerdown", (e) => e.stopPropagation());
+    refs.play.addEventListener("click", (e) => {
+      e.stopPropagation();
+      void refs.video.play().catch(() => {});
+    });
     parent.appendChild(el);
     return el;
   }
@@ -206,13 +261,13 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
     cellState.length = 0;
     const vw = stage!.clientWidth || window.innerWidth;
     const vh = stage!.clientHeight || window.innerHeight;
-    cellsX = Math.ceil(vw / cellW) + MARGIN * 2 + 2;
-    cellsY = Math.ceil(vh / cellH) + MARGIN * 2 + 2;
+    cellsX = Math.ceil(vw / cellW) + MARGIN * 2 + 1;
+    cellsY = Math.ceil(vh / cellH) + MARGIN * 2 + 1;
     const frag = document.createDocumentFragment();
     const total = cellsX * cellsY;
     for (let i = 0; i < total; i++) {
       cellEls.push(buildCell(frag));
-      cellState.push({ id: "", op: -1, z: -1, scale: 1 });
+      cellState.push({ id: "", op: -1, z: -1, scale: 1, transform: "", videoZone: "" });
     }
     plane!.appendChild(frag);
   }
@@ -224,17 +279,22 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
     el.classList.toggle("pano-tile--app-desktop", tile.variant === "app-desktop");
     el.classList.toggle("pano-tile--app-mobile", tile.variant === "app-mobile");
     el.classList.toggle("pano-tile--reel", !!tile.videoSrc);
-    const img = el.querySelector<HTMLImageElement>(".pano-tile__img")!;
-    const video = el.querySelector<HTMLVideoElement>(".pano-tile__video")!;
-    const badge = el.querySelector<HTMLElement>(".pano-tile__reel-badge")!;
+    const { img, video, badge } = cellRefs(el);
+    const st = cellState[cellEls.indexOf(el)];
+    if (st) st.videoZone = "";
+
     if (tile.videoSrc) {
-      img.hidden = true;
-      video.hidden = false;
+      img.hidden = false;
+      img.src = tile.cover;
+      img.alt = tile.alt;
+      img.onerror = () => {
+        if (img.src !== tile.coverFull) img.src = tile.coverFull;
+      };
+      video.hidden = true;
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
       badge.hidden = false;
-      if (video.src !== new URL(tile.videoSrc, location.origin).href) {
-        video.src = tile.videoSrc;
-        video.poster = tile.cover;
-      }
     } else {
       img.hidden = false;
       video.hidden = true;
@@ -242,8 +302,11 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
       video.pause();
       video.removeAttribute("src");
       img.src = tile.cover;
+      img.alt = tile.alt;
+      img.onerror = () => {
+        if (img.src !== tile.coverFull) img.src = tile.coverFull;
+      };
     }
-    img.alt = tile.alt;
     el.querySelector("[data-client]")!.textContent = tile.client;
     el.querySelector("[data-name]")!.textContent = tile.title;
     el.querySelector("[data-kind]")!.textContent = tile.kind;
@@ -251,6 +314,61 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
       .map((t) => `<span class="pano-tile__tag">${t}</span>`)
       .join("");
     el.setAttribute("aria-label", `${tile.title} — ${tile.client}. Open viewer.`);
+  }
+
+  function syncVideo(
+    el: HTMLElement,
+    tile: PanoTile,
+    dist: number,
+    st: (typeof cellState)[number],
+  ): void {
+    if (!tile.videoSrc) return;
+    const { img, video, play } = cellRefs(el);
+    const wantNear = dist < VIDEO_NEAR;
+    const wantFar = dist > VIDEO_FAR;
+    let zone = st.videoZone || "far";
+    if (wantNear) zone = "near";
+    else if (wantFar) zone = "far";
+
+    if (zone !== st.videoZone) {
+      const enteringNear = zone === "near";
+      st.videoZone = zone;
+      if (zone === "near") {
+        if (!video.src) {
+          video.src = tile.videoSrc!;
+          video.poster = tile.cover;
+        }
+        img.hidden = true;
+        video.hidden = false;
+        if (enteringNear && video.paused && (!activeVideo || activeVideo === video)) {
+          void video.play().then(() => {
+            play.hidden = true;
+            el.classList.remove("pano-tile--paused");
+            activeVideo = video;
+          }).catch(() => {
+            play.hidden = false;
+            el.classList.add("pano-tile--paused");
+          });
+        }
+      } else {
+        video.pause();
+        if (activeVideo === video) activeVideo = null;
+        video.removeAttribute("src");
+        video.load();
+        video.hidden = true;
+        img.hidden = false;
+        play.hidden = true;
+        el.classList.remove("pano-tile--paused");
+      }
+      return;
+    }
+
+    if (zone !== "near") return;
+
+    const paused = video.paused;
+    play.hidden = !paused;
+    el.classList.toggle("pano-tile--paused", paused);
+    if (!paused) activeVideo = video;
   }
 
   function render(): void {
@@ -296,11 +414,14 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
           const rotY = nx * 26;
           const rotX = -ny * 18;
           const tz = -(dist * dist) * 260;
-          transform += ` rotateY(${rotY.toFixed(2)}deg) rotateX(${rotX.toFixed(2)}deg) translateZ(${tz.toFixed(1)}px) scale(${scale.toFixed(3)})`;
+          transform += ` rotateY(${rotY.toFixed(1)}deg) rotateX(${rotX.toFixed(1)}deg) translateZ(${tz.toFixed(0)}px) scale(${scale.toFixed(2)})`;
         } else {
-          transform += ` scale(${scale.toFixed(3)})`;
+          transform += ` scale(${scale.toFixed(2)})`;
         }
-        el.style.transform = transform;
+        if (transform !== st.transform) {
+          el.style.transform = transform;
+          st.transform = transform;
+        }
 
         // opacity / z-index only repaint when they actually change
         const op = Math.round((0.55 + centerBoost * 0.45) * 100) / 100;
@@ -317,23 +438,13 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
           st.scale = scale;
         }
 
-        // Autoplay reels when the tile is near the viewport centre
-        if (tile.videoSrc) {
-          const video = el.querySelector<HTMLVideoElement>(".pano-tile__video");
-          if (video) {
-            const near = dist < 0.42;
-            if (near && video.paused) {
-              void video.play().catch(() => {});
-            } else if (!near && !video.paused) {
-              video.pause();
-            }
-          }
-        }
+        syncVideo(el, tile, dist, st);
       }
     }
   }
 
   function tick(): void {
+    frame++;
     let needs = dirty;
     dirty = false;
     if (!dragging && (Math.abs(vx) > 0.05 || Math.abs(vy) > 0.05)) {
@@ -348,7 +459,10 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
       oy += 0.1;
       needs = true;
     }
-    if (needs) render();
+    if (needs) {
+      const glide = !dragging && Math.abs(vx) < 0.08 && Math.abs(vy) < 0.08;
+      if (!glide || frame % 2 === 0) render();
+    }
     if (running) raf = requestAnimationFrame(tick);
   }
 
@@ -533,7 +647,11 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
     if (!tiles.length) tiles = allTiles;
     ox = 0;
     oy = 0;
-    for (const st of cellState) st.id = "";
+    for (const st of cellState) {
+      st.id = "";
+      st.transform = "";
+      st.videoZone = "";
+    }
     buildList();
     dirty = true;
     render();
@@ -588,6 +706,7 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
       await dismissLoader();
     } else {
       document.querySelector("[data-pano-loader]")?.remove();
+      void preloadTileAssets(uniqueCovers);
     }
     dirty = true;
     render();

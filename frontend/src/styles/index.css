@@ -1606,8 +1606,7 @@ main { padding-top: var(--header-h); }
   transform-style: preserve-3d;
   backface-visibility: hidden;
   transform-origin: center center;
-  will-change: transform;
-  contain: layout paint;
+  contain: layout paint style;
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
   cursor: pointer;
   overflow: hidden;
@@ -1769,10 +1768,50 @@ main { padding-top: var(--header-h); }
 .pano__edge-blur {
   position: absolute;
   inset: 0;
-  backdrop-filter: blur(7px);
-  -webkit-backdrop-filter: blur(7px);
-  -webkit-mask-image: radial-gradient(ellipse 76% 74% at 50% 50%, transparent 48%, #000 88%);
-  mask-image: radial-gradient(ellipse 76% 74% at 50% 50%, transparent 48%, #000 88%);
+  /* Static edge soften — live backdrop-filter over moving tiles is too costly */
+  background: radial-gradient(
+    ellipse 76% 74% at 50% 50%,
+    transparent 46%,
+    rgba(6, 20, 48, 0.35) 78%,
+    rgba(6, 20, 48, 0.55) 100%
+  );
+  pointer-events: none;
+}
+.pano-tile__play {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: rgba(6, 20, 48, 0.42);
+  color: #eff6ff;
+  cursor: pointer;
+  transition: background 0.2s ease, opacity 0.2s ease;
+}
+.pano-tile__play[hidden] {
+  display: none !important;
+}
+.pano-tile__play svg {
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0.65rem;
+  border-radius: 50%;
+  background: rgba(15, 53, 104, 0.88);
+  border: 1px solid rgba(147, 197, 253, 0.55);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+.pano-tile__play:hover {
+  background: rgba(6, 20, 48, 0.55);
+}
+.pano-tile--paused .pano-tile__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 12, 28, 0.18);
+  pointer-events: none;
 }
 .pano__vignette {
   position: absolute;
