@@ -160,7 +160,20 @@ function verifyMediaManifest() {
   }
 }
 
+function ensureDecapVendored() {
+  const dest = "frontend/public/admin/decap-cms.js";
+  if (fs.existsSync(path.join(root, dest))) return;
+  const r = spawnSync("node", ["scripts/vendor-decap.mjs"], { cwd: root, stdio: "pipe" });
+  if (r.status !== 0) {
+    fail(
+      "Missing admin asset: frontend/public/admin/decap-cms.js\n" +
+        "  Run: npm run sync:cms  (vendors decap-cms from node_modules)",
+    );
+  }
+}
+
 function verifyAdminBundle() {
+  ensureDecapVendored();
   const required = ["index.html", "config.yml", "decap-cms.js", "cms-app.css", "cms-app.js", "media-manifest.json"];
   for (const f of required) {
     const rel = `frontend/public/admin/${f}`;

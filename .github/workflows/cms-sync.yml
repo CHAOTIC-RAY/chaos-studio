@@ -28,5 +28,8 @@ jobs:
 
       - run: npm ci
 
+      - name: Vendor CMS assets (decap-cms.js is gitignored)
+        run: npm run sync:cms
+
       - name: Verify CMS ↔ GitHub ↔ site mirrors
         run: npm run verify:cms-sync
