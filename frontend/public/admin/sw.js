@@ -1,8 +1,11 @@
 /* Chaos Studio Admin PWA — scoped to /admin/ */
-const CACHE = "chaos-admin-v25";
+const CACHE = "chaos-admin-v26";
 const PRECACHE = [
   "/admin/",
   "/admin/index.html",
+  "/admin/editor-frame.html",
+  "/admin/editor-frame.css",
+  "/admin/cms-hooks.js",
   "/admin/decap-cms.js",
   "/admin/cms-app.css",
   "/admin/cms-app.js",

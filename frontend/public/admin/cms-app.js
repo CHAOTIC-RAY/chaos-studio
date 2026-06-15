@@ -6,6 +6,7 @@
   const SITE = "https://portfolio.chaoticstudio.workers.dev";
   const MANIFEST = "/admin/media-manifest.json";
   const SYNC_URL = "/admin/sync-status.json";
+  const EDITOR_FRAME = "/admin/editor-frame.html";
 
   const ICONS = {
     home: '<svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/></svg>',
@@ -116,10 +117,81 @@
     const target = `${location.pathname}${location.search}#/`;
     if (h !== "#/") history.replaceState(null, "", target);
     forcePortalView("dashboard");
+    syncEditorFrame();
     ensureDecapMounted();
     setTimeout(() => {
       window.__chaosPortalRedirect = false;
     }, 300);
+  }
+
+  function getEditorFrame() {
+    return document.querySelector("[data-decap-frame]");
+  }
+
+  /** Decap runs in an iframe while editing; login uses the parent mount. */
+  function decapDocument() {
+    const frame = getEditorFrame();
+    if (mode() === "editor" && frame?.contentDocument?.body) {
+      return frame.contentDocument;
+    }
+    return document;
+  }
+
+  function decapQuery(sel) {
+    return decapDocument().querySelector(sel);
+  }
+
+  function syncEditorFrame() {
+    const slot = document.querySelector("[data-decap-slot]");
+    const mount = document.getElementById("chaos-decap-mount");
+    if (!slot) return;
+
+    if (mode() !== "editor" || !isLoggedIn()) {
+      const frame = getEditorFrame();
+      if (frame) {
+        frame.hidden = true;
+        if (frame.src && frame.src !== "about:blank") frame.src = "about:blank";
+      }
+      if (mount) mount.style.removeProperty("display");
+      return;
+    }
+
+    let frame = getEditorFrame();
+    if (!frame) {
+      frame = document.createElement("iframe");
+      frame.className = "chaos-decap-frame";
+      frame.setAttribute("data-decap-frame", "");
+      frame.title = "Decap CMS editor";
+      frame.setAttribute(
+        "sandbox",
+        "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox",
+      );
+      slot.appendChild(frame);
+      frame.addEventListener("load", () => {
+        nudgeDecapLayout();
+        renderSaveDock(true);
+        watchIframeDecap();
+      });
+    }
+
+    frame.hidden = false;
+    if (mount) mount.style.display = "none";
+
+    const hash = route();
+    const target = `${EDITOR_FRAME}${hash}`;
+    const current = frame.getAttribute("src") || "";
+    if (!current.includes("editor-frame.html")) {
+      frame.src = target;
+      return;
+    }
+    try {
+      const win = frame.contentWindow;
+      if (win && win.location.pathname.endsWith("/editor-frame.html") && win.location.hash !== hash) {
+        win.location.replace(target);
+      }
+    } catch {
+      frame.src = target;
+    }
   }
 
   function ensureDecapMounted() {
@@ -171,6 +243,7 @@
     if (viewMode === "dashboard") renderDashboard();
     if (viewMode === "media") renderMedia();
     if (viewMode === "assistant") renderAssistantView();
+    if (viewMode !== "editor") syncEditorFrame();
   }
 
   const AI_UI_VERSION = "15";
@@ -372,6 +445,7 @@
   }
 
   function mountDecap() {
+    syncEditorFrame();
     ensureDecapMounted();
   }
 
@@ -422,9 +496,10 @@
   }
 
   function findToolbarButtons() {
+    const doc = decapDocument();
     const toolbar =
-      document.querySelector('[class*="ToolbarContainer"]') ||
-      document.querySelector('[class*="EditorControlBar"]');
+      doc.querySelector('[class*="ToolbarContainer"]') ||
+      doc.querySelector('[class*="EditorControlBar"]');
     if (!toolbar) return [];
     return [...toolbar.querySelectorAll("button")].filter((btn) => {
       const t = (btn.textContent || "").toLowerCase();
@@ -442,7 +517,12 @@
   }
 
   function isDecapLoginScreen() {
-    return Boolean(document.querySelector('#nc-root [class*="AuthenticationPage"]'));
+    return Boolean(decapQuery('[class*="AuthenticationPage"]'));
+  }
+
+  function editorFieldsReady() {
+    const doc = decapDocument();
+    return doc.querySelectorAll("#nc-root input, #nc-root textarea, #nc-root select").length > 0;
   }
 
   function renderSaveDock(force) {
@@ -477,9 +557,9 @@
     if (!buttons.length) {
       const wait = document.createElement("span");
       wait.className = "chaos-dock__label";
-      wait.textContent = "Loading editor…";
+      wait.textContent = editorFieldsReady() ? "Preparing publish actions…" : "Loading editor…";
       dock.appendChild(wait);
-      setEditorLoading(true);
+      setEditorLoading(!editorFieldsReady());
       lastDockKey = "";
       return;
     }
@@ -583,7 +663,7 @@
     if (m === "editor") {
       lastDockKey = "";
       setEditorLoading(true);
-      ensureDecapMounted();
+      syncEditorFrame();
       renderEditorBar();
       syncEditorLayoutVars();
       document.getElementById("chaos-app")?.classList.add("chaos-app--editing");
@@ -614,73 +694,8 @@
     window.addEventListener("popstate", () => applyMode());
   }
 
-  function normalizeListValue(val, prop) {
-    if (!Array.isArray(val)) return val;
-    return val.map((item) => {
-      if (typeof item === "string") return item;
-      if (item && typeof item === "object" && prop in item) return String(item[prop]);
-      return String(item ?? "");
-    });
-  }
-
-  function normalizeEntry(entry) {
-    if (!entry?.data) return entry;
-    const d = entry.data;
-    if (Array.isArray(d.posts)) {
-      for (const p of d.posts) {
-        if (p.tags) p.tags = normalizeListValue(p.tags, "tag");
-        if (p.slides) p.slides = normalizeListValue(p.slides, "slide");
-      }
-    }
-    if (d.softSkills) d.softSkills = normalizeListValue(d.softSkills, "skill");
-    if (d.experience?.items) {
-      for (const job of d.experience.items) {
-        if (job.bullets) job.bullets = normalizeListValue(job.bullets, "bullet");
-      }
-    }
-    if (d.featuredWork?.projects) {
-      for (const proj of d.featuredWork.projects) {
-        if (proj.highlights) proj.highlights = normalizeListValue(proj.highlights, "line");
-        if (proj.tags) proj.tags = normalizeListValue(proj.tags, "tag");
-      }
-    }
-    if (d.skills?.categories) {
-      for (const cat of d.skills.categories) {
-        if (cat.tools) cat.tools = normalizeListValue(cat.tools, "tool");
-      }
-    }
-    if (d.highlights) d.highlights = normalizeListValue(d.highlights, "line");
-    if (d.services) d.services = normalizeListValue(d.services, "service");
-    if (d.packages) {
-      for (const pkg of d.packages) {
-        if (pkg.features) pkg.features = normalizeListValue(pkg.features, "feature");
-      }
-    }
-    if (d.about?.skills) d.about.skills = normalizeListValue(d.about.skills, "skill");
-    return entry;
-  }
-
   function registerCmsHooks() {
-    if (window.__chaosAppHooks || !window.CMS?.registerEventListener) return;
-    window.__chaosAppHooks = true;
-    // Decap 3.x: preSave/postSave only (no preLoad). Normalize list shapes on save.
-    try {
-      window.CMS.registerEventListener({
-        name: "preSave",
-        handler: ({ entry }) => {
-          if (!entry?.get) return entry;
-          const data = entry.get("data");
-          if (!data?.toJS) return entry;
-          const plain = data.toJS();
-          normalizeEntry({ data: plain });
-          const Map = data.constructor;
-          if (Map?.fromJS) return entry.set("data", Map.fromJS(plain));
-          return entry;
-        },
-      });
-    } catch (e) {
-      console.warn("[CMS] preSave hook skipped", e);
-    }
+    /* cms-hooks.js registers preSave on each Decap instance (parent + iframe). */
   }
 
   function bindPublishToast() {
@@ -701,6 +716,26 @@
       },
       true,
     );
+  }
+
+  function watchIframeDecap() {
+    const frame = getEditorFrame();
+    const doc = frame?.contentDocument;
+    const root = doc?.getElementById("nc-root");
+    if (!root || root.dataset.chaosObserved) return;
+    root.dataset.chaosObserved = "1";
+    const obs = new MutationObserver((records) => {
+      if (mode() !== "editor") return;
+      const relevant = records.some((r) => {
+        const nodes = [...(r.addedNodes || []), ...(r.removedNodes || []), r.target];
+        return nodes.some((n) => {
+          const el = n instanceof Element ? n : n?.parentElement;
+          return el?.id === "nc-root" || el?.closest?.("#nc-root");
+        });
+      });
+      if (relevant) scheduleEditorChrome();
+    });
+    obs.observe(root, { childList: true, subtree: true });
   }
 
   function watchDecapMount() {
