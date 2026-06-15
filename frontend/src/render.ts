@@ -342,6 +342,12 @@ export function renderGalleryPage(p: Portfolio): string {
   return `
     ${renderSiteChrome(p, { mode: "studio", logoHref: portfolioUrl(), nav: STUDIO_NAV, showPrint: false })}
     <main id="main" class="page-gallery">
+      <div class="pano__loader" data-pano-loader role="status" aria-live="polite" aria-busy="true" aria-label="Loading gallery">
+        <div class="pano__loader-glow" aria-hidden="true"></div>
+        <div class="pano__loader-logo">${CHAOS_LOGO_SVG}</div>
+        <p class="pano__loader-label">Chaos Studio</p>
+        <div class="pano__loader-track" aria-hidden="true"><span class="pano__loader-bar" data-pano-loader-bar></span></div>
+      </div>
       <div class="pano" data-pano-root data-view="grid">
         <div class="pano__stage" data-pano-stage aria-label="Panoramic gallery — drag to explore">
           <div class="pano__plane" data-pano-plane></div>

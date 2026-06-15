@@ -16,6 +16,8 @@ interface PanoTile {
   items: LightboxItem[];
   /** Set for product / web-app tiles so they render with a screenshot-optimized layout. */
   variant?: "app-desktop" | "app-mobile";
+  /** Autoplaying reel in the tile when near centre */
+  videoSrc?: string;
 }
 
 const POSTS_DIR = "/images/posts";
@@ -78,6 +80,7 @@ function tileFromPost(post: SocialPost): PanoTile {
     kind: postKindLabel(post),
     tags: post.tags.slice(0, 3),
     items,
+    videoSrc: post.video ? `${POSTS_DIR}/${post.id}/${post.video}` : undefined,
   };
 }
 
@@ -159,13 +162,12 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
   let lastY = 0;
   let pointerId: number | null = null;
   let downTile: string | null = null;
-  let interacted = reduced;
 
   // Fixed cell pool: the DOM grid is allocated once (and only on resize), and
   // panning just re-points each cell at a new world coordinate. This avoids the
   // per-frame createElement/remove churn that made dragging janky.
   let cellEls: HTMLElement[] = [];
-  const cellState: { id: string; op: number; z: number }[] = [];
+  const cellState: { id: string; op: number; z: number; scale: number }[] = [];
   let cellsX = 0;
   let cellsY = 0;
   let raf = 0;
@@ -187,6 +189,8 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
       </span>
       <span class="pano-tile__media">
         <img class="pano-tile__img" alt="" loading="lazy" decoding="async" draggable="false" />
+        <video class="pano-tile__video" muted loop playsinline preload="metadata" hidden></video>
+        <span class="pano-tile__reel-badge" hidden>Reel</span>
       </span>
       <span class="pano-tile__foot">
         <span class="pano-tile__tags" data-tags></span>
@@ -208,7 +212,7 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
     const total = cellsX * cellsY;
     for (let i = 0; i < total; i++) {
       cellEls.push(buildCell(frag));
-      cellState.push({ id: "", op: -1, z: -1 });
+      cellState.push({ id: "", op: -1, z: -1, scale: 1 });
     }
     plane!.appendChild(frag);
   }
@@ -219,8 +223,26 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
     el.classList.toggle("pano-tile--app", !!tile.variant);
     el.classList.toggle("pano-tile--app-desktop", tile.variant === "app-desktop");
     el.classList.toggle("pano-tile--app-mobile", tile.variant === "app-mobile");
+    el.classList.toggle("pano-tile--reel", !!tile.videoSrc);
     const img = el.querySelector<HTMLImageElement>(".pano-tile__img")!;
-    img.src = tile.cover;
+    const video = el.querySelector<HTMLVideoElement>(".pano-tile__video")!;
+    const badge = el.querySelector<HTMLElement>(".pano-tile__reel-badge")!;
+    if (tile.videoSrc) {
+      img.hidden = true;
+      video.hidden = false;
+      badge.hidden = false;
+      if (video.src !== new URL(tile.videoSrc, location.origin).href) {
+        video.src = tile.videoSrc;
+        video.poster = tile.cover;
+      }
+    } else {
+      img.hidden = false;
+      video.hidden = true;
+      badge.hidden = true;
+      video.pause();
+      video.removeAttribute("src");
+      img.src = tile.cover;
+    }
     img.alt = tile.alt;
     el.querySelector("[data-client]")!.textContent = tile.client;
     el.querySelector("[data-name]")!.textContent = tile.title;
@@ -268,16 +290,20 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
         const dist = Math.min(1.25, Math.hypot(nx, ny));
 
         let transform = `translate3d(${sx.toFixed(1)}px, ${sy.toFixed(1)}px, 0)`;
+        const centerBoost = Math.max(0, 1 - dist / 0.82);
+        const scale = 1 + centerBoost * 0.34;
         if (!reduced) {
           const rotY = nx * 26;
           const rotX = -ny * 18;
           const tz = -(dist * dist) * 260;
-          transform += ` rotateY(${rotY.toFixed(2)}deg) rotateX(${rotX.toFixed(2)}deg) translateZ(${tz.toFixed(1)}px)`;
+          transform += ` rotateY(${rotY.toFixed(2)}deg) rotateX(${rotX.toFixed(2)}deg) translateZ(${tz.toFixed(1)}px) scale(${scale.toFixed(3)})`;
+        } else {
+          transform += ` scale(${scale.toFixed(3)})`;
         }
         el.style.transform = transform;
 
         // opacity / z-index only repaint when they actually change
-        const op = Math.round((1 - dist * 0.35) * 100) / 100;
+        const op = Math.round((0.55 + centerBoost * 0.45) * 100) / 100;
         if (op !== st.op) {
           el.style.opacity = String(op);
           st.op = op;
@@ -286,6 +312,22 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
         if (z !== st.z) {
           el.style.zIndex = String(z);
           st.z = z;
+        }
+        if (scale !== st.scale) {
+          st.scale = scale;
+        }
+
+        // Autoplay reels when the tile is near the viewport centre
+        if (tile.videoSrc) {
+          const video = el.querySelector<HTMLVideoElement>(".pano-tile__video");
+          if (video) {
+            const near = dist < 0.42;
+            if (near && video.paused) {
+              void video.play().catch(() => {});
+            } else if (!near && !video.paused) {
+              video.pause();
+            }
+          }
         }
       }
     }
@@ -301,9 +343,9 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
       vy *= 0.93;
       needs = true;
     }
-    if (!interacted && !reduced && !dragging) {
-      ox += 0.22;
-      oy += 0.06;
+    if (!dragging && !reduced) {
+      ox += 0.62;
+      oy += 0.1;
       needs = true;
     }
     if (needs) render();
@@ -334,7 +376,7 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
     downTile = tileEl?.dataset.tileId ?? null;
     stage!.classList.add("is-grabbing");
     stage!.setPointerCapture?.(e.pointerId);
-    markInteracted();
+    hideHint();
   }
 
   function onPointerMove(e: PointerEvent): void {
@@ -366,7 +408,7 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
 
   function onWheel(e: WheelEvent): void {
     e.preventDefault();
-    markInteracted();
+    hideHint();
     const horizontal = e.shiftKey;
     ox += horizontal ? e.deltaY : e.deltaX;
     oy += horizontal ? 0 : e.deltaY;
@@ -375,8 +417,44 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
     dirty = true;
   }
 
-  function markInteracted(): void {
-    interacted = true;
+  function hideHint(): void {
+    document.querySelector("[data-pano-hint]")?.setAttribute("hidden", "");
+  }
+
+  function preloadTileAssets(urls: string[]): Promise<void> {
+    let done = 0;
+    const total = urls.length;
+    const loader = document.querySelector<HTMLElement>("[data-pano-loader]");
+    const bar = loader?.querySelector<HTMLElement>("[data-pano-loader-bar]");
+    const bump = () => {
+      done += 1;
+      if (bar && total) bar.style.width = `${Math.round((done / total) * 100)}%`;
+    };
+    return Promise.all(
+      urls.map(
+        (url) =>
+          new Promise<void>((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+              bump();
+              resolve();
+            };
+            img.onerror = () => {
+              bump();
+              resolve();
+            };
+            img.src = url;
+          }),
+      ),
+    ).then(() => undefined);
+  }
+
+  async function dismissLoader(): Promise<void> {
+    const loader = document.querySelector<HTMLElement>("[data-pano-loader]");
+    if (!loader) return;
+    loader.classList.add("is-done");
+    await new Promise((r) => setTimeout(r, 420));
+    loader.remove();
   }
 
   function onResize(): void {
@@ -497,8 +575,25 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
   stage.style.setProperty("--tile-h", `${tileH}px`);
   buildGrid();
   buildList();
-  render();
-  startLoop();
+
+  const isMobile = window.matchMedia("(max-width: 900px)").matches;
+  const uniqueCovers = [...new Set(allTiles.map((t) => t.cover))];
+
+  const boot = async (): Promise<void> => {
+    if (isMobile) {
+      await Promise.race([
+        preloadTileAssets(uniqueCovers),
+        new Promise<void>((r) => setTimeout(r, 4800)),
+      ]);
+      await dismissLoader();
+    } else {
+      document.querySelector("[data-pano-loader]")?.remove();
+    }
+    dirty = true;
+    render();
+    startLoop();
+  };
+  void boot();
 
   // Pause the rAF loop whenever the stage scrolls out of view or the tab is
   // hidden, so the gallery never burns CPU in the background.
@@ -546,7 +641,10 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
     document.removeEventListener("visibilitychange", onVisibility);
     viewHandlers.forEach(([b, h]) => b.removeEventListener("click", h));
     io.disconnect();
-    cellEls.forEach((el) => el.remove());
+    cellEls.forEach((el) => {
+      el.querySelector<HTMLVideoElement>(".pano-tile__video")?.pause();
+      el.remove();
+    });
     cellEls = [];
     cellState.length = 0;
   };
