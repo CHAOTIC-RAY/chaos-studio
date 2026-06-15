@@ -6,7 +6,7 @@
   const SITE = "https://portfolio.chaoticstudio.workers.dev";
   const MANIFEST = "/admin/media-manifest.json";
   const SYNC_URL = "/admin/sync-status.json";
-  const EDITOR_FRAME = "/admin/editor-frame.html";
+  const EDITOR_FRAME = "/admin/editor-frame";
 
   const ICONS = {
     home: '<svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/></svg>',
@@ -180,13 +180,13 @@
     const hash = route();
     const target = `${EDITOR_FRAME}${hash}`;
     const current = frame.getAttribute("src") || "";
-    if (!current.includes("editor-frame.html")) {
+    if (!current.includes("/admin/editor-frame")) {
       frame.src = target;
       return;
     }
     try {
       const win = frame.contentWindow;
-      if (win && win.location.pathname.endsWith("/editor-frame.html") && win.location.hash !== hash) {
+      if (win && win.location.pathname.endsWith("/editor-frame") && win.location.hash !== hash) {
         win.location.replace(target);
       }
     } catch {
