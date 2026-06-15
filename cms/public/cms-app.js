@@ -436,14 +436,29 @@
     return Boolean(el.closest("[data-save-dock], .chaos-toast, [data-editor-loading]"));
   }
 
+  function triggerDecapButton(btn) {
+    if (!btn) return;
+    btn.focus();
+    btn.dispatchEvent(
+      new MouseEvent("click", { bubbles: true, cancelable: true, view: window }),
+    );
+    if (typeof btn.click === "function") btn.click();
+  }
+
   function findToolbarButtons() {
-    const toolbar =
-      document.querySelector('[class*="ToolbarContainer"]') ||
-      document.querySelector('[class*="EditorControlBar"]');
-    if (!toolbar) return [];
-    return [...toolbar.querySelectorAll("button")].filter((btn) => {
+    const root = document.getElementById("nc-root");
+    if (!root) return [];
+    const candidates = [
+      ...root.querySelectorAll('[class*="ToolbarContainer"] button'),
+      ...root.querySelectorAll('[class*="EditorControlBar"] button'),
+      ...root.querySelectorAll("button"),
+    ];
+    const seen = new Set();
+    return candidates.filter((btn) => {
+      if (seen.has(btn) || btn.closest("[data-save-dock]")) return false;
+      seen.add(btn);
       const t = (btn.textContent || "").toLowerCase();
-      return /publish|save|delete|status|draft/.test(t);
+      return /^(publish|save|delete|status|draft)/.test(t.trim()) || /\bpublish\b|\bsave\b/.test(t);
     });
   }
 
@@ -453,6 +468,11 @@
     document.body.addEventListener("click", (e) => {
       const t = e.target instanceof Element ? e.target.closest("[data-portal-back], [data-nav='dashboard']") : null;
       if (!t) return;
+      if (t.matches("[data-portal-back]")) {
+        e.preventDefault();
+        goToPortal();
+        return;
+      }
       if (t.matches("[data-nav='dashboard']") && route() === "#/") return;
       if (t.matches("[data-nav='dashboard']")) {
         e.preventDefault();
@@ -467,6 +487,10 @@
     back.className = "chaos-dock__btn chaos-dock__btn--back";
     back.setAttribute("data-portal-back", "");
     back.textContent = "← Home";
+    back.addEventListener("click", (e) => {
+      e.preventDefault();
+      goToPortal();
+    });
     dock.appendChild(back);
   }
 
@@ -535,7 +559,7 @@
           action.disabled = true;
           action.textContent = /publish/.test(lower) ? "Publishing…" : "Saving…";
         }
-        btn.click();
+        triggerDecapButton(btn);
         setTimeout(() => renderSaveDock(true), 2000);
       });
       dock.appendChild(action);

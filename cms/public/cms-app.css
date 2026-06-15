@@ -419,7 +419,7 @@ body.chaos-mode-assistant .chaos-dock {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: var(--app-bg);
+  background: #ffffff;
 }
 
 body.chaos-mode-editor #chaos-decap-mount {
@@ -431,7 +431,7 @@ body.chaos-mode-editor #chaos-decap-mount {
   width: 100%;
   overflow: hidden;
   position: relative;
-  background: var(--app-bg);
+  background: #ffffff;
 }
 
 body.chaos-mode-editor #nc-root {
@@ -531,6 +531,7 @@ body:not(.chaos-mode-editor):not(.chaos-mode-login) #chaos-decap-mount {
 /* —— Login + dock —— */
 body.chaos-mode-editor .chaos-editor-view {
   padding-bottom: var(--app-dock-h);
+  background: #ffffff;
 }
 
 body.chaos-mode-login #chaos-decap-mount {

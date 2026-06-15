@@ -2,7 +2,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700&display=swap");
 
 :root {
-  --editor-bg: #f4f1f8;
+  --editor-bg: #ffffff;
   --editor-surface: #ffffff;
   --editor-border: rgba(88, 68, 118, 0.14);
   --editor-accent: #9b4dca;
@@ -44,7 +44,7 @@ body {
   margin: 0 !important;
 }
 
-/* Hide Decap chrome — portal dock mirrors publish on embedded view */
+/* Hide Decap chrome — dock mirrors publish; toolbar stays in DOM (visually hidden) */
 #nc-root [class*="AppHeader"],
 #nc-root [class*="Sidebar"],
 #nc-root [class*="SidebarContainer"],
@@ -53,9 +53,21 @@ body {
   display: none !important;
 }
 
-/* Standalone page keeps toolbar; iframe hides it (portal dock handles publish) */
-body:not([data-chaos-standalone]) [class*="ToolbarContainer"] {
-  display: none !important;
+/* Keep toolbar buttons in DOM for dock — display:none breaks React button refs */
+#nc-root [class*="ToolbarContainer"],
+#nc-root [class*="EditorControlBar"] {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  z-index: -1 !important;
 }
 
 /* Do not use [class*="Editor"] — it also matches EditorContainer and breaks layout */
@@ -64,7 +76,11 @@ body:not([data-chaos-standalone]) [class*="ToolbarContainer"] {
   padding-top: 0 !important;
   overflow: auto !important;
   -webkit-overflow-scrolling: touch;
-  background: var(--editor-bg);
+  background: #ffffff !important;
+}
+
+#nc-root [class*="AppMainContainer"] {
+  background: #ffffff !important;
 }
 
 #nc-root [class*="ControlPaneContainer"] {
