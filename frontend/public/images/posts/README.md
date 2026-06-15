@@ -1,6 +1,8 @@
 # Campaign post images
 
-**Edit post text** in the repo root file: [`content/campaign-posts.json`](../../../content/campaign-posts.json)  
+**Edit post text** in the repo root files:
+- Portfolio feed (home): [`content/social-posts.json`](../../../content/social-posts.json)
+- Gallery pano tiles: [`content/gallery-posts.json`](../../../content/gallery-posts.json)  
 **Full guide:** [`content/README.md`](../../../content/README.md)
 
 ## Image files

@@ -12,7 +12,8 @@
   },
   "include": [
     "src/**/*.ts",
-    "../content/campaign-posts.json",
+    "../content/social-posts.json",
+    "../content/gallery-posts.json",
     "../content/campaign-meta.json",
     "../content/portfolio.json",
     "../content/chaos-studio.json",

@@ -167,11 +167,19 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
   const plane = document.querySelector<HTMLElement>("[data-pano-plane]");
   if (!stage || !plane) return () => {};
 
-  const postTiles = portfolio.socialPosts.items
+  const postTiles = portfolio.galleryPosts.items.length
+    ? [
+        ...portfolio.galleryPosts.items,
+        ...portfolio.socialPosts.items.filter(
+          (p) => !portfolio.galleryPosts.items.some((g) => g.id === p.id),
+        ),
+      ]
+    : portfolio.socialPosts.items;
+  const postPanoTiles = postTiles
     .filter((p) => !p.id.startsWith("_"))
     .map(tileFromPost);
   // App designs lead the grid so they're the first thing the eye lands on.
-  const allTiles = [...appTilesFromPortfolio(portfolio), ...postTiles];
+  const allTiles = [...appTilesFromPortfolio(portfolio), ...postPanoTiles];
   if (!allTiles.length) return () => {};
 
   let tiles = allTiles;

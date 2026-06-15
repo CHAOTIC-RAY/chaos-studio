@@ -1,11 +1,21 @@
 {
-  "checkedAt": "2026-06-15T11:01:50.254Z",
+  "checkedAt": "2026-06-15T11:34:08.685Z",
   "branch": "main",
   "ok": true,
   "mirrors": [
     {
-      "source": "content/campaign-meta.json + campaign-posts.json",
+      "source": "content/campaign-meta.json + social-posts.json",
       "mirror": "frontend/public/content/campaign-posts.json",
+      "inSync": true
+    },
+    {
+      "source": "content/social-posts.json",
+      "mirror": "frontend/public/content/social-posts.json",
+      "inSync": true
+    },
+    {
+      "source": "content/gallery-posts.json",
+      "mirror": "frontend/public/content/gallery-posts.json",
       "inSync": true
     },
     {
@@ -20,7 +30,11 @@
       "exists": true
     },
     {
-      "path": "content/campaign-posts.json",
+      "path": "content/social-posts.json",
+      "exists": true
+    },
+    {
+      "path": "content/gallery-posts.json",
       "exists": true
     },
     {

@@ -22,13 +22,22 @@
 
   const EDITORS = [
     {
-      id: "campaign-posts",
-      title: "All social posts",
-      desc: "Edit every campaign card, tags, slides, and visibility. Large file — allow time to load.",
-      hash: "#/collections/campaign/entries/campaign-posts",
+      id: "social-posts",
+      title: "Portfolio feed",
+      desc: "Social and campaign cards on the home page.",
+      hash: "#/collections/campaign/entries/social-posts",
       icon: "grid",
       hero: true,
-      hint: "Tap a post to edit it. Use Publish at the bottom when you're done.",
+      hint: "Client posts for the main site feed. Publish when done.",
+    },
+    {
+      id: "gallery-posts",
+      title: "Gallery posts",
+      desc: "Reels, media kits, posters, and multi-slide work for /gallery.",
+      hash: "#/collections/campaign/entries/gallery-posts",
+      icon: "image",
+      hero: true,
+      hint: "Tiles in the panoramic gallery. Feed posts also appear unless listed here.",
     },
     {
       id: "campaign-meta",
@@ -262,7 +271,11 @@
         fetch(`${SITE}/api/portfolio`, { cache: "no-store" }),
         fetch(MANIFEST, { cache: "no-store" }),
       ]);
-      if (p.ok) stats.posts = (await p.json()).socialPosts?.items?.length ?? 0;
+      if (p.ok) {
+        const data = await p.json();
+        stats.posts =
+          (data.socialPosts?.items?.length ?? 0) + (data.galleryPosts?.items?.length ?? 0);
+      }
       if (m.ok) stats.images = (await m.json()).files?.length ?? 0;
     } catch {
       /* ignore */

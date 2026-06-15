@@ -9,7 +9,7 @@ import sharp from "sharp";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const zipPath = path.resolve(root, process.argv[2] || "Posts.zip");
-const postsJsonPath = path.join(root, "content", "campaign-posts.json");
+const postsJsonPath = path.join(root, "content", "social-posts.json");
 const imagesRoot = path.join(root, "frontend", "public", "images", "posts");
 
 const IMAGE_EXT = new Set([".jpg", ".jpeg", ".png", ".webp", ".JPG", ".JPEG", ".PNG", ".WEBP"]);

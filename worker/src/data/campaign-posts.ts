@@ -1,4 +1,5 @@
-import rawPosts from "../../../content/campaign-posts.json";
+import socialRaw from "../../../content/social-posts.json";
+import galleryRaw from "../../../content/gallery-posts.json";
 import meta from "../../../content/campaign-meta.json";
 import { toStringList } from "./cms-list-shape";
 
@@ -21,7 +22,8 @@ export type CampaignPostJson = {
 
 type PostsFile = { posts: CampaignPostJson[] };
 
-const postsFile = rawPosts as PostsFile;
+const socialFile = socialRaw as PostsFile;
+const galleryFile = galleryRaw as PostsFile;
 
 function normalizePost(post: CampaignPostJson): CampaignPostJson {
   const p = { ...post };
@@ -32,13 +34,36 @@ function normalizePost(post: CampaignPostJson): CampaignPostJson {
   return p;
 }
 
-export function getSocialPosts() {
-  const items = postsFile.posts
+function visiblePosts(posts: CampaignPostJson[]): CampaignPostJson[] {
+  return posts
     .filter((p) => p.enabled !== false && !p.id.startsWith("_"))
     .map(({ enabled: _e, ...post }) => normalizePost(post));
+}
 
+export function getSocialPosts() {
   return {
     subtitle: meta.subtitle,
-    items,
+    items: visiblePosts(socialFile.posts),
   };
+}
+
+export function getGalleryPosts() {
+  return {
+    items: visiblePosts(galleryFile.posts),
+  };
+}
+
+/** Gallery pano: gallery-only tiles first, then feed posts not already listed. */
+export function getPanoramaPosts(): CampaignPostJson[] {
+  const gallery = visiblePosts(galleryFile.posts);
+  const social = visiblePosts(socialFile.posts);
+  const seen = new Set(gallery.map((p) => p.id));
+  const merged = [...gallery];
+  for (const post of social) {
+    if (!seen.has(post.id)) {
+      seen.add(post.id);
+      merged.push(post);
+    }
+  }
+  return merged;
 }

@@ -118,7 +118,8 @@ export async function handleGithubApply(
 
   const allowed = new Set([
     "content/campaign-meta.json",
-    "content/campaign-posts.json",
+    "content/social-posts.json",
+    "content/gallery-posts.json",
     "content/portfolio.json",
     "content/chaos-studio.json",
     "frontend/public/assets/site.config.json",

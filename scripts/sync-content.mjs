@@ -3,33 +3,49 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const postsPath = path.join(root, "content", "campaign-posts.json");
+const socialPath = path.join(root, "content", "social-posts.json");
+const galleryPath = path.join(root, "content", "gallery-posts.json");
 const metaPath = path.join(root, "content", "campaign-meta.json");
-const dest = path.join(root, "frontend", "public", "content", "campaign-posts.json");
+const publicDir = path.join(root, "frontend", "public", "content");
 
-if (!fs.existsSync(postsPath)) {
-  console.error("Missing content/campaign-posts.json");
+if (!fs.existsSync(socialPath)) {
+  console.error("Missing content/social-posts.json");
   process.exit(1);
 }
 
-const posts = JSON.parse(fs.readFileSync(postsPath, "utf8"));
+const social = JSON.parse(fs.readFileSync(socialPath, "utf8"));
 const meta = fs.existsSync(metaPath)
   ? JSON.parse(fs.readFileSync(metaPath, "utf8"))
   : { subtitle: "Campaign & feed highlights" };
 
-fs.mkdirSync(path.dirname(dest), { recursive: true });
-fs.writeFileSync(
-  dest,
-  `${JSON.stringify({ subtitle: meta.subtitle, posts: posts.posts }, null, 2)}\n`,
-);
-console.log("Synced campaign meta + posts → frontend/public/content/campaign-posts.json");
+fs.mkdirSync(publicDir, { recursive: true });
 
-// Also mirror gallery.json (if present) to the site's public content folder
-const galleryPath = path.join(root, "content", "gallery.json");
-const galleryDest = path.join(root, "frontend", "public", "content", "gallery.json");
+fs.writeFileSync(
+  path.join(publicDir, "social-posts.json"),
+  `${JSON.stringify(social, null, 2)}\n`,
+);
+console.log("Synced social posts → frontend/public/content/social-posts.json");
+
 if (fs.existsSync(galleryPath)) {
   const gallery = JSON.parse(fs.readFileSync(galleryPath, "utf8"));
-  fs.mkdirSync(path.dirname(galleryDest), { recursive: true });
-  fs.writeFileSync(galleryDest, `${JSON.stringify(gallery, null, 2)}\n`);
-  console.log("Synced gallery → frontend/public/content/gallery.json");
+  fs.writeFileSync(
+    path.join(publicDir, "gallery-posts.json"),
+    `${JSON.stringify(gallery, null, 2)}\n`,
+  );
+  console.log("Synced gallery posts → frontend/public/content/gallery-posts.json");
+}
+
+// Legacy mirror for older tooling (subtitle + feed posts only)
+fs.writeFileSync(
+  path.join(publicDir, "campaign-posts.json"),
+  `${JSON.stringify({ subtitle: meta.subtitle, posts: social.posts }, null, 2)}\n`,
+);
+console.log("Synced campaign meta + feed → frontend/public/content/campaign-posts.json");
+
+const galleryPagePath = path.join(root, "content", "gallery.json");
+const galleryPageDest = path.join(publicDir, "gallery.json");
+if (fs.existsSync(galleryPagePath)) {
+  const galleryPage = JSON.parse(fs.readFileSync(galleryPagePath, "utf8"));
+  fs.writeFileSync(galleryPageDest, `${JSON.stringify(galleryPage, null, 2)}\n`);
+  console.log("Synced gallery page copy → frontend/public/content/gallery.json");
 }

@@ -15,7 +15,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const zipPath = path.resolve(root, process.argv[2] || "MDP.zip");
 const extractDir = path.join(root, "MDP_extract");
 const postsRoot = path.join(root, "frontend", "public", "images", "posts");
-const postsJsonPath = path.join(root, "content", "campaign-posts.json");
+const postsJsonPath = path.join(root, "content", "social-posts.json");
 
 const CAMPAIGN_DIR = "NEw/MDP Campaign Mohamed Amir";
 const PDF_REL = "NEw/Media Kit Concep for Khulaasa/media kitc.pdf";

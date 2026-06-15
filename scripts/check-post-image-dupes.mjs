@@ -10,7 +10,16 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const postsRoot = path.join(root, "frontend", "public", "images", "posts");
-const postsJson = path.join(root, "content", "campaign-posts.json");
+function loadAllPosts() {
+  const social = JSON.parse(
+    fs.readFileSync(path.join(root, "content", "social-posts.json"), "utf8"),
+  );
+  const galleryPath = path.join(root, "content", "gallery-posts.json");
+  const gallery = fs.existsSync(galleryPath)
+    ? JSON.parse(fs.readFileSync(galleryPath, "utf8"))
+    : { posts: [] };
+  return [...(social.posts ?? []), ...(gallery.posts ?? [])];
+}
 
 function postIdFromRel(rel) {
   const parts = rel.split(path.sep);
@@ -33,9 +42,9 @@ function walk(dir, base = dir) {
   return out;
 }
 
-const data = JSON.parse(fs.readFileSync(postsJson, "utf8"));
+const allPosts = loadAllPosts();
 const singleImagePosts = new Set(
-  (data.posts ?? [])
+  allPosts
     .filter((p) => !p.slides || p.slides.length <= 1)
     .map((p) => p.id),
 );

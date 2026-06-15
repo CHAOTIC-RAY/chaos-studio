@@ -1,3 +1,19 @@
+export interface SocialPostItem {
+  id: string;
+  platform: string;
+  client: string;
+  title: string;
+  description: string;
+  tags: string[];
+  accent: string;
+  mediaAspect?: "portrait" | "landscape" | "square";
+  cardLayout?: "poster" | "media-kit";
+  image?: string;
+  slides?: string[];
+  video?: string;
+  poster?: string;
+}
+
 export interface Portfolio {
   profile: {
     name: string;
@@ -56,23 +72,10 @@ export interface Portfolio {
   };
   socialPosts: {
     subtitle: string;
-    items: {
-      id: string;
-      platform: string;
-      client: string;
-      title: string;
-      description: string;
-      tags: string[];
-      accent: string;
-      mediaAspect?: "portrait" | "landscape" | "square";
-      /** poster = full portrait artwork; media-kit = all pages visible in one grid */
-      cardLayout?: "poster" | "media-kit";
-      image?: string;
-      slides?: string[];
-      /** Filename under /images/posts/{id}/ */
-      video?: string;
-      poster?: string;
-    }[];
+    items: SocialPostItem[];
+  };
+  galleryPosts: {
+    items: SocialPostItem[];
   };
   featuredWork: {
     subtitle: string;

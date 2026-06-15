@@ -38,11 +38,13 @@ function readText(rel) {
 
 /** Pairs that must be byte-identical before deploy (CMS edits content/, build copies to public/). */
 const MIRROR_PAIRS = [
+  ["content/social-posts.json", "frontend/public/content/social-posts.json"],
+  ["content/gallery-posts.json", "frontend/public/content/gallery-posts.json"],
   ["content/gallery.json", "frontend/public/content/gallery.json"],
 ];
 
 function readCampaignPublicMerged() {
-  const posts = JSON.parse(readText("content/campaign-posts.json"));
+  const posts = JSON.parse(readText("content/social-posts.json"));
   const meta = JSON.parse(readText("content/campaign-meta.json"));
   return `${JSON.stringify({ subtitle: meta.subtitle, posts: posts.posts }, null, 2)}\n`;
 }
@@ -50,7 +52,8 @@ function readCampaignPublicMerged() {
 /** Every path Decap CMS commits to on GitHub (from config.yml). */
 const CMS_REPO_FILES = [
   "content/campaign-meta.json",
-  "content/campaign-posts.json",
+  "content/social-posts.json",
+  "content/gallery-posts.json",
   "content/portfolio.json",
   "content/chaos-studio.json",
   "content/gallery.json",
@@ -200,7 +203,7 @@ function writeSyncStatus() {
     ok: errors.length === 0,
     mirrors: [
       {
-        source: "content/campaign-meta.json + campaign-posts.json",
+        source: "content/campaign-meta.json + social-posts.json",
         mirror: "frontend/public/content/campaign-posts.json",
         inSync:
           fs.existsSync(path.join(root, "frontend/public/content/campaign-posts.json")) &&

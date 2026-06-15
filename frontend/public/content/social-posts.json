@@ -1,0 +1,534 @@
+{
+  "posts": [
+    {
+      "id": "ayha-02",
+      "platform": "Instagram",
+      "client": "Ayha Maldives",
+      "title": "School Uniform Design Promo",
+      "description": "",
+      "tags": [
+        "Uniform",
+        "Jersey Design",
+        "Illustration"
+      ],
+      "accent": "teal"
+    },
+    {
+      "id": "ayha-03",
+      "platform": "Instagram",
+      "client": "Ayha Maldives",
+      "title": "Jersey Design Collection",
+      "description": "",
+      "tags": [
+        "events",
+        "Jersey Design"
+      ],
+      "accent": "teal"
+    },
+    {
+      "id": "aysh-saloon-01",
+      "platform": "Instagram",
+      "client": "Aysh Salon",
+      "title": "Relaxation Trio packages",
+      "description": "",
+      "tags": [
+        "salon",
+        "beauty",
+        "packages"
+      ],
+      "accent": "pink"
+    },
+    {
+      "id": "aysh-saloon-02",
+      "platform": "Instagram",
+      "client": "Aysh Salon",
+      "title": "Skin tips",
+      "description": "",
+      "tags": [
+        "salon",
+        "skincare",
+        "education"
+      ],
+      "accent": "pink"
+    },
+    {
+      "id": "aysh-saloon-03",
+      "platform": "Instagram",
+      "client": "Aysh Salon",
+      "title": "Sothys facial promo",
+      "description": "",
+      "tags": [
+        "salon",
+        "facial",
+        "beauty"
+      ],
+      "accent": "pink"
+    },
+    {
+      "id": "digital-dive-01",
+      "platform": "Facebook",
+      "client": "Digital Dive",
+      "title": "Futsal Fiesta — women's fixtures",
+      "description": "",
+      "tags": [
+        "futsal",
+        "fixtures",
+        "council",
+        "2024"
+      ],
+      "accent": "purple"
+    },
+    {
+      "id": "digital-dive-02",
+      "platform": "Facebook",
+      "client": "Digital Dive",
+      "title": "Futsal Fiesta — men's fixtures",
+      "description": "",
+      "tags": [
+        "futsal",
+        "fixtures",
+        "council",
+        "2024"
+      ],
+      "accent": "purple"
+    },
+    {
+      "id": "digital-dive-03",
+      "platform": "Facebook",
+      "client": "Digital Dive",
+      "title": "Women's champions",
+      "description": "",
+      "tags": [
+        "futsal",
+        "champions",
+        "sports"
+      ],
+      "accent": "purple"
+    },
+    {
+      "id": "digital-dive-04",
+      "platform": "Facebook",
+      "client": "Digital Dive",
+      "title": "Men's champions",
+      "description": "",
+      "tags": [
+        "futsal",
+        "champions",
+        "sports"
+      ],
+      "accent": "purple"
+    },
+    {
+      "id": "digital-dive-05",
+      "platform": "Facebook",
+      "client": "Digital Dive",
+      "title": "Sponsors & partners",
+      "description": "",
+      "tags": [
+        "futsal",
+        "sponsors",
+        "council"
+      ],
+      "accent": "purple"
+    },
+    {
+      "id": "expressshipping-01",
+      "platform": "Instagram",
+      "client": "Express Shipping MV",
+      "title": "Profile banner — land, air & sea",
+      "description": "",
+      "tags": [
+        "shipping",
+        "logistics",
+        "banner",
+        "carousel"
+      ],
+      "accent": "teal",
+      "slides": [
+        "slide-01",
+        "slide-02",
+        "slide-03"
+      ]
+    },
+    {
+      "id": "expressshipping-02",
+      "platform": "Instagram",
+      "client": "Express Shipping MV",
+      "title": "Customer Reviewer Club",
+      "description": "",
+      "tags": [
+        "shipping",
+        "partnership",
+        "logistics"
+      ],
+      "accent": "teal"
+    },
+    {
+      "id": "expressshipping-03",
+      "platform": "Instagram",
+      "client": "Express Shipping MV",
+      "title": "Brand lockup",
+      "description": "",
+      "tags": [
+        "shipping",
+        "branding",
+        "logo"
+      ],
+      "accent": "teal"
+    },
+    {
+      "id": "expressshipping-04",
+      "platform": "Instagram",
+      "client": "Express Shipping MV",
+      "title": "Freight inquiry CTA",
+      "description": "",
+      "tags": [
+        "shipping",
+        "freight",
+        "carousel",
+        "CTA"
+      ],
+      "accent": "teal",
+      "slides": [
+        "slide-01",
+        "slide-02",
+        "slide-03"
+      ]
+    },
+    {
+      "id": "fottcalm-02",
+      "platform": "Instagram",
+      "client": "Footcalm",
+      "title": "Flat foot & plantar fasciitis",
+      "description": "",
+      "tags": [
+        "footcare",
+        "education",
+        "insoles"
+      ],
+      "accent": "pink"
+    },
+    {
+      "id": "fottcalm-03",
+      "platform": "Instagram",
+      "client": "Footcalm",
+      "title": "Pain relief range",
+      "description": "",
+      "tags": [
+        "footcare",
+        "product",
+        "comfort"
+      ],
+      "accent": "pink"
+    },
+    {
+      "id": "haus-of-paws-01",
+      "platform": "Instagram",
+      "client": "Haus of Paws",
+      "title": "Brand & partners",
+      "description": "",
+      "tags": [
+        "pets",
+        "grooming",
+        "carousel",
+        "retail"
+      ],
+      "accent": "gold",
+      "slides": [
+        "slide-01",
+        "slide-02",
+        "slide-03"
+      ]
+    },
+    {
+      "id": "haus-of-paws-02",
+      "platform": "Instagram",
+      "client": "Haus of Paws",
+      "title": "Cutezy grand opening",
+      "description": "",
+      "tags": [
+        "pets",
+        "retail",
+        "launch"
+      ],
+      "accent": "gold"
+    },
+    {
+      "id": "haus-of-paws-03",
+      "platform": "Instagram",
+      "client": "Haus of Paws",
+      "title": "Pet nutrition imports",
+      "description": "",
+      "tags": [
+        "pets",
+        "nutrition",
+        "retail"
+      ],
+      "accent": "gold"
+    },
+    {
+      "id": "lumeria-01",
+      "platform": "Instagram",
+      "client": "Lumeria Salon",
+      "title": "Pixana treatment menu",
+      "description": "",
+      "tags": [
+        "salon",
+        "beauty",
+        "pricing",
+        "hair care"
+      ],
+      "accent": "pink"
+    },
+    {
+      "id": "lumeria-03",
+      "platform": "Instagram",
+      "client": "Lumeria Salon",
+      "title": "Logo lockup",
+      "description": "",
+      "tags": [
+        "salon",
+        "branding",
+        "logo"
+      ],
+      "accent": "pink"
+    },
+    {
+      "id": "metroflex-islanders-nutrition-01",
+      "platform": "Instagram",
+      "client": "Metroflex & Islanders Nutrition",
+      "title": "Calisthenics Arena 2025",
+      "description": "",
+      "tags": [
+        "gym",
+        "fitness",
+        "tournament",
+        "events"
+      ],
+      "accent": "gold"
+    },
+    {
+      "id": "metroflex-islanders-nutrition-02",
+      "platform": "Instagram",
+      "client": "Metroflex & Islanders Nutrition",
+      "title": "Beef protein isolate",
+      "description": "",
+      "tags": [
+        "nutrition",
+        "supplements",
+        "product",
+        "offer"
+      ],
+      "accent": "gold"
+    },
+    {
+      "id": "metroflex-islanders-nutrition-03",
+      "platform": "Instagram",
+      "client": "Metroflex & Islanders Nutrition",
+      "title": "Community calisthenics",
+      "description": "",
+      "tags": [
+        "gym",
+        "fitness",
+        "tournament"
+      ],
+      "accent": "gold"
+    },
+    {
+      "id": "metroflex-islanders-nutrition-04",
+      "platform": "Instagram",
+      "client": "Metroflex & Islanders Nutrition",
+      "title": "Ghost Lifestyle wholesale",
+      "description": "",
+      "tags": [
+        "nutrition",
+        "supplements",
+        "wholesale"
+      ],
+      "accent": "gold"
+    },
+    {
+      "id": "metroflex-islanders-nutrition-05",
+      "platform": "Instagram",
+      "client": "Metroflex & Islanders Nutrition",
+      "title": "Creatine stack offer",
+      "description": "",
+      "tags": [
+        "nutrition",
+        "supplements",
+        "promo"
+      ],
+      "accent": "gold"
+    },
+    {
+      "id": "metroflex-islanders-nutrition-06",
+      "platform": "Instagram",
+      "client": "Metroflex & Islanders Nutrition",
+      "title": "3000 sqft facility",
+      "description": "",
+      "tags": [
+        "gym",
+        "fitness",
+        "facility"
+      ],
+      "accent": "gold"
+    },
+    {
+      "id": "metroflex-islanders-nutrition-07",
+      "platform": "Instagram",
+      "client": "Metroflex & Islanders Nutrition",
+      "title": "Calisthenics registration",
+      "description": "",
+      "tags": [
+        "gym",
+        "fitness",
+        "CTA",
+        "events"
+      ],
+      "accent": "gold"
+    },
+    {
+      "id": "rainbow-01",
+      "platform": "Instagram",
+      "client": "Rainbow Enterprise",
+      "title": "My Home member deals",
+      "description": "",
+      "tags": [
+        "retail",
+        "furniture",
+        "member offers",
+        "carousel"
+      ],
+      "accent": "purple",
+      "slides": [
+        "slide-01",
+        "slide-02",
+        "slide-03"
+      ]
+    },
+    {
+      "id": "rainbow-02",
+      "platform": "Instagram",
+      "client": "Rainbow Enterprise",
+      "title": "Exclusive member offers",
+      "description": "",
+      "tags": [
+        "retail",
+        "furniture",
+        "member offers"
+      ],
+      "accent": "purple"
+    },
+    {
+      "id": "rainbow-04",
+      "platform": "Instagram",
+      "client": "Rainbow Enterprise",
+      "title": "Product spotlight",
+      "description": "",
+      "tags": [
+        "furniture",
+        "retail",
+        "product"
+      ],
+      "accent": "purple"
+    },
+    {
+      "id": "rainbow-05",
+      "platform": "Instagram",
+      "client": "Rainbow Enterprise",
+      "title": "Anniversary sale 70% off",
+      "description": "",
+      "tags": [
+        "furniture",
+        "sale",
+        "promo",
+        "retail"
+      ],
+      "accent": "purple"
+    },
+    {
+      "id": "rioga-01",
+      "platform": "Instagram",
+      "client": "Rioga Travel & Tours",
+      "title": "Rioga Points loyalty",
+      "description": "",
+      "tags": [
+        "travel",
+        "loyalty",
+        "carousel"
+      ],
+      "accent": "teal",
+      "slides": [
+        "slide-01",
+        "slide-02"
+      ]
+    },
+    {
+      "id": "rioga-03",
+      "platform": "Instagram",
+      "client": "Rioga Travel & Tours",
+      "title": "Best Travel Agency 2024",
+      "description": "",
+      "tags": [
+        "travel",
+        "awards",
+        "branding"
+      ],
+      "accent": "teal"
+    },
+    {
+      "id": "world-trip-tours-01",
+      "platform": "Instagram",
+      "client": "World Trip Tours",
+      "title": "Azerbaijan & Georgia package",
+      "description": "",
+      "tags": [
+        "travel",
+        "tourism",
+        "package"
+      ],
+      "accent": "teal"
+    },
+    {
+      "id": "world-trip-tours-02",
+      "platform": "Instagram",
+      "client": "World Trip Tours",
+      "title": "China tour package",
+      "description": "",
+      "tags": [
+        "travel",
+        "tourism",
+        "offer"
+      ],
+      "accent": "teal"
+    },
+    {
+      "id": "mdp-post",
+      "mediaAspect": "square",
+      "platform": "Instagram",
+      "client": "MDP Campaign",
+      "title": "Campaign feed visual",
+      "description": "",
+      "tags": [
+        "MDP",
+        "campaign",
+        "politics",
+        "portrait"
+      ],
+      "accent": "purple"
+    },
+    {
+      "id": "_copy-me-for-new-post",
+      "enabled": false,
+      "platform": "Instagram",
+      "client": "Client name here",
+      "title": "Your campaign title",
+      "description": "Write 1–3 sentences about what you designed and the goal of the post.",
+      "tags": [
+        "Tag one",
+        "Tag two"
+      ],
+      "accent": "purple"
+    }
+  ]
+}

@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const postsPath = path.join(root, "content", "campaign-posts.json");
+const postsPath = path.join(root, "content", "social-posts.json");
 const copyPath = path.join(root, "content", "post-copy.json");
 
 const data = JSON.parse(fs.readFileSync(postsPath, "utf8"));

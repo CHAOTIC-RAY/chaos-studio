@@ -40,9 +40,15 @@
       "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "Social posts",
-      "short_name": "Posts",
-      "url": "/admin/#/collections/campaign/entries/campaign-posts",
+      "name": "Portfolio feed",
+      "short_name": "Feed",
+      "url": "/admin/#/collections/campaign/entries/social-posts",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Gallery posts",
+      "short_name": "Gallery",
+      "url": "/admin/#/collections/campaign/entries/gallery-posts",
       "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     },
     {

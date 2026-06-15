@@ -12,12 +12,18 @@ function writeJson(rel, data) {
   console.log(`Updated ${rel}`);
 }
 
-const campaign = JSON.parse(fs.readFileSync(path.join(root, "content/campaign-posts.json"), "utf8"));
-for (const post of campaign.posts) {
-  if (post.tags) post.tags = toStringList(post.tags, "tag");
-  if (post.slides) post.slides = toStringList(post.slides, "slide");
+function revertPostsFile(rel) {
+  const data = JSON.parse(fs.readFileSync(path.join(root, rel), "utf8"));
+  for (const post of data.posts) {
+    if (post.tags) post.tags = toStringList(post.tags, "tag");
+    if (post.slides) post.slides = toStringList(post.slides, "slide");
+  }
+  writeJson(rel, data);
 }
-writeJson("content/campaign-posts.json", campaign);
+
+for (const rel of ["content/social-posts.json", "content/gallery-posts.json"]) {
+  if (fs.existsSync(path.join(root, rel))) revertPostsFile(rel);
+}
 if (fs.existsSync(path.join(root, "content/campaign-meta.json"))) {
   /* meta has no list fields */
 }

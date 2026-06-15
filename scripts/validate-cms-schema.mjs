@@ -28,16 +28,21 @@ function isStringArray(v, label) {
   );
 }
 
-function validateCampaign() {
-  const meta = readJson("content/campaign-meta.json");
-  assert(typeof meta.subtitle === "string", "campaign-meta: subtitle");
-  const data = readJson("content/campaign-posts.json");
-  assert(Array.isArray(data.posts), "campaign-posts: posts");
+function validatePostsFile(rel, label) {
+  const data = readJson(rel);
+  assert(Array.isArray(data.posts), `${label}: posts`);
   for (const p of data.posts) {
     assert(typeof p.id === "string" && p.id, `post missing id`);
     isStringArray(p.tags ?? [], `post ${p.id} tags`);
     if (p.slides != null) isStringArray(p.slides, `post ${p.id} slides`);
   }
+}
+
+function validateCampaign() {
+  const meta = readJson("content/campaign-meta.json");
+  assert(typeof meta.subtitle === "string", "campaign-meta: subtitle");
+  validatePostsFile("content/social-posts.json", "social-posts");
+  validatePostsFile("content/gallery-posts.json", "gallery-posts");
 }
 
 function validatePortfolio() {

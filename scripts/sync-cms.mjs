@@ -15,4 +15,4 @@ for (const args of [
   if (r.status !== 0) process.exit(r.status ?? 1);
 }
 
-console.log("CMS sync complete (campaign-posts mirror + media manifest).");
+console.log("CMS sync complete (social/gallery posts mirrors + media manifest).");

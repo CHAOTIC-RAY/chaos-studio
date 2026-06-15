@@ -84,9 +84,13 @@
       path: "content/campaign-meta.json",
       label: "Campaign heading",
     },
-    "campaign-posts": {
-      path: "content/campaign-posts.json",
-      label: "Social posts",
+    "social-posts": {
+      path: "content/social-posts.json",
+      label: "Portfolio feed",
+    },
+    "gallery-posts": {
+      path: "content/gallery-posts.json",
+      label: "Gallery posts",
     },
     main: {
       path: "content/portfolio.json",
@@ -120,10 +124,11 @@ When the user asks to change site text, posts, studio copy, or SEO, respond with
 \`\`\`
 
 Rules:
-- "path" must be one of: content/campaign-meta.json, content/campaign-posts.json, content/portfolio.json, content/chaos-studio.json, frontend/public/assets/site.config.json
+- "path" must be one of: content/campaign-meta.json, content/social-posts.json, content/gallery-posts.json, content/portfolio.json, content/chaos-studio.json, frontend/public/assets/site.config.json
 - "content" is the COMPLETE file object after your edits (merge with current data; do not drop unrelated fields).
-- **Social posts** (choparts-01, ayha-01, etc.): ALWAYS path **content/campaign-posts.json** with { "posts": [ ... ] }. Send the FULL posts array from the snapshot, editing only what changed. NEVER put posts in portfolio.json.
-- campaign-posts.json: each post needs id, platform, client, title, description, tags (string[]), accent (purple|pink|gold|teal). Optional: slides (string[]), enabled, cardLayout, mediaAspect, video, poster, image.
+- **Portfolio feed posts** (home page cards): path **content/social-posts.json** with { "posts": [ ... ] }. Send the FULL posts array from the snapshot, editing only what changed. NEVER put posts in portfolio.json.
+- **Gallery posts** (reels, posters, media kits, multi-slide /gallery tiles): path **content/gallery-posts.json** with { "posts": [ ... ] }.
+- social-posts.json / gallery-posts.json: each post needs id, platform, client, title, description, tags (string[]), accent (purple|pink|gold|teal). Optional: slides (string[]), enabled, cardLayout, mediaAspect, video, poster, image.
 - campaign-meta.json: { "subtitle": string }
 - portfolio.json: profile, objective, experience, skills, education, contact, featuredWork only — never a posts array.
 - chaos-studio.json: studio page only.
@@ -354,8 +359,32 @@ Rules:
     return "";
   }
 
+  function allSnapshotPosts() {
+    return [
+      ...(siteSnapshot?.files?.["social-posts"]?.data?.posts || []),
+      ...(siteSnapshot?.files?.["gallery-posts"]?.data?.posts || []),
+    ];
+  }
+
+  function postFilePathForId(postId) {
+    const inGallery = (siteSnapshot?.files?.["gallery-posts"]?.data?.posts || []).some(
+      (p) => p.id === postId,
+    );
+    return inGallery ? "content/gallery-posts.json" : "content/social-posts.json";
+  }
+
+  function postsForPath(path) {
+    const key =
+      path === "content/gallery-posts.json"
+        ? "gallery-posts"
+        : path === "content/social-posts.json"
+          ? "social-posts"
+          : null;
+    return key ? siteSnapshot?.files?.[key]?.data?.posts || [] : [];
+  }
+
   function resolvePostIdFromHint(hint, userText) {
-    const posts = siteSnapshot?.files?.["campaign-posts"]?.data?.posts || [];
+    const posts = allSnapshotPosts();
     const h = `${hint || ""} ${userText || ""}`.toLowerCase();
     const explicit = h.match(/\b([a-z][a-z0-9]*-\d{2})\b/);
     if (explicit) {
@@ -403,11 +432,17 @@ Rules:
           /* fall through */
         }
       }
-      if (id === "campaign-posts" && snap.live?.socialPosts) {
+      if (id === "social-posts" && snap.live?.socialPosts) {
         snap.files[id] = {
           path: meta.path,
           label: meta.label,
           data: { posts: snap.live.socialPosts.items || [] },
+        };
+      } else if (id === "gallery-posts" && snap.live?.galleryPosts) {
+        snap.files[id] = {
+          path: meta.path,
+          label: meta.label,
+          data: { posts: snap.live.galleryPosts.items || [] },
         };
       } else if (id === "campaign-meta" && snap.live) {
         snap.files[id] = {
@@ -503,7 +538,10 @@ Rules:
   }
 
   function summarizeUpdate(u) {
-    if (u.path === "content/campaign-posts.json" && u.content?.posts) {
+    if (
+      (u.path === "content/social-posts.json" || u.path === "content/gallery-posts.json") &&
+      u.content?.posts
+    ) {
       const lines = u.content.posts
         .slice(0, 8)
         .map((p) => `<li><strong>${escapeHtml(p.id)}</strong> — ${escapeHtml(p.title || "")}</li>`)
@@ -585,7 +623,10 @@ Rules:
       const label = Object.values(CONTENT_FILES).find((m) => m.path === u.path)?.label || u.path;
       let items = [];
 
-      if (u.path === "content/campaign-posts.json") {
+      if (
+        u.path === "content/social-posts.json" ||
+        u.path === "content/gallery-posts.json"
+      ) {
         items = diffCampaignPosts(baseline?.posts, u.content?.posts);
       } else if (u.path === "content/campaign-meta.json") {
         items = diffShallowObject(baseline, u.content, ["subtitle"]);
@@ -640,7 +681,10 @@ Rules:
     let n = 0;
     for (const u of parsed.updates) {
       const baseline = getBaselineForPath(u.path);
-      if (u.path === "content/campaign-posts.json") {
+      if (
+        u.path === "content/social-posts.json" ||
+        u.path === "content/gallery-posts.json"
+      ) {
         n += diffCampaignPosts(baseline?.posts, u.content?.posts).length;
       } else {
         n += 1;
@@ -671,14 +715,22 @@ Rules:
         (content?.id && content?.title && !content?.profile && !content?.objective);
 
       if (path === "content/portfolio.json" && isPostPayload) {
-        path = "content/campaign-posts.json";
+        path = "content/social-posts.json";
         fixNotes.push(
-          "Corrected: social posts must be saved to content/campaign-posts.json (not portfolio.json).",
+          "Corrected: feed posts must be saved to content/social-posts.json (not portfolio.json).",
         );
       }
 
       if (path === "content/campaign-posts.json") {
-        const existing = siteSnapshot?.files?.["campaign-posts"]?.data?.posts || [];
+        path = "content/social-posts.json";
+        fixNotes.push("Corrected: legacy campaign-posts.json → social-posts.json.");
+      }
+
+      if (
+        path === "content/social-posts.json" ||
+        path === "content/gallery-posts.json"
+      ) {
+        const existing = postsForPath(path);
         const incoming = Array.isArray(content?.posts)
           ? content.posts
           : content?.id
@@ -744,7 +796,7 @@ Rules:
         }
         if (Array.isArray(data.posts)) {
           return fixAndValidateUpdates({
-            updates: [{ path: "content/campaign-posts.json", content: data }],
+            updates: [{ path: "content/social-posts.json", content: data }],
             commitMessage: data.commitMessage || "CMS AI: update posts",
           });
         }
@@ -753,13 +805,14 @@ Rules:
           postId &&
           (data.title != null || data.description != null || data.tags || data.slides)
         ) {
-          const existing = siteSnapshot?.files?.["campaign-posts"]?.data?.posts || [];
+          const postPath = postFilePathForId(postId);
+          const existing = postsForPath(postPath);
           if (!existing.some((p) => p.id === postId)) continue;
           const merged = existing.map((p) =>
             p.id === postId ? { ...p, ...data, id: postId } : p,
           );
           return fixAndValidateUpdates({
-            updates: [{ path: "content/campaign-posts.json", content: { posts: merged } }],
+            updates: [{ path: postPath, content: { posts: merged } }],
             commitMessage: data.commitMessage || `CMS AI: update ${postId}`,
           });
         }
@@ -793,13 +846,14 @@ Rules:
     }
 
     if (!postId) return null;
-    const existing = siteSnapshot?.files?.["campaign-posts"]?.data?.posts || [];
+    const postPath = postFilePathForId(postId);
+    const existing = postsForPath(postPath);
     if (!existing.some((p) => p.id === postId)) return null;
 
     return fixAndValidateUpdates({
       updates: [
         {
-          path: "content/campaign-posts.json",
+          path: postPath,
           content: { posts: existing.map((p) => (p.id === postId ? { ...p, title: newTitle } : p)) },
         },
       ],
@@ -818,12 +872,13 @@ Rules:
       (reply || "").match(/'title'\s*:\s*'([^']+)'/i);
     if (!titleInReply) return null;
     const newTitle = titleInReply[1].replace(/\\"/g, '"');
-    const existing = siteSnapshot?.files?.["campaign-posts"]?.data?.posts || [];
+    const postPath = postFilePathForId(postId);
+    const existing = postsForPath(postPath);
     if (!existing.some((p) => p.id === postId)) return null;
     return fixAndValidateUpdates({
       updates: [
         {
-          path: "content/campaign-posts.json",
+          path: postPath,
           content: {
             posts: existing.map((p) => (p.id === postId ? { ...p, title: newTitle } : p)),
           },
