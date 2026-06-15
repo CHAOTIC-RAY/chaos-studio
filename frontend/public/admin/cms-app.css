@@ -17,6 +17,7 @@
   --app-shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(213, 119, 237, 0.12);
   --app-header-h: 3.5rem;
   --app-dock-h: 4rem;
+  --chaos-editor-bar-h: 4.25rem;
   --app-safe-t: env(safe-area-inset-top, 0px);
   --app-safe-b: env(safe-area-inset-bottom, 0px);
   --app-safe-l: env(safe-area-inset-left, 0px);
@@ -522,41 +523,52 @@ body.chaos-mode-assistant .chaos-dock {
 }
 
 .chaos-decap-slot {
-  position: relative;
-  z-index: 1;
   flex: 1 1 auto;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
+  pointer-events: none;
 }
 
-.chaos-decap-mount {
-  position: relative;
-  z-index: 1;
-  flex: 1 1 auto;
+/* Decap mount stays on <body> — never reparent #nc-root after React init */
+body:not(.chaos-mode-editor) #chaos-decap-mount {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  pointer-events: none;
+  opacity: 0;
+}
+
+body.chaos-mode-editor #chaos-decap-mount {
+  position: fixed;
+  z-index: 95;
+  top: calc(var(--app-safe-t) + var(--app-header-h) + var(--chaos-editor-bar-h, 4.25rem));
+  left: max(0px, var(--app-safe-l));
+  right: max(0px, var(--app-safe-r));
+  bottom: calc(var(--app-dock-h) + var(--app-safe-b));
+  display: flex;
+  flex-direction: column;
   min-height: 0;
-  width: 100%;
   overflow: hidden;
   background: #f7f5fb;
   color: #1e1b3b;
   border-radius: var(--app-radius) var(--app-radius) 0 0;
 }
 
-/* Decap expects a full-height chain — do not set height:auto on EditorContainer */
 body.chaos-mode-editor #nc-root {
-  height: 100% !important;
-  min-height: 100% !important;
-  width: 100% !important;
-  overflow: hidden !important;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-body.chaos-mode-editor #nc-root [class*="AppMainContainer"],
-body.chaos-mode-editor #nc-root [class*="WorkflowWrapper"],
-body.chaos-mode-editor #nc-root [class*="NoPreviewContainer"],
-body.chaos-mode-editor #nc-root [class*="StyledSplitPane"],
-body.chaos-mode-editor #nc-root [class*="Editor"] {
-  height: 100% !important;
-  min-height: 0 !important;
+/* Decap editor routes hide AppHeader; establish height for absolute EditorContainer */
+body.chaos-mode-editor #nc-root [class*="AppMainContainer"] {
+  position: relative !important;
+  min-height: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
 }
 
 body.chaos-mode-editor #nc-root [class*="AppHeader"],
@@ -571,32 +583,53 @@ body.chaos-mode-editor #nc-root [class*="PreviewPaneFrame"] {
   display: none !important;
 }
 
-/* Header hidden — drop Decap's 66px top pad; use normal flow + scroll */
+/*
+ * EditorContainer defaults to position:absolute;height:100% with a 66px toolbar pad.
+ * AppMainContainer has no explicit height, so height:100% collapses to 0 after load.
+ */
 body.chaos-mode-editor #nc-root [class*="EditorContainer"] {
   position: relative !important;
   top: auto !important;
   left: auto !important;
   width: 100% !important;
   min-width: 0 !important;
-  height: 100% !important;
+  height: auto !important;
+  min-height: 100% !important;
   padding-top: 0 !important;
-  overflow: auto !important;
-  -webkit-overflow-scrolling: touch;
+  overflow: visible !important;
+}
+
+body.chaos-mode-editor #nc-root [class*="NoPreviewContainer"],
+body.chaos-mode-editor #nc-root [class*="ControlPaneContainer"] {
+  height: auto !important;
+  min-height: 0 !important;
+  max-width: 100% !important;
 }
 
 body.chaos-mode-editor #nc-root [class*="ControlPaneContainer"] {
-  max-width: 100% !important;
   margin: 0 !important;
   padding: 0.75rem 1rem 2rem !important;
+  overflow-y: visible !important;
 }
 
 body.chaos-mode-editor #nc-root [class*="ToolbarContainer"] {
-  position: fixed !important;
-  left: -9999px !important;
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: -1px !important;
   opacity: 0 !important;
   pointer-events: none !important;
-  height: 0 !important;
-  overflow: hidden !important;
+}
+
+body.chaos-mode-editor #nc-root [class*="ErrorBoundary"],
+body.chaos-mode-editor #nc-root [class*="ErrorBoundaryContainer"] {
+  min-height: 12rem !important;
+  padding: 1rem !important;
 }
 
 body.chaos-mode-editor #nc-root svg {

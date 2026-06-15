@@ -1,5 +1,5 @@
 /* Chaos Studio Admin PWA — scoped to /admin/ */
-const CACHE = "chaos-admin-v18";
+const CACHE = "chaos-admin-v19";
 const PRECACHE = [
   "/admin/",
   "/admin/index.html",
@@ -14,7 +14,13 @@ const PRECACHE = [
   "/icons/icon-512.png",
 ];
 
-const NETWORK_FIRST = ["/admin/sync-status.json", "/admin/media-manifest.json"];
+const NETWORK_FIRST = [
+  "/admin/sync-status.json",
+  "/admin/media-manifest.json",
+  "/admin/index.html",
+  "/admin/cms-app.js",
+  "/admin/cms-app.css",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

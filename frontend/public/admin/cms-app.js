@@ -121,12 +121,19 @@
 
   function ensureDecapMounted() {
     const mount = document.getElementById("chaos-decap-mount");
-    const slot = document.querySelector("[data-decap-slot]");
     const nc = document.getElementById("nc-root");
-    if (!mount || !slot || !nc) return false;
+    if (!mount || !nc) return false;
     if (nc.parentElement !== mount) mount.appendChild(nc);
-    if (mount.parentElement !== slot) slot.appendChild(mount);
     return true;
+  }
+
+  function syncEditorLayoutVars() {
+    const bar = document.querySelector("[data-editor-bar]");
+    if (!bar) return;
+    document.documentElement.style.setProperty(
+      "--chaos-editor-bar-h",
+      `${Math.ceil(bar.getBoundingClientRect().height)}px`,
+    );
   }
 
   function waitForDecapRoot() {
@@ -200,7 +207,7 @@
         <div id="chaos-view-editor" class="chaos-view chaos-editor-view">
           <div class="chaos-editor-bar" data-editor-bar></div>
           <p class="chaos-editor-loading" data-editor-loading hidden>Loading editor… large files may take a moment.</p>
-          <div class="chaos-decap-slot" data-decap-slot></div>
+          <div class="chaos-decap-slot" data-decap-slot aria-hidden="true"></div>
         </div>
       </main>
       <footer class="chaos-dock" data-save-dock role="toolbar" aria-label="Publish"></footer>
@@ -385,6 +392,7 @@
       e.preventDefault();
       goToPortal();
     });
+    syncEditorLayoutVars();
   }
 
   function bindPortalNavigation() {
@@ -535,17 +543,20 @@
       setEditorLoading(true);
       ensureDecapMounted();
       renderEditorBar();
+      syncEditorLayoutVars();
       document.getElementById("chaos-app")?.classList.add("chaos-app--editing");
       nudgeDecapLayout();
       renderSaveDock(true);
       clearTimeout(dockTimer);
       dockTimer = setTimeout(() => {
         ensureDecapMounted();
+        syncEditorLayoutVars();
         nudgeDecapLayout();
         renderSaveDock(true);
       }, 1200);
       dockTimer = setTimeout(() => {
         ensureDecapMounted();
+        syncEditorLayoutVars();
         nudgeDecapLayout();
         renderSaveDock(true);
       }, 4000);
@@ -717,6 +728,25 @@
     setInterval(syncDecapGithubToken, 8000);
   }
 
+  function watchEditorLayout() {
+    if (window.__chaosEditorLayout) return;
+    window.__chaosEditorLayout = true;
+    window.addEventListener("resize", () => {
+      if (mode() === "editor") syncEditorLayoutVars();
+    });
+    const obs = new MutationObserver(() => {
+      const bar = document.querySelector("[data-editor-bar]");
+      if (!bar || bar.dataset.layoutObserved) return;
+      bar.dataset.layoutObserved = "1";
+      syncEditorLayoutVars();
+      if (typeof ResizeObserver !== "undefined") {
+        const ro = new ResizeObserver(() => syncEditorLayoutVars());
+        ro.observe(bar);
+      }
+    });
+    obs.observe(document.body, { childList: true, subtree: true });
+  }
+
   function boot() {
     buildShell();
     waitForDecapRoot();
@@ -727,6 +757,7 @@
     registerCmsHooks();
     watchDecapMount();
     watchHashGuard();
+    watchEditorLayout();
 
     window.addEventListener("load", () => {
       registerCmsHooks();
