@@ -160,14 +160,27 @@ body {
 }
 
 .chaos-view {
-  display: none;
+  display: flex;
   flex: 1 1 auto;
   flex-direction: column;
   min-height: 0;
+  position: relative;
+}
+
+/* Keep views in layout (Decap/React break when parent is display:none) */
+.chaos-view:not(.is-active) {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
 }
 
 .chaos-view.is-active {
-  display: flex;
+  visibility: visible;
+  pointer-events: auto;
+  z-index: 1;
 }
 
 .chaos-assistant-view.is-active {
@@ -178,29 +191,11 @@ body {
   flex-direction: column;
 }
 
-/* Hide Decap + editor shell when not in entry editor */
-body.chaos-mode-dashboard #chaos-view-editor,
-body.chaos-mode-media #chaos-view-editor {
-  display: none !important;
-}
-
+/* Hide editor chrome when not editing — views stay mounted, only visibility toggles */
 body.chaos-mode-dashboard .chaos-dock,
-body.chaos-mode-media .chaos-dock {
+body.chaos-mode-media .chaos-dock,
+body.chaos-mode-assistant .chaos-dock {
   display: none !important;
-}
-
-#chaos-decap-stash,
-body.chaos-mode-dashboard #nc-root,
-body.chaos-mode-media #nc-root {
-  position: fixed !important;
-  left: -9999px !important;
-  top: 0 !important;
-  width: 1px !important;
-  height: 1px !important;
-  overflow: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  visibility: hidden !important;
 }
 
 /* —— Dashboard —— */
@@ -334,7 +329,11 @@ body.chaos-mode-media #nc-root {
   width: 100%;
   height: 100%;
 }
-#chaos-app svg {
+#chaos-app > header svg,
+#chaos-app .chaos-card svg,
+#chaos-app .chaos-icon svg,
+#chaos-app .chaos-editor-bar svg,
+#chaos-app .chaos-dock svg {
   max-width: 1.5rem;
   max-height: 1.5rem;
   stroke: currentColor;
@@ -573,7 +572,16 @@ body.chaos-mode-editor [class*="SplitPane"] > * {
   width: 100% !important;
   max-width: 100% !important;
   flex: 1 1 auto !important;
-  min-height: 0 !important;
+  min-height: auto !important;
+}
+
+/* Decap list + form widgets must not inherit portal icon sizing */
+#nc-root svg {
+  max-width: none !important;
+  max-height: none !important;
+  fill: initial !important;
+  stroke: initial !important;
+  stroke-width: initial !important;
 }
 
 body.chaos-mode-editor [class*="WorkflowWrapper"],

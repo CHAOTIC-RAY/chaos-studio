@@ -119,22 +119,26 @@
     }, 300);
   }
 
-  function ensureDecapStash() {
-    let stash = document.getElementById("chaos-decap-stash");
-    if (!stash) {
-      stash = document.createElement("div");
-      stash.id = "chaos-decap-stash";
-      stash.setAttribute("aria-hidden", "true");
-      document.body.appendChild(stash);
-    }
-    return stash;
+  function ensureDecapMounted() {
+    const mount = document.getElementById("chaos-decap-mount");
+    const nc = document.getElementById("nc-root");
+    if (!mount || !nc) return false;
+    if (nc.parentElement !== mount) mount.appendChild(nc);
+    return true;
   }
 
-  function stashDecap() {
-    const nc = document.getElementById("nc-root");
-    if (!nc) return;
-    const stash = ensureDecapStash();
-    if (nc.parentElement !== stash) stash.appendChild(nc);
+  function waitForDecapRoot() {
+    if (ensureDecapMounted()) return;
+    const obs = new MutationObserver(() => {
+      if (ensureDecapMounted()) obs.disconnect();
+    });
+    obs.observe(document.body, { childList: true, subtree: true });
+  }
+
+  function nudgeDecapLayout() {
+    requestAnimationFrame(() => {
+      window.dispatchEvent(new Event("resize"));
+    });
   }
 
   function forcePortalView(viewMode) {
@@ -149,7 +153,6 @@
     if (bar) bar.replaceChildren();
     setEditorLoading(false);
     lastDockKey = "";
-    stashDecap();
     if (viewMode === "dashboard") renderDashboard();
     if (viewMode === "media") renderMedia();
     if (viewMode === "assistant") renderAssistantView();
@@ -347,10 +350,7 @@
   }
 
   function mountDecap() {
-    const mount = document.getElementById("chaos-decap-mount");
-    const nc = document.getElementById("nc-root");
-    if (!mount || !nc) return;
-    if (nc.parentElement !== mount) mount.appendChild(nc);
+    ensureDecapMounted();
   }
 
   function setEditorLoading(show) {
@@ -509,23 +509,30 @@
     if (m === "dashboard") renderDashboard();
     if (m === "media") renderMedia();
     if (m === "assistant") {
-      stashDecap();
       renderAssistantView();
     }
     if (m === "editor") {
       lastDockKey = "";
       setEditorLoading(true);
-      mountDecap();
+      ensureDecapMounted();
       renderEditorBar();
       document.getElementById("chaos-app")?.classList.add("chaos-app--editing");
+      nudgeDecapLayout();
       renderSaveDock(true);
       clearTimeout(dockTimer);
-      dockTimer = setTimeout(() => renderSaveDock(true), 1200);
-      dockTimer = setTimeout(() => renderSaveDock(true), 4000);
+      dockTimer = setTimeout(() => {
+        ensureDecapMounted();
+        nudgeDecapLayout();
+        renderSaveDock(true);
+      }, 1200);
+      dockTimer = setTimeout(() => {
+        ensureDecapMounted();
+        nudgeDecapLayout();
+        renderSaveDock(true);
+      }, 4000);
     } else {
       setEditorLoading(false);
       document.getElementById("chaos-app")?.classList.remove("chaos-app--editing");
-      stashDecap();
     }
   }
 
@@ -693,6 +700,7 @@
 
   function boot() {
     buildShell();
+    waitForDecapRoot();
     applyMode();
     bindPublishToast();
     bindPortalNavigation();
