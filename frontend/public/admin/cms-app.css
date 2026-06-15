@@ -537,14 +537,14 @@ body.chaos-mode-assistant .chaos-dock {
 .chaos-decap-slot {
   position: relative;
   flex: 1 1 auto;
-  min-height: 0;
+  min-height: 12rem;
   overflow: hidden;
   background: #f7f5fb;
   color: #1e1b3b;
   border-radius: var(--app-radius) var(--app-radius) 0 0;
 }
 
-/* Mount lives inside the slot in editor mode — stash only when portal is active */
+/* Mount stays on body; CSS places it over login/editor slots (never reparent after React init) */
 body:not(.chaos-mode-editor):not(.chaos-mode-login) #chaos-decap-mount {
   position: fixed;
   width: 1px;
@@ -555,9 +555,13 @@ body:not(.chaos-mode-editor):not(.chaos-mode-login) #chaos-decap-mount {
   opacity: 0;
 }
 
-body.chaos-mode-editor .chaos-decap-mount {
-  position: absolute;
-  inset: 0;
+body.chaos-mode-editor #chaos-decap-mount {
+  position: fixed;
+  z-index: 105;
+  top: calc(var(--app-header-h) + var(--chaos-editor-bar-h) + var(--app-safe-t));
+  right: 0;
+  bottom: calc(var(--app-dock-h) + var(--app-safe-b));
+  left: 0;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -566,17 +570,46 @@ body.chaos-mode-editor .chaos-decap-mount {
   color: #1e1b3b;
 }
 
-body.chaos-mode-editor #nc-root {
-  flex: 1 1 auto;
+body.chaos-mode-login #chaos-decap-mount {
+  position: fixed;
+  z-index: 105;
+  top: calc(var(--app-header-h) + var(--app-safe-t) + 1rem);
+  right: max(1rem, var(--app-safe-r));
+  bottom: calc(1rem + var(--app-safe-b));
+  left: max(1rem, var(--app-safe-l));
+  display: flex;
+  flex-direction: column;
   min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #f7f5fb;
+  color: #1e1b3b;
+  border-radius: var(--app-radius);
+}
+
+body.chaos-mode-editor #nc-root,
+body.chaos-mode-login #nc-root {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
   width: 100%;
+  overflow: hidden;
+}
+
+body.chaos-mode-editor #nc-root {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
 
 body.chaos-mode-editor #nc-root [class*="AppMainContainer"] {
+  flex: 1 1 auto;
+  display: flex !important;
+  flex-direction: column !important;
   position: relative !important;
-  min-height: 100% !important;
+  min-height: 0 !important;
+  height: 100% !important;
   max-width: 100% !important;
   margin: 0 !important;
 }
@@ -593,29 +626,31 @@ body.chaos-mode-editor #nc-root [class*="PreviewPaneFrame"] {
   display: none !important;
 }
 
-/* Decap EditorContainer is absolute+height:100% — breaks when parent has no height */
+/* Decap EditorContainer is absolute+height:100% — needs a sized flex parent, not height:auto */
 body.chaos-mode-editor #nc-root [class*="EditorContainer"] {
+  flex: 1 1 auto;
   position: relative !important;
   top: auto !important;
   left: auto !important;
   width: 100% !important;
   min-width: 0 !important;
-  height: auto !important;
+  height: 100% !important;
   min-height: 0 !important;
   padding-top: 0 !important;
-  overflow: visible !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
-/* Inner editor stack — all default to height:100% which collapses after load */
 body.chaos-mode-editor #nc-root [class*="EditorContainer"] > [class*="Editor"],
 body.chaos-mode-editor #nc-root [class*="NoPreviewContainer"],
 body.chaos-mode-editor #nc-root [class*="StyledSplitPane"],
 body.chaos-mode-editor #nc-root [class*="ControlPaneContainer"],
 body.chaos-mode-editor #nc-root [class*="EditorControlPane"] {
-  height: auto !important;
+  flex: 1 1 auto;
+  height: 100% !important;
   min-height: 0 !important;
   max-width: 100% !important;
-  overflow: visible !important;
 }
 
 body.chaos-mode-editor #nc-root [class*="ControlPaneContainer"] {
@@ -704,22 +739,12 @@ body.chaos-mode-editor #nc-root [class*="LoginButton"] {
   border-radius: var(--app-radius);
 }
 
-body.chaos-mode-login .chaos-decap-mount {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-  background: #f7f5fb;
-  color: #1e1b3b;
+body.chaos-mode-login .chaos-login-slot {
+  min-height: calc(100dvh - var(--app-header-h) - var(--app-safe-t) - 1.5rem);
 }
 
-body.chaos-mode-login #nc-root {
-  flex: 1 1 auto;
-  min-height: 100%;
-  width: 100%;
+body.chaos-mode-login .chaos-dock {
+  display: none !important;
 }
 
 body.chaos-mode-login #nc-root [class*="AuthenticationPage"] {
@@ -734,10 +759,6 @@ body.chaos-mode-login #nc-root [class*="AuthenticationPage"] {
 body.chaos-mode-login #nc-root [class*="LoginButton"] {
   opacity: 1 !important;
   pointer-events: auto !important;
-}
-
-body.chaos-mode-login .chaos-dock {
-  display: none !important;
 }
 
 /* Save dock */

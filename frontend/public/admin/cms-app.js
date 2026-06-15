@@ -124,25 +124,11 @@
 
   function ensureDecapMounted() {
     const mount = document.getElementById("chaos-decap-mount");
-    const loginSlot = document.querySelector("[data-login-slot]");
-    const slot = document.querySelector("[data-decap-slot]");
     const nc = document.getElementById("nc-root");
     if (!mount || !nc) return false;
     if (nc.parentElement !== mount) mount.appendChild(nc);
-
-    if (!isLoggedIn() && loginSlot) {
-      if (mount.parentElement !== loginSlot) loginSlot.appendChild(mount);
-      if (slot) slot.setAttribute("aria-hidden", "true");
-      return true;
-    }
-
-    if (mode() === "editor" && slot) {
-      if (mount.parentElement !== slot) slot.appendChild(mount);
-      slot.removeAttribute("aria-hidden");
-    } else if (mount.parentElement !== document.body) {
-      document.body.appendChild(mount);
-      if (slot) slot.setAttribute("aria-hidden", "true");
-    }
+    // Keep mount on body — reparenting after React init collapses Decap editor layout.
+    if (mount.parentElement !== document.body) document.body.appendChild(mount);
     return true;
   }
 
