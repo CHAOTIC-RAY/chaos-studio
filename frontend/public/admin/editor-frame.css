@@ -16,6 +16,7 @@ body {
   overflow: hidden;
 }
 
+/* Sized parent so Decap's absolute EditorContainer (height:100%) can fill the viewport */
 #nc-root [class*="AppMainContainer"] {
   position: relative !important;
   flex: 1 1 auto;
@@ -25,38 +26,21 @@ body {
   margin: 0 !important;
 }
 
+/* Hide Decap chrome — keep ToolbarContainer for Save/Publish on this standalone page */
 #nc-root [class*="AppHeader"],
 #nc-root [class*="Sidebar"],
 #nc-root [class*="SidebarContainer"],
 #nc-root > header,
-#nc-root [class*="ToolbarContainer"],
-#nc-root [class*="PreviewPane"],
 #nc-root [class*="PreviewPaneFrame"] {
   display: none !important;
 }
 
+/* Do not use [class*="Editor"] — it also matches EditorContainer and breaks layout */
 #nc-root [class*="EditorContainer"] {
-  position: absolute !important;
-  inset: 0 !important;
-  width: 100% !important;
   min-width: 0 !important;
-  height: 100% !important;
-  padding-top: 0 !important;
   overflow: auto !important;
   -webkit-overflow-scrolling: touch;
   background: #f7f5fb;
-}
-
-#nc-root [class*="Editor"] {
-  position: relative !important;
-  height: auto !important;
-  min-height: 100% !important;
-}
-
-#nc-root [class*="NoPreviewContainer"],
-#nc-root [class*="StyledSplitPane"] {
-  height: auto !important;
-  min-height: 100% !important;
 }
 
 #nc-root [class*="ControlPaneContainer"] {
@@ -70,8 +54,4 @@ body {
 #nc-root textarea,
 #nc-root select {
   font-size: 1rem !important;
-}
-
-#nc-root [class*="Loader"] {
-  min-height: 8rem !important;
 }
