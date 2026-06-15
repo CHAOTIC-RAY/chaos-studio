@@ -17,6 +17,7 @@
     external: '<svg viewBox="0 0 24 24"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v7H3V3h7"/></svg>',
     chevron: '<svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>',
     chat: '<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+    logout: '<svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>',
   };
 
   const EDITORS = [
@@ -206,6 +207,7 @@
           <a href="#/media" data-nav="media">${icon("image")}<span class="chaos-nav-label">Media</span></a>
           <a href="#/assistant" data-nav="assistant">${icon("chat")}<span class="chaos-nav-label">AI</span></a>
           <a href="${SITE}/" target="_blank" rel="noopener">${icon("external")}<span class="chaos-nav-label">Site</span></a>
+          <button type="button" class="chaos-logout" data-portal-logout hidden title="Log out of GitHub">${icon("logout")}<span class="chaos-nav-label">Log out</span></button>
         </nav>
       </header>
       <main class="chaos-app-main">
@@ -224,6 +226,7 @@
     ensureDecapMounted();
 
     loadSyncBadge();
+    updateLogoutButton();
   }
 
   async function loadSyncBadge() {
@@ -699,6 +702,51 @@
 
   const CMS_TOKEN_CACHE = "chaos_cms_github_token";
 
+  function getCmsUser() {
+    try {
+      const raw = localStorage.getItem("decap-cms-user");
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function isLoggedIn() {
+    return Boolean(getCmsUser()?.token);
+  }
+
+  function updateLogoutButton() {
+    const btn = document.querySelector("[data-portal-logout]");
+    if (!btn) return;
+    const user = getCmsUser();
+    const loggedIn = Boolean(user?.token);
+    btn.hidden = !loggedIn;
+    const name = user?.login || user?.name || "";
+    btn.title = name ? `Log out (${name})` : "Log out of GitHub";
+  }
+
+  function logoutPortal() {
+    const btn = document.querySelector("[data-portal-logout]");
+    if (btn instanceof HTMLButtonElement) btn.disabled = true;
+
+    localStorage.removeItem("decap-cms-user");
+    sessionStorage.removeItem(CMS_TOKEN_CACHE);
+
+    location.hash = "#/";
+    location.reload();
+  }
+
+  function bindPortalLogout() {
+    if (window.__chaosPortalLogout) return;
+    window.__chaosPortalLogout = true;
+    document.body.addEventListener("click", (e) => {
+      const btn = e.target instanceof Element ? e.target.closest("[data-portal-logout]") : null;
+      if (!btn) return;
+      e.preventDefault();
+      logoutPortal();
+    });
+  }
+
   function cacheCmsGithubToken(token) {
     if (token && typeof token === "string") {
       sessionStorage.setItem(CMS_TOKEN_CACHE, token);
@@ -708,12 +756,16 @@
   function syncDecapGithubToken() {
     try {
       const raw = localStorage.getItem("decap-cms-user");
-      if (!raw) return;
+      if (!raw) {
+        updateLogoutButton();
+        return;
+      }
       const user = JSON.parse(raw);
       if (user?.token) cacheCmsGithubToken(user.token);
     } catch {
       /* ignore */
     }
+    updateLogoutButton();
   }
 
   function bindCmsOAuthTokenCache() {
@@ -728,6 +780,7 @@
         if (payload?.token) {
           console.debug("Decap OAuth token received");
           cacheCmsGithubToken(payload.token);
+          updateLogoutButton();
         }
       } catch (err) {
         console.warn("Failed to parse OAuth payload", err);
@@ -762,6 +815,7 @@
     applyMode();
     bindPublishToast();
     bindPortalNavigation();
+    bindPortalLogout();
     bindCmsOAuthTokenCache();
     registerCmsHooks();
     watchDecapMount();
