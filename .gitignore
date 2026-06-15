@@ -21,3 +21,4 @@ MDP_extract/
 .tmp-posts-import-*
 artifacts/
 .cursor/skills/**/__pycache__/
+frontend/public/admin/decap-cms.js

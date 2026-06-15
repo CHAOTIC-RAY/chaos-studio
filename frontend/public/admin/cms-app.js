@@ -103,13 +103,20 @@
 
   function isKnownEditorRoute() {
     const h = route();
-    return EDITORS.some((e) => h.startsWith(e.hash));
+    return EDITORS.some((e) => h === e.hash || h.startsWith(`${e.hash}/`));
   }
 
   function goToPortal() {
+    if (window.__chaosPortalRedirect) return;
+    const h = route();
+    if (h === "#/" && mode() === "dashboard") return;
+    window.__chaosPortalRedirect = true;
     const target = `${location.pathname}${location.search}#/`;
-    if (route() !== "#/") history.replaceState(null, "", target);
+    if (h !== "#/") history.replaceState(null, "", target);
     forcePortalView("dashboard");
+    setTimeout(() => {
+      window.__chaosPortalRedirect = false;
+    }, 300);
   }
 
   function ensureDecapStash() {
@@ -523,24 +530,8 @@
   }
 
   function watchHashGuard() {
-    let last = route();
-    const tick = () => {
-      const h = route();
-      if (h !== last) {
-        last = h;
-        applyMode();
-        return;
-      }
-      if (isStrayDecapRoute() && document.body.classList.contains("chaos-mode-editor")) {
-        goToPortal();
-      }
-    };
-    window.addEventListener("hashchange", () => {
-      last = route();
-      applyMode();
-    });
-    window.addEventListener("popstate", tick);
-    setInterval(tick, 400);
+    window.addEventListener("hashchange", () => applyMode());
+    window.addEventListener("popstate", () => applyMode());
   }
 
   function normalizeListValue(val, prop) {

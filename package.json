@@ -44,6 +44,7 @@
     "frontend"
   ],
   "devDependencies": {
+    "decap-cms": "^3.8.3",
     "playwright": "^1.60.0",
     "sharp": "^0.34.5",
     "typescript": "^5.8.3",

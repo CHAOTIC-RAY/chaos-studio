@@ -161,7 +161,7 @@ function verifyMediaManifest() {
 }
 
 function verifyAdminBundle() {
-  const required = ["index.html", "config.yml", "cms-app.css", "cms-app.js", "media-manifest.json"];
+  const required = ["index.html", "config.yml", "decap-cms.js", "cms-app.css", "cms-app.js", "media-manifest.json"];
   for (const f of required) {
     const rel = `frontend/public/admin/${f}`;
     if (!fs.existsSync(path.join(root, rel))) {
