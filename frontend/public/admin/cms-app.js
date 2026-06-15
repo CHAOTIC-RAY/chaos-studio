@@ -110,11 +110,13 @@
   function goToPortal() {
     if (window.__chaosPortalRedirect) return;
     const h = route();
-    if (h === "#/" && mode() === "dashboard") return;
+    const leavingLogin = document.body.classList.contains("chaos-mode-login");
+    if (h === "#/" && mode() === "dashboard" && !leavingLogin) return;
     window.__chaosPortalRedirect = true;
     const target = `${location.pathname}${location.search}#/`;
     if (h !== "#/") history.replaceState(null, "", target);
     forcePortalView("dashboard");
+    ensureDecapMounted();
     setTimeout(() => {
       window.__chaosPortalRedirect = false;
     }, 300);
@@ -173,6 +175,7 @@
       v.classList.toggle("is-active", v.id === `chaos-view-${viewMode}`);
     });
     document.querySelectorAll("[data-nav]").forEach((a) => {
+      a.hidden = false;
       a.classList.toggle("is-active", a.getAttribute("data-nav") === viewMode);
     });
     const bar = document.querySelector("[data-editor-bar]");
@@ -564,6 +567,12 @@
       a.hidden = false;
     });
 
+    if (document.body.classList.contains("chaos-mode-login")) {
+      forcePortalView("dashboard");
+      ensureDecapMounted();
+      return;
+    }
+
     if (isStrayDecapRoute() || (route().includes("/collections") && !isKnownEditorRoute())) {
       goToPortal();
       return;
@@ -710,6 +719,9 @@
 
   function watchDecapMount() {
     const obs = new MutationObserver((records) => {
+      if (isLoggedIn() && document.body.classList.contains("chaos-mode-login")) {
+        applyMode();
+      }
       if (!isLoggedIn() && document.querySelector('#nc-root [class*="AuthenticationPage"]')) {
         onAuthChange();
       }
@@ -816,6 +828,33 @@
     onAuthChange();
   }
 
+  function persistOAuthUser(payload) {
+    if (!payload?.token) return;
+    cacheCmsGithubToken(payload.token);
+  }
+
+  function pollAuthAfterLogin() {
+    let attempts = 0;
+    const poll = setInterval(() => {
+      attempts += 1;
+      const raw = localStorage.getItem("decap-cms-user");
+      if (raw) {
+        try {
+          const user = JSON.parse(raw);
+          if (user?.token) {
+            cacheCmsGithubToken(user.token);
+            onAuthChange();
+            clearInterval(poll);
+            return;
+          }
+        } catch {
+          /* ignore */
+        }
+      }
+      if (attempts >= 40) clearInterval(poll);
+    }, 500);
+  }
+
   function bindCmsOAuthTokenCache() {
     if (window.__chaosCmsOAuthCache) return;
     window.__chaosCmsOAuthCache = true;
@@ -827,13 +866,23 @@
         const payload = JSON.parse(e.data.slice(okPrefix.length));
         if (payload?.token) {
           console.debug("Decap OAuth token received");
-          cacheCmsGithubToken(payload.token);
+          persistOAuthUser(payload);
           onAuthChange();
+          pollAuthAfterLogin();
         }
       } catch (err) {
         console.warn("Failed to parse OAuth payload", err);
       }
     });
+    document.body.addEventListener(
+      "click",
+      (e) => {
+        const btn = e.target instanceof Element ? e.target.closest('[class*="LoginButton"]') : null;
+        if (!btn) return;
+        pollAuthAfterLogin();
+      },
+      true,
+    );
     syncDecapGithubToken();
     setInterval(syncDecapGithubToken, 8000);
   }

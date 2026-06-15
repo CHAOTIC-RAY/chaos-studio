@@ -49,27 +49,39 @@ const handleAuth = (url: URL, env: Env) => {
 };
 
 const callbackScriptResponse = (status: string, token: string) => {
-  const payload = JSON.stringify({ token }).replace(/</g, "\\u003c");
+  const safeToken = JSON.stringify(token);
+  const payload =
+    status === "success"
+      ? `"authorization:github:success:" + JSON.stringify({ token: ${safeToken} })`
+      : `"authorization:github:error:" + JSON.stringify({ message: ${safeToken} })`;
+
   return new Response(
     `<!DOCTYPE html><html><body><script>
 (function () {
-  const message = "authorization:github:${status}:" + JSON.stringify(${payload});
-  const send = () => {
+  const message = ${payload};
+
+  function relay(origin) {
     if (!window.opener || window.opener.closed) {
       document.body.textContent = "Unable to complete login: opener window is closed.";
       return;
     }
-    window.opener.postMessage(message, "*");
+    window.opener.postMessage(message, origin || "*");
     try {
       window.close();
     } catch (e) {
-      // ignore
+      /* ignore */
     }
-  };
-  if (document.readyState === "complete") {
-    send();
-  } else {
-    window.addEventListener("load", send, false);
+  }
+
+  // Decap / Netlify CMS handshake: popup notifies parent, parent echoes, popup sends token.
+  window.addEventListener("message", function (e) {
+    if (e.data === "authorizing:github") {
+      relay(e.origin);
+    }
+  }, false);
+
+  if (window.opener && !window.opener.closed) {
+    window.opener.postMessage("authorizing:github", "*");
   }
 })();
 </script><p>Authorizing Decap…</p></body></html>`,
