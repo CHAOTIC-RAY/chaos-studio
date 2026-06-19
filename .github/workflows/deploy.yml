@@ -72,6 +72,9 @@ jobs:
           test -f cms/dist/cms-assistant.js
           test -f cms/dist/media-manifest.json
           test -f cms/dist/sync-status.json
+          test -f frontend/dist/admin/index.html
+          test -f frontend/dist/admin/decap-cms.js
+          test -f frontend/dist/admin/config.yml
 
       - name: Deploy portfolio to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
