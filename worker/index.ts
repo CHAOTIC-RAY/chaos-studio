@@ -108,8 +108,8 @@ export default {
     }
 
     // CMS admin is static under /admin/ — must not fall through to portfolio SPA
-    if (url.pathname === "/admin") {
-      return Response.redirect(`${url.origin}/admin/`, 301);
+    if (url.pathname === "/admin" || url.pathname === "/admin/index.html") {
+      return Response.redirect(`${url.origin}/admin/`, 302);
     }
     if (url.pathname.startsWith("/admin/")) {
       return env.ASSETS.fetch(request);

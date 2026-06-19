@@ -26,6 +26,20 @@
     />
     <script>
       (function () {
+        var path = location.pathname;
+        if (path === "/admin" || path.startsWith("/admin/")) {
+          if (path === "/admin") {
+            location.replace("/admin/" + location.search + location.hash);
+            return;
+          }
+          if (document.title.indexOf("CMS") === -1) {
+            location.replace("/admin/" + location.search + location.hash);
+          }
+        }
+      })();
+    </script>
+    <script>
+      (function () {
         var k = "portfolio-theme";
         var t;
         try {

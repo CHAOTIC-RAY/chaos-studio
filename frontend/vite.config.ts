@@ -78,9 +78,9 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,svg,webp,png,json,woff2}"],
-        globIgnores: ["**/*.pano.webp", "**/preview.mp4"],
+        globIgnores: ["**/*.pano.webp", "**/preview.mp4", "admin/**"],
         navigateFallback: "/index.html",
-        navigateFallbackDenylist: [/^\/api\//, /^\/admin\//],
+        navigateFallbackDenylist: [/^\/api\//, /^\/admin/],
         additionalManifestEntries: [
           { url: "/studio/", revision: null },
           { url: "/gallery/", revision: null },
