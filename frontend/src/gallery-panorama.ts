@@ -195,21 +195,23 @@ function appTilesFromPortfolio(portfolio: Portfolio): PanoTile[] {
 }
 
 /** Layout + curvature constants */
-const GAP = 26;
+const GAP = 18;
 const MARGIN = 1; // extra ring of cells so pan + 3D rotation never exposes empty edges
 const DRAG_THRESHOLD = 7;
 const VIDEO_NEAR = 0.44;
 const VIDEO_FAR = 0.58;
-const CENTER_SCALE = 0.16;
-const CENTER_FALLOFF = 0.95;
+const CENTER_SCALE = 0.14;
+const CENTER_FALLOFF = 0.88;
 const SCALE_SLOT_PAD = 0.03;
+const EDGE_SHRINK = 0.46;
+const DEPTH_PULL = 360;
 
 function tileMetrics(): { tileW: number; tileH: number; cols: number } {
   const vw = window.innerWidth;
-  if (vw < 560) return { tileW: 190, tileH: 250, cols: 5 };
-  if (vw < 900) return { tileW: 230, tileH: 300, cols: 6 };
-  if (vw < 1400) return { tileW: 270, tileH: 350, cols: 7 };
-  return { tileW: 300, tileH: 388, cols: 8 };
+  if (vw < 560) return { tileW: 148, tileH: 196, cols: 6 };
+  if (vw < 900) return { tileW: 178, tileH: 232, cols: 7 };
+  if (vw < 1400) return { tileW: 210, tileH: 272, cols: 8 };
+  return { tileW: 236, tileH: 306, cols: 9 };
 }
 
 export function initGalleryPanorama(portfolio: Portfolio): () => void {
@@ -439,8 +441,8 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
     const cx = vw / 2;
     const cy = vh / 2;
     const n = tiles.length;
-    // normalized curvature radius
-    const maxR = Math.hypot(vw, vh) / 2 || 1;
+    // Tighter radius so corner tiles fall off faster in scale/opacity.
+    const maxR = Math.hypot(vw, vh) / 2.35 || 1;
 
     const baseCol = Math.floor(ox / cellW) - MARGIN - 1;
     const baseRow = Math.floor(oy / cellH) - MARGIN - 1;
@@ -470,7 +472,8 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
         const dist = Math.min(1.25, Math.hypot(nx, ny));
 
         const centerBoost = Math.max(0, 1 - dist / CENTER_FALLOFF);
-        const scale = tileScale(centerBoost);
+        const edgeFactor = 1 - Math.min(EDGE_SHRINK, dist * dist * 0.38);
+        const scale = tileScale(centerBoost) * edgeFactor;
         // Push enlarged tiles away from viewport centre so card edges never stack.
         const grow = scale - 1;
         const pushX = nx * grow * tileW * 0.72;
@@ -480,9 +483,9 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
 
         let transform = `translate3d(${drawX.toFixed(1)}px, ${drawY.toFixed(1)}px, 0)`;
         if (!reduced) {
-          const rotY = nx * 26 * Math.min(1, dist / 0.4);
-          const rotX = -ny * 18 * Math.min(1, dist / 0.4);
-          const tz = -(dist * dist) * 260;
+          const rotY = nx * 34 * Math.min(1, dist / 0.35);
+          const rotX = -ny * 24 * Math.min(1, dist / 0.35);
+          const tz = -(dist * dist) * DEPTH_PULL;
           transform += ` rotateY(${rotY.toFixed(1)}deg) rotateX(${rotX.toFixed(1)}deg) translateZ(${tz.toFixed(0)}px) scale(${scale.toFixed(2)})`;
         } else {
           transform += ` scale(${scale.toFixed(2)})`;
@@ -493,7 +496,7 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
         }
 
         // opacity / z-index only repaint when they actually change
-        const op = Math.round((0.55 + centerBoost * 0.45) * 100) / 100;
+        const op = Math.round((0.32 + centerBoost * 0.58) * edgeFactor * 100) / 100;
         if (op !== st.op) {
           el.style.opacity = String(op);
           st.op = op;
