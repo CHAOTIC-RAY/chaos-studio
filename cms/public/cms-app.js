@@ -78,6 +78,8 @@
   let manifestCache = null;
   let dockTimer = null;
   let chromeTimer = null;
+  let dockPollTimer = null;
+  let dockPollAttempts = 0;
   let lastDockKey = "";
   let applyingMode = false;
 
@@ -427,8 +429,56 @@
     if (el) el.hidden = !show;
   }
 
-  function dockSignature(buttons) {
-    return buttons.map((b) => `${(b.textContent || "").trim()}|${b.disabled}`).join(";");
+  function dockSignature(controls) {
+    return controls
+      .map((c) => `${controlLabel(c)}|${controlDisabled(c)}|${c.getAttribute("role") || "button"}`)
+      .join(";");
+  }
+
+  function controlLabel(el) {
+    return (el.textContent || el.getAttribute("aria-label") || "").replace(/\s+/g, " ").trim();
+  }
+
+  function controlDisabled(el) {
+    if (!el) return true;
+    if ("disabled" in el && el.disabled) return true;
+    return el.getAttribute("aria-disabled") === "true";
+  }
+
+  function toolbarActionText(el) {
+    return controlLabel(el).toLowerCase();
+  }
+
+  function isEditorWidgetControl(el) {
+    if (!(el instanceof Element)) return false;
+    if (el.closest("[data-save-dock], .chaos-toast, [data-editor-loading]")) return true;
+    if (el.closest('[data-testid^="list-item"], [class*="ListItem"], [class*="ListControl"]')) {
+      return !el.closest('[class*="ToolbarContainer"], [class*="ToolbarDropdown"]');
+    }
+    if (el.closest('[class*="ObjectControl"], [class*="WidgetHeader"], [class*="CollapseButton"]')) {
+      return !el.closest('[class*="ToolbarContainer"], [class*="ToolbarDropdown"]');
+    }
+    return false;
+  }
+
+  function isToolbarAction(el) {
+    if (!(el instanceof Element)) return false;
+    if (isEditorWidgetControl(el)) return false;
+    const t = toolbarActionText(el);
+    if (!t) return false;
+    return (
+      /^(publish(ed|ing)?|save|saving|delete|deleting|status|draft|ready|published|unpublish)/.test(t) ||
+      /\b(publish now|publish changes|save changes|delete entry|delete published|delete unpublished|unpublish|duplicate)\b/.test(
+        t,
+      )
+    );
+  }
+
+  function toolbarScopes(root) {
+    const scoped = [
+      ...root.querySelectorAll('[class*="ToolbarContainer"], [class*="ToolbarDropdown"]'),
+    ];
+    return scoped.length ? scoped : [root];
   }
 
   function mutationInChrome(node) {
@@ -447,21 +497,86 @@
     if (typeof btn.click === "function") btn.click();
   }
 
+  function findDropdownMenuItem(trigger, preferred) {
+    const menuItems = [
+      ...document.querySelectorAll('#nc-root [role="menuitem"], #nc-root [class*="DropdownItem"]'),
+    ];
+    if (!menuItems.length) return null;
+    if (preferred) {
+      const hit = menuItems.find((item) => preferred.test(toolbarActionText(item)));
+      if (hit) return hit;
+    }
+    const triggerText = toolbarActionText(trigger);
+    if (/^publish/.test(triggerText)) {
+      return (
+        menuItems.find((item) => /\bpublish now\b/.test(toolbarActionText(item))) || menuItems[0]
+      );
+    }
+    if (/^save|^status|^draft/.test(triggerText)) return menuItems[0];
+    return null;
+  }
+
+  function triggerDecapControl(control, options) {
+    if (!control) return;
+    const preferred = options?.menuMatch;
+    const isDropdown =
+      control.getAttribute("role") === "button" && control.getAttribute("aria-haspopup") === "true";
+
+    triggerDecapButton(control);
+    if (!isDropdown) return;
+
+    window.setTimeout(() => {
+      const item = findDropdownMenuItem(control, preferred);
+      if (item) triggerDecapButton(item);
+    }, 140);
+  }
+
   function findToolbarButtons() {
     const root = document.getElementById("nc-root");
     if (!root) return [];
-    const candidates = [
-      ...root.querySelectorAll('[class*="ToolbarContainer"] button'),
-      ...root.querySelectorAll('[class*="EditorControlBar"] button'),
-      ...root.querySelectorAll("button"),
-    ];
+    const scopes = toolbarScopes(root);
+    const candidates = scopes.flatMap((scope) => [
+      ...scope.querySelectorAll("button"),
+      ...scope.querySelectorAll('[role="button"]'),
+    ]);
     const seen = new Set();
-    return candidates.filter((btn) => {
-      if (seen.has(btn) || btn.closest("[data-save-dock]")) return false;
-      seen.add(btn);
-      const t = (btn.textContent || "").toLowerCase();
-      return /^(publish|save|delete|status|draft)/.test(t.trim()) || /\bpublish\b|\bsave\b/.test(t);
-    });
+    const matches = [];
+    for (const el of candidates) {
+      if (seen.has(el) || el.closest("[data-save-dock]")) continue;
+      if (!isToolbarAction(el)) continue;
+      seen.add(el);
+      matches.push(el);
+    }
+    return matches;
+  }
+
+  function stopDockPoll() {
+    clearTimeout(dockPollTimer);
+    dockPollAttempts = 0;
+  }
+
+  function scheduleDockPoll(force) {
+    if (mode() !== "editor") {
+      stopDockPoll();
+      return;
+    }
+    clearTimeout(dockPollTimer);
+    if (force) dockPollAttempts = 0;
+    const buttons = findToolbarButtons();
+    if (buttons.length) {
+      stopDockPoll();
+      renderSaveDock(true);
+      return;
+    }
+    if (dockPollAttempts >= 40) {
+      renderSaveDock(true);
+      return;
+    }
+    dockPollAttempts += 1;
+    dockPollTimer = setTimeout(() => {
+      renderSaveDock(true);
+      scheduleDockPoll(false);
+    }, 500);
   }
 
   function bindPortalNavigation() {
@@ -540,28 +655,35 @@
       dock.appendChild(wait);
       setEditorLoading(!editorFieldsReady());
       lastDockKey = "";
+      if (editorFieldsReady()) scheduleDockPoll(true);
       return;
     }
 
+    stopDockPoll();
     setEditorLoading(false);
     lastDockKey = sig;
 
     for (const btn of buttons) {
-      const text = (btn.textContent || "").trim();
+      const text = controlLabel(btn);
       const lower = text.toLowerCase();
       const action = document.createElement("button");
       action.type = "button";
       action.className = "chaos-dock__btn";
       action.textContent = text;
-      action.disabled = btn.disabled;
+      action.disabled = controlDisabled(btn);
       if (/publish|save/.test(lower)) action.classList.add("chaos-dock__btn--primary");
       if (/delete/.test(lower)) action.classList.add("chaos-dock__btn--danger");
+      if (/^published$/.test(lower.trim()) && controlDisabled(btn)) {
+        action.disabled = true;
+      }
       action.addEventListener("click", () => {
         if (/publish|save/.test(lower)) {
           action.disabled = true;
           action.textContent = /publish/.test(lower) ? "Publishing…" : "Saving…";
         }
-        triggerDecapButton(btn);
+        triggerDecapControl(btn, {
+          menuMatch: /publish/.test(lower) ? /\bpublish now\b/i : /\bsave\b/i,
+        });
         setTimeout(() => renderSaveDock(true), 2000);
       });
       dock.appendChild(action);
@@ -653,18 +775,15 @@
         document.getElementById("chaos-app")?.classList.add("chaos-app--editing");
         nudgeDecapLayout();
         renderSaveDock(true);
+        scheduleDockPoll(true);
         clearTimeout(dockTimer);
         dockTimer = setTimeout(() => {
           ensureDecapMounted();
           nudgeDecapLayout();
           renderSaveDock(true);
         }, 1200);
-        setTimeout(() => {
-          ensureDecapMounted();
-          nudgeDecapLayout();
-          renderSaveDock(true);
-        }, 4000);
       } else {
+        stopDockPoll();
         setEditorLoading(false);
         ensureDecapMounted();
         document.getElementById("chaos-app")?.classList.remove("chaos-app--editing");
@@ -689,7 +808,7 @@
     document.body.addEventListener(
       "click",
       (e) => {
-        const btn = e.target instanceof HTMLElement ? e.target.closest("button") : null;
+        const btn = e.target instanceof HTMLElement ? e.target.closest("button, [role='button']") : null;
         if (!btn) return;
         const t = (btn.textContent || "").toLowerCase();
         if (/publish|published|save/.test(t)) {
