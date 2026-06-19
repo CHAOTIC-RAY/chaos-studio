@@ -79,6 +79,7 @@
   let dockTimer = null;
   let chromeTimer = null;
   let lastDockKey = "";
+  let applyingMode = false;
 
   function icon(name, size) {
     const cls = size === "sm" ? "chaos-icon chaos-icon--sm" : "chaos-icon";
@@ -124,7 +125,8 @@
       location.hash = target;
       return;
     }
-    window.dispatchEvent(new HashChangeEvent("hashchange"));
+    // Hash already matches — nudge Decap layout only. Do not dispatch hashchange:
+    // watchHashGuard listens for that and calls applyMode(), which recurses forever.
     nudgeDecapLayout();
   }
 
@@ -601,68 +603,74 @@
   }
 
   function applyMode() {
-    if (!isLoggedIn()) {
-      applyLoginMode();
-      return;
-    }
+    if (applyingMode) return;
+    applyingMode = true;
+    try {
+      if (!isLoggedIn()) {
+        applyLoginMode();
+        return;
+      }
 
-    document.querySelectorAll("[data-nav]").forEach((a) => {
-      a.hidden = false;
-    });
+      document.querySelectorAll("[data-nav]").forEach((a) => {
+        a.hidden = false;
+      });
 
-    if (document.body.classList.contains("chaos-mode-login")) {
-      postLoginView();
-      ensureDecapMounted();
-      return;
-    }
+      if (document.body.classList.contains("chaos-mode-login")) {
+        postLoginView();
+        ensureDecapMounted();
+        return;
+      }
 
-    if (isStrayDecapRoute() || (route().includes("/collections") && !isKnownEditorRoute())) {
-      goToPortal();
-      return;
-    }
+      if (isStrayDecapRoute() || (route().includes("/collections") && !isKnownEditorRoute())) {
+        goToPortal();
+        return;
+      }
 
-    const m = mode();
-    document.body.className = `chaos-mode-${m}`;
+      const m = mode();
+      document.body.className = `chaos-mode-${m}`;
 
-    document.querySelectorAll(".chaos-view").forEach((v) => {
-      v.classList.toggle("is-active", v.id === `chaos-view-${m}`);
-    });
+      document.querySelectorAll(".chaos-view").forEach((v) => {
+        v.classList.toggle("is-active", v.id === `chaos-view-${m}`);
+      });
 
-    document.querySelectorAll("[data-nav]").forEach((a) => {
-      a.classList.toggle("is-active", a.getAttribute("data-nav") === m);
-    });
+      document.querySelectorAll("[data-nav]").forEach((a) => {
+        a.classList.toggle("is-active", a.getAttribute("data-nav") === m);
+      });
 
-    updateEditorContext();
-
-    if (m === "dashboard") renderDashboard();
-    if (m === "media") renderMedia();
-    if (m === "assistant") {
-      renderAssistantView();
-    }
-    if (m === "editor") {
-      lastDockKey = "";
-      setEditorLoading(true);
-      syncDecapEditorRoute();
-      ensureDecapMounted();
       updateEditorContext();
-      document.getElementById("chaos-app")?.classList.add("chaos-app--editing");
-      nudgeDecapLayout();
-      renderSaveDock(true);
-      clearTimeout(dockTimer);
-      dockTimer = setTimeout(() => {
+
+      if (m === "dashboard") renderDashboard();
+      if (m === "media") renderMedia();
+      if (m === "assistant") {
+        renderAssistantView();
+      }
+      if (m === "editor") {
+        lastDockKey = "";
+        setEditorLoading(true);
+        syncDecapEditorRoute();
         ensureDecapMounted();
+        updateEditorContext();
+        document.getElementById("chaos-app")?.classList.add("chaos-app--editing");
         nudgeDecapLayout();
         renderSaveDock(true);
-      }, 1200);
-      setTimeout(() => {
+        clearTimeout(dockTimer);
+        dockTimer = setTimeout(() => {
+          ensureDecapMounted();
+          nudgeDecapLayout();
+          renderSaveDock(true);
+        }, 1200);
+        setTimeout(() => {
+          ensureDecapMounted();
+          nudgeDecapLayout();
+          renderSaveDock(true);
+        }, 4000);
+      } else {
+        setEditorLoading(false);
         ensureDecapMounted();
-        nudgeDecapLayout();
-        renderSaveDock(true);
-      }, 4000);
-    } else {
-      setEditorLoading(false);
-      ensureDecapMounted();
-      document.getElementById("chaos-app")?.classList.remove("chaos-app--editing");
+        document.getElementById("chaos-app")?.classList.remove("chaos-app--editing");
+      }
+    } finally {
+      applyingMode = false;
     }
   }
 
