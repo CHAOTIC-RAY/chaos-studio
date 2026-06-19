@@ -1577,6 +1577,7 @@ main { padding-top: var(--header-h); }
   inset: 0;
   transform-style: preserve-3d;
   will-change: transform;
+  isolation: isolate;
 }
 
 /* Tile — a glass card mirroring the studio package surface */

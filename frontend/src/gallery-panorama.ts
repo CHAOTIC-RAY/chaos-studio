@@ -200,8 +200,9 @@ const MARGIN = 1; // extra ring of cells so pan + 3D rotation never exposes empt
 const DRAG_THRESHOLD = 7;
 const VIDEO_NEAR = 0.44;
 const VIDEO_FAR = 0.58;
-const CENTER_SCALE = 0.24;
+const CENTER_SCALE = 0.16;
 const CENTER_FALLOFF = 0.95;
+const SCALE_SLOT_PAD = 0.03;
 
 function tileMetrics(): { tileW: number; tileH: number; cols: number } {
   const vw = window.innerWidth;
@@ -425,6 +426,13 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
     if (!paused) activeVideo = video;
   }
 
+  function tileScale(centerBoost: number): number {
+    // Squared falloff — only the true centre tile grows; neighbours stay in their slot.
+    const boost = centerBoost * centerBoost;
+    const maxScale = cellW / tileW - SCALE_SLOT_PAD;
+    return Math.min(maxScale, 1 + boost * CENTER_SCALE);
+  }
+
   function render(): void {
     const vw = stage!.clientWidth;
     const vh = stage!.clientHeight;
@@ -461,12 +469,19 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
         const nx = (tileCx - cx) / maxR;
         const dist = Math.min(1.25, Math.hypot(nx, ny));
 
-        let transform = `translate3d(${sx.toFixed(1)}px, ${sy.toFixed(1)}px, 0)`;
         const centerBoost = Math.max(0, 1 - dist / CENTER_FALLOFF);
-        const scale = 1 + centerBoost * CENTER_SCALE;
+        const scale = tileScale(centerBoost);
+        // Push enlarged tiles away from viewport centre so card edges never stack.
+        const grow = scale - 1;
+        const pushX = nx * grow * tileW * 0.72;
+        const pushY = ny * grow * tileH * 0.38;
+        const drawX = sx + pushX;
+        const drawY = sy + pushY;
+
+        let transform = `translate3d(${drawX.toFixed(1)}px, ${drawY.toFixed(1)}px, 0)`;
         if (!reduced) {
-          const rotY = nx * 26;
-          const rotX = -ny * 18;
+          const rotY = nx * 26 * Math.min(1, dist / 0.4);
+          const rotX = -ny * 18 * Math.min(1, dist / 0.4);
           const tz = -(dist * dist) * 260;
           transform += ` rotateY(${rotY.toFixed(1)}deg) rotateX(${rotX.toFixed(1)}deg) translateZ(${tz.toFixed(0)}px) scale(${scale.toFixed(2)})`;
         } else {
@@ -483,7 +498,8 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
           el.style.opacity = String(op);
           st.op = op;
         }
-        const z = 1000 - Math.round(dist * 1000);
+        const z =
+          Math.round((1 - dist) * 1_000_000 - Math.abs(nx) * 12_000 - Math.abs(ny) * 2_000) + k;
         if (z !== st.z) {
           el.style.zIndex = String(z);
           st.z = z;
