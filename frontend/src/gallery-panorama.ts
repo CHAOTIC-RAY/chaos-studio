@@ -196,10 +196,12 @@ function appTilesFromPortfolio(portfolio: Portfolio): PanoTile[] {
 
 /** Layout + curvature constants */
 const GAP = 26;
-const MARGIN = 0;
+const MARGIN = 1; // extra ring of cells so pan + 3D rotation never exposes empty edges
 const DRAG_THRESHOLD = 7;
 const VIDEO_NEAR = 0.44;
 const VIDEO_FAR = 0.58;
+const CENTER_SCALE = 0.24;
+const CENTER_FALLOFF = 0.95;
 
 function tileMetrics(): { tileW: number; tileH: number; cols: number } {
   const vw = window.innerWidth;
@@ -316,8 +318,8 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
     cellState.length = 0;
     const vw = stage!.clientWidth || window.innerWidth;
     const vh = stage!.clientHeight || window.innerHeight;
-    cellsX = Math.ceil(vw / cellW) + MARGIN * 2 + 1;
-    cellsY = Math.ceil(vh / cellH) + MARGIN * 2 + 1;
+    cellsX = Math.ceil(vw / cellW) + MARGIN * 2 + 2;
+    cellsY = Math.ceil(vh / cellH) + MARGIN * 2 + 2;
     const frag = document.createDocumentFragment();
     const total = cellsX * cellsY;
     for (let i = 0; i < total; i++) {
@@ -460,8 +462,8 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
         const dist = Math.min(1.25, Math.hypot(nx, ny));
 
         let transform = `translate3d(${sx.toFixed(1)}px, ${sy.toFixed(1)}px, 0)`;
-        const centerBoost = Math.max(0, 1 - dist / 0.82);
-        const scale = 1 + centerBoost * 0.34;
+        const centerBoost = Math.max(0, 1 - dist / CENTER_FALLOFF);
+        const scale = 1 + centerBoost * CENTER_SCALE;
         if (!reduced) {
           const rotY = nx * 26;
           const rotX = -ny * 18;
@@ -585,6 +587,20 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
 
   function hideHint(): void {
     document.querySelector("[data-pano-hint]")?.setAttribute("hidden", "");
+  }
+
+  function tilesForVisibleGrid(source: PanoTile[] = tiles): PanoTile[] {
+    const n = source.length;
+    if (!n || !cellsX || !cellsY) return source.slice(0, MOBILE_PRIORITY_COUNT);
+    const indices = new Set<number>();
+    const baseCol = Math.floor(ox / cellW) - MARGIN - 1;
+    const baseRow = Math.floor(oy / cellH) - MARGIN - 1;
+    for (let lj = 0; lj < cellsY; lj++) {
+      for (let li = 0; li < cellsX; li++) {
+        indices.add(mod((baseRow + lj) * (cols + 1) + (baseCol + li), n));
+      }
+    }
+    return [...indices].map((i) => source[i]);
   }
 
   function preloadTileAssets(tileList: PanoTile[]): Promise<void> {
@@ -727,8 +743,9 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
   buildList();
 
   const isMobile = window.matchMedia("(max-width: 900px)").matches;
-  const priorityTiles = allTiles.slice(0, MOBILE_PRIORITY_COUNT);
-  const restTiles = allTiles.slice(MOBILE_PRIORITY_COUNT);
+  const priorityTiles = tilesForVisibleGrid(allTiles);
+  const priorityIds = new Set(priorityTiles.map((t) => t.id));
+  const restTiles = allTiles.filter((t) => !priorityIds.has(t.id));
 
   const boot = async (): Promise<void> => {
     if (isMobile) {
