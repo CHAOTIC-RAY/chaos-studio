@@ -25,6 +25,12 @@ import {
   PROJECT_LIVE_URL,
   PROJECT_LOGOS,
 } from "./project-media";
+import { renderStatsSection } from "./components/stats-section";
+import { renderAwardsSection } from "./components/awards-section";
+import { renderNewsSection } from "./components/news-section";
+import { renderTestimonialsSection } from "./components/testimonials-section";
+import { renderClientLogoWall } from "./components/client-logo-wall";
+import { renderProcessSteps } from "./components/process-steps";
 
 const POST_ACCENTS: Record<string, string> = {
   purple: "post-card--purple",
@@ -216,6 +222,35 @@ export function renderPage(p: Portfolio): string {
         </div>
       </section>
 
+      ${p.sections?.showStats ? renderStatsSection({
+        subtitle: "Our impact in numbers",
+        stats: [
+          { id: "projects", label: "Projects delivered", value: "150+", icon: "projects-icon" },
+          { id: "clients", label: "Happy clients", value: "97", icon: "clients-icon" },
+          { id: "years", label: "Years active", value: "5+", icon: "years-icon" },
+          { id: "satisfaction", label: "Client satisfaction", value: "98%", icon: "satisfaction-icon" }
+        ]
+      }) : ""}
+
+      ${p.sections?.showAwards ? renderAwardsSection({
+        subtitle: "Recognition & achievements",
+        awards: [
+          { id: "award-1", title: "Best Design Portfolio 2024", organization: "Maldives Design Awards", year: "2024", description: "Recognized for excellence in portfolio design and user experience" },
+          { id: "award-2", title: "Top Creative Studio", organization: "Regional Business Awards", year: "2023", description: "Awarded for outstanding creative work and client satisfaction" }
+        ]
+      }) : ""}
+
+      ${p.sections?.showNews ? renderNewsSection({
+        subtitle: "Latest updates",
+        news: [
+          { id: "news-1", title: "Launching new branding packages", date: "2024-06-15", category: "Studio Update", excerpt: "Introducing comprehensive branding solutions for businesses of all sizes", content: "" },
+          { id: "news-2", title: "Case study: Rainbow Enterprise rebrand", date: "2024-05-20", category: "Case Study", excerpt: "How we transformed a local furniture brand's digital presence", content: "" },
+          { id: "news-3", title: "Expanding our service offerings", date: "2024-04-10", category: "Studio Update", excerpt: "New services including app design and marketing videos", content: "" }
+        ]
+      }, p.sections.newsCount || 3) : ""}
+
+      ${p.clientLogoWall?.enabled ? renderClientLogoWall(p.clientLogoWall) : ""}
+
       <section id="skills" class="section">
         <div class="section-head" data-reveal>
           <p class="eyebrow">Skills & education</p>
@@ -328,6 +363,22 @@ export function renderStudioPage(p: Portfolio): string {
       </section>
       <div class="studio-page-body section section--studio">
         ${renderStudioContent(studio, { omitHero: true })}
+        ${studio.stats ? `
+          <div class="section-head" data-reveal>
+            <p class="eyebrow">${esc(studio.stats.subtitle || "Our impact")}</p>
+          </div>
+          <div class="stats-grid" data-reveal>
+            ${studio.stats.metrics.map((metric) => `
+              <div class="stat-card glass-card" data-stat-card>
+                <div class="stat-value" data-count-up="${esc(metric.value)}">${esc(metric.value)}</div>
+                <div class="stat-label">${esc(metric.label)}</div>
+                ${metric.description ? `<div class="stat-desc">${esc(metric.description)}</div>` : ""}
+              </div>
+            `).join("")}
+          </div>
+        ` : ""}
+        ${studio.process && studio.process.length ? renderProcessSteps(studio.process) : ""}
+        ${studio.testimonials && studio.testimonials.length ? renderTestimonialsSection(studio.testimonials) : ""}
       </div>
       ${renderStudioFinale(studio)}
     </main>

@@ -1,0 +1,19 @@
+{
+  "subtitle": "Recognition & achievements",
+  "awards": [
+    {
+      "id": "award-1",
+      "title": "Best Design Portfolio 2024",
+      "organization": "Maldives Design Awards",
+      "year": "2024",
+      "description": "Recognized for excellence in portfolio design and user experience"
+    },
+    {
+      "id": "award-2",
+      "title": "Top Creative Studio",
+      "organization": "Regional Business Awards",
+      "year": "2023",
+      "description": "Awarded for outstanding creative work and client satisfaction"
+    }
+  ]
+}

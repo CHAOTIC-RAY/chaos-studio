@@ -1,6 +1,7 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "./reduced-motion";
+import { initCountUpAnimations } from "./count-up";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,7 +14,7 @@ export function initScrollAnimations(): () => void {
       el.style.opacity = "1";
       el.style.transform = "none";
     });
-    return () => ScrollTrigger.getAll().forEach((t) => t.kill());
+    return () => ScrollTrigger.getAll().forEach((t: ScrollTrigger) => t.kill());
   }
 
   const ctx = gsap.context(() => {
@@ -69,13 +70,142 @@ export function initScrollAnimations(): () => void {
         },
       );
     }
+
+    // Animate stat cards
+    const statCards = gsap.utils.toArray<HTMLElement>(".stat-card");
+    if (statCards.length) {
+      gsap.fromTo(
+        statCards,
+        { opacity: 0, scale: 0.9 },
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "back.out(1.7)",
+          scrollTrigger: {
+            trigger: ".stats-grid",
+            start: "top 85%",
+            once: true,
+          },
+        },
+      );
+    }
+
+    // Animate award cards
+    const awardCards = gsap.utils.toArray<HTMLElement>(".award-card");
+    if (awardCards.length) {
+      gsap.fromTo(
+        awardCards,
+        { opacity: 0, x: -24 },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.5,
+          stagger: 0.1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".awards-list",
+            start: "top 85%",
+            once: true,
+          },
+        },
+      );
+    }
+
+    // Animate news cards
+    const newsCards = gsap.utils.toArray<HTMLElement>(".news-card");
+    if (newsCards.length) {
+      gsap.fromTo(
+        newsCards,
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          stagger: 0.1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".news-grid",
+            start: "top 85%",
+            once: true,
+          },
+        },
+      );
+    }
+
+    // Animate testimonial cards
+    const testimonialCards = gsap.utils.toArray<HTMLElement>(".testimonial-card");
+    if (testimonialCards.length) {
+      gsap.fromTo(
+        testimonialCards,
+        { opacity: 0, y: 32 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          stagger: 0.15,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".testimonials-grid",
+            start: "top 85%",
+            once: true,
+          },
+        },
+      );
+    }
+
+    // Animate process steps
+    const processSteps = gsap.utils.toArray<HTMLElement>(".process-step");
+    if (processSteps.length) {
+      gsap.fromTo(
+        processSteps,
+        { opacity: 0, x: -32 },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.6,
+          stagger: 0.2,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".process-steps",
+            start: "top 85%",
+            once: true,
+          },
+        },
+      );
+    }
+
+    // Animate client logos
+    const clientLogos = gsap.utils.toArray<HTMLElement>(".client-logo-item");
+    if (clientLogos.length) {
+      gsap.fromTo(
+        clientLogos,
+        { opacity: 0, scale: 0.8 },
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 0.5,
+          stagger: 0.05,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ".client-logos-grid",
+            start: "top 85%",
+            once: true,
+          },
+        },
+      );
+    }
+
+    // Initialize count-up animations
+    initCountUpAnimations();
   });
 
   requestAnimationFrame(() => ScrollTrigger.refresh());
 
   return () => {
     ctx.revert();
-    ScrollTrigger.getAll().forEach((t) => t.kill());
+    ScrollTrigger.getAll().forEach((t: ScrollTrigger) => t.kill());
   };
 }
 

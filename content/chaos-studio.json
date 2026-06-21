@@ -112,5 +112,83 @@
     "instagramUrl": "https://instagram.com/chaosstudio.mv",
     "phones": "+960 9401011 / 9401001",
     "email": "chaos.studio.mv@gmail.com"
-  }
+  },
+  "stats": {
+    "subtitle": "Our impact",
+    "metrics": [
+      {
+        "label": "Projects delivered",
+        "value": "200+",
+        "description": "Across all service categories"
+      },
+      {
+        "label": "Client retention",
+        "value": "95%",
+        "description": "Clients return for additional services"
+      },
+      {
+        "label": "Average delivery",
+        "value": "2 weeks",
+        "description": "Standard project turnaround time"
+      }
+    ]
+  },
+  "process": [
+    {
+      "step": 1,
+      "title": "Discovery",
+      "description": "We learn about your brand, goals, and audience"
+    },
+    {
+      "step": 2,
+      "title": "Design",
+      "description": "Creative concepts and visual development"
+    },
+    {
+      "step": 3,
+      "title": "Review",
+      "description": "Collaborative refinement and feedback cycles"
+    },
+    {
+      "step": 4,
+      "title": "Delivery",
+      "description": "Final assets, launch support, and handoff"
+    }
+  ],
+  "testimonials": [
+    {
+      "id": "testimonial-1",
+      "quote": "I recommend Wafig as a talented and skilled graphic designer. Wafig delivers high-quality and visually appealing design work. His creativity and ability to bring client's visions to life make him an asset to us. I am confident that he will exceed expectations and bring a fresh perspective to any project he undertakes.",
+      "author": "Fathmath Laena",
+      "title": "Ayha Boss",
+      "contact": "+960 798 0094",
+      "packageId": null
+    },
+    {
+      "id": "testimonial-2",
+      "quote": "Wafig is one the very first student whome I have thought graphic design at Maldives Polytechnic 2023, from the very first day I find his enthusiasm and creativity blending from hand sketches of design and the final touch of digital graphic design, he is fast and creative showing the execution of work acceptional and satisfying. I find him very creative and dedicated to Graphic art and Design... wish him the best of days ahead in the field of Graphic Design",
+      "author": "Saudulla Rasheed",
+      "title": "Asset lecturer, Maldives polytechnic",
+      "contact": "+960 978 1119",
+      "packageId": null
+    },
+    {
+      "id": "testimonial-3",
+      "quote": "Working with Wafiq was an absolute pleasure. Their creativity have helped us achieve our vision to be a marketing partner to many big clients we handle. From the initial concept, Wafiq have demonstrated exceptional skill and professionalism. His ability to understand our needs and deliver a product was truly impressive. We highly recommend Wafiq to anyone looking for innovative and high-quality design work",
+      "author": "Mariyam Shukaina",
+      "title": "Rioga Boss",
+      "contact": null,
+      "packageId": null
+    }
+  ],
+  "featuredWork": [
+    {
+      "id": "featured-1",
+      "title": "Rainbow Enterprise Rebrand",
+      "category": "Branding",
+      "image": "rainbow-cover.webp",
+      "results": "300% increase in social engagement",
+      "link": "/gallery"
+    }
+  ]
 }

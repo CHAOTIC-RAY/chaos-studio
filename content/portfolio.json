@@ -202,5 +202,41 @@
     "telegram": "@Wafig",
     "telegramUrl": "https://t.me/Wafig",
     "whatsappUrl": "https://wa.me/9609401011"
+  },
+  "hero": {
+    "headline": "Visual stories that connect",
+    "subheadline": "Crafting brand identities, campaigns, and experiences that drive engagement",
+    "ctaText": "View featured work",
+    "secondaryCta": "Get in touch"
+  },
+  "sections": {
+    "showStats": true,
+    "showAwards": true,
+    "showNews": true,
+    "newsCount": 3
+  },
+  "clientLogoWall": {
+    "enabled": false,
+    "subtitle": "Trusted by leading brands",
+    "logos": [
+      {
+        "name": "Rainbow Enterprise",
+        "logo": "clients/rainbow.svg",
+        "alt": "Rainbow Enterprise logo",
+        "link": null
+      },
+      {
+        "name": "Ayha",
+        "logo": "clients/ayha.svg",
+        "alt": "Ayha logo",
+        "link": null
+      },
+      {
+        "name": "Rioga",
+        "logo": "clients/rioga.svg",
+        "alt": "Rioga logo",
+        "link": null
+      }
+    ]
   }
 }

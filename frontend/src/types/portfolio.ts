@@ -14,6 +14,83 @@ export interface SocialPostItem {
   poster?: string;
 }
 
+export interface PortfolioStats {
+  subtitle: string;
+  stats: {
+    id: string;
+    label: string;
+    value: string;
+    icon?: string;
+  }[];
+}
+
+export interface PortfolioAwards {
+  subtitle: string;
+  awards: {
+    id: string;
+    title: string;
+    organization: string;
+    year: string;
+    description?: string;
+  }[];
+}
+
+export interface PortfolioNews {
+  subtitle: string;
+  news: {
+    id: string;
+    title: string;
+    date: string;
+    category: string;
+    excerpt: string;
+    content?: string;
+  }[];
+}
+
+export interface ClientLogoWall {
+  enabled: boolean;
+  subtitle?: string;
+  logos: {
+    name: string;
+    logo: string;
+    alt: string;
+    link?: string;
+  }[];
+}
+
+export interface Testimonial {
+  id: string;
+  quote: string;
+  author: string;
+  title: string;
+  contact?: string;
+  packageId?: string;
+}
+
+export interface StudioStats {
+  subtitle?: string;
+  metrics: {
+    label: string;
+    value: string;
+    description?: string;
+  }[];
+}
+
+export interface ProcessStep {
+  step: number;
+  title: string;
+  description: string;
+}
+
+export interface FeaturedWork {
+  id: string;
+  title: string;
+  category: string;
+  image: string;
+  results?: string;
+  link: string;
+}
+
 export interface Portfolio {
   profile: {
     name: string;
@@ -25,6 +102,19 @@ export interface Portfolio {
   objective: { title: string; body: string };
   softSkills: string[];
   interests: { label: string; emoji: string }[];
+  hero?: {
+    headline?: string;
+    subheadline?: string;
+    ctaText?: string;
+    secondaryCta?: string;
+  };
+  sections?: {
+    showStats?: boolean;
+    showAwards?: boolean;
+    showNews?: boolean;
+    newsCount?: number;
+  };
+  clientLogoWall?: ClientLogoWall;
   chaosStudio: {
     title: string;
     tagline: string;
@@ -50,6 +140,10 @@ export interface Portfolio {
       phones: string;
       email: string;
     };
+    stats?: StudioStats;
+    process?: ProcessStep[];
+    testimonials?: Testimonial[];
+    featuredWork?: FeaturedWork[];
   };
   gallery: {
     title: string;

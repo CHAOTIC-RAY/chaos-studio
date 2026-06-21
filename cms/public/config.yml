@@ -234,6 +234,41 @@ collections:
               - { label: Telegram, name: telegram, widget: string }
               - { label: Telegram URL, name: telegramUrl, widget: string }
               - { label: WhatsApp URL, name: whatsappUrl, widget: string }
+          - label: Hero section
+            name: hero
+            widget: object
+            collapsed: true
+            fields:
+              - { label: Headline, name: headline, widget: string, required: false }
+              - { label: Subheadline, name: subheadline, widget: text, required: false }
+              - { label: CTA text, name: ctaText, widget: string, required: false }
+              - { label: Secondary CTA text, name: secondaryCta, widget: string, required: false }
+          - label: Section toggles
+            name: sections
+            widget: object
+            collapsed: true
+            fields:
+              - { label: Show statistics, name: showStats, widget: boolean, default: false }
+              - { label: Show awards, name: showAwards, widget: boolean, default: false }
+              - { label: Show news, name: showNews, widget: boolean, default: false }
+              - { label: News items to show, name: newsCount, widget: number, default: 3, required: false }
+          - label: Client logo wall
+            name: clientLogoWall
+            widget: object
+            collapsed: true
+            fields:
+              - { label: Show client logos, name: enabled, widget: boolean, default: false }
+              - { label: Section subtitle, name: subtitle, widget: string, required: false }
+              - label: Client logos
+                name: logos
+                widget: list
+                label_singular: Client logo
+                summary: "{{fields.name}}"
+                fields:
+                  - { label: Client name, name: name, widget: string }
+                  - { label: Logo path, name: logo, widget: string }
+                  - { label: Alt text, name: alt, widget: string }
+                  - { label: Website link, name: link, widget: string, required: false }
       - name: gallery
         label: Gallery page
         file: content/gallery.json
@@ -242,6 +277,54 @@ collections:
           - { label: Tagline, name: tagline, widget: string }
           - { label: Headline, name: headline, widget: string }
           - { label: Pitch, name: pitch, widget: text }
+      - name: portfolio-stats
+        label: Portfolio statistics
+        file: content/portfolio-stats.json
+        fields:
+          - { label: Section subtitle, name: subtitle, widget: string }
+          - label: Statistics
+            name: stats
+            widget: list
+            label_singular: Stat
+            summary: "{{fields.label}}"
+            fields:
+              - { label: ID, name: id, widget: string }
+              - { label: Label, name: label, widget: string }
+              - { label: Value, name: value, widget: string }
+              - { label: Icon name, name: icon, widget: string, required: false }
+      - name: portfolio-awards
+        label: Awards & recognition
+        file: content/portfolio-awards.json
+        fields:
+          - { label: Section subtitle, name: subtitle, widget: string }
+          - label: Awards
+            name: awards
+            widget: list
+            label_singular: Award
+            summary: "{{fields.title}} ({{fields.year}})"
+            fields:
+              - { label: ID, name: id, widget: string }
+              - { label: Award title, name: title, widget: string }
+              - { label: Organization, name: organization, widget: string }
+              - { label: Year, name: year, widget: string }
+              - { label: Description, name: description, widget: text, required: false }
+      - name: portfolio-news
+        label: News & updates
+        file: content/portfolio-news.json
+        fields:
+          - { label: Section subtitle, name: subtitle, widget: string }
+          - label: News items
+            name: news
+            widget: list
+            label_singular: News item
+            summary: "{{fields.title}} - {{fields.date}}"
+            fields:
+              - { label: ID, name: id, widget: string }
+              - { label: Title, name: title, widget: string }
+              - { label: Date, name: date, widget: string }
+              - { label: Category, name: category, widget: string }
+              - { label: Excerpt, name: excerpt, widget: text }
+              - { label: Content, name: content, widget: text, required: false }
 
   - name: chaos-studio
     label: Chaos Studio tab
@@ -291,6 +374,52 @@ collections:
             fields:
               - { label: Title, name: title, widget: string }
               - { label: Body, name: body, widget: text }
+          - label: Studio statistics
+            name: stats
+            widget: object
+            collapsed: true
+            fields:
+              - { label: Section subtitle, name: subtitle, widget: string }
+              - label: Metrics
+                name: metrics
+                widget: list
+                fields:
+                  - { label: Label, name: label, widget: string }
+                  - { label: Value, name: value, widget: string }
+                  - { label: Description, name: description, widget: string, required: false }
+          - label: Process steps
+            name: process
+            widget: list
+            label_singular: Process step
+            summary: "{{fields.step}}. {{fields.title}}"
+            fields:
+              - { label: Step number, name: step, widget: number }
+              - { label: Title, name: title, widget: string }
+              - { label: Description, name: description, widget: text }
+          - label: Client testimonials
+            name: testimonials
+            widget: list
+            label_singular: Testimonial
+            summary: "{{fields.author}}"
+            fields:
+              - { label: ID, name: id, widget: string }
+              - { label: Quote, name: quote, widget: text }
+              - { label: Author name, name: author, widget: string }
+              - { label: Title/position, name: title, widget: string }
+              - { label: Contact number, name: contact, widget: string, required: false }
+              - { label: Related package ID, name: packageId, widget: string, required: false }
+          - label: Featured studio work
+            name: featuredWork
+            widget: list
+            label_singular: Featured project
+            summary: "{{fields.title}}"
+            fields:
+              - { label: ID, name: id, widget: string }
+              - { label: Project title, name: title, widget: string }
+              - { label: Category, name: category, widget: string }
+              - { label: Cover image, name: image, widget: string }
+              - { label: Results metric, name: results, widget: string, required: false }
+              - { label: Link, name: link, widget: string }
           - label: Studio contact
             name: studioContact
             widget: object

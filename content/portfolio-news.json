@@ -1,0 +1,29 @@
+{
+  "subtitle": "Latest updates",
+  "news": [
+    {
+      "id": "news-1",
+      "title": "Launching new branding packages",
+      "date": "2024-06-15",
+      "category": "Studio Update",
+      "excerpt": "Introducing comprehensive branding solutions for businesses of all sizes",
+      "content": "We're excited to announce our new comprehensive branding packages designed to help businesses of all sizes establish a strong visual identity. From logo design to complete brand systems, our packages are tailored to meet your specific needs and budget."
+    },
+    {
+      "id": "news-2",
+      "title": "Case study: Rainbow Enterprise rebrand",
+      "date": "2024-05-20",
+      "category": "Case Study",
+      "excerpt": "How we transformed a local furniture brand's digital presence",
+      "content": "Rainbow Enterprise approached us looking to revitalize their brand presence in the competitive furniture market. Through strategic design and consistent visual identity, we helped them achieve a 300% increase in social media engagement and stronger brand recognition."
+    },
+    {
+      "id": "news-3",
+      "title": "Expanding our service offerings",
+      "date": "2024-04-10",
+      "category": "Studio Update",
+      "excerpt": "New services including app design and marketing videos",
+      "content": "Based on client demand and market trends, we've expanded our service offerings to include mobile app design, marketing video production, and comprehensive social media management packages."
+    }
+  ]
+}

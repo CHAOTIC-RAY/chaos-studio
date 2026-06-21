@@ -1,0 +1,29 @@
+{
+  "subtitle": "Our impact in numbers",
+  "stats": [
+    {
+      "id": "projects",
+      "label": "Projects delivered",
+      "value": "150+",
+      "icon": "projects-icon"
+    },
+    {
+      "id": "clients",
+      "label": "Happy clients",
+      "value": "97",
+      "icon": "clients-icon"
+    },
+    {
+      "id": "years",
+      "label": "Years active",
+      "value": "5+",
+      "icon": "years-icon"
+    },
+    {
+      "id": "satisfaction",
+      "label": "Client satisfaction",
+      "value": "98%",
+      "icon": "satisfaction-icon"
+    }
+  ]
+}
