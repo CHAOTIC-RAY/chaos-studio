@@ -6,6 +6,7 @@
   const SITE = "https://portfolio.chaoticstudio.workers.dev";
   const MANIFEST = "/media-manifest.json";
   const SYNC_URL = "/sync-status.json";
+  const BUILD_ID_URL = "/build-id.json";
 
   const ICONS = {
     home: '<svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/></svg>',
@@ -18,6 +19,7 @@
     chevron: '<svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>',
     chat: '<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
     logout: '<svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>',
+    terminal: '<svg viewBox="0 0 24 24"><path d="M4 17l6-6-6-6M12 19h8"/></svg>',
   };
 
   const EDITORS = [
@@ -101,6 +103,7 @@
     const h = route();
     if (h.includes("/assistant") || h === "#/assistant") return "assistant";
     if (h.includes("/media")) return "media";
+    if (h.includes("/logs") || h === "#/logs") return "logs";
     if (editorFromHash()) return "editor";
     return "dashboard";
   }
@@ -214,6 +217,7 @@
     if (viewMode === "dashboard") renderDashboard();
     if (viewMode === "media") renderMedia();
     if (viewMode === "assistant") renderAssistantView();
+    if (viewMode === "logs") renderLogsView();
     if (viewMode !== "editor") ensureDecapMounted();
   }
 
@@ -248,6 +252,7 @@
           <a href="#/" data-nav="dashboard">${icon("home")}<span class="chaos-nav-label">Dashboard</span></a>
           <a href="#/media" data-nav="media">${icon("image")}<span class="chaos-nav-label">Media</span></a>
           <a href="#/assistant" data-nav="assistant">${icon("chat")}<span class="chaos-nav-label">AI</span></a>
+          <a href="#/logs" data-nav="logs">${icon("terminal")}<span class="chaos-nav-label">Logs</span></a>
           <a href="${SITE}/" target="_blank" rel="noopener">${icon("external")}<span class="chaos-nav-label">Site</span></a>
           <button type="button" class="chaos-logout" data-portal-logout hidden title="Log out of GitHub">${icon("logout")}<span class="chaos-nav-label">Log out</span></button>
         </nav>
@@ -259,6 +264,7 @@
         <div id="chaos-view-dashboard" class="chaos-view chaos-dash"></div>
         <div id="chaos-view-media" class="chaos-view chaos-media-view"></div>
         <div id="chaos-view-assistant" class="chaos-view chaos-assistant-view"></div>
+        <div id="chaos-view-logs" class="chaos-view chaos-logs-view"></div>
         <div id="chaos-view-editor" class="chaos-view chaos-editor-view">
           <p class="chaos-editor-loading" data-editor-loading hidden>Loading editor… large files may take a moment.</p>
           <div class="chaos-decap-slot" data-decap-slot></div>
@@ -417,6 +423,78 @@
       folder.addEventListener("change", paint);
       paint();
     });
+  }
+
+  async function renderLogsView() {
+    const el = document.getElementById("chaos-view-logs");
+    if (!el) return;
+
+    el.innerHTML = `
+      <h2>System logs</h2>
+      <p class="chaos-dash__lead">Build status, sync status, and deployment information.</p>
+      <div class="chaos-logs-container">
+        <div class="chaos-log-section">
+          <h3>Build Information</h3>
+          <div data-build-info class="chaos-log-content">Loading…</div>
+        </div>
+        <div class="chaos-log-section">
+          <h3>Sync Status</h3>
+          <div data-sync-info class="chaos-log-content">Loading…</div>
+        </div>
+        <div class="chaos-log-section">
+          <h3>External Links</h3>
+          <div class="chaos-log-links">
+            <a href="https://github.com/CHAOTIC-RAY/portfolio/actions" target="_blank" rel="noopener">
+              ${icon("external")} GitHub Actions
+            </a>
+            <a href="https://dash.cloudflare.com/" target="_blank" rel="noopener">
+              ${icon("external")} Cloudflare Dashboard
+            </a>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Load build info
+    const buildEl = el.querySelector("[data-build-info]");
+    try {
+      const res = await fetch(BUILD_ID_URL, { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        buildEl.innerHTML = `
+          <div class="chaos-log-item"><span class="chaos-log-label">Build ID:</span> <code>${data.id || "Unknown"}</code></div>
+          <div class="chaos-log-item"><span class="chaos-log-label">Built at:</span> <code>${data.builtAt || "Unknown"}</code></div>
+        `;
+      } else {
+        buildEl.innerHTML = `<p class="chaos-log-error">Failed to load build info</p>`;
+      }
+    } catch {
+      buildEl.innerHTML = `<p class="chaos-log-error">Failed to load build info</p>`;
+    }
+
+    // Load sync status
+    const syncEl = el.querySelector("[data-sync-info]");
+    try {
+      const res = await fetch(SYNC_URL, { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        const ok = data.ok && data.mirrors?.every((m) => m.inSync);
+        syncEl.innerHTML = `
+          <div class="chaos-log-item"><span class="chaos-log-label">Status:</span> <span class="${ok ? "chaos-log-ok" : "chaos-log-pending"}">${ok ? "In sync" : "Sync pending"}</span></div>
+          <div class="chaos-log-item"><span class="chaos-log-label">Mirrors:</span> <code>${data.mirrors?.length || 0}</code></div>
+          ${data.mirrors?.map((m) => `
+            <div class="chaos-log-item">
+              <span class="chaos-log-label">${m.source} → ${m.target}:</span>
+              <span class="${m.inSync ? "chaos-log-ok" : "chaos-log-pending"}">${m.inSync ? "OK" : "Pending"}</span>
+            </div>
+          `).join("") || ""}
+        `;
+      } else {
+        syncEl.innerHTML = `<p class="chaos-log-error">Failed to load sync status</p>`;
+      }
+    } catch {
+      syncEl.innerHTML = `<p class="chaos-log-error">Failed to load sync status</p>`;
+    }
   }
 
   function mountDecap() {

@@ -210,9 +210,9 @@
     "secondaryCta": "Get in touch"
   },
   "sections": {
-    "showStats": true,
-    "showAwards": true,
-    "showNews": true,
+    "showStats": false,
+    "showAwards": false,
+    "showNews": false,
     "newsCount": 3
   },
   "clientLogoWall": {

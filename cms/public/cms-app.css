@@ -212,7 +212,8 @@ body {
 /* Hide editor chrome when not editing — views stay mounted, only visibility toggles */
 body.chaos-mode-dashboard .chaos-dock,
 body.chaos-mode-media .chaos-dock,
-body.chaos-mode-assistant .chaos-dock {
+body.chaos-mode-assistant .chaos-dock,
+body.chaos-mode-logs .chaos-dock {
   display: none !important;
 }
 
@@ -528,6 +529,113 @@ body:not(.chaos-mode-editor):not(.chaos-mode-login) #chaos-decap-mount {
   word-break: break-all;
 }
 
+/* —— Logs view —— */
+.chaos-logs-view {
+  flex: 1 1 auto;
+  padding: 1rem max(1rem, var(--app-safe-r)) 1.5rem max(1rem, var(--app-safe-l));
+  max-width: 72rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.chaos-logs-view h2 {
+  margin: 0 0 0.5rem;
+  font-family: var(--app-mono);
+  font-size: 1.35rem;
+}
+
+.chaos-logs-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.chaos-log-section {
+  padding: 1.25rem;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+  box-shadow: var(--app-shadow);
+}
+
+.chaos-log-section h3 {
+  margin: 0 0 0.75rem;
+  font-family: var(--app-mono);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--app-primary-dark);
+}
+
+.chaos-log-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.chaos-log-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+}
+
+.chaos-log-label {
+  font-weight: 600;
+  color: var(--app-muted);
+  min-width: 6rem;
+}
+
+.chaos-log-item code {
+  padding: 0.15rem 0.4rem;
+  background: var(--app-surface-2);
+  border-radius: 4px;
+  font-family: var(--app-mono);
+  font-size: 0.82rem;
+  color: var(--app-primary-dark);
+}
+
+.chaos-log-ok {
+  color: var(--app-cta);
+  font-weight: 600;
+}
+
+.chaos-log-pending {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.chaos-log-error {
+  color: #dc2626;
+  font-size: 0.88rem;
+}
+
+.chaos-log-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.chaos-log-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: var(--app-surface-2);
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--app-primary-dark);
+  font-weight: 600;
+  font-size: 0.88rem;
+  transition: background var(--app-ease), border-color var(--app-ease);
+}
+
+.chaos-log-links a:hover {
+  background: var(--app-primary);
+  color: #fff;
+  border-color: var(--app-primary);
+}
+
 /* —— Login + dock —— */
 body.chaos-mode-editor .chaos-editor-view {
   padding-bottom: var(--app-dock-h);
@@ -686,7 +794,8 @@ body.chaos-mode-editor .chaos-dock {
 }
 
 .chaos-dash,
-.chaos-media-view {
+.chaos-media-view,
+.chaos-logs-view {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
