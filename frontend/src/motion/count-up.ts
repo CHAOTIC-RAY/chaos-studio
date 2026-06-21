@@ -23,7 +23,9 @@ export function initCountUpAnimations(): () => void {
       const numericValue = parseFloat(targetValue.replace(/[^0-9.]/g, ""));
       const suffix = targetValue.replace(/[0-9.]/g, "");
 
+      const proxy = { value: 0 };
       gsap.fromTo(
+        proxy,
         { value: 0 },
         {
           value: numericValue,
@@ -35,8 +37,7 @@ export function initCountUpAnimations(): () => void {
             once: true,
           },
           onUpdate: function() {
-            const current = this.targets()[0].value;
-            valueEl.textContent = Math.round(current) + suffix;
+            valueEl.textContent = Math.round(proxy.value) + suffix;
           },
         },
       );
