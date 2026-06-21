@@ -177,6 +177,63 @@ function initStudioHeroLogoParallax(): () => void {
   };
 }
 
+/** Panoramic 3D card tilt — applied to [data-pano-tilt] elements site-wide. */
+export function initPanoTilt(): () => void {
+  if (!window.matchMedia("(pointer: fine)").matches) return () => {};
+  const zones = document.querySelectorAll<HTMLElement>("[data-pano-tilt]");
+  if (!zones.length) return () => {};
+  const cleanups: (() => void)[] = [];
+
+  zones.forEach((el) => {
+    let targetRx = 0, targetRy = 0, currentRx = 0, currentRy = 0;
+    let raf = 0, hovering = false;
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+    const loop = () => {
+      if (!hovering) { targetRx = 0; targetRy = 0; }
+      currentRx = lerp(currentRx, targetRx, hovering ? 0.12 : 0.08);
+      currentRy = lerp(currentRy, targetRy, hovering ? 0.12 : 0.08);
+      const settled = !hovering && Math.abs(currentRx) < 0.04 && Math.abs(currentRy) < 0.04;
+      if (settled) {
+        currentRx = 0; currentRy = 0;
+        el.style.removeProperty("--ptx");
+        el.style.removeProperty("--pty");
+        raf = 0;
+        return;
+      }
+      el.style.setProperty("--ptx", `${currentRx.toFixed(3)}deg`);
+      el.style.setProperty("--pty", `${currentRy.toFixed(3)}deg`);
+      raf = requestAnimationFrame(loop);
+    };
+
+    const startLoop = () => { if (!raf) raf = requestAnimationFrame(loop); };
+    const maxTilt = Number(el.dataset.panoTilt) || 7;
+
+    const onMove = (e: MouseEvent) => {
+      const r = el.getBoundingClientRect();
+      targetRx = -((e.clientY - r.top) / r.height - 0.5) * maxTilt;
+      targetRy = ((e.clientX - r.left) / r.width - 0.5) * maxTilt;
+      startLoop();
+    };
+    const onEnter = () => { hovering = true; startLoop(); };
+    const onLeave = () => { hovering = false; startLoop(); };
+
+    el.addEventListener("mouseenter", onEnter);
+    el.addEventListener("mousemove", onMove);
+    el.addEventListener("mouseleave", onLeave);
+    cleanups.push(() => {
+      cancelAnimationFrame(raf);
+      el.removeEventListener("mouseenter", onEnter);
+      el.removeEventListener("mousemove", onMove);
+      el.removeEventListener("mouseleave", onLeave);
+      el.style.removeProperty("--ptx");
+      el.style.removeProperty("--pty");
+    });
+  });
+
+  return () => cleanups.forEach((fn) => fn());
+}
+
 /** Subtle tilt on featured-work device previews only — smoothed via rAF lerp. */
 function initShowcaseTilt(): () => void {
   const zones = document.querySelectorAll<HTMLElement>("[data-tilt-showcase]");

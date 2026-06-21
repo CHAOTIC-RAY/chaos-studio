@@ -113,9 +113,6 @@ function renderSiteChrome(
         ${CHAOS_LOGO_SVG}
         <span class="logo-text">${opts.mode === "studio" ? esc(p.chaosStudio.title) : esc(p.profile.name)}</span>
       </a>
-      <nav class="nav nav--desktop" aria-label="Primary">
-        ${renderNavLinks(opts.nav)}
-      </nav>
       <div class="header-actions">
         <button type="button" class="btn-icon theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Switch to dark mode">
           <span class="theme-toggle__sun">${ICON_SUN}</span>
@@ -125,6 +122,9 @@ function renderSiteChrome(
         <a class="nav-cta" href="${ctaHref}"${ctaExternal}>${ctaLabel}</a>
       </div>
     </header>
+    <nav class="bottom-nav" aria-label="Primary">
+      ${renderNavLinks(opts.nav)}
+    </nav>
     <button type="button" class="nav-toggle nav-toggle--fab" id="nav-toggle" aria-expanded="false" aria-controls="nav-drawer" aria-label="Open menu">
       <span class="nav-toggle__open">${ICON_MENU}</span>
       <span class="nav-toggle__close">${ICON_CLOSE}</span>
@@ -473,7 +473,7 @@ function renderStudioPackage(pkg: Portfolio["chaosStudio"]["packages"][0]): stri
     : "";
   const icon = studioPackageIcon(pkg.id);
   return `
-        <article class="studio-package ${pkg.recommended ? "studio-package--recommended" : ""}" data-package-id="${esc(pkg.id)}">
+        <article class="studio-package ${pkg.recommended ? "studio-package--recommended" : ""}" data-package-id="${esc(pkg.id)}" data-pano-tilt="7">
           <div class="studio-package__glow" aria-hidden="true"></div>
           <header class="studio-package__header">
             <div class="studio-package__identity">
@@ -1075,7 +1075,7 @@ function renderProject(proj: Portfolio["featuredWork"]["projects"][0], index: nu
     : "";
 
   return `
-    <article class="work-showcase work-showcase--${esc(proj.id)} ${featured ? "work-showcase--featured" : ""}" data-reveal id="project-${esc(proj.id)}">
+    <article class="work-showcase work-showcase--${esc(proj.id)} ${featured ? "work-showcase--featured" : ""}" data-reveal data-pano-tilt="5" id="project-${esc(proj.id)}">
       <div class="work-showcase__glow" aria-hidden="true"></div>
       <div class="work-showcase__stage">
         ${deviceBlock}

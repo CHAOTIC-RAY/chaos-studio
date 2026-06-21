@@ -246,6 +246,7 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
   let oy = 0;
   let vx = 0;
   let vy = 0;
+  let introBoost = 5.5;
 
   let dragging = false;
   let moved = 0;
@@ -528,8 +529,10 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
       needs = true;
     }
     if (!dragging && !reduced) {
-      ox += 0.62;
-      oy += 0.1;
+      ox += 0.62 + introBoost;
+      oy += 0.1 + introBoost * 0.05;
+      if (introBoost > 0.01) introBoost *= 0.971;
+      else introBoost = 0;
       needs = true;
     }
     if (needs) {

@@ -2,11 +2,13 @@ import { observeInView } from "./motion/perf";
 import { prefersReducedMotion } from "./motion/reduced-motion";
 import { initStudioScrollEffect } from "./motion/studio-scroll";
 import { initPostLightbox } from "./post-lightbox";
+import { initPanoTilt } from "./mouse/mouse-effects";
 
 export function initInteractions(): () => void {
   const cleanups: (() => void)[] = [];
   if (!prefersReducedMotion()) {
     cleanups.push(initMagnetic());
+    cleanups.push(initPanoTilt());
   }
   cleanups.push(initPostsRail());
   cleanups.push(initPostsPanel());
@@ -114,6 +116,7 @@ export function initStudioInteractions(): () => void {
   cleanups.push(initStudioScrollEffect());
   if (!prefersReducedMotion()) {
     cleanups.push(initMagnetic());
+    cleanups.push(initPanoTilt());
   }
   cleanups.push(initActiveNav());
   return () => cleanups.forEach((fn) => fn());

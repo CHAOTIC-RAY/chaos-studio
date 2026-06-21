@@ -17,6 +17,7 @@ import { initTheme } from "./theme";
 
 let portfolio: Portfolio | null = null;
 const cleanups: (() => void)[] = [];
+let firstMount = true;
 
 function runCleanup(): void {
   while (cleanups.length) {
@@ -28,6 +29,18 @@ function runCleanup(): void {
 async function mount(route: AppRoute): Promise<void> {
   const app = document.getElementById("app");
   if (!app || !portfolio) return;
+
+  if (!firstMount) {
+    app.style.transition = "opacity 0.22s ease, transform 0.22s ease, filter 0.22s ease";
+    app.style.opacity = "0";
+    app.style.transform = "scale(0.984) translateZ(0)";
+    app.style.filter = "blur(2px)";
+    await new Promise<void>((r) => setTimeout(r, 210));
+    app.style.transition = "";
+    app.style.opacity = "";
+    app.style.transform = "";
+    app.style.filter = "";
+  }
 
   runCleanup();
 
@@ -47,6 +60,12 @@ async function mount(route: AppRoute): Promise<void> {
   }
 
   await exitLoadingScreen(app);
+
+  if (!firstMount) {
+    app.classList.add("page-enter");
+    requestAnimationFrame(() => requestAnimationFrame(() => app.classList.remove("page-enter")));
+  }
+  firstMount = false;
 
   cleanups.push(initTheme());
   cleanups.push(

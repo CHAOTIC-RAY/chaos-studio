@@ -514,11 +514,15 @@ body.nav-open {
   .nav-cta { padding: 0.4rem 0.7rem; font-size: 0.72rem; }
 }
 
+@media (max-width: 899px) {
+  .bottom-nav { display: none !important; }
+}
+
 @media (min-width: 900px) {
   .nav--desktop { display: flex; }
   .nav-toggle--fab { display: none !important; }
   .nav-drawer { display: none !important; }
-  .header-actions { margin-left: 0; }
+  main:not(.page-gallery) { padding-bottom: 5.5rem; }
 }
 
 /* Layout */
@@ -4602,5 +4606,79 @@ main { position: relative; z-index: 1; }
   
   .stat-value {
     font-size: 2.5rem;
+  }
+}
+
+/* ─── Bottom navigation bar ─────────────────────────────────────────────── */
+.bottom-nav {
+  position: fixed;
+  bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.35rem 0.45rem;
+  background: var(--header-scrolled-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(213, 119, 237, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  white-space: nowrap;
+}
+.bottom-nav a {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+  border-radius: 999px;
+  transition: color 0.2s, background 0.2s;
+  text-decoration: none;
+}
+.bottom-nav a:hover {
+  color: var(--text);
+  background: rgba(213, 119, 237, 0.1);
+}
+.bottom-nav .nav__link--active {
+  color: var(--purple-bright) !important;
+  background: rgba(213, 119, 237, 0.15);
+  text-shadow: 0 0 20px rgba(213, 119, 237, 0.3);
+}
+
+/* ─── Page transition ─────────────────────────────────────────────────────── */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: scale(1.014) translateZ(0);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateZ(0);
+    filter: blur(0px);
+  }
+}
+#app.page-enter {
+  animation: page-enter 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ─── Panoramic 3D card tilt ─────────────────────────────────────────────── */
+@media (pointer: fine) {
+  [data-pano-tilt] {
+    transform-style: preserve-3d;
+    transform: perspective(1000px) rotateX(var(--ptx, 0deg)) rotateY(var(--pty, 0deg));
+    will-change: transform;
+  }
+  .studio-package[data-pano-tilt] {
+    transition: border-color 0.3s, box-shadow 0.3s, transform 0.08s linear;
+  }
+  .work-showcase[data-pano-tilt] {
+    transition: border-color 0.3s, box-shadow 0.3s, transform 0.08s linear;
   }
 }
