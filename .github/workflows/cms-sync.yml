@@ -30,4 +30,19 @@ jobs:
       - run: npm ci
 
       - name: Build CMS + verify mirrors
-        run: npm run build:cms && npm run verify:cms-sync -- --dist
+        run: |
+          set -x
+          echo "::group::Starting CMS build and sync verification"
+          echo "Node version: $(node --version)"
+          echo "NPM version: $(npm --version)"
+          echo "::endgroup::"
+          
+          echo "::group::Step 1: Build CMS"
+          npm run build:cms || { echo "::error::CMS build failed"; exit 1; }
+          echo "::endgroup::"
+          
+          echo "::group::Step 2: Verify CMS sync (dist)"
+          npm run verify:cms-sync -- --dist || { echo "::error::CMS sync verification failed"; exit 1; }
+          echo "::endgroup::"
+          
+          echo "::notice::CMS build and sync verification completed successfully"

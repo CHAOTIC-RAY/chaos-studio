@@ -61,7 +61,54 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
       - name: Build site + CMS app
-        run: npm run build
+        run: |
+          set -x
+          echo "::group::Starting build process"
+          echo "Node version: $(node --version)"
+          echo "NPM version: $(npm --version)"
+          echo "::endgroup::"
+          
+          echo "::group::Step 1: Sync content"
+          npm run sync:content || { echo "::error::Content sync failed"; exit 1; }
+          echo "::endgroup::"
+          
+          echo "::group::Step 2: Verify CMS sync"
+          node scripts/verify-cms-sync.mjs || { echo "::error::CMS sync verification failed"; exit 1; }
+          echo "::endgroup::"
+          
+          echo "::group::Step 3: Validate CMS schema"
+          node scripts/validate-cms-schema.mjs || { echo "::error::CMS schema validation failed"; exit 1; }
+          echo "::endgroup::"
+          
+          echo "::group::Step 4: Check post image duplicates"
+          node scripts/check-post-image-dupes.mjs || { echo "::error::Post image duplicate check failed"; exit 1; }
+          echo "::endgroup::"
+          
+          echo "::group::Step 5: Generate icons"
+          node scripts/generate-icons.mjs || { echo "::error::Icon generation failed"; exit 1; }
+          echo "::endgroup::"
+          
+          echo "::group::Step 6: Generate panorama assets"
+          npm run pano:assets || { echo "::error::Panorama asset generation failed"; exit 1; }
+          echo "::endgroup::"
+          
+          echo "::group::Step 7: Build frontend"
+          npm run build --workspace=frontend || { echo "::error::Frontend build failed"; exit 1; }
+          echo "::endgroup::"
+          
+          echo "::group::Step 8: Copy SPA routes"
+          node scripts/copy-spa-routes.mjs || { echo "::error::SPA routes copy failed"; exit 1; }
+          echo "::endgroup::"
+          
+          echo "::group::Step 9: Build CMS"
+          npm run build:cms || { echo "::error::CMS build failed"; exit 1; }
+          echo "::endgroup::"
+          
+          echo "::group::Step 10: Verify CMS sync (dist)"
+          node scripts/verify-cms-sync.mjs --dist || { echo "::error::CMS sync verification (dist) failed"; exit 1; }
+          echo "::endgroup::"
+          
+          echo "::notice::Build completed successfully"
 
       - name: Verify CMS build output
         run: |
