@@ -103,7 +103,6 @@
     const h = route();
     if (h.includes("/assistant") || h === "#/assistant") return "assistant";
     if (h.includes("/media")) return "media";
-    if (h.includes("/logs") || h === "#/logs") return "logs";
     if (editorFromHash()) return "editor";
     return "dashboard";
   }
@@ -217,7 +216,6 @@
     if (viewMode === "dashboard") renderDashboard();
     if (viewMode === "media") renderMedia();
     if (viewMode === "assistant") renderAssistantView();
-    if (viewMode === "logs") renderLogsView();
     if (viewMode !== "editor") ensureDecapMounted();
   }
 
@@ -252,7 +250,6 @@
           <a href="#/" data-nav="dashboard">${icon("home")}<span class="chaos-nav-label">Dashboard</span></a>
           <a href="#/media" data-nav="media">${icon("image")}<span class="chaos-nav-label">Media</span></a>
           <a href="#/assistant" data-nav="assistant">${icon("chat")}<span class="chaos-nav-label">AI</span></a>
-          <a href="#/logs" data-nav="logs">${icon("terminal")}<span class="chaos-nav-label">Logs</span></a>
           <a href="${SITE}/" target="_blank" rel="noopener">${icon("external")}<span class="chaos-nav-label">Site</span></a>
           <button type="button" class="chaos-logout" data-portal-logout hidden title="Log out of GitHub">${icon("logout")}<span class="chaos-nav-label">Log out</span></button>
         </nav>
@@ -264,12 +261,12 @@
         <div id="chaos-view-dashboard" class="chaos-view chaos-dash"></div>
         <div id="chaos-view-media" class="chaos-view chaos-media-view"></div>
         <div id="chaos-view-assistant" class="chaos-view chaos-assistant-view"></div>
-        <div id="chaos-view-logs" class="chaos-view chaos-logs-view"></div>
         <div id="chaos-view-editor" class="chaos-view chaos-editor-view">
           <p class="chaos-editor-loading" data-editor-loading hidden>Loading editor… large files may take a moment.</p>
           <div class="chaos-decap-slot" data-decap-slot></div>
         </div>
       </main>
+      <div id="chaos-logs-overlay" class="chaos-logs-overlay" data-logs-overlay></div>
       <footer class="chaos-dock" data-save-dock role="toolbar" aria-label="Publish"></footer>
     `;
     document.body.prepend(app);
@@ -425,35 +422,54 @@
     });
   }
 
-  async function renderLogsView() {
-    const el = document.getElementById("chaos-view-logs");
+  async function renderLogsOverlay() {
+    const el = document.getElementById("chaos-logs-overlay");
     if (!el) return;
 
-    el.innerHTML = `
-      <h2>System logs</h2>
-      <p class="chaos-dash__lead">Build status, sync status, and deployment information.</p>
-      <div class="chaos-logs-container">
-        <div class="chaos-log-section">
-          <h3>Build Information</h3>
-          <div data-build-info class="chaos-log-content">Loading…</div>
-        </div>
-        <div class="chaos-log-section">
-          <h3>Sync Status</h3>
-          <div data-sync-info class="chaos-log-content">Loading…</div>
-        </div>
-        <div class="chaos-log-section">
-          <h3>External Links</h3>
-          <div class="chaos-log-links">
-            <a href="https://github.com/CHAOTIC-RAY/portfolio/actions" target="_blank" rel="noopener">
-              ${icon("external")} GitHub Actions
-            </a>
-            <a href="https://dash.cloudflare.com/" target="_blank" rel="noopener">
-              ${icon("external")} Cloudflare Dashboard
-            </a>
+    if (!el.dataset.mounted) {
+      el.dataset.mounted = "1";
+      el.innerHTML = `
+        <button type="button" class="chaos-logs-toggle" data-logs-toggle aria-label="Toggle logs">
+          ${icon("terminal")}
+          <span data-logs-status>Checking…</span>
+        </button>
+        <div class="chaos-logs-panel" data-logs-panel>
+          <div class="chaos-logs-header">
+            <strong>System Status</strong>
+            <button type="button" class="chaos-logs-close" data-logs-close aria-label="Close">${icon("chevron", "sm")}</button>
+          </div>
+          <div class="chaos-logs-content">
+            <div class="chaos-log-section">
+              <h4>Build</h4>
+              <div data-build-info class="chaos-log-content">Loading…</div>
+            </div>
+            <div class="chaos-log-section">
+              <h4>Sync</h4>
+              <div data-sync-info class="chaos-log-content">Loading…</div>
+            </div>
+            <div class="chaos-log-section">
+              <h4>Links</h4>
+              <div class="chaos-log-links">
+                <a href="https://github.com/CHAOTIC-RAY/portfolio/actions" target="_blank" rel="noopener">
+                  ${icon("external")} GitHub Actions
+                </a>
+                <a href="https://dash.cloudflare.com/" target="_blank" rel="noopener">
+                  ${icon("external")} Cloudflare
+                </a>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    `;
+      `;
+
+      el.querySelector("[data-logs-toggle]").addEventListener("click", () => {
+        el.classList.toggle("chaos-logs-overlay--open");
+      });
+
+      el.querySelector("[data-logs-close]").addEventListener("click", () => {
+        el.classList.remove("chaos-logs-overlay--open");
+      });
+    }
 
     // Load build info
     const buildEl = el.querySelector("[data-build-info]");
@@ -462,38 +478,45 @@
       if (res.ok) {
         const data = await res.json();
         buildEl.innerHTML = `
-          <div class="chaos-log-item"><span class="chaos-log-label">Build ID:</span> <code>${data.id || "Unknown"}</code></div>
-          <div class="chaos-log-item"><span class="chaos-log-label">Built at:</span> <code>${data.builtAt || "Unknown"}</code></div>
+          <div class="chaos-log-item"><span class="chaos-log-label">ID:</span> <code>${data.id?.slice(-8) || "Unknown"}</code></div>
+          <div class="chaos-log-item"><span class="chaos-log-label">Time:</span> <code>${data.builtAt?.slice(0, 16) || "Unknown"}</code></div>
         `;
       } else {
-        buildEl.innerHTML = `<p class="chaos-log-error">Failed to load build info</p>`;
+        buildEl.innerHTML = `<span class="chaos-log-error">Failed</span>`;
       }
     } catch {
-      buildEl.innerHTML = `<p class="chaos-log-error">Failed to load build info</p>`;
+      buildEl.innerHTML = `<span class="chaos-log-error">Failed</span>`;
     }
 
     // Load sync status
     const syncEl = el.querySelector("[data-sync-info]");
+    const statusEl = el.querySelector("[data-logs-status]");
     try {
       const res = await fetch(SYNC_URL, { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
         const ok = data.ok && data.mirrors?.every((m) => m.inSync);
         syncEl.innerHTML = `
-          <div class="chaos-log-item"><span class="chaos-log-label">Status:</span> <span class="${ok ? "chaos-log-ok" : "chaos-log-pending"}">${ok ? "In sync" : "Sync pending"}</span></div>
+          <div class="chaos-log-item"><span class="chaos-log-label">Status:</span> <span class="${ok ? "chaos-log-ok" : "chaos-log-pending"}">${ok ? "OK" : "Pending"}</span></div>
           <div class="chaos-log-item"><span class="chaos-log-label">Mirrors:</span> <code>${data.mirrors?.length || 0}</code></div>
-          ${data.mirrors?.map((m) => `
-            <div class="chaos-log-item">
-              <span class="chaos-log-label">${m.source} → ${m.target}:</span>
-              <span class="${m.inSync ? "chaos-log-ok" : "chaos-log-pending"}">${m.inSync ? "OK" : "Pending"}</span>
-            </div>
-          `).join("") || ""}
         `;
+        if (statusEl) {
+          statusEl.textContent = ok ? "OK" : "Pending";
+          statusEl.className = ok ? "chaos-log-ok" : "chaos-log-pending";
+        }
       } else {
-        syncEl.innerHTML = `<p class="chaos-log-error">Failed to load sync status</p>`;
+        syncEl.innerHTML = `<span class="chaos-log-error">Failed</span>`;
+        if (statusEl) {
+          statusEl.textContent = "Error";
+          statusEl.className = "chaos-log-error";
+        }
       }
     } catch {
-      syncEl.innerHTML = `<p class="chaos-log-error">Failed to load sync status</p>`;
+      syncEl.innerHTML = `<span class="chaos-log-error">Failed</span>`;
+      if (statusEl) {
+        statusEl.textContent = "Error";
+        statusEl.className = "chaos-log-error";
+      }
     }
   }
 
@@ -1090,6 +1113,8 @@
     watchDecapMount();
     watchHashGuard();
     watchEditorLayout();
+    renderLogsOverlay();
+    setInterval(renderLogsOverlay, 30000); // Refresh every 30s
 
     window.addEventListener("load", () => {
       registerCmsHooks();
