@@ -53,9 +53,9 @@ export function renderWorkMarquee(): string {
 
   return `
     <div class="work-marquee work-marquee--hero" role="region" aria-label="Selected clients and services">
-      ${marqueeRow(row1, -2, "a")}
-      ${marqueeRow(row2, 2, "b")}
-      ${marqueeRow(row3, -1.5, "c")}
+      ${marqueeRow(row1, -3, "a")}
+      ${marqueeRow(row2, 3, "b")}
+      ${marqueeRow(row3, -2, "c")}
     </div>
   `;
 }

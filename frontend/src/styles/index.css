@@ -4028,7 +4028,7 @@ body.studio-finale-active .studio-finale {
   overflow: hidden;
 }
 .work-marquee--hero .work-marquee__inner {
-  font-size: clamp(1.65rem, 4.5vw, 3.75rem);
+  font-size: clamp(2rem, 5.5vw, 4.5rem);
 }
 .work-marquee--hero .work-marquee__row {
   padding: 1.35rem 0;
@@ -4040,7 +4040,7 @@ body.studio-finale-active .studio-finale {
 @media (min-width: 768px) {
   .work-marquee--hero .work-marquee__row--b,
   .work-marquee--hero .work-marquee__row--c {
-    margin-top: -1.25rem;
+    margin-top: -2.5rem;
   }
 }
 .work-marquee__row {
