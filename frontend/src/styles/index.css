@@ -1480,7 +1480,7 @@ main { padding-top: var(--header-h); }
   width: 100%;
   max-width: none;
   box-sizing: border-box;
-  padding: var(--header-h) 0 0;
+  padding: var(--header-h) 0 calc(env(safe-area-inset-bottom, 0px) + 4.5rem) 0;
   height: 100svh;
   overflow: hidden;
   position: relative;
