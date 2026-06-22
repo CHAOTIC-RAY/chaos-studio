@@ -49,7 +49,7 @@ function readCampaignPublicMerged() {
   return `${JSON.stringify({ subtitle: meta.subtitle, posts: posts.posts }, null, 2)}\n`;
 }
 
-/** Every path Decap CMS commits to on GitHub (from config.yml). */
+/** Every path Sveltia CMS commits to on GitHub (from config.yml). */
 const CMS_REPO_FILES = [
   "content/campaign-meta.json",
   "content/social-posts.json",
@@ -72,7 +72,7 @@ function verifyMirrors() {
     const onDisk = fs.readFileSync(path.join(root, publicCampaign), "utf8");
     if (merged !== onDisk) {
       fail(
-        `Out of sync: campaign meta+posts ≠ ${publicCampaign}\n` +
+        `Out of sync: campaign meta+posts !== ${publicCampaign}\n` +
           `  Run: npm run sync:cms`,
       );
     }
@@ -89,7 +89,7 @@ function verifyMirrors() {
     }
     if (!filesEqual(src, dest)) {
       fail(
-        `Out of sync: ${src} ≠ ${dest}\n` +
+        `Out of sync: ${src} != ${dest}\n` +
           `  The admin saves to GitHub (${src}) but the site reads ${dest} until build syncs.\n` +
           `  Run: npm run sync:cms  (or npm run verify:cms-sync --fix)`,
       );
@@ -124,7 +124,7 @@ function verifyCmsSourceFiles() {
   try {
     const portfolio = JSON.parse(readText("content/portfolio.json"));
     if (portfolio.chaosStudio != null) {
-      fail("content/portfolio.json must not contain chaosStudio — use content/chaos-studio.json");
+      fail("content/portfolio.json must not contain chaosStudio - use content/chaos-studio.json");
     }
   } catch {
     fail("content/portfolio.json is invalid JSON");
@@ -165,8 +165,8 @@ function verifyMediaManifest() {
   }
 }
 
-function ensureDecapVendored() {
-  const dest = `${CMS_DIST}/decap-cms.js`;
+function ensureCmsVendored() {
+  const dest = `${CMS_DIST}/sveltia-cms.js`;
   if (fs.existsSync(path.join(root, dest))) return;
   const r = spawnSync("node", ["scripts/build-cms.mjs"], { cwd: root, stdio: "pipe" });
   if (r.status !== 0 || !fs.existsSync(path.join(root, dest))) {
@@ -199,7 +199,7 @@ function verifyDistCmsIfPresent() {
   const required = [
     "index.html",
     "config.yml",
-    "decap-cms.js",
+    "sveltia-cms.js",
     "cms-app.js",
     "media-manifest.json",
     "sync-status.json",
@@ -212,7 +212,7 @@ function verifyDistCmsIfPresent() {
   }
   for (const f of ["config.yml", "cms-app.js"]) {
     if (!filesEqual(`${CMS_PUBLIC}/${f}`, `${CMS_DIST}/${f}`)) {
-      fail(`${CMS_DIST}/${f} is out of sync with ${CMS_PUBLIC}/${f} — run: npm run build:cms`);
+      fail(`${CMS_DIST}/${f} is out of sync with ${CMS_PUBLIC}/${f} - run: npm run build:cms`);
     }
   }
 }
@@ -246,7 +246,7 @@ function writeSyncStatus() {
 }
 
 function runFix() {
-  console.log("Fixing CMS sync (content mirrors + CMS build)…");
+  console.log("Fixing CMS sync (content mirrors + CMS build)...");
   const r = spawnSync("node", ["scripts/build-cms.mjs"], { cwd: root, stdio: "inherit" });
   if (r.status !== 0) process.exit(r.status ?? 1);
 }
@@ -260,7 +260,7 @@ async function main() {
   if (checkDist) {
     verifyDistCmsIfPresent();
     verifyMediaManifest();
-    ensureDecapVendored();
+    ensureCmsVendored();
   } else {
     verifyCmsSourceBundle();
   }

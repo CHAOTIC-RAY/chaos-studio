@@ -382,7 +382,7 @@ export function renderStudioPage(p: Portfolio): string {
             `).join("")}
           </div>
         ` : ""}
-        ${studio.process && studio.process.length ? renderProcessSteps(studio.process) : ""}
+        ${p.sections?.showProcess && studio.process && studio.process.length ? renderProcessSteps(studio.process) : ""}
         ${studio.testimonials && studio.testimonials.length ? renderTestimonialsSection(studio.testimonials) : ""}
       </div>
       ${renderStudioFinale(studio)}

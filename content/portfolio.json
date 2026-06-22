@@ -213,6 +213,7 @@
     "showStats": false,
     "showAwards": false,
     "showNews": false,
+    "showProcess": false,
     "newsCount": 3
   },
   "clientLogoWall": {

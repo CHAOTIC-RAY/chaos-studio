@@ -12,9 +12,9 @@ const buildId =
   process.env.CMS_BUILD_ID ||
   new Date().toISOString().replace(/[:-]/g, "").slice(0, 14);
 
-const decapSrc = path.join(root, "node_modules/decap-cms/dist/decap-cms.js");
-if (!fs.existsSync(decapSrc)) {
-  console.error("decap-cms not installed — run npm ci");
+const sveltiaSrc = path.join(root, "node_modules/sveltia-cms/dist/sveltia-cms.js");
+if (!fs.existsSync(sveltiaSrc)) {
+  console.error("sveltia-cms not installed — run npm ci");
   process.exit(1);
 }
 
@@ -22,14 +22,14 @@ fs.rmSync(distDir, { recursive: true, force: true });
 fs.mkdirSync(distDir, { recursive: true });
 fs.cpSync(publicDir, distDir, { recursive: true });
 
-fs.copyFileSync(decapSrc, path.join(distDir, "decap-cms.js"));
+fs.copyFileSync(sveltiaSrc, path.join(distDir, "sveltia-cms.js"));
 
 const iconsSrc = path.join(root, "frontend/public/icons");
 fs.cpSync(iconsSrc, path.join(distDir, "icons"), { recursive: true });
 
 let index = fs.readFileSync(path.join(distDir, "index.html"), "utf8");
 index = index.replace(
-  /(\/(?:cms-app|cms-hooks|cms-assistant|decap-cms)\.js)("|')/g,
+  /(\/(?:cms-app|cms-hooks|cms-assistant|sveltia-cms)\.js)("|')/g,
   `$1?v=${buildId}$2`,
 );
 index = index.replace(

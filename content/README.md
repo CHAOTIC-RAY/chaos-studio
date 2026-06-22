@@ -3,7 +3,7 @@
 ## GUI editor (recommended)
 
 Open **https://portfolio.chaoticstudio.workers.dev/admin/** after deploy.  
-Setup once: **[CMS-SETUP.md](./CMS-SETUP.md)** (GitHub login + Decap CMS).
+Setup once: **[CMS-SETUP.md](./CMS-SETUP.md)** (GitHub login + Sveltia CMS).
 
 ## Manual editing
 

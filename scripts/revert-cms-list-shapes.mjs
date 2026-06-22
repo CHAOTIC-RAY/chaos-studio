@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Convert Decap object lists back to string[] for site + simple list widgets. */
+/** Convert CMS object lists back to string[] for site + simple list widgets. */
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";

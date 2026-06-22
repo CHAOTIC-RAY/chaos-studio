@@ -5,7 +5,7 @@ If clicking "Publish" in the admin portal doesn't update GitHub main or trigger 
 ## Step 1: Check GitHub OAuth App Permissions
 
 1. Go to GitHub → Settings → Developer settings → OAuth Apps
-2. Find your "Portfolio Decap CMS" app
+2. Find your "Portfolio CMS" app
 3. Verify the **Authorization callback URL** is exactly:
    `https://cms-auth.chaoticstudio.workers.dev/callback?provider=github`
 4. Check that the app has the **repo** scope enabled (required for private repos)

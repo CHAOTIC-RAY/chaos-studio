@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Decap CMS only lists media_folder at depth 1 (root files).
+ * Sveltia CMS only lists media_folder at depth 1 (root files).
  * This manifest powers the "All post images" browser in /admin/.
  * Skips build-time pano thumbs (*.pano.webp) and preview.mp4.
  */
@@ -51,7 +51,7 @@ const folders = [...new Set(files.map((f) => f.folder))].sort();
 
 const manifest = {
   generatedAt: new Date().toISOString(),
-  note: "Includes subfolders; Decap Media tab only shows root-level uploads.",
+  note: "Includes subfolders; Sveltia Media tab only shows root-level uploads.",
   total: files.length,
   rootCount: files.filter((f) => !f.path.includes("/")).length,
   folderCount: folders.length,

@@ -1,6 +1,6 @@
-# Decap CMS GitHub OAuth proxy
+# Sveltia CMS GitHub OAuth proxy
 
-Decap CMS on Cloudflare Workers cannot use `https://api.netlify.com` for login unless the site is registered on Netlify. This worker handles GitHub OAuth for `/admin/`.
+Sveltia CMS on Cloudflare Workers cannot use `https://api.netlify.com` for login unless the site is registered on Netlify. This worker handles GitHub OAuth for `/admin/`.
 
 **Public URL:** https://cms-auth.chaoticstudio.workers.dev
 
@@ -22,7 +22,7 @@ Copy **Client ID** and **Client secret**.
 In **CHAOTIC-RAY/portfolio** → **Settings** → **Secrets and variables** → **Actions**, add:
 
 | Secret | Value |
-|--------|--------|
+|--------|-------|
 | `CMS_OAUTH_CLIENT_ID` | OAuth App Client ID |
 | `CMS_OAUTH_CLIENT_SECRET` | OAuth App Client secret |
 

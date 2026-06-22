@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Guardrails: JSON list fields are string[] (Decap simple list widgets).
+ * Guardrails: JSON list fields are string[] (CMS simple list widgets).
  * Worker also accepts legacy {tag:"..."} objects via cms-list-shape normalizer.
  */
 import fs from "node:fs";

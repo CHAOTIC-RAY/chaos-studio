@@ -112,7 +112,7 @@ jobs:
 
       - name: Verify CMS build output
         run: |
-          test -f cms/dist/decap-cms.js
+          test -f cms/dist/sveltia-cms.js
           test -f cms/dist/config.yml
           test -f cms/dist/cms-app.css
           test -f cms/dist/cms-app.js
@@ -122,7 +122,7 @@ jobs:
           test -f cms/dist/media-manifest.json
           test -f cms/dist/sync-status.json
           test -f frontend/dist/admin/index.html
-          test -f frontend/dist/admin/decap-cms.js
+          test -f frontend/dist/admin/sveltia-cms.js
           test -f frontend/dist/admin/config.yml
 
       - name: Deploy portfolio to Cloudflare Workers

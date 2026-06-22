@@ -1,4 +1,4 @@
-/** Normalize Decap list fields (object[]) to string[] for the live site. */
+/** Normalize CMS list fields (object[]) to string[] for the live site. */
 export function toStringList(arr: unknown, prop: string): string[] {
   if (!Array.isArray(arr)) return [];
   return arr

@@ -112,6 +112,7 @@ export interface Portfolio {
     showStats?: boolean;
     showAwards?: boolean;
     showNews?: boolean;
+    showProcess?: boolean;
     newsCount?: number;
   };
   clientLogoWall?: ClientLogoWall;

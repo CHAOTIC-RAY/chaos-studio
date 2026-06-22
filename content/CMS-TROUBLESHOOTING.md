@@ -14,7 +14,7 @@ You should see **Chaos Studio CMS** in the tab title, not the portfolio.
 
 ## Config error: list `field` must have `name`
 
-Decap requires each list sub-field to have a `name` (e.g. `tag`, `slide`). Repo JSON stores lists as `[{ "tag": "design" }, …]`. The live site normalizes these back to string arrays. If you edit JSON by hand, keep that shape or run `npm run migrate:cms-lists`.
+Sveltia requires each list sub-field to have a `name` (e.g. `tag`, `slide`). Repo JSON stores lists as `[{ "tag": "design" }, …]`. The live site normalizes these back to string arrays. If you edit JSON by hand, keep that shape or run `npm run migrate:cms-lists`.
 
 ## Page freezes or crashes
 
@@ -30,7 +30,7 @@ Hard-refresh `/admin/`. If it still spins, log out and **Login with GitHub** aga
 
 ```mermaid
 flowchart LR
-  A[Edit in /admin/] --> B[Publish in Decap]
+  A[Edit in /admin/] --> B[Publish in Sveltia]
   B --> C[Git commit on main]
   C --> D[Deploy Worker workflow]
   D --> E[validate + build]
@@ -63,7 +63,7 @@ flowchart LR
 | Publish works but site unchanged | Deploy failed — open Actions log; fix `validate:cms` or build errors |
 | **Failed to persist** / 403 on save | Need **write** access to repo; check branch protection (CMS must push to `main`) |
 | Images missing after save | Post ID ≠ folder name; or deploy still running |
-| Media tab shows few files | Normal — Decap only lists **root** uploads. Use **All post images** at top of Media tab for folders |
+| Media tab shows few files | Normal — Sveltia only lists **root** uploads. Use **All post images** at top of Media tab for folders |
 | Tags/posts look wrong | Re-edit tags as plain lines; run `npm run validate:cms` locally |
 
 ## GitHub secrets (Actions)
@@ -72,7 +72,7 @@ flowchart LR
 |--------|---------|
 | `CLOUDFLARE_API_TOKEN` | Deploy portfolio + cms-auth |
 | `CLOUDFLARE_ACCOUNT_ID` | Account ID |
-| `CMS_OAUTH_CLIENT_ID` | Decap GitHub login (not `GITHUB_*` — blocked by GitHub) |
+| `CMS_OAUTH_CLIENT_ID` | Sveltia GitHub login (not `GITHUB_*` — blocked by GitHub) |
 | `CMS_OAUTH_CLIENT_SECRET` | OAuth client secret |
 
 ## Local checks
@@ -84,4 +84,4 @@ npm run build          # includes validation + sync
 
 ## Branch protection
 
-If `main` requires pull requests, **Decap cannot push** until you allow the OAuth user/bot to bypass rules or disable protection for CMS commits.
+If `main` requires pull requests, **Sveltia cannot push** until you allow the OAuth user/bot to bypass rules or disable protection for CMS commits.

@@ -1,6 +1,6 @@
 /**
  * Export worker/src/data/portfolio.ts body to content/portfolio.json (run after editing TS).
- * Prefer editing content/portfolio.json via Decap CMS; re-run only if TS was changed by hand.
+ * Prefer editing content/portfolio.json via CMS; re-run only if TS was changed by hand.
  */
 import fs from "node:fs";
 import path from "node:path";

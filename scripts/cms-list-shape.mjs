@@ -1,5 +1,5 @@
 /**
- * Decap CMS list widgets require { name: value } objects; the site uses string[].
+ * Sveltia CMS list widgets require { name: value } objects; the site uses string[].
  * These helpers convert both ways and migrate JSON content files.
  */
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** One-time: convert string[] list fields to Decap CMS object shape in content JSON. */
+/** One-time: convert string[] list fields to CMS object shape in content JSON. */
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";

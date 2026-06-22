@@ -1,4 +1,4 @@
-# Git-based CMS (Decap CMS)
+# Git-based CMS (Sveltia CMS)
 
 Edit portfolio text, campaign posts, and images through a browser UI. Changes are saved as **commits to GitHub**; deploy runs automatically on `main`.
 
@@ -20,7 +20,7 @@ The CMS runs as a standalone app (`/admin/` scope) with a bottom tab bar, slide-
 ### A. GitHub OAuth App
 
 1. GitHub → **Settings** → **Developer settings** → **OAuth Apps** → **New OAuth App**
-2. **Application name:** `Portfolio Decap CMS`
+2. **Application name:** `Portfolio CMS`
 3. **Homepage URL:** `https://portfolio.chaoticstudio.workers.dev`
 4. **Authorization callback URL:**  
    `https://cms-auth.chaoticstudio.workers.dev/callback?provider=github`
@@ -84,7 +84,7 @@ npm run apply:post-copy
 
 ```bash
 npm install
-npx decap-server
+npx sveltia-server
 ```
 
 In `frontend/public/admin/config.yml`, uncomment:
@@ -93,7 +93,7 @@ In `frontend/public/admin/config.yml`, uncomment:
 local_backend: true
 ```
 
-Open http://localhost:8080/admin/ (decap-server prints the port). Edits commit to your local git repo.
+Open http://localhost:8080/admin/ (sveltia-server prints the port). Edits commit to your local git repo.
 
 ---
 
@@ -112,7 +112,7 @@ If login still fails:
 
 ## 5. After you publish in the CMS
 
-1. Decap commits to `main` on GitHub.
+1. Sveltia commits to `main` on GitHub.
 2. **Deploy Worker** workflow runs (`npm run build` → Cloudflare).
 3. Site updates in ~1–2 minutes.
 

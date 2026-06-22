@@ -1,3 +1,4 @@
+/// <reference lib="webworker" />
 import { OAuthClient } from "./oauth";
 
 interface Env {
@@ -73,7 +74,7 @@ const callbackScriptResponse = (status: string, token: string) => {
     }
   }
 
-  // Decap / Netlify CMS handshake: popup notifies parent, parent echoes, popup sends token.
+  // Sveltia CMS handshake: popup notifies parent, parent echoes, popup sends token.
   window.addEventListener("message", function (e) {
     if (e.data === "authorizing:github") {
       relay(e.origin);
@@ -84,7 +85,7 @@ const callbackScriptResponse = (status: string, token: string) => {
     window.opener.postMessage("authorizing:github", "*");
   }
 })();
-</script><p>Authorizing Decap…</p></body></html>`,
+</script><p>Authorizing Sveltia…</p></body></html>`,
     { headers: { "Content-Type": "text/html; charset=utf-8" } },
   );
 };
@@ -124,7 +125,7 @@ export default {
       return handleCallback(url, env);
     }
 
-    return new Response("Decap CMS GitHub OAuth proxy", {
+    return new Response("Sveltia CMS GitHub OAuth proxy", {
       headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
   },
