@@ -311,24 +311,35 @@
     return stats;
   }
 
+  /** Fetch preview thumbnails for dashboard cards from content JSON */
+  async function fetchPreviews() {
+    const previews = {};
+    try {
+      const [social, gallery] = await Promise.all([
+        fetch(`${SITE}/content/social-posts.json`, { cache: "no-store" }).then((r) => r.ok ? r.json() : null),
+        fetch(`${SITE}/content/gallery-posts.json`, { cache: "no-store" }).then((r) => r.ok ? r.json() : null),
+      ]);
+      if (social?.posts?.length) {
+        const latest = social.posts[0];
+        previews["social-posts"] = latest.images?.[0] ? `${SITE}${latest.images[0]}` : null;
+      }
+      if (gallery?.posts?.length) {
+        const latest = gallery.posts[0];
+        previews["gallery-posts"] = latest.images?.[0] || latest.slides?.[0]?.image ? `${SITE}${latest.images?.[0] || latest.slides[0].image}` : null;
+      }
+    } catch {
+      /* ignore */
+    }
+    return previews;
+  }
+
   function renderDashboard() {
     const el = document.getElementById("chaos-view-dashboard");
     if (!el) return;
 
-    const cards = EDITORS.map((e) => {
-      const cls = e.hero ? "chaos-card chaos-card--hero" : "chaos-card";
-      return `
-        <a class="${cls}" href="${e.hash}">
-          ${icon(e.icon)}
-          <strong>${e.title}</strong>
-          <span>${e.desc}</span>
-          <span class="chaos-card__cta">Open editor ${icon("chevron", "sm")}</span>
-        </a>`;
-    }).join("");
-
     el.innerHTML = `
       <h1 class="chaos-dash__title">Content portal</h1>
-      <p class="chaos-dash__lead">Pick what to edit. You never need Decap’s old collection screens — each card opens the editor directly.</p>
+      <p class="chaos-dash__lead">Pick what to edit. Each card opens the editor directly — no collection screens needed.</p>
       <div data-kpis class="chaos-kpis"><div class="chaos-kpi"><span class="chaos-kpi__n">…</span><span class="chaos-kpi__l">Loading</span></div></div>
       <a class="chaos-card chaos-card--ai" href="#/assistant">
         ${icon("chat")}
@@ -336,7 +347,7 @@
         <span>Free Gemini AI with image uploads — attach files and apply site changes to GitHub.</span>
         <span class="chaos-card__cta">Open AI ${icon("chevron", "sm")}</span>
       </a>
-      <div class="chaos-grid">${cards}</div>
+      <div class="chaos-grid" data-cards-grid><p style="color:var(--text-dim);padding:2rem;">Loading editors…</p></div>
       <p class="chaos-dash__note"><strong>Publish</strong> saves to GitHub. The live site updates in about two minutes after deploy.</p>
     `;
 
@@ -348,6 +359,25 @@
         <div class="chaos-kpi"><span class="chaos-kpi__n">${s.images}</span><span class="chaos-kpi__l">Images</span></div>
         <div class="chaos-kpi"><span class="chaos-kpi__n">${s.sections}</span><span class="chaos-kpi__l">Sections</span></div>
       `;
+    });
+
+    fetchPreviews().then((previews) => {
+      const grid = el.querySelector("[data-cards-grid]");
+      if (!grid) return;
+      grid.innerHTML = EDITORS.map((e) => {
+        const cls = e.hero ? "chaos-card chaos-card--hero" : "chaos-card";
+        const previewUrl = previews[e.id];
+        const previewHtml = previewUrl
+          ? `<img class="chaos-preview-img" src="${previewUrl}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><div class="chaos-preview-placeholder" style="display:none;">${icon("image")} No preview</div>`
+          : `<div class="chaos-preview-placeholder">${icon(e.icon)}</div>`;
+        return `
+          <a class="${cls}" href="${e.hash}">
+            ${previewHtml}
+            <strong>${e.title}</strong>
+            <span>${e.desc}</span>
+            <span class="chaos-card__cta">Open editor ${icon("chevron", "sm")}</span>
+          </a>`;
+      }).join("");
     });
   }
 

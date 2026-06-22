@@ -1,197 +1,202 @@
-/* Decap editor document — portal iframe + standalone full screen */
-@import url("https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700&display=swap");
+u /* ─── Sveltia editor document — portal iframe + standalone full screen ─── */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
 
 :root {
-  --editor-bg: #ffffff;
-  --editor-surface: #ffffff;
-  --editor-border: rgba(88, 68, 118, 0.14);
-  --editor-accent: #9b4dca;
-  --editor-accent-soft: rgba(155, 77, 202, 0.1);
-  --editor-text: #2a2438;
-  --editor-muted: #6b6280;
-  --editor-radius: 12px;
-  --editor-max: 42rem;
-  --editor-font: "Fira Sans", system-ui, sans-serif;
+  --bg: #1a1725;
+  --bg-panel: #16131f;
+  --bg-card: #1c1928;
+  --bg-input: #221f30;
+  --bg-active: #2a2540;
+  --border: rgba(120, 100, 180, 0.15);
+  --border-focus: rgba(160, 130, 255, 0.4);
+  --text: #e8e5f0;
+  --text-muted: #8a82a8;
+  --text-dim: #6a6288;
+  --primary: #9b6dff;
+  --primary-glow: rgba(155, 109, 255, 0.15);
+  --radius: 8px;
+  --radius-lg: 12px;
+  --font: "Inter", system-ui, -apple-system, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
-html,
 body {
   margin: 0;
-  min-height: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: var(--editor-bg);
-  color: var(--editor-text);
-  font-family: var(--editor-font);
+  font-family: var(--font);
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+  color-scheme: dark;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
 }
 
-#nc-root {
-  display: flex;
-  flex-direction: column;
-  height: 100dvh;
-  width: 100%;
-  overflow: hidden;
-}
-
-/* Decap defaults to min-width:800px — allow narrow portal iframe */
+/* Sveltia defaults to min-width:800px — allow narrow portal iframe */
 #nc-root [class*="AppMainContainer"] {
-  position: relative !important;
-  flex: 1 1 auto;
-  height: 100% !important;
-  min-height: 0 !important;
   min-width: 0 !important;
-  max-width: none !important;
-  margin: 0 !important;
+  background: var(--bg) !important;
+  color: var(--text) !important;
 }
 
-/* Hide Decap chrome — dock mirrors publish; toolbar stays in DOM (visually hidden) */
+/* Hide Sveltia chrome — dock mirrors publish; toolbar stays in DOM */
 #nc-root [class*="AppHeader"],
+#nc-root [class*="AppHeader"] > *,
+#nc-root [class*="TopBar"],
 #nc-root [class*="Sidebar"],
-#nc-root [class*="SidebarContainer"],
-#nc-root > header,
-#nc-root [class*="PreviewPaneFrame"] {
+#nc-root [class*="EditorToolbar"] {
   display: none !important;
 }
 
-/* Keep toolbar buttons in DOM for dock — display:none breaks React button refs */
-#nc-root [class*="ToolbarContainer"],
-#nc-root [class*="EditorControlBar"] {
-  position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
-  margin: -1px !important;
-  padding: 0 !important;
-  overflow: hidden !important;
-  clip: rect(0, 0, 0, 0) !important;
-  white-space: nowrap !important;
-  border: 0 !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  z-index: -1 !important;
-}
-
-/* Do not use [class*="Editor"] — it also matches EditorContainer and breaks layout */
+/* Editor panel — full height card */
 #nc-root [class*="EditorContainer"] {
-  min-width: 0 !important;
-  padding-top: 0 !important;
-  overflow: auto !important;
-  -webkit-overflow-scrolling: touch;
-  background: #ffffff !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  margin: 0.5rem !important;
+  padding: 1rem !important;
+  overflow-y: auto !important;
 }
 
-#nc-root [class*="AppMainContainer"] {
-  background: #ffffff !important;
-}
-
-#nc-root [class*="ControlPaneContainer"] {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: var(--editor-max);
-  margin: 0 auto !important;
-  padding: 1.25rem 1.25rem 3.5rem !important;
-  overflow: visible !important;
-}
-
-/* Field labels */
-#nc-root label,
-#nc-root [class*="WidgetLabel"] {
-  font-weight: 600 !important;
-  color: var(--editor-text) !important;
-  font-size: 0.92rem !important;
-}
-
+/* Inputs & form controls */
 #nc-root input,
 #nc-root textarea,
 #nc-root select {
-  font-family: var(--editor-font) !important;
-  font-size: 1rem !important;
-  border-radius: 10px !important;
-  border-color: var(--editor-border) !important;
+  background: var(--bg-input) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  padding: 0.5rem 0.65rem !important;
+  font-family: var(--font) !important;
+  font-size: 0.85rem !important;
 }
 
 #nc-root input:focus,
 #nc-root textarea:focus,
 #nc-root select:focus {
-  border-color: var(--editor-accent) !important;
-  box-shadow: 0 0 0 3px var(--editor-accent-soft) !important;
+  border-color: var(--border-focus) !important;
+  box-shadow: 0 0 0 3px var(--primary-glow) !important;
   outline: none !important;
 }
 
-/* List / object widgets — card rows instead of full-width gray bars */
-#nc-root [data-testid^="list-item"],
-#nc-root [class*="ListItem"] {
-  margin-bottom: 0.5rem !important;
-  border: 1px solid var(--editor-border) !important;
-  border-radius: var(--editor-radius) !important;
-  background: var(--editor-surface) !important;
-  box-shadow: 0 1px 2px rgba(42, 36, 56, 0.04) !important;
-  overflow: hidden !important;
-}
-
-#nc-root [data-testid^="list-item"] > button,
-#nc-root [class*="ListItem"] > button,
-#nc-root [class*="CollapseButton"] {
-  font-family: var(--editor-font) !important;
+/* Labels */
+#nc-root label,
+#nc-root [class*="Label"],
+#nc-root [class*="FieldLabel"] {
+  color: var(--text-muted) !important;
+  font-size: 0.8rem !important;
   font-weight: 500 !important;
-  color: var(--editor-text) !important;
 }
 
-#nc-root [class*="WidgetHeader"] {
-  font-family: var(--editor-font) !important;
-  font-weight: 600 !important;
-  color: var(--editor-muted) !important;
-  font-size: 0.85rem !important;
-  letter-spacing: 0.02em;
-  text-transform: none !important;
+/* Widget sections */
+#nc-root [class*="Widget"],
+#nc-root [class*="Field"] {
+  margin-bottom: 0.75rem !important;
 }
 
-#nc-root [class*="ObjectControl"] {
-  border: 1px solid var(--editor-border) !important;
-  border-radius: var(--editor-radius) !important;
-  background: var(--editor-surface) !important;
-  margin-bottom: 1rem !important;
-  overflow: hidden !important;
+/* List controls */
+#nc-root [class*="ListControl"],
+#nc-root [class*="ListControl"] > * {
+  background: transparent !important;
 }
 
-#nc-root [class*="ListControl"] {
-  max-width: 100% !important;
+/* Buttons inside editor */
+#nc-root button {
+  background: var(--bg-input) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  padding: 0.4rem 0.75rem !important;
+  font-family: var(--font) !important;
+  font-size: 0.82rem !important;
+  cursor: pointer !important;
+  transition: all 150ms ease !important;
 }
 
-/* Softer add / action buttons */
-#nc-root button[class*="Button"],
-#nc-root [class*="ToolbarButton"] {
-  font-family: var(--editor-font) !important;
-  border-radius: 999px !important;
+#nc-root button:hover {
+  background: var(--bg-active) !important;
+  border-color: var(--border-focus) !important;
 }
 
-#nc-root [class*="Loader"] {
-  min-height: 8rem !important;
+/* Preview area */
+#nc-root [class*="PreviewPane"],
+#nc-root [class*="PreviewContainer"] {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  margin: 0.5rem !important;
+  padding: 1rem !important;
+  color: var(--text) !important;
 }
 
-#nc-root svg {
-  max-width: none !important;
-  max-height: none !important;
-  fill: initial !important;
-  stroke: initial !important;
-  stroke-width: initial !important;
+/* Preview card placeholder — shows when editing posts */
+.chaos-preview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
 }
 
-/* Standalone toolbar — compact top bar */
-body[data-chaos-standalone] [class*="ToolbarContainer"] {
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 10 !important;
-  background: var(--editor-surface) !important;
-  border-bottom: 1px solid var(--editor-border) !important;
-  padding: 0.5rem 1rem !important;
+.chaos-preview-card img {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  background: var(--bg-input);
 }
 
-body[data-chaos-standalone] [class*="EditorContainer"] {
-  padding-top: 0 !important;
+.chaos-preview-card .preview-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
 }
 
-@media (min-width: 900px) {
-  :root {
-    --editor-max: 48rem;
-  }
+.chaos-preview-card .preview-title {
+  font-family: var(--mono);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.chaos-preview-card .preview-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.chaos-preview-card .preview-placeholder {
+  width: 100%;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--bg-input), var(--bg-card));
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--text-dim);
+  font-size: 0.75rem;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-dim);
 }
