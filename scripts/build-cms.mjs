@@ -12,9 +12,9 @@ const buildId =
   process.env.CMS_BUILD_ID ||
   new Date().toISOString().replace(/[:-]/g, "").slice(0, 14);
 
-const sveltiaSrc = path.join(root, "node_modules/sveltia-cms/dist/sveltia-cms.js");
+const sveltiaSrc = path.join(root, "node_modules/@sveltia/cms/dist/sveltia-cms.js");
 if (!fs.existsSync(sveltiaSrc)) {
-  console.error("sveltia-cms not installed — run npm ci");
+  console.error("@sveltia/cms not installed — run npm ci");
   process.exit(1);
 }
 
