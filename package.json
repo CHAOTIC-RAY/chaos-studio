@@ -47,7 +47,7 @@
     "frontend"
   ],
   "devDependencies": {
-    "@sveltia/cms": "github:sveltia/sveltia-cms",
+    "@sveltia/cms": "^0.167.3",
     "playwright": "^1.60.0",
     "sharp": "^0.34.5",
     "typescript": "^5.8.3",
