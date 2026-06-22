@@ -21,22 +21,59 @@
     "Social media management & ads",
     "Graphic design — posters, flyers & more"
   ],
-  "whyUs": [
-    {
-      "title": "Affordable",
-      "body": "High-quality designs at budget-friendly rates."
-    },
-    {
-      "title": "Fast & direct",
-      "body": "No middlemen — quick, clear communication."
-    },
-    {
-      "title": "Tailored for you",
-      "body": "Unique designs that match your brand perfectly."
-    }
-  ],
-  "pricingNote": "All-in-one solutions with creativity, efficiency, and care. Prices are negotiable based on design or post type.",
   "packages": [
+    {
+      "id": "starter",
+      "name": "Starter Package",
+      "tagline": "Perfect for businesses just starting out.",
+      "price": "2,000",
+      "currency": "MVR",
+      "features": [
+        "Logo design (3 concepts)",
+        "Letterhead design",
+        "2 social media posts per week",
+        "1 reel per week"
+      ]
+    },
+    {
+      "id": "starter",
+      "name": "Starter Package",
+      "tagline": "Perfect for businesses just starting out.",
+      "price": "2,000",
+      "currency": "MVR",
+      "features": [
+        "Logo design (3 concepts)",
+        "Letterhead design",
+        "2 social media posts per week",
+        "1 reel per week"
+      ]
+    },
+    {
+      "id": "starter",
+      "name": "Starter Package",
+      "tagline": "Perfect for businesses just starting out.",
+      "price": "2,000",
+      "currency": "MVR",
+      "features": [
+        "Logo design (3 concepts)",
+        "Letterhead design",
+        "2 social media posts per week",
+        "1 reel per week"
+      ]
+    },
+    {
+      "id": "starter",
+      "name": "Starter Package",
+      "tagline": "Perfect for businesses just starting out.",
+      "price": "2,000",
+      "currency": "MVR",
+      "features": [
+        "Logo design (3 concepts)",
+        "Letterhead design",
+        "2 social media posts per week",
+        "1 reel per week"
+      ]
+    },
     {
       "id": "starter",
       "name": "Starter Package",
@@ -107,12 +144,21 @@
       ]
     }
   ],
-  "studioContact": {
-    "instagram": "@chaosstudio.mv",
-    "instagramUrl": "https://instagram.com/chaosstudio.mv",
-    "phones": "+960 9401011 / 9401001",
-    "email": "chaos.studio.mv@gmail.com"
-  },
+  "pricingNote": "All-in-one solutions with creativity, efficiency, and care. Prices are negotiable based on design or post type.",
+  "whyUs": [
+    {
+      "title": "Affordable",
+      "body": "High-quality designs at budget-friendly rates."
+    },
+    {
+      "title": "Fast & direct",
+      "body": "No middlemen — quick, clear communication."
+    },
+    {
+      "title": "Tailored for you",
+      "body": "Unique designs that match your brand perfectly."
+    }
+  ],
   "stats": {
     "subtitle": "Our impact",
     "metrics": [
@@ -190,5 +236,11 @@
       "results": "300% increase in social engagement",
       "link": "/gallery"
     }
-  ]
+  ],
+  "studioContact": {
+    "instagram": "@chaosstudio.mv",
+    "instagramUrl": "https://instagram.com/chaosstudio.mv",
+    "phones": "+960 9401011 / 9401001",
+    "email": "chaos.studio.mv@gmail.com"
+  }
 }
