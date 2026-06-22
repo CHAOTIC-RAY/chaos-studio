@@ -503,7 +503,9 @@ export function initGalleryPanorama(portfolio: Portfolio): () => void {
           st.op = op;
         }
         const z =
-          Math.round((1 - dist) * 1_000_000 - Math.abs(nx) * 12_000 - Math.abs(ny) * 2_000) + k;
+          Math.round((1 - dist) * 1_000_000 - Math.abs(nx) * 12_000 - Math.abs(ny) * 2_000) +
+          200_000 +
+          k;
         if (z !== st.z) {
           el.style.zIndex = String(z);
           st.z = z;

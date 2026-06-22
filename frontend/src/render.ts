@@ -64,6 +64,11 @@ const STUDIO_NAV: NavItem[] = [
   { href: "#studio-contact", label: "Contact" },
 ];
 
+const GALLERY_NAV: NavItem[] = [
+  { href: portfolioUrl(), label: "Portfolio", route: true },
+  { href: studioUrl(), label: "Studio", route: true },
+];
+
 function renderBgLayers(opts?: { includeHeroOrb?: boolean; studio?: boolean }): string {
   const includeHeroOrb = opts?.includeHeroOrb !== false;
   const studio = opts?.studio === true;
@@ -391,7 +396,7 @@ export function renderStudioPage(p: Portfolio): string {
 export function renderGalleryPage(p: Portfolio): string {
   const gallery = p.gallery;
   return `
-    ${renderSiteChrome(p, { mode: "studio", logoHref: portfolioUrl(), nav: STUDIO_NAV, showPrint: false })}
+    ${renderSiteChrome(p, { mode: "studio", logoHref: portfolioUrl(), nav: GALLERY_NAV, showPrint: false })}
     <main id="main" class="page-gallery">
       <div class="pano__loader" data-pano-loader role="status" aria-live="polite" aria-busy="true" aria-label="Loading gallery">
         <div class="pano__loader-glow" aria-hidden="true"></div>
