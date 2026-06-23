@@ -298,7 +298,7 @@ Rules:
     if (cached?.trim()) return cached.trim();
 
     try {
-      const decap = JSON.parse(localStorage.getItem("decap-cms-user") || "null");
+      const decap = JSON.parse(localStorage.getItem("sveltia-cms.user") || localStorage.getItem("decap-cms-user") || "null");
       if (decap?.token) {
         sessionStorage.setItem(CMS_TOKEN_CACHE, decap.token);
         return decap.token;
@@ -1382,7 +1382,7 @@ Rules:
         githubToken: prev.githubToken || "",
       });
       try {
-        const decap = JSON.parse(localStorage.getItem("decap-cms-user") || "null");
+        const decap = JSON.parse(localStorage.getItem("sveltia-cms.user") || localStorage.getItem("decap-cms-user") || "null");
         if (decap?.token) sessionStorage.setItem(CMS_TOKEN_CACHE, decap.token);
       } catch {
         /* ignore */

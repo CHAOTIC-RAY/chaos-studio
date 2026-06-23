@@ -1001,7 +1001,7 @@
 
   function getCmsUser() {
     try {
-      const raw = localStorage.getItem("decap-cms-user");
+      const raw = localStorage.getItem("sveltia-cms.user") || localStorage.getItem("decap-cms-user");
       return raw ? JSON.parse(raw) : null;
     } catch {
       return null;
@@ -1034,6 +1034,7 @@
     const btn = document.querySelector("[data-portal-logout]");
     if (btn instanceof HTMLButtonElement) btn.disabled = true;
 
+    localStorage.removeItem("sveltia-cms.user");
     localStorage.removeItem("decap-cms-user");
     sessionStorage.removeItem(CMS_TOKEN_CACHE);
 
@@ -1060,7 +1061,7 @@
 
   function syncDecapGithubToken() {
     try {
-      const raw = localStorage.getItem("decap-cms-user");
+      const raw = localStorage.getItem("sveltia-cms.user") || localStorage.getItem("decap-cms-user");
       if (!raw) {
         onAuthChange();
         return;
@@ -1082,7 +1083,7 @@
     let attempts = 0;
     const poll = setInterval(() => {
       attempts += 1;
-      const raw = localStorage.getItem("decap-cms-user");
+      const raw = localStorage.getItem("sveltia-cms.user") || localStorage.getItem("decap-cms-user");
       if (raw) {
         try {
           const user = JSON.parse(raw);
