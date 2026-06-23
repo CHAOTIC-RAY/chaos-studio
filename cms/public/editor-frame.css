@@ -120,15 +120,10 @@ body {
   border-color: var(--border-focus) !important;
 }
 
-/* Preview area */
+/* Preview area — hidden, using custom Mockup Preview instead */
 #nc-root [class*="PreviewPane"],
 #nc-root [class*="PreviewContainer"] {
-  background: var(--bg-card) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius-lg) !important;
-  margin: 0.5rem !important;
-  padding: 1rem !important;
-  color: var(--text) !important;
+  display: none !important;
 }
 
 /* Preview card placeholder — shows when editing posts */

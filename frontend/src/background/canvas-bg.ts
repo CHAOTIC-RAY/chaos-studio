@@ -14,11 +14,6 @@ const PORTFOLIO_FRAME_MS = 32;
 const PORTFOLIO_AMBIENT_MS = 64;
 
 const BLOB_PALETTES: Record<Theme, [string, string, string]> = {
-  light: [
-    "rgba(213, 119, 237, 0.22)",
-    "rgba(168, 72, 198, 0.14)",
-    "rgba(139, 61, 173, 0.12)",
-  ],
   dark: [
     "rgba(213, 119, 237, 0.32)",
     "rgba(168, 72, 198, 0.2)",
@@ -27,7 +22,7 @@ const BLOB_PALETTES: Record<Theme, [string, string, string]> = {
 };
 
 function currentTheme(): Theme {
-  return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+  return "dark";
 }
 
 function isStudioRoute(): boolean {
@@ -69,7 +64,7 @@ function drawStudioLogoAt(
   cy: number,
   scaleMul: number,
   time: number,
-  theme: Theme,
+  _theme: Theme,
   alpha: number,
   solidFill: boolean,
 ): void {
@@ -92,9 +87,9 @@ function drawStudioLogoAt(
   const r = CHAOS_LOGO_VIEWBOX.w * 0.78;
 
   if (solidFill) {
-    target.fillStyle = theme === "dark" ? "rgba(213, 119, 237, 0.92)" : "rgba(168, 72, 198, 0.85)";
+    target.fillStyle = "rgba(213, 119, 237, 0.92)";
     target.fillRect(-CHAOS_LOGO_VIEWBOX.w, -CHAOS_LOGO_VIEWBOX.h, CHAOS_LOGO_VIEWBOX.w * 3, CHAOS_LOGO_VIEWBOX.h * 3);
-  } else if (theme === "dark") {
+  } else {
     const core = target.createRadialGradient(lx, ly, 0, lx, ly, r * 0.55);
     core.addColorStop(0, "rgba(232, 160, 245, 0.95)");
     core.addColorStop(0.35, "rgba(213, 119, 237, 0.72)");
@@ -108,13 +103,6 @@ function drawStudioLogoAt(
     rim.addColorStop(0.55, "rgba(168, 72, 198, 0.35)");
     rim.addColorStop(1, "rgba(213, 119, 237, 0.12)");
     target.fillStyle = rim;
-    target.fillRect(0, 0, CHAOS_LOGO_VIEWBOX.w, CHAOS_LOGO_VIEWBOX.h);
-  } else {
-    const core = target.createRadialGradient(lx, ly, 0, lx, ly, r * 0.55);
-    core.addColorStop(0, "rgba(213, 119, 237, 0.75)");
-    core.addColorStop(0.5, "rgba(139, 61, 173, 0.35)");
-    core.addColorStop(1, "rgba(0, 0, 0, 0)");
-    target.fillStyle = core;
     target.fillRect(0, 0, CHAOS_LOGO_VIEWBOX.w, CHAOS_LOGO_VIEWBOX.h);
   }
 
@@ -164,7 +152,7 @@ function drawStudioLogoGlow(
     const ax = mx * tw;
     const ay = my * th;
     const amb = target.createRadialGradient(ax, ay, 0, ax, ay, Math.min(tw, th) * 0.5);
-    amb.addColorStop(0, theme === "dark" ? "rgba(78, 19, 112, 0.18)" : "rgba(213, 119, 237, 0.1)");
+    amb.addColorStop(0, "rgba(78, 19, 112, 0.18)");
     amb.addColorStop(1, "rgba(0, 0, 0, 0)");
     target.globalAlpha = reveal * 0.85;
     target.fillStyle = amb;
@@ -317,7 +305,7 @@ export function initCanvasBackground(): () => void {
           applyBayerDither(bctx, bw, bh, {
             profile,
             lite: true,
-            strength: (theme === "dark" ? 0.52 : 0.4) * ditherReveal,
+            strength: 0.52 * ditherReveal,
             noise: 0.45 * ditherReveal,
             vignetteNoise: false,
             cx: mx,
@@ -340,8 +328,8 @@ export function initCanvasBackground(): () => void {
         applyBayerDither(bctx, bw, bh, {
           profile: "default",
           lite: false,
-          strength: theme === "light" ? 0.32 : 0.44,
-          noise: theme === "light" ? 0.22 : 0.3,
+          strength: 0.44,
+          noise: 0.3,
           cx: attract.x,
           cy: attract.y,
         });

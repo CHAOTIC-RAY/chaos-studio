@@ -11,9 +11,7 @@ import {
   ICON_GRID,
   ICON_LIST,
   ICON_MENU,
-  ICON_MOON,
   ICON_PRINT,
-  ICON_SUN,
   ICON_TELEGRAM,
 } from "./icons";
 import { renderToolTag } from "./skill-icons";
@@ -119,10 +117,6 @@ function renderSiteChrome(
         <span class="logo-text">${opts.mode === "studio" ? esc(p.chaosStudio.title) : esc(p.profile.name)}</span>
       </a>
       <div class="header-actions">
-        <button type="button" class="btn-icon theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Switch to dark mode">
-          <span class="theme-toggle__sun">${ICON_SUN}</span>
-          <span class="theme-toggle__moon">${ICON_MOON}</span>
-        </button>
         ${printBtn}
         <a class="nav-cta" href="${ctaHref}"${ctaExternal}>${ctaLabel}</a>
       </div>

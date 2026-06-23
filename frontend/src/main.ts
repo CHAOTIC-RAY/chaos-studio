@@ -215,6 +215,15 @@ function bindPrintPortfolio(profileName: string): () => void {
 
 async function init(): Promise<void> {
   const app = document.getElementById("app");
+
+  // CMS Live Update Listener
+  window.addEventListener("message", (e) => {
+    if (e.data && e.data.type === "cms-update" && e.data.portfolio) {
+      console.log("[CMS] Received live update", e.data.portfolio);
+      portfolio = e.data.portfolio;
+      void mount(getRoute());
+    }
+  });
   if (!app) return;
 
   mountLoadingScreen(app);

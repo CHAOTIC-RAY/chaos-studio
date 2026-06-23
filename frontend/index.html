@@ -7,8 +7,7 @@
       name="description"
       content="Ibrahim Wafig — graphic designer. Brand identity, campaigns, and product design. ChaosStudio.mv"
     />
-    <meta name="theme-color" content="#4e1370" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0f0c14" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#0f0c14" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -36,17 +35,6 @@
             location.replace("/admin/" + location.search + location.hash);
           }
         }
-      })();
-    </script>
-    <script>
-      (function () {
-        var k = "portfolio-theme";
-        var t;
-        try {
-          t = localStorage.getItem(k);
-        } catch (e) {}
-        if (t !== "light" && t !== "dark") t = "dark";
-        document.documentElement.setAttribute("data-theme", t);
       })();
     </script>
   </head>

@@ -6,7 +6,9 @@
 (function () {
   'use strict';
 
-  const SITE = 'https://portfolio.chaoticstudio.workers.dev';
+  const SITE = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+    ? location.origin
+    : 'https://portfolio.chaoticstudio.workers.dev';
   const REPO = 'CHAOTIC-RAY/portfolio';
   const BRANCH = 'main';
   const SYNC_URL = '/admin/sync-status.json';
@@ -42,7 +44,7 @@
     return `<span class="cms-icon" aria-hidden="true">${ICONS[name] || ''}</span>`;
   }
 
-  let previewOpen = false;
+  let previewOpen = true;
   let previewDevice = 'desktop'; // desktop | tablet | mobile
   let sectionsOpen = false;
   let portfolioData = null;
@@ -152,7 +154,7 @@
     previewPane.id = 'cms-preview-pane';
     previewPane.innerHTML = `
       <div class="cms-preview__bar">
-        <span class="cms-preview__title">Live Preview</span>
+        <span class="cms-preview__title">Mockup Preview</span>
         <span class="cms-preview__url" id="cms-preview-url">${SITE}/</span>
         <span class="cms-preview__badge">Published only</span>
         <button class="cms-preview__refresh" id="cms-preview-refresh" title="Reload preview">
@@ -435,6 +437,7 @@
   // ── Boot ─────────────────────────────────────────────────────
   function boot() {
     buildPortal();
+    togglePreview(true);
     // Refresh sync badge every 30s
     setInterval(loadSyncBadge, 30000);
     // Watch auth state changes

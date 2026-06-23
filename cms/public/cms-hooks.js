@@ -48,10 +48,56 @@
     return entry;
   }
 
+  let lastUpdate = 0;
+  async function sendLiveUpdate(entry) {
+    if (Date.now() - lastUpdate < 150) return;
+    lastUpdate = Date.now();
+
+    const data = entry.get("data")?.toJS();
+    if (!data) return;
+
+    // Fetch full portfolio to merge changes (simulated for preview)
+    try {
+      const res = await fetch("https://portfolio.chaoticstudio.workers.dev/api/portfolio");
+      const portfolio = await res.json();
+
+      // Merge current entry into portfolio
+      const slug = entry.get("slug");
+      const collection = entry.get("collection");
+
+      if (collection === "portfolio" && slug === "main") {
+        Object.assign(portfolio, data);
+      } else if (collection === "campaign" && slug === "social-posts") {
+        portfolio.socialPosts = data;
+      } else if (collection === "campaign" && slug === "gallery-posts") {
+        portfolio.galleryPosts = data;
+      } else if (collection === "chaos-studio" && slug === "studio-page") {
+        portfolio.chaosStudio = data;
+      }
+
+      // Find preview frame in parent
+      const frame = window.parent.document.getElementById("cms-preview-frame");
+      if (frame && frame.contentWindow) {
+        frame.contentWindow.postMessage({ type: "cms-update", portfolio }, "*");
+      }
+    } catch (e) {
+      console.warn("[CMS] Live update failed", e);
+    }
+  }
+
   function registerCmsHooks() {
     if (window.__chaosAppHooks || !window.CMS?.registerEventListener) return false;
     window.__chaosAppHooks = true;
     try {
+      // Live Preview Bridge
+      const Preview = ({ entry }) => {
+        sendLiveUpdate(entry);
+        return null;
+      };
+      window.CMS.registerPreviewTemplate("campaign", Preview);
+      window.CMS.registerPreviewTemplate("portfolio", Preview);
+      window.CMS.registerPreviewTemplate("chaos-studio", Preview);
+
       window.CMS.registerEventListener({
         name: "preSave",
         handler: ({ entry }) => {
