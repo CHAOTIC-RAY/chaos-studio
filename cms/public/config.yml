@@ -64,7 +64,7 @@ collections:
   - name: campaign
     label: Portfolio posts
     editor:
-      preview: false
+      preview: true
     files:
       - name: campaign-meta
         label: Campaign heading
@@ -75,7 +75,7 @@ collections:
         label: Portfolio feed (home page)
         file: content/social-posts.json
         editor:
-          preview: false
+          preview: true
         fields:
           - label: Social & campaign posts
             name: posts
@@ -92,7 +92,7 @@ collections:
         label: Gallery pano tiles
         file: content/gallery-posts.json
         editor:
-          preview: false
+          preview: true
         fields:
           - label: Gallery posts & images
             name: posts
@@ -109,7 +109,7 @@ collections:
   - name: portfolio
     label: Site content
     editor:
-      preview: false
+      preview: true
     files:
       - name: main
         label: Home page
@@ -332,7 +332,7 @@ collections:
   - name: chaos-studio
     label: Chaos Studio tab
     editor:
-      preview: false
+      preview: true
     files:
       - name: studio-page
         label: Studio page (/studio)
@@ -436,7 +436,7 @@ collections:
   - name: site
     label: SEO & projects
     editor:
-      preview: false
+      preview: true
     files:
       - name: site-config
         label: Meta & work cards

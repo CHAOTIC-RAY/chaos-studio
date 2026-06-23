@@ -69,48 +69,6 @@
       console.warn("[CMS] preSave hook skipped", e);
     }
 
-    // Register visual builder preview
-    if (window.CMS.registerPreviewTemplate) {
-      const PagesPreview = window.createClass({
-        render: function() {
-          const entry = this.props.entry;
-          const blocks = entry.getIn(['data', 'blocks']) || [];
-          
-          const renderBlock = (block, index) => {
-            if (!block) return null;
-            const type = block.get('type');
-            if (type === 'hero') {
-              return window.h('div', { key: index, style: { padding: '40px', background: '#111', color: '#fff', borderRadius: '12px', marginBottom: '20px' } },
-                window.h('h2', { style: { fontSize: '2.5rem', marginBottom: '10px'} }, block.get('headline')),
-                window.h('p', { style: { fontSize: '1.2rem', opacity: 0.8} }, block.get('subheadline')),
-                block.get('image') ? window.h('img', { src: this.props.getAsset(block.get('image')), style: { marginTop: '20px', maxWidth: '100%', borderRadius: '8px' } }) : null
-              );
-            }
-            if (type === 'text') {
-              return window.h('div', { key: index, style: { padding: '20px', color: '#ccc' } }, 
-                window.h('div', { dangerouslySetInnerHTML: { __html: this.props.widgetFor('body') } })
-              );
-            }
-            if (type === 'gallery') {
-              const images = block.get('images') || [];
-              return window.h('div', { key: index, style: { padding: '20px' } }, 
-                 window.h('h3', { style: { color: '#fff' } }, block.get('title')),
-                 window.h('div', { style: { display: 'flex', gap: '10px', overflowX: 'auto' } }, 
-                   images.map((img, i) => window.h('img', { src: this.props.getAsset(img.get('image')), style: { height: '150px', borderRadius: '8px' }, key: i }))
-                 )
-              );
-            }
-            return window.h('div', { key: index }, `[Block: ${type}]`);
-          };
-
-          return window.h('div', { style: { fontFamily: 'sans-serif', padding: '20px' } },
-            window.h('h1', { style: { borderBottom: '1px solid #333', paddingBottom: '10px', color: '#fff' } }, entry.getIn(['data', 'title']) || 'Untitled Page'),
-            blocks.map((b, i) => renderBlock(b, i))
-          );
-        }
-      });
-      window.CMS.registerPreviewTemplate('pages', PagesPreview);
-    }
 
     return true;
   }
