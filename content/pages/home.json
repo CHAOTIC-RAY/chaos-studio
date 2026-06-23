@@ -1,0 +1,229 @@
+{
+  "title": "Home",
+  "path": "/",
+  "blocks": [
+    {
+      "type": "hero",
+      "headline": "Welcome to my portfolio",
+      "subheadline": "I build things for the web."
+    },
+    {
+      "type": "social_feed",
+      "subtitle": "Campaign & feed highlights",
+      "posts": [
+        {
+          "id": "ayha-02",
+          "platform": "Instagram",
+          "client": "Ayha Maldives",
+          "title": "School Uniform Design Promo",
+          "description": "",
+          "tags": ["Uniform", "Jersey Design", "Illustration"],
+          "accent": "teal"
+        },
+        {
+          "id": "ayha-03",
+          "platform": "Instagram",
+          "client": "Ayha Maldives",
+          "title": "Jersey Design Collection",
+          "description": "",
+          "tags": ["events", "Jersey Design"],
+          "accent": "teal"
+        },
+        {
+          "id": "aysh-saloon-01",
+          "platform": "Instagram",
+          "client": "Aysh Salon",
+          "title": "Relaxation Trio packages",
+          "description": "",
+          "tags": ["salon", "beauty", "packages"],
+          "accent": "pink"
+        },
+        {
+          "id": "digital-dive-01",
+          "platform": "Facebook",
+          "client": "Digital Dive",
+          "title": "Futsal Fiesta — women's fixtures",
+          "description": "",
+          "tags": ["futsal", "fixtures", "council", "2024"],
+          "accent": "purple"
+        },
+        {
+          "id": "digital-dive-05",
+          "platform": "Facebook",
+          "client": "Digital Dive",
+          "title": "Sponsors & partners",
+          "description": "",
+          "tags": ["futsal", "sponsors", "council"],
+          "accent": "purple"
+        },
+        {
+          "id": "expressshipping-01",
+          "platform": "Instagram",
+          "client": "Express Shipping MV",
+          "title": "Profile banner — land, air & sea",
+          "description": "",
+          "tags": ["shipping", "logistics", "banner", "carousel"],
+          "accent": "teal",
+          "slides": ["slide-01", "slide-02", "slide-03"]
+        },
+        {
+          "id": "haus-of-paws-01",
+          "platform": "Instagram",
+          "client": "Haus of Paws",
+          "title": "Brand & partners",
+          "description": "",
+          "tags": ["pets", "grooming", "carousel", "retail"],
+          "accent": "gold",
+          "slides": ["slide-01", "slide-02", "slide-03"]
+        },
+        {
+          "id": "lumeria-01",
+          "platform": "Instagram",
+          "client": "Lumeria Salon",
+          "title": "Pixana treatment menu",
+          "description": "",
+          "tags": ["salon", "beauty", "pricing", "hair care"],
+          "accent": "pink"
+        },
+        {
+          "id": "metroflex-islanders-nutrition-01",
+          "platform": "Instagram",
+          "client": "Metroflex & Islanders Nutrition",
+          "title": "Calisthenics Arena 2025",
+          "description": "",
+          "tags": ["gym", "fitness", "tournament", "events"],
+          "accent": "gold"
+        },
+        {
+          "id": "rainbow-01",
+          "platform": "Instagram",
+          "client": "Rainbow Enterprise",
+          "title": "My Home member deals",
+          "description": "",
+          "tags": ["retail", "furniture", "member offers", "carousel"],
+          "accent": "purple",
+          "slides": ["slide-01", "slide-02", "slide-03"]
+        },
+        {
+          "id": "rioga-01",
+          "platform": "Instagram",
+          "client": "Rioga Travel & Tours",
+          "title": "Rioga Points loyalty",
+          "description": "",
+          "tags": ["travel", "loyalty", "carousel"],
+          "accent": "teal",
+          "slides": ["slide-01", "slide-02"]
+        },
+        {
+          "id": "world-trip-tours-01",
+          "platform": "Instagram",
+          "client": "World Trip Tours",
+          "title": "Azerbaijan & Georgia package",
+          "description": "",
+          "tags": ["travel", "tourism", "package"],
+          "accent": "teal"
+        }
+      ]
+    },
+    {
+      "type": "social_feed",
+      "subtitle": "Gallery pano tiles",
+      "posts": [
+        {
+          "id": "ayha-01",
+          "platform": "Instagram",
+          "client": "Ayha Maldives",
+          "title": "Custom jersey collection",
+          "description": "",
+          "tags": ["jersey design", "sports", "carousel", "football"],
+          "accent": "teal",
+          "slides": ["slide-01", "slide-02", "slide-03", "slide-04", "slide-05", "slide-06", "slide-07", "slide-08", "slide-09", "slide-10"]
+        },
+        {
+          "id": "choparts-01",
+          "platform": "Instagram",
+          "client": "Choparts Maldives",
+          "title": "Advertising Chopart's advertisement services",
+          "description": "",
+          "tags": ["automotive", "parts", "carousel"],
+          "accent": "purple",
+          "slides": ["slide-01", "slide-02", "slide-03", "slide-04", "slide-05", "slide-06", "slide-07", "slide-08"]
+        },
+        {
+          "id": "fottcalm-01",
+          "platform": "Instagram",
+          "client": "Footcalm",
+          "title": "Product range",
+          "description": "",
+          "tags": ["footcare", "wellness", "carousel", "product"],
+          "accent": "pink",
+          "slides": ["slide-01", "slide-02", "slide-03", "slide-04", "slide-05", "slide-06", "slide-07"]
+        },
+        {
+          "id": "lumeria-02",
+          "platform": "Instagram",
+          "client": "Lumeria Salon",
+          "title": "Services & packages",
+          "description": "",
+          "tags": ["salon", "beauty", "carousel", "packages"],
+          "accent": "pink",
+          "slides": ["slide-01", "slide-02", "slide-03", "slide-04", "slide-05", "slide-06", "slide-07"]
+        },
+        {
+          "id": "rainbow-03",
+          "platform": "Instagram",
+          "client": "Rainbow Enterprise",
+          "title": "Room collection",
+          "description": "",
+          "tags": ["furniture", "interior", "carousel", "retail"],
+          "accent": "purple",
+          "slides": ["slide-01", "slide-02", "slide-03", "slide-04"]
+        },
+        {
+          "accent": "purple",
+          "client": "Rainbow Enterprise",
+          "poster": "poster.webp",
+          "platform": "Instagram",
+          "title": "Showroom reel",
+          "tags": ["furniture", "reel", "retail", "video"],
+          "video": "video.mp4",
+          "id": "rainbow-reel-01",
+          "description": ""
+        },
+        {
+          "id": "rioga-02",
+          "platform": "Instagram",
+          "client": "Rioga Travel & Tours",
+          "title": "Tour itineraries",
+          "description": "",
+          "tags": ["travel", "tourism", "carousel", "packages"],
+          "accent": "teal",
+          "slides": ["slide-01", "slide-02", "slide-03", "slide-04", "slide-05", "slide-06", "slide-07"]
+        },
+        {
+          "accent": "purple",
+          "client": "MDP Campaign",
+          "platform": "Print / OOH",
+          "title": "Vertical campaign poster",
+          "tags": ["MDP", "poster", "print", "campaign"],
+          "cardLayout": "poster",
+          "id": "mdp-poster",
+          "mediaAspect": "portrait",
+          "description": ""
+        },
+        {
+          "slides": ["slide-01", "slide-02", "slide-03", "slide-04", "slide-05", "slide-06", "slide-07", "slide-08", "slide-09"],
+          "accent": "teal",
+          "client": "MDP Campaign · Khulaasa",
+          "platform": "Media kit",
+          "title": "Khulaasa media kit",
+          "tags": ["MDP", "media kit", "branding", "Khulaasa"],
+          "cardLayout": "media-kit",
+          "id": "mdp-media-kit",
+          "mediaAspect": "landscape",
+          "description": ""
+        }
+      ]
+    }
+  ]
+}

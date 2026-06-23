@@ -73,6 +73,15 @@
       icon: "search",
       hint: "Expand sections carefully — do not delete unknown fields.",
     },
+    {
+      id: "pages",
+      title: "Page Builder",
+      desc: "Drag and drop blocks to build rich pages.",
+      hash: "#/collections/pages",
+      icon: "file",
+      hero: true,
+      hint: "Create visual pages.",
+    },
   ];
 
   const LABELS = Object.fromEntries(EDITORS.map((e) => [e.id, e.title]));
