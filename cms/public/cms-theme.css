@@ -1,0 +1,253 @@
+/* ─── Chaos Studio CMS · Sveltia Enhancement Theme ─── */
+/* Polishes the native Sveltia dark UI — does NOT hide any chrome or override layout */
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+/* ── Override Sveltia's app-level CSS variables ── */
+:root {
+  /* Sveltia reads these custom properties */
+  --primary-color: #7c6eea;
+  --accent: #7c6eea;
+  --font-family: "Inter", system-ui, -apple-system, sans-serif;
+  --mono-font: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* ── Global font ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: "Inter", system-ui, -apple-system, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── App shell: subtle gradient background ── */
+#nc-root {
+  font-family: "Inter", system-ui, -apple-system, sans-serif !important;
+}
+
+/* ── Sidebar: slightly deeper, cleaner borders ── */
+#nc-root [class*="Sidebar"],
+#nc-root [class*="sidebar"],
+#nc-root nav[class],
+#nc-root [role="navigation"] {
+  background: #111118 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* ── Top app bar ── */
+#nc-root [class*="AppHeader"],
+#nc-root [class*="TopBar"],
+#nc-root [class*="app-header"],
+#nc-root header[class] {
+  background: #111118 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Toolbar (publish/save bar) */
+#nc-root [class*="Toolbar"],
+#nc-root [class*="toolbar"] {
+  background: #18181f !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* ── Collection / entry list items ── */
+#nc-root [class*="ListItem"],
+#nc-root [class*="EntryListItem"],
+#nc-root [class*="CollectionList"] li,
+#nc-root ul[class] > li {
+  border-radius: 8px !important;
+  transition: background 150ms ease !important;
+}
+
+#nc-root [class*="ListItem"]:hover,
+#nc-root [class*="EntryListItem"]:hover {
+  background: rgba(124, 110, 234, 0.08) !important;
+}
+
+/* Sidebar nav links */
+#nc-root [class*="NavItem"],
+#nc-root [class*="nav-item"],
+#nc-root nav a[class] {
+  border-radius: 8px !important;
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+  transition: background 150ms ease, color 150ms ease !important;
+  padding: 0.45rem 0.75rem !important;
+}
+
+#nc-root [class*="NavItem"]:hover,
+#nc-root nav a[class]:hover {
+  background: rgba(124, 110, 234, 0.1) !important;
+}
+
+#nc-root [class*="NavItem"][class*="active"],
+#nc-root [class*="NavItem"][aria-current],
+#nc-root nav a[aria-current] {
+  background: rgba(124, 110, 234, 0.15) !important;
+  color: #a599f5 !important;
+}
+
+/* ── Main content area ── */
+#nc-root [class*="MainArea"],
+#nc-root [class*="Content"],
+#nc-root [class*="EditorContainer"],
+#nc-root main[class] {
+  background: #14141c !important;
+}
+
+/* ── Form widgets: inputs, selects, textareas ── */
+#nc-root input[type="text"],
+#nc-root input[type="email"],
+#nc-root input[type="number"],
+#nc-root input[type="search"],
+#nc-root input[type="url"],
+#nc-root textarea,
+#nc-root select {
+  background: #1c1c28 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  color: #e2e0ef !important;
+  font-family: "Inter", system-ui, sans-serif !important;
+  font-size: 0.875rem !important;
+  transition: border-color 150ms ease, box-shadow 150ms ease !important;
+}
+
+#nc-root input:focus,
+#nc-root textarea:focus,
+#nc-root select:focus {
+  border-color: rgba(124, 110, 234, 0.6) !important;
+  box-shadow: 0 0 0 3px rgba(124, 110, 234, 0.15) !important;
+  outline: none !important;
+}
+
+/* ── Labels ── */
+#nc-root label,
+#nc-root [class*="FieldLabel"],
+#nc-root [class*="Label"] {
+  font-family: "Inter", system-ui, sans-serif !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  color: #8b88a8 !important;
+  text-transform: uppercase !important;
+}
+
+/* ── Buttons ── */
+#nc-root button:not([class*="icon"]):not([class*="toggle"]) {
+  font-family: "Inter", system-ui, sans-serif !important;
+  font-size: 0.82rem !important;
+  font-weight: 500 !important;
+  border-radius: 8px !important;
+  transition: all 150ms ease !important;
+}
+
+/* Primary (publish / save) buttons */
+#nc-root button[class*="primary"],
+#nc-root button[class*="Publish"],
+#nc-root button[class*="Save"]:not([disabled]) {
+  background: linear-gradient(135deg, #7c6eea, #5a4fcf) !important;
+  border: none !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 8px rgba(124, 110, 234, 0.3) !important;
+}
+
+#nc-root button[class*="primary"]:hover,
+#nc-root button[class*="Publish"]:hover,
+#nc-root button[class*="Save"]:not([disabled]):hover {
+  box-shadow: 0 4px 16px rgba(124, 110, 234, 0.45) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Danger buttons */
+#nc-root button[class*="danger"],
+#nc-root button[class*="Delete"],
+#nc-root button[class*="delete"] {
+  color: #f87171 !important;
+}
+
+/* ── Cards & panels ── */
+#nc-root [class*="Card"],
+#nc-root [class*="Panel"],
+#nc-root [class*="Section"] {
+  border-radius: 10px !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* ── Scrollbars ── */
+#nc-root *::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+#nc-root *::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#nc-root *::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+}
+
+#nc-root *::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 110, 234, 0.5);
+}
+
+/* ── Code / monospace ── */
+#nc-root code,
+#nc-root pre,
+#nc-root [class*="CodeEditor"] {
+  font-family: "JetBrains Mono", ui-monospace, monospace !important;
+}
+
+/* ── Badges / tags ── */
+#nc-root [class*="Badge"],
+#nc-root [class*="Tag"],
+#nc-root [class*="Chip"] {
+  border-radius: 999px !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  padding: 0.2rem 0.55rem !important;
+}
+
+/* ── Tooltips ── */
+#nc-root [role="tooltip"],
+#nc-root [class*="Tooltip"] {
+  font-family: "Inter", system-ui, sans-serif !important;
+  font-size: 0.78rem !important;
+  border-radius: 6px !important;
+  padding: 0.35rem 0.65rem !important;
+}
+
+/* ── Modals / dialogs ── */
+#nc-root [role="dialog"],
+#nc-root [class*="Modal"] {
+  border-radius: 14px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: #18181f !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* ── Collection headings in sidebar ── */
+#nc-root [class*="CollectionHeading"],
+#nc-root [class*="SectionHeading"],
+#nc-root [class*="group-header"] {
+  font-size: 0.65rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  color: #5c5a78 !important;
+  padding: 0.75rem 0.75rem 0.25rem !important;
+}
+
+/* ── Reduce motion ── */
+@media (prefers-reduced-motion: reduce) {
+  #nc-root * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

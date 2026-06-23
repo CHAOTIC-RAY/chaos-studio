@@ -7,28 +7,24 @@
       content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
     />
     <meta name="robots" content="noindex, nofollow" />
-    <meta name="theme-color" content="#0f0d14" />
+    <meta name="theme-color" content="#0c0c12" />
     <meta name="color-scheme" content="dark" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="CMS Admin" />
     <meta name="format-detection" content="telephone=no" />
-    <title>Chaos Studio CMS — Sveltia</title>
+    <title>Chaos Studio CMS</title>
     <link rel="icon" href="/icons/icon-192.png" type="image/png" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="cms-config-url" type="text/yaml" href="/config.yml" />
-    <link rel="stylesheet" href="/editor-frame.css" />
-    <link rel="stylesheet" href="/cms-app.css" />
-    <link rel="stylesheet" href="/cms-assistant.css" />
+    <link rel="stylesheet" href="/cms-portal.css" />
   </head>
   <body>
-    <!-- Sveltia must mount on body before sveltia-cms.js — never reparent #nc-root after React init -->
-    <div id="chaos-decap-mount" class="chaos-decap-mount"><div id="nc-root"></div></div>
+    <div id="nc-root"></div>
     <script src="/sveltia-cms.js"></script>
     <script src="/cms-hooks.js"></script>
-    <script src="/cms-assistant.js" defer></script>
-    <script src="/cms-app.js" defer></script>
+    <script src="/cms-portal.js" defer></script>
   </body>
 </html>

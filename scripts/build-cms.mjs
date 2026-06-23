@@ -29,11 +29,11 @@ fs.cpSync(iconsSrc, path.join(distDir, "icons"), { recursive: true });
 
 let index = fs.readFileSync(path.join(distDir, "index.html"), "utf8");
 index = index.replace(
-  /(\/(?:cms-app|cms-hooks|cms-assistant|sveltia-cms)\.js)("|')/g,
+  /(\/(?:cms-app|cms-hooks|cms-assistant|cms-portal|sveltia-cms)\.js)("|')/g,
   `$1?v=${buildId}$2`,
 );
 index = index.replace(
-  /(\/(?:cms-app|cms-assistant|editor-frame)\.css)("|')/g,
+  /(\/(?:cms-app|cms-assistant|cms-portal|editor-frame)\.css)("|')/g,
   `$1?v=${buildId}$2`,
 );
 fs.writeFileSync(path.join(distDir, "index.html"), index);
