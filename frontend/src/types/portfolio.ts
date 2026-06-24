@@ -91,6 +91,17 @@ export interface FeaturedWork {
   link: string;
 }
 
+export interface WorkCard {
+  slug: string;
+  title: string;
+  category: string;
+  year: string;
+  cover: string;
+  coverAlt: string;
+  href: string;
+  featured?: boolean;
+}
+
 export interface Portfolio {
   profile: {
     name: string;
@@ -186,6 +197,7 @@ export interface Portfolio {
       tags?: string[];
     }[];
   };
+  workCards: WorkCard[];
   skills: {
     subtitle: string;
     categories: {

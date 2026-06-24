@@ -1,6 +1,7 @@
 import portfolioBase from "../../../content/portfolio.json";
 import chaosStudioRaw from "../../../content/chaos-studio.json";
 import galleryRaw from "../../../content/gallery.json";
+import siteConfig from "../../../frontend/public/assets/site.config.json";
 import { getSocialPosts, getGalleryPosts } from "./campaign-posts";
 import { toStringList } from "./cms-list-shape";
 
@@ -57,6 +58,7 @@ export const portfolio = {
   gallery: normalizeGallery(galleryRaw),
   socialPosts: getSocialPosts(),
   galleryPosts: getGalleryPosts(),
+  workCards: siteConfig.work,
 };
 
 export type Portfolio = typeof portfolio;

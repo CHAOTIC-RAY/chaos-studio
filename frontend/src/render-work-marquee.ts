@@ -13,7 +13,8 @@ function marqueeRow(content: string, velocity: number, mod: string): string {
   `;
 }
 
-export function renderWorkMarquee(): string {
+export function renderWorkMarquee(opts: { velocity?: number } = {}): string {
+  const v = opts.velocity || 3;
   const row1 = `
     <span class="work-marquee__grad">Rainbow Enterprise</span>
     <span class="work-marquee__sep" aria-hidden="true">•</span>
@@ -53,9 +54,9 @@ export function renderWorkMarquee(): string {
 
   return `
     <div class="work-marquee work-marquee--hero" role="region" aria-label="Selected clients and services">
-      ${marqueeRow(row1, -3, "a")}
-      ${marqueeRow(row2, 3, "b")}
-      ${marqueeRow(row3, -2, "c")}
+      ${marqueeRow(row1, -v, "a")}
+      ${marqueeRow(row2, v, "b")}
+      ${marqueeRow(row3, -(v * 0.66), "c")}
     </div>
   `;
 }
