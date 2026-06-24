@@ -36,58 +36,6 @@
       ]
     },
     {
-      "id": "starter",
-      "name": "Starter Package",
-      "tagline": "Perfect for businesses just starting out.",
-      "price": "2,000",
-      "currency": "MVR",
-      "features": [
-        "Logo design (3 concepts)",
-        "Letterhead design",
-        "2 social media posts per week",
-        "1 reel per week"
-      ]
-    },
-    {
-      "id": "starter",
-      "name": "Starter Package",
-      "tagline": "Perfect for businesses just starting out.",
-      "price": "2,000",
-      "currency": "MVR",
-      "features": [
-        "Logo design (3 concepts)",
-        "Letterhead design",
-        "2 social media posts per week",
-        "1 reel per week"
-      ]
-    },
-    {
-      "id": "starter",
-      "name": "Starter Package",
-      "tagline": "Perfect for businesses just starting out.",
-      "price": "2,000",
-      "currency": "MVR",
-      "features": [
-        "Logo design (3 concepts)",
-        "Letterhead design",
-        "2 social media posts per week",
-        "1 reel per week"
-      ]
-    },
-    {
-      "id": "starter",
-      "name": "Starter Package",
-      "tagline": "Perfect for businesses just starting out.",
-      "price": "2,000",
-      "currency": "MVR",
-      "features": [
-        "Logo design (3 concepts)",
-        "Letterhead design",
-        "2 social media posts per week",
-        "1 reel per week"
-      ]
-    },
-    {
       "id": "business-booster",
       "name": "Business Booster Package",
       "tagline": "Ideal for small businesses looking to grow their brand.",
@@ -223,8 +171,8 @@
       "quote": "Working with Wafiq was an absolute pleasure. Their creativity have helped us achieve our vision to be a marketing partner to many big clients we handle. From the initial concept, Wafiq have demonstrated exceptional skill and professionalism. His ability to understand our needs and deliver a product was truly impressive. We highly recommend Wafiq to anyone looking for innovative and high-quality design work",
       "author": "Mariyam Shukaina",
       "title": "Rioga Boss",
-      "contact": null,
-      "packageId": null
+      "contact": "",
+      "packageId": ""
     }
   ],
   "featuredWork": [
