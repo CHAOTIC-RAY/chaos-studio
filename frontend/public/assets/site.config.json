@@ -34,9 +34,12 @@
       "title": "CookXpert",
       "category": "Product Design",
       "year": "2025",
+      "tagline": "",
+      "description": "",
       "cover": "/assets/work/cookxpert/cover.webp",
       "coverAlt": "CookXpert — AI recipe manager and cooking companion UI",
       "href": "https://cookxpert.app",
+      "cta": "",
       "featured": true
     },
     {
@@ -44,9 +47,12 @@
       "title": "Forge",
       "category": "UI/UX",
       "year": "2025",
+      "tagline": "",
+      "description": "",
       "cover": "/assets/work/forge/cover.webp",
       "coverAlt": "Forge — content scheduler and idea creator",
-      "href": "https://forge.app"
+      "href": "https://forge.app",
+      "cta": ""
     },
     {
       "slug": "faisa",
