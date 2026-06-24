@@ -116,13 +116,9 @@ function postKindLabel(post: SocialPost): string {
   return post.platform || "Image";
 }
 
-function postImageBase(post: SocialPost): string {
-  return post.image?.trim() || post.id;
-}
-
 function postSlideSrc(post: SocialPost, slide: string): string {
   if (post.slides?.length) return `${POSTS_DIR}/${post.id}/${slide}.webp`;
-  return `${POSTS_DIR}/${postImageBase(post)}.webp`;
+  return `${POSTS_DIR}/${post.id}.webp`;
 }
 
 function tileFromPost(post: SocialPost): PanoTile {
@@ -132,7 +128,7 @@ function tileFromPost(post: SocialPost): PanoTile {
     ? `${POSTS_DIR}/${post.id}/${post.poster ?? "poster.webp"}`
     : post.slides?.length
       ? postSlideSrc(post, post.slides[0])
-      : `${POSTS_DIR}/${postImageBase(post)}.webp`;
+      : `${POSTS_DIR}/${post.id}.webp`;
 
   if (post.video) {
     const src = `${POSTS_DIR}/${post.id}/${post.video}`;

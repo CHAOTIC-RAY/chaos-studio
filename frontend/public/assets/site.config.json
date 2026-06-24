@@ -34,48 +34,134 @@
       "title": "CookXpert",
       "category": "Product Design",
       "year": "2025",
+      "tagline": "AI-powered recipe manager & cooking companion",
+      "description": "End-to-end product design for a cooking companion: onboarding, recipe discovery, fridge tracking, shared DB, themes, and Android packaging.",
       "cover": "/assets/work/cookxpert/cover.webp",
       "coverAlt": "CookXpert — AI recipe manager and cooking companion UI",
       "href": "https://cookxpert.app",
-      "featured": true
+      "cta": "Open App",
+      "featured": true,
+      "accent": "pink",
+      "highlights": [
+        "Chef AI chat and guided cooking mode",
+        "Meal guides, discovery search, and shared recipe database",
+        "Fridge tracker, themes, and Android APK distribution"
+      ],
+      "tags": [
+        "CookXpert Chef AI",
+        "Meal guides",
+        "Shared recipe DB",
+        "Fridge tracker",
+        "Cooking mode",
+        "Discovery & Search",
+        "Themes",
+        "Android APK"
+      ]
     },
     {
       "slug": "forge",
       "title": "Forge",
       "category": "UI/UX",
       "year": "2025",
+      "tagline": "Content Scheduler & Idea Creator",
+      "description": "UI for planning posts, generating content ideas, and scheduling across channels with a dark productivity-focused interface.",
       "cover": "/assets/work/forge/cover.webp",
       "coverAlt": "Forge — content scheduler and idea creator",
-      "href": "https://forge.app"
+      "href": "https://forge.app",
+      "cta": "Try Scheduler",
+      "accent": "neutral",
+      "highlights": [
+        "Content calendar and queue views",
+        "Idea prompts and draft captions",
+        "Channel-specific preview frames"
+      ],
+      "tags": [
+        "Content Calendar",
+        "Idea Generator",
+        "Scheduler",
+        "Dark Mode"
+      ]
     },
     {
       "slug": "faisa",
       "title": "FaisaMobileXYZ",
       "category": "Mobile UI",
       "year": "2024",
+      "tagline": "MIB App Design Concept",
+      "description": "Mobile banking concept with green accent system, card dashboards, and transfer flows designed for clarity on small screens.",
       "cover": "/assets/work/faisa/cover.webp",
       "coverAlt": "FaisaMobileXYZ — MIB banking app design concept",
-      "href": "#"
+      "href": "https://xd.adobe.com/view/b36c0490-3f96-4e44-b508-e7eec72ac2f4-e63f/screen/ff1f537b-4355-4368-a948-171625c7b7dc/?fullscreen&hints=off",
+      "cta": "View prototype",
+      "accent": "green",
+      "highlights": [
+        "Dashboard & card overview screens",
+        "Transfer and bill-pay flows",
+        "MIB-inspired green glass components"
+      ],
+      "tags": [
+        "Mobile Banking",
+        "Dashboard",
+        "Transfers",
+        "Green Glass UI"
+      ]
     },
     {
       "slug": "QuePulse",
       "title": "QuePulse",
       "category": "Android App + WebApp",
       "year": "2026",
+      "tagline": "Live Hospital Queue Tracking",
+      "description": "Open-source mobile-first queue management system for Maldivian hospitals — real-time tracking, SMS notifications, and admin dashboard.",
       "cover": "/assets/work/quepulse/cover.webp",
       "coverAlt": "Live hospital queue tracking for the Maldives — open source, mobile-first, and free to use.",
       "href": "https://quepulse.chaoticstudio.workers.dev/",
-      "featured": true
+      "cta": "View App",
+      "featured": true,
+      "accent": "green",
+      "highlights": [
+        "Real-time queue status and position tracking",
+        "SMS notifications when your turn approaches",
+        "Admin dashboard for hospital staff management",
+        "Open source and free for public use"
+      ],
+      "tags": [
+        "Queue Management",
+        "Hospital",
+        "Real-time",
+        "SMS Notifications",
+        "Open Source",
+        "Mobile First",
+        "Admin Dashboard"
+      ]
     },
     {
       "slug": "GexTag",
       "title": "GexTag",
       "category": "WebApp/Tool",
       "year": "2026",
+      "tagline": "Bulk Geotagging Utility",
+      "description": "Free web-based tool to inject EXIF GPS location metadata into multiple photos at once — perfect for photographers and content creators.",
       "cover": "/assets/work/gextag/cover.webp",
       "coverAlt": "A free bulk geotagging utility to inject EXIF location metadata into photos.",
       "href": "https://gextag.chaoticstudio.workers.dev/",
-      "featured": false
+      "cta": "Try Tool",
+      "featured": false,
+      "accent": "neutral",
+      "highlights": [
+        "Batch process multiple photos at once",
+        "Inject precise GPS coordinates into EXIF data",
+        "Drag-and-drop interface with instant preview",
+        "Free to use with no account required"
+      ],
+      "tags": [
+        "Geotagging",
+        "EXIF Metadata",
+        "Photo Tool",
+        "GPS",
+        "Batch Processing",
+        "Photography"
+      ]
     }
   ],
   "clients": [

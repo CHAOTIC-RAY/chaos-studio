@@ -474,25 +474,42 @@ export function renderStudioPage(p: Portfolio): string {
 }
 
 export function renderGalleryPage(p: Portfolio): string {
+  const gallery = p.gallery;
+  const posts = p.galleryPosts.items || [];
+  const clients = Array.from(new Set(posts.map((p) => p.client))).sort();
+  const tabs = ["All", ...clients]
+    .map(
+      (c, i) =>
+        `<button type="button" class="posts-tabs__btn ${i === 0 ? "is-active" : ""}" data-filter="${c === "All" ? "all" : esc(c)}">${esc(c)}</button>`,
+    )
+    .join("");
+
   return `
     ${renderSiteChrome(p, { mode: "portfolio", logoHref: portfolioUrl(), nav: GALLERY_NAV })}
     <main id="main">
       <section class="gallery-hero">
         <div class="gallery-hero__inner">
-          <p class="eyebrow" data-reveal>${esc(p.gallery.tagline)}</p>
-          <h1 data-reveal>${esc(p.gallery.headline)}</h1>
-          <p class="lead" data-reveal>${esc(p.gallery.pitch)}</p>
+          <p class="eyebrow" data-reveal>${esc(gallery.tagline)}</p>
+          <h1 data-reveal>${esc(gallery.headline)}</h1>
+          <p class="lead" data-reveal>${esc(gallery.pitch)}</p>
         </div>
       </section>
-      <div id="pano-container" class="pano-container">
-        <div class="pano-hint">
-          <span>${ICON_CHEVRON_LEFT}</span>
-          <span>Scroll to explore</span>
-          <span>${ICON_CHEVRON_RIGHT}</span>
+      <div class="posts-feed" data-posts-feed>
+        <div class="posts-tabs-wrap" data-posts-tabs-wrap>
+          <button class="posts-tabs-nav posts-tabs-nav--prev" data-posts-tabs-prev aria-label="Scroll tabs left">${ICON_CHEVRON_LEFT}</button>
+          <div class="posts-tabs" data-posts-tabs role="tablist">
+            ${tabs}
+          </div>
+          <button class="posts-tabs-nav posts-tabs-nav--next" data-posts-tabs-next aria-label="Scroll tabs right">${ICON_CHEVRON_RIGHT}</button>
         </div>
-        <div id="pano-track" class="pano-track">
-          <!-- Panoramic items injected by gallery-panorama.ts -->
-          <div class="pano-loading">Loading gallery...</div>
+        <div class="posts-rail-viewport" data-posts-rail-viewport>
+          <div class="posts-rail" data-posts-rail>
+            ${posts.map((p) => renderPostCard(p, { feed: "rail" })).join("")}
+          </div>
+        </div>
+        <div class="posts-rail-nav">
+          <button class="btn-icon" data-posts-prev aria-label="Previous posts">${ICON_CHEVRON_LEFT}</button>
+          <button class="btn-icon" data-posts-next aria-label="Next posts">${ICON_CHEVRON_RIGHT}</button>
         </div>
       </div>
     </main>
@@ -591,7 +608,9 @@ function renderPostSlideImg(
   opts: { slideIndex: number; slideCount: number; eager: boolean; filmstrip?: boolean },
 ): string {
   const base = postImageBase(post);
-  const src = `/images/posts/${post.id}/${slide}.webp`;
+  // If post has slides, use directory path. Otherwise use direct file path.
+  const hasSlides = post.slides && post.slides.length > 0;
+  const src = hasSlides ? `/images/posts/${post.id}/${slide}.webp` : `/images/posts/${post.id}.webp`;
   const loading = opts.eager ? "eager" : "lazy";
   const className = opts.filmstrip ? "post-card__filmstrip-img" : "post-card__img";
   return `
@@ -625,7 +644,7 @@ function renderPostVideo(post: Portfolio["socialPosts"]["items"][0]): string {
 }
 
 function renderPostPosterFull(post: Portfolio["socialPosts"]["items"][0]): string {
-  const slide = post.slides?.[0] || postImageBase(post);
+  const slide = post.slides?.[0] || post.id;
   return `
     <div class="post-card__poster-full">
       ${renderPostSlideImg(post, slide, { slideIndex: 0, slideCount: 1, eager: false })}
@@ -684,7 +703,7 @@ function renderPostMedia(post: Portfolio["socialPosts"]["items"][0], mode: "rail
   const slides =
     post.slides?.length && post.slides.length > 0
       ? post.slides
-      : [postImageBase(post)];
+      : [post.id];
 
   if (layout === "poster") {
     return renderPostPosterFull(post);
