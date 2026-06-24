@@ -182,12 +182,14 @@ html, body {
   display: flex;
   height: 100vh;
   padding-top: var(--bar-h);
+  flex-direction: row;
 }
 
 /* Sveltia pane */
 #cms-editor-pane {
   flex: 1 1 auto;
   min-width: 0;
+  min-height: 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -578,3 +580,34 @@ html, body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--c-accent-hi); }
+
+@media (max-width: 900px) {
+  #cms-layout {
+    flex-direction: column;
+    padding-top: var(--bar-h);
+  }
+
+  #cms-editor-pane {
+    flex: 1 1 50%;
+    min-height: 0;
+  }
+
+  #cms-preview-pane {
+    border-left: none !important;
+    border-top: 1px solid var(--c-border);
+    flex-basis: 0;
+  }
+
+  #cms-preview-pane.is-open {
+    flex: 1 1 50% !important;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  #cms-resizer {
+    flex: 0 0 6px !important;
+    cursor: row-resize !important;
+    display: none;
+  }
+  #cms-layout.has-preview #cms-resizer { display: block; }
+}

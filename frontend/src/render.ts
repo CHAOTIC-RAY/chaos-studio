@@ -3,7 +3,6 @@ import { CHAOS_LOGO_SVG, CHAOS_LOGO_SVG_HERO } from "./brand/logo";
 import { portfolioUrl, studioUrl, galleryUrl } from "./router";
 import {
   ICON_CHECK,
-  ICON_CHEVRON_DOWN,
   ICON_CHEVRON_LEFT,
   ICON_CHEVRON_RIGHT,
   ICON_CLOSE,
@@ -574,26 +573,14 @@ function visiblePosts(items: SocialPost[]): SocialPost[] {
 /** First visible frame for a post — mirrors the gallery tile cover logic. */
 function renderPostsSection(social: Portfolio["socialPosts"]): string {
   const items = visiblePosts(social.items);
-  const count = items.length;
   return `
         <div class="section-head section-head--posts" data-reveal>
           <div class="section-head__copy">
             <p class="eyebrow">Campaign & feed</p>
             <h2>${esc(social.subtitle)}</h2>
           </div>
-          <button
-            type="button"
-            class="posts-panel__toggle"
-            data-posts-expand
-            aria-expanded="false"
-            aria-controls="posts-panel"
-          >
-            <span class="posts-panel__toggle-label">Browse full feed</span>
-            <span class="posts-panel__toggle-meta">${count} posts</span>
-            <span class="posts-panel__toggle-icon" aria-hidden="true">${ICON_CHEVRON_DOWN}</span>
-          </button>
         </div>
-        <div class="posts-panel posts-panel--collapsed" id="posts-panel" data-posts-panel data-reveal>
+        <div class="posts-panel" id="posts-panel" data-posts-panel data-reveal>
           <div class="posts-rail" data-posts-carousel>
             <div class="posts-rail__shell">
               <button type="button" class="posts-rail__btn posts-rail__btn--prev" aria-label="Previous campaign posts">
@@ -608,10 +595,7 @@ function renderPostsSection(social: Portfolio["socialPosts"]): string {
                 ${ICON_CHEVRON_RIGHT}
               </button>
             </div>
-            <p class="posts-rail__hint">Auto-scrolls smoothly · drag or use arrows · expand for full grid</p>
-          </div>
-          <div class="posts-feed-expanded" data-posts-expanded hidden>
-            ${renderPostsExpandedFeed(items)}
+            <p class="posts-rail__hint">Auto-scrolls smoothly · drag or use arrows · browse our panoramic gallery below</p>
           </div>
         </div>
         <div class="posts-pano-cta" data-reveal>
@@ -629,13 +613,6 @@ function groupPostsByClient(items: SocialPost[]): { client: string; posts: Socia
     else groups.push({ client: post.client, posts: [post] });
   }
   return groups;
-}
-
-function clientSlug(client: string): string {
-  return client
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
 }
 
 function postCardLayout(post: SocialPost): "poster" | "media-kit" | null {
@@ -681,68 +658,6 @@ function renderPostsTrack(items: SocialPost[]): string {
       )
       .join("");
   return renderGroups() + renderGroups();
-}
-
-function renderPostsExpandedFeed(items: SocialPost[]): string {
-  const groups = groupPostsByClient(items);
-  const clientCount = groups.length;
-  const tabs = groups
-    .map(
-      (g, i) => `
-        <button
-          type="button"
-          role="tab"
-          class="posts-feed__tab${i === 0 ? " posts-feed__tab--active" : ""}"
-          data-posts-tab="${esc(clientSlug(g.client))}"
-          aria-selected="${i === 0 ? "true" : "false"}"
-          aria-controls="posts-panel-${esc(clientSlug(g.client))}"
-          id="posts-tab-${esc(clientSlug(g.client))}"
-        >
-          <span class="posts-feed__tab-label">${esc(g.client)}</span>
-          <span class="posts-feed__tab-count">${g.posts.length}</span>
-        </button>`,
-    )
-    .join("");
-
-  const panels = groups
-    .map(
-      (g, i) => `
-      <section
-        class="posts-feed__panel${i === 0 ? " posts-feed__panel--active" : ""}"
-        id="posts-panel-${esc(clientSlug(g.client))}"
-        role="tabpanel"
-        data-posts-tab-panel="${esc(clientSlug(g.client))}"
-        data-client="${esc(g.client)}"
-        aria-labelledby="posts-tab-${esc(clientSlug(g.client))}"
-        ${i === 0 ? "" : "hidden"}
-      >
-        <p class="posts-feed__panel-intro">${g.posts.length} post${g.posts.length === 1 ? "" : "s"} · Swipe multi-slide decks sideways · Tap any frame for fullscreen</p>
-        <div class="posts-feed__grid">
-          ${g.posts.map((post) => renderPostCard(post, { feed: "expanded" })).join("")}
-        </div>
-      </section>`,
-    )
-    .join("");
-
-  return `
-    <div class="posts-feed__shell">
-      <header class="posts-feed__toolbar" data-posts-toolbar>
-        <div class="posts-feed__toolbar-copy">
-          <p class="posts-feed__eyebrow">Campaign archive</p>
-          <p class="posts-feed__lead">${items.length} posts · ${clientCount} client${clientCount === 1 ? "" : "s"}</p>
-        </div>
-        <div class="posts-feed__tabs-wrap" data-posts-tabs-wrap>
-          <button type="button" class="posts-feed__tabs-scroll posts-feed__tabs-scroll--prev" data-posts-tabs-prev aria-label="Scroll clients left">
-            ${ICON_CHEVRON_LEFT}
-          </button>
-          <div class="posts-feed__tabs hide-scrollbar" data-posts-tabs role="tablist" aria-label="Filter by client">${tabs}</div>
-          <button type="button" class="posts-feed__tabs-scroll posts-feed__tabs-scroll--next" data-posts-tabs-next aria-label="Scroll clients right">
-            ${ICON_CHEVRON_RIGHT}
-          </button>
-        </div>
-      </header>
-      <div class="posts-feed__panels">${panels}</div>
-    </div>`;
 }
 
 function postImageBase(post: SocialPost): string {

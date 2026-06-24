@@ -2,6 +2,27 @@
  * Shared Decap CMS hooks (login shell + editor iframe).
  */
 (function () {
+  let portfolioCache = null;
+  let cachePromise = null;
+
+  async function getPortfolio() {
+    if (portfolioCache) return portfolioCache;
+    if (cachePromise) return cachePromise;
+
+    cachePromise = fetch("https://portfolio.chaoticstudio.workers.dev/api/portfolio")
+      .then(res => res.json())
+      .then(data => {
+        portfolioCache = data;
+        return data;
+      })
+      .catch(err => {
+        console.error("[CMS] Failed to fetch portfolio for cache", err);
+        cachePromise = null;
+        return null;
+      });
+    return cachePromise;
+  }
+
   function normalizeListValue(val, prop) {
     if (!Array.isArray(val)) return val;
     return val.map((item) => {
@@ -50,53 +71,60 @@
 
   let lastUpdate = 0;
   async function sendLiveUpdate(entry) {
-    if (Date.now() - lastUpdate < 150) return;
-    lastUpdate = Date.now();
+    const now = Date.now();
+    if (now - lastUpdate < 50) return;
+    lastUpdate = now;
 
     const data = entry.get("data")?.toJS();
     if (!data) return;
 
-    // Fetch full portfolio to merge changes (simulated for preview)
-    try {
-      const res = await fetch("https://portfolio.chaoticstudio.workers.dev/api/portfolio");
-      const portfolio = await res.json();
+    const portfolio = await getPortfolio();
+    if (!portfolio) return;
 
-      // Merge current entry into portfolio
-      const slug = entry.get("slug");
-      const collection = entry.get("collection");
+    const merged = JSON.parse(JSON.stringify(portfolio));
+    const slug = entry.get("slug");
+    const collection = entry.get("collection");
 
-      if (collection === "portfolio" && slug === "main") {
-        Object.assign(portfolio, data);
-      } else if (collection === "campaign" && slug === "social-posts") {
-        portfolio.socialPosts = data;
-      } else if (collection === "campaign" && slug === "gallery-posts") {
-        portfolio.galleryPosts = data;
-      } else if (collection === "chaos-studio" && slug === "studio-page") {
-        portfolio.chaosStudio = data;
-      }
-
-      // Find preview frame in parent
-      const frame = window.parent.document.getElementById("cms-preview-frame");
-      if (frame && frame.contentWindow) {
-        frame.contentWindow.postMessage({ type: "cms-update", portfolio }, "*");
-      }
-    } catch (e) {
-      console.warn("[CMS] Live update failed", e);
+    if (collection === "portfolio" && slug === "main") {
+      Object.assign(merged, data);
+    } else if (collection === "campaign" && slug === "social-posts") {
+      merged.socialPosts.items = data.posts || [];
+    } else if (collection === "campaign" && slug === "gallery-posts") {
+      merged.galleryPosts.items = data.posts || [];
+    } else if (collection === "chaos-studio" && slug === "studio-page") {
+      merged.chaosStudio = data;
     }
+
+    const portalFrame = window.parent.document.getElementById("cms-preview-frame");
+    if (portalFrame?.contentWindow) {
+      portalFrame.contentWindow.postMessage({ type: "cms-update", portfolio: merged }, "*");
+    }
+
+    try {
+      window.top.postMessage({ type: "cms-update", portfolio: merged }, "*");
+    } catch(e) {}
   }
 
   function registerCmsHooks() {
     if (window.__chaosAppHooks || !window.CMS?.registerEventListener) return false;
     window.__chaosAppHooks = true;
     try {
-      // Live Preview Bridge
+      getPortfolio();
+
       const Preview = ({ entry }) => {
         sendLiveUpdate(entry);
-        return null;
+        try {
+          return window.top.React.createElement("div", {
+            style: { padding: "2rem", color: "#8a82a8", textAlign: "center", fontFamily: "sans-serif", fontSize: "0.8rem" }
+          }, "Real-time mockup preview is active in the right panel.");
+        } catch(e) {
+          return null;
+        }
       };
-      window.CMS.registerPreviewTemplate("campaign", Preview);
-      window.CMS.registerPreviewTemplate("portfolio", Preview);
-      window.CMS.registerPreviewTemplate("chaos-studio", Preview);
+
+      ["campaign", "portfolio", "chaos-studio"].forEach(c => {
+        window.CMS.registerPreviewTemplate(c, Preview);
+      });
 
       window.CMS.registerEventListener({
         name: "preSave",
@@ -112,10 +140,8 @@
         },
       });
     } catch (e) {
-      console.warn("[CMS] preSave hook skipped", e);
+      console.warn("[CMS] Hook registration failed", e);
     }
-
-
     return true;
   }
 

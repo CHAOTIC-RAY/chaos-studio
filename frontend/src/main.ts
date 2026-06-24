@@ -26,11 +26,11 @@ function runCleanup(): void {
   }
 }
 
-async function mount(route: AppRoute): Promise<void> {
+async function mount(route: AppRoute, isLiveUpdate = false): Promise<void> {
   const app = document.getElementById("app");
   if (!app || !portfolio) return;
 
-  if (!firstMount) {
+  if (!firstMount && !isLiveUpdate) {
     app.style.transition = "opacity 0.22s ease, transform 0.22s ease, filter 0.22s ease";
     app.style.opacity = "0";
     app.style.transform = "scale(0.984) translateZ(0)";
@@ -61,7 +61,7 @@ async function mount(route: AppRoute): Promise<void> {
 
   await exitLoadingScreen(app);
 
-  if (!firstMount) {
+  if (!firstMount && !isLiveUpdate) {
     app.classList.add("page-enter");
     requestAnimationFrame(() => requestAnimationFrame(() => app.classList.remove("page-enter")));
   }
@@ -221,7 +221,7 @@ async function init(): Promise<void> {
     if (e.data && e.data.type === "cms-update" && e.data.portfolio) {
       console.log("[CMS] Received live update", e.data.portfolio);
       portfolio = e.data.portfolio;
-      void mount(getRoute());
+      void mount(getRoute(), true);
     }
   });
   if (!app) return;

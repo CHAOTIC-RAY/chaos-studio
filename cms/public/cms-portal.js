@@ -1,186 +1,160 @@
-/**
- * Chaos Studio CMS — Admin Portal
- * Split-view preview + section visibility toggles
- * Works on top of native Sveltia CMS, does NOT intercept routes
- */
 (function () {
-  'use strict';
+  "use strict";
 
-  const SITE = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
-    ? location.origin
-    : 'https://portfolio.chaoticstudio.workers.dev';
-  const REPO = 'CHAOTIC-RAY/portfolio';
-  const BRANCH = 'main';
-  const SYNC_URL = '/admin/sync-status.json';
-  const PORTFOLIO_JSON_PATH = 'content/portfolio.json';
+  const SYNC_URL = 'https://portfolio.chaoticstudio.workers.dev/api/sync-status';
+  const PORTFOLIO_JSON_PATH = 'data/portfolio.json';
 
-  // Map CMS hash routes → live site anchors
-  const ROUTE_MAP = [
-    { match: /campaign-meta|social-posts/,        url: SITE + '/#posts',      label: 'Campaign & feed' },
-    { match: /gallery-posts/,                      url: SITE + '/gallery',     label: 'Gallery' },
-    { match: /collections\/campaign/,             url: SITE + '/#posts',      label: 'Campaign & feed' },
-    { match: /collections\/portfolio.*main/,       url: SITE + '/#about',      label: 'Home page' },
-    { match: /collections\/portfolio.*gallery/,    url: SITE + '/gallery',     label: 'Gallery page' },
-    { match: /collections\/chaos-studio/,          url: SITE + '/studio',      label: 'Studio page' },
-    { match: /collections\/site/,                  url: SITE + '/',            label: 'Site config' },
-    { match: /collections\/pages/,                 url: SITE + '/',            label: 'Page builder' },
-  ];
-
-  const ICONS = {
-    eye:      '<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
-    eyeOff:   '<svg viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>',
-    split:    '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>',
-    desktop:  '<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>',
-    tablet:   '<svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><circle cx="12" cy="18" r="1"/></svg>',
-    mobile:   '<svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1"/></svg>',
-    refresh:  '<svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>',
-    close:    '<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
-    layers:   '<svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
-    check:    '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>',
-    upload:   '<svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>',
-  };
-
-  function icon(name) {
-    return `<span class="cms-icon" aria-hidden="true">${ICONS[name] || ''}</span>`;
-  }
-
-  let previewOpen = true;
-  let previewDevice = 'desktop'; // desktop | tablet | mobile
+  let previewOpen = false;
+  let previewDevice = 'desktop';
   let sectionsOpen = false;
   let portfolioData = null;
-  let githubToken = null;
   let savingVisibility = false;
+  let githubToken = null;
 
-  // ── Helpers ──────────────────────────────────────────────────
+  const ICONS = {
+    monitor: '<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+    smartphone: '<svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>',
+    tablet: '<svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>',
+    refresh: '<svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>',
+    columns: '<svg viewBox="0 0 24 24"><path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7m0-18H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7m0-18v18"/></svg>',
+    layers: '<svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
+    check: '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>',
+    eye: '<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+    upload: '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
+    x: '<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    desktop: '<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>'
+  };
+
   function getToken() {
     if (githubToken) return githubToken;
+    const auth = localStorage.getItem('decap-cms-user');
+    if (!auth) return null;
     try {
-      const u = JSON.parse(localStorage.getItem('sveltia-cms.user') || localStorage.getItem('decap-cms-user') || 'null');
-      if (u?.token) { githubToken = u.token; return u.token; }
-    } catch { /* ignore */ }
-    return '';
+      const parsed = JSON.parse(auth);
+      githubToken = parsed.token;
+      return githubToken;
+    } catch { return null; }
   }
 
-  function routeLabel() {
-    const h = location.hash;
-    const hit = ROUTE_MAP.find(r => r.match.test(h));
-    return hit ? hit.label : 'Chaos Studio CMS';
-  }
-
-  function previewUrl() {
-    const h = location.hash;
-    const hit = ROUTE_MAP.find(r => r.match.test(h));
-    return hit ? hit.url : SITE + '/';
-  }
-
-  function showToast(msg, type = '') {
-    document.querySelector('.cms-toast')?.remove();
-    const t = document.createElement('div');
-    t.className = `cms-toast${type ? ` cms-toast--${type}` : ''}`;
-    t.textContent = msg;
-    document.body.appendChild(t);
-    setTimeout(() => t.remove(), 4000);
-  }
-
-  // ── GitHub API ────────────────────────────────────────────────
   async function ghGet(path) {
     const tok = getToken();
     if (!tok) return null;
-    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURIComponent(path)}?ref=${BRANCH}`, {
-      headers: { Authorization: `Bearer ${tok}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' }
+    const res = await fetch(`https://api.github.com/repos/CHAOTIC-RAY/portfolio/contents/${path}`, {
+      headers: { 'Authorization': `token ${tok}`, 'Accept': 'application/vnd.github.v3+json' }
     });
     if (!res.ok) return null;
-    const meta = await res.json();
-    const text = new TextDecoder().decode(Uint8Array.from(atob(meta.content.replace(/\n/g, '')), c => c.charCodeAt(0)));
-    return { data: JSON.parse(text), sha: meta.sha };
+    const json = await res.json();
+    return {
+      sha: json.sha,
+      data: JSON.parse(atob(json.content))
+    };
   }
 
   async function ghPut(path, content, message, sha) {
     const tok = getToken();
-    if (!tok) throw new Error('Not authenticated');
-    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2) + '\n')));
-    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURIComponent(path)}`, {
+    const res = await fetch(`https://api.github.com/repos/CHAOTIC-RAY/portfolio/contents/${path}`, {
       method: 'PUT',
-      headers: { Authorization: `Bearer ${tok}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json', 'X-GitHub-Api-Version': '2022-11-28' },
-      body: JSON.stringify({ message, branch: BRANCH, content: encoded, sha })
+      headers: { 'Authorization': `token ${tok}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message,
+        content: btoa(JSON.stringify(content, null, 2)),
+        sha
+      })
     });
-    if (!res.ok) {
-      const err = await res.text();
-      throw new Error(`GitHub: ${res.status} ${err.slice(0, 100)}`);
-    }
+    if (!res.ok) throw new Error(await res.text());
     return res.json();
   }
 
-  // ── Build Portal HTML ─────────────────────────────────────────
+  function showToast(msg, type = 'info') {
+    const t = document.createElement('div');
+    t.className = `cms-toast cms-toast--${type}`;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
+  }
+
+  function routeLabel() {
+    const h = window.location.hash;
+    if (h.includes('/collections/portfolio')) return 'Portfolio';
+    if (h.includes('/collections/campaign')) return 'Campaign';
+    if (h.includes('/collections/chaos-studio')) return 'Chaos Studio';
+    return 'Dashboard';
+  }
+
+  function previewUrl() {
+    const origin = window.location.origin.includes('localhost') ? 'http://localhost:5173' : 'https://chaotic.studio';
+    const h = window.location.hash;
+    if (h.includes('/collections/chaos-studio')) return `${origin}/studio`;
+    if (h.includes('/collections/campaign')) return `${origin}/gallery`;
+    return origin;
+  }
+
+  // ── UI Construction ───────────────────────────────────────────
   function buildPortal() {
-    if (document.getElementById('cms-bar')) return;
-
-    // Top bar
-    const bar = document.createElement('div');
-    bar.id = 'cms-bar';
-    bar.innerHTML = `
-      <img class="cms-bar__logo" src="/icons/icon-192.png" alt="" />
-      <span class="cms-bar__name">Chaos Studio CMS</span>
-      <span class="cms-bar__sep"></span>
-      <span class="cms-bar__context" id="cms-bar-context">Content editor</span>
-      <div class="cms-bar__spacer"></div>
-      <button class="cms-bar__btn" id="cms-sections-btn" title="Section visibility">
-        ${icon('layers')} Sections
-      </button>
-      <button class="cms-bar__btn" id="cms-split-btn" title="Toggle preview panel">
-        ${icon('split')} Preview
-      </button>
-      <div class="cms-bar__group" id="cms-device-group">
-        <button class="cms-bar__btn is-active" data-device="desktop" title="Desktop preview">${icon('desktop')}</button>
-        <button class="cms-bar__btn" data-device="tablet" title="Tablet preview">${icon('tablet')}</button>
-        <button class="cms-bar__btn" data-device="mobile" title="Mobile preview">${icon('mobile')}</button>
-      </div>
-      <span class="cms-bar__sync" id="cms-sync-badge">Checking…</span>
-    `;
-    document.body.prepend(bar);
-
-    // Wrap nc-root and preview in layout container
-    const nc = document.getElementById('nc-root');
     const layout = document.createElement('div');
     layout.id = 'cms-layout';
 
+    // Move nc-root into editor pane
+    const root = document.getElementById('nc-root');
     const editorPane = document.createElement('div');
     editorPane.id = 'cms-editor-pane';
+    if (root) {
+      root.parentNode.insertBefore(layout, root);
+      editorPane.appendChild(root);
+    }
+    layout.appendChild(editorPane);
 
-    const resizer = document.createElement('div');
-    resizer.id = 'cms-resizer';
+    // Bar
+    const bar = document.createElement('div');
+    bar.id = 'cms-bar';
+    bar.innerHTML = `
+      <div class="cms-bar__logo">Chaos.</div>
+      <div class="cms-bar__context" id="cms-bar-context">${routeLabel()}</div>
+      <div class="cms-bar__spacer"></div>
+      <div class="cms-bar__sync" id="cms-sync-badge">GitHub</div>
+      <button class="cms-bar__btn" id="cms-sections-btn" title="Toggle section visibility">
+        ${ICONS['layers']}
+        <span>Visibility</span>
+      </button>
+      <button class="cms-bar__btn" id="cms-split-btn" title="Toggle preview pane">
+        ${ICONS['columns']}
+      </button>
+    `;
+    document.body.appendChild(bar);
 
+    // Preview pane
     const previewPane = document.createElement('div');
     previewPane.id = 'cms-preview-pane';
     previewPane.innerHTML = `
       <div class="cms-preview__bar">
-        <span class="cms-preview__title">Mockup Preview</span>
-        <span class="cms-preview__url" id="cms-preview-url">${SITE}/</span>
-        <span class="cms-preview__badge">Published only</span>
-        <button class="cms-preview__refresh" id="cms-preview-refresh" title="Reload preview">
-          ${ICONS['refresh']}
-        </button>
+        <span class="cms-preview__title">Mockup</span>
+        <span class="cms-preview__url" id="cms-preview-url">...</span>
+        <div class="cms-bar__group" id="cms-device-group">
+          <button class="cms-bar__btn is-active" data-device="desktop">${ICONS['monitor']}</button>
+          <button class="cms-bar__btn" data-device="tablet">${ICONS['tablet']}</button>
+          <button class="cms-bar__btn" data-device="mobile">${ICONS['smartphone']}</button>
+        </div>
+        <button class="cms-preview__refresh" id="cms-preview-refresh" title="Refresh frame">${ICONS['refresh']}</button>
       </div>
       <div class="cms-preview__viewport" id="cms-preview-viewport">
-        <iframe id="cms-preview-frame" src="${SITE}/" loading="lazy" title="Site preview"></iframe>
+        <iframe id="cms-preview-frame"></iframe>
+        <div class="cms-preview__highlight" id="cms-preview-hl"></div>
       </div>
     `;
-
-    document.body.insertBefore(layout, document.body.firstChild.nextSibling);
-    layout.appendChild(editorPane);
-    layout.appendChild(resizer);
     layout.appendChild(previewPane);
-    editorPane.appendChild(nc);
 
-    // Section visibility panel
+    // Resizer
+    const resizer = document.createElement('div');
+    resizer.id = 'cms-resizer';
+    layout.insertBefore(resizer, previewPane);
+
+    // Sections Panel
     const sectionsPanel = document.createElement('div');
     sectionsPanel.id = 'cms-sections-panel';
     sectionsPanel.innerHTML = `
       <div class="cms-sections__header">
-        <span class="cms-sections__title">
-          ${ICONS['layers']} Section visibility
-        </span>
-        <button class="cms-sections__close" id="cms-sections-close">${ICONS['close']}</button>
+        <span class="cms-sections__title">${ICONS['layers']} Sections</span>
+        <button class="cms-sections__close" id="cms-sections-close">${ICONS['x']}</button>
       </div>
       <div class="cms-sections__note">
         Toggle switches save directly to GitHub — site updates after ~2 min deploy.
@@ -223,36 +197,25 @@
 
   // ── Event bindings ────────────────────────────────────────────
   function bindEvents() {
-    // Split view toggle
     document.getElementById('cms-split-btn')?.addEventListener('click', togglePreview);
-
-    // Refresh preview
     document.getElementById('cms-preview-refresh')?.addEventListener('click', refreshPreview);
-
-    // Device toggle
     document.getElementById('cms-device-group')?.addEventListener('click', e => {
       const btn = e.target.closest('[data-device]');
       if (!btn) return;
       setDevice(btn.dataset.device);
     });
-
-    // Sections panel open/close
     document.getElementById('cms-sections-btn')?.addEventListener('click', () => toggleSections());
     document.getElementById('cms-sections-close')?.addEventListener('click', () => toggleSections(false));
-
-    // Save sections
     document.getElementById('cms-sections-save')?.addEventListener('click', saveSections);
 
     // Resizer drag
     const resizer = document.getElementById('cms-resizer');
     if (resizer) {
-      let dragging = false, startX = 0, startW = 0;
+      let dragging = false;
       resizer.addEventListener('mousedown', e => {
         const pane = document.getElementById('cms-preview-pane');
         if (!pane || !previewOpen) return;
         dragging = true;
-        startX = e.clientX;
-        startW = pane.getBoundingClientRect().width;
         resizer.classList.add('is-dragging');
         e.preventDefault();
       });
@@ -261,9 +224,19 @@
         const pane = document.getElementById('cms-preview-pane');
         const layout = document.getElementById('cms-layout');
         if (!pane || !layout) return;
-        const layoutW = layout.getBoundingClientRect().width;
-        const newW = Math.min(Math.max(startW + (startX - e.clientX), 300), layoutW - 300);
-        pane.style.flexBasis = `${newW}px`;
+
+        const isMobile = window.innerWidth <= 900;
+        if (isMobile) {
+          const layoutH = layout.getBoundingClientRect().height;
+          const rect = layout.getBoundingClientRect();
+          const newH = Math.min(Math.max(rect.bottom - e.clientY, 100), layoutH - 100);
+          pane.style.flexBasis = `${newH}px`;
+        } else {
+          const layoutW = layout.getBoundingClientRect().width;
+          const rect = layout.getBoundingClientRect();
+          const newW = Math.min(Math.max(rect.right - e.clientX, 300), layoutW - 300);
+          pane.style.flexBasis = `${newW}px`;
+        }
       });
       document.addEventListener('mouseup', () => {
         dragging = false;
@@ -271,7 +244,6 @@
       });
     }
 
-    // Watch hash changes to update context label and preview URL
     window.addEventListener('hashchange', onRouteChange);
     onRouteChange();
   }
@@ -284,12 +256,11 @@
       const frame = document.getElementById('cms-preview-frame');
       const urlEl = document.getElementById('cms-preview-url');
       const url = previewUrl();
-      if (frame) frame.src = url;
+      if (frame && frame.src !== url) frame.src = url;
       if (urlEl) urlEl.textContent = url.replace('https://', '');
     }
   }
 
-  // ── Preview panel ─────────────────────────────────────────────
   function togglePreview(force) {
     previewOpen = typeof force === 'boolean' ? force : !previewOpen;
     const pane = document.getElementById('cms-preview-pane');
@@ -328,7 +299,6 @@
     });
   }
 
-  // ── Section visibility panel ──────────────────────────────────
   function toggleSections(force) {
     sectionsOpen = typeof force === 'boolean' ? force : !sectionsOpen;
     const panel = document.getElementById('cms-sections-panel');
@@ -408,7 +378,6 @@
     const btn = document.getElementById('cms-sections-save');
     if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
 
-    // Collect toggle values
     const updated = JSON.parse(JSON.stringify(portfolioData.data));
     document.querySelectorAll('[data-section-toggle]').forEach(input => {
       const parts = input.dataset.sectionToggle.split('.');
@@ -434,14 +403,11 @@
     }
   }
 
-  // ── Boot ─────────────────────────────────────────────────────
   function boot() {
     buildPortal();
     togglePreview(true);
-    // Refresh sync badge every 30s
     setInterval(loadSyncBadge, 30000);
-    // Watch auth state changes
-    setInterval(() => { githubToken = null; }, 60000); // reset token cache
+    setInterval(() => { githubToken = null; }, 60000);
   }
 
   if (document.readyState === 'loading') {

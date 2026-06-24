@@ -11,8 +11,6 @@ export function initInteractions(): () => void {
     cleanups.push(initPanoTilt());
   }
   cleanups.push(initPostsRail());
-  cleanups.push(initPostsPanel());
-  cleanups.push(initPostsExpandedFeed());
   cleanups.push(initPostsFeedTabs());
   cleanups.push(initActiveNav());
   cleanups.push(initPostImageFallback());
@@ -252,7 +250,6 @@ function initPostsRail(): () => void {
     }, ms);
   };
 
-  const isExpanded = () =>
     document.querySelector("[data-posts-panel]")?.classList.contains("posts-panel--expanded");
 
   let hoverPause = false;
@@ -274,7 +271,6 @@ function initPostsRail(): () => void {
       !paused &&
       !hoverPause &&
       !isDown &&
-      !isExpanded() &&
       !document.body.classList.contains("lightbox-open") &&
       !animating &&
       loopHalf() > 1
@@ -469,71 +465,6 @@ function initPostsFeedTabs(): () => void {
   };
 }
 
-function initPostsPanel(): () => void {
-  const panel = document.querySelector("[data-posts-panel]") as HTMLElement | null;
-  const btn = document.querySelector("[data-posts-expand]") as HTMLButtonElement | null;
-  const expanded = document.querySelector("[data-posts-expanded]") as HTMLElement | null;
-  const label = btn?.querySelector(".posts-panel__toggle-label");
-  if (!panel || !btn || !expanded) return () => {};
-
-  const setExpanded = (on: boolean) => {
-    panel.classList.toggle("posts-panel--expanded", on);
-    panel.classList.toggle("posts-panel--collapsed", !on);
-    btn.setAttribute("aria-expanded", String(on));
-    expanded.hidden = !on;
-    if (label) label.textContent = on ? "Back to carousel" : "Browse full feed";
-    if (on) {
-      expanded.querySelectorAll<HTMLVideoElement>(".post-card__video").forEach((v) => {
-        v.pause();
-        v.currentTime = 0;
-      });
-      requestAnimationFrame(() => {
-        panel.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "nearest" });
-      });
-    }
-  };
-
-  const onToggle = () => setExpanded(!panel.classList.contains("posts-panel--expanded"));
-  btn.addEventListener("click", onToggle);
-  return () => btn.removeEventListener("click", onToggle);
-}
-
-function initPostsExpandedFeed(): () => void {
-  const feed = document.querySelector("[data-posts-expanded]");
-  if (!feed) return () => {};
-
-  const tabs = Array.from(feed.querySelectorAll<HTMLButtonElement>("[data-posts-tab]"));
-  const panels = Array.from(feed.querySelectorAll<HTMLElement>("[data-posts-tab-panel]"));
-  if (!tabs.length || !panels.length) return () => {};
-
-  const activate = (slug: string) => {
-    tabs.forEach((tab) => {
-      const on = tab.getAttribute("data-posts-tab") === slug;
-      tab.classList.toggle("posts-feed__tab--active", on);
-      tab.setAttribute("aria-selected", String(on));
-    });
-    panels.forEach((panel) => {
-      const on = panel.getAttribute("data-posts-tab-panel") === slug;
-      panel.classList.toggle("posts-feed__panel--active", on);
-      panel.hidden = !on;
-    });
-  };
-
-  const cleanups: Array<() => void> = [];
-  tabs.forEach((tab) => {
-    const onClick = () => {
-      const slug = tab.getAttribute("data-posts-tab");
-      if (slug) activate(slug);
-    };
-    tab.addEventListener("click", onClick);
-    cleanups.push(() => tab.removeEventListener("click", onClick));
-  });
-
-  const first = tabs[0]?.getAttribute("data-posts-tab");
-  if (first) activate(first);
-
-  return () => cleanups.forEach((fn) => fn());
-}
 
 function initActiveNav(): () => void {
   const links = document.querySelectorAll<HTMLAnchorElement>(".nav a[href^='#']");
