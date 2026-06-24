@@ -593,7 +593,7 @@ function renderPostSlideImg(
   opts: { slideIndex: number; slideCount: number; eager: boolean; filmstrip?: boolean },
 ): string {
   const base = postImageBase(post);
-  const src = `/images/posts/${slide}.webp`;
+  const src = `/images/posts/${post.id}/${slide}.webp`;
   const loading = opts.eager ? "eager" : "lazy";
   const className = opts.filmstrip ? "post-card__filmstrip-img" : "post-card__img";
   return `
@@ -609,8 +609,8 @@ function renderPostSlideImg(
 }
 
 function renderPostVideo(post: Portfolio["socialPosts"]["items"][0]): string {
-  const videoSrc = `/images/posts/${post.video}`;
-  const posterSrc = post.poster ? `/images/posts/${post.poster}` : "";
+  const videoSrc = `/images/posts/${post.id}/${post.video}`;
+  const posterSrc = post.poster ? `/images/posts/${post.id}/${post.poster}` : "";
   return `
     <div class="post-card__video-wrap">
       <video
