@@ -6,6 +6,9 @@ import {
   ICON_CHEVRON_LEFT,
   ICON_CHEVRON_RIGHT,
   ICON_CLOSE,
+  ICON_FILTER,
+  ICON_GRID,
+  ICON_LIST,
   ICON_MENU,
   ICON_PRINT,
   ICON_TELEGRAM,
@@ -34,7 +37,6 @@ const POST_ACCENTS: Record<string, string> = {
 };
 
 function esc(s: string): string {
-  if (typeof s !== "string") return "";
   const d = document.createElement("div");
   d.textContent = s;
   return d.innerHTML;
@@ -155,7 +157,7 @@ export function renderPage(p: Portfolio): string {
           <p class="eyebrow">Clients &amp; services</p>
           <p class="print-clients__text">Rainbow Enterprise · Reach MV · Haus of Paws · Islanders · Nutrition · Digital Dive · Motion Graphics · Unicare · Logo Design · Strategy · Marketing · Content</p>
         </div>
-        ${renderWorkMarquee({})}
+        ${renderWorkMarquee()}
         <div class="scroll-cue" aria-hidden="true"><span>Scroll</span><span class="scroll-line"></span></div>
       </section>
 
@@ -214,26 +216,7 @@ export function renderPage(p: Portfolio): string {
           <h2>${esc(p.featuredWork.subtitle)}</h2>
         </div>
         <div class="work-stack">
-          ${(p.workCards || []).map((card, i) => {
-            const merged = {
-              id: card.slug,
-              name: card.title,
-              tagline: card.tagline || card.category,
-              description: card.description || "",
-              href: card.href,
-              cta: card.cta || "View Project",
-              accent: card.accent || "neutral",
-              highlights: card.highlights || [],
-              tags: card.tags || [],
-              slug: card.slug,
-              year: card.year,
-              cover: card.cover,
-              coverAlt: card.coverAlt,
-              category: card.category,
-              featuredCard: card.featured
-            };
-            return renderProject(merged as any, i);
-          }).join("")}
+          ${p.featuredWork.projects.map((proj, i) => renderProject(proj, i)).join("")}
         </div>
       </section>
 
@@ -316,15 +299,28 @@ export function renderPage(p: Portfolio): string {
               </p>
             </div>
             <div class="contact-banner__actions">
-              <a class="btn btn-primary" href="${esc(p.contact.telegramUrl)}" target="_blank" rel="noopener noreferrer">
+              <a
+                class="btn btn-primary contact-banner__cta"
+                href="${esc(p.contact.telegramUrl)}"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-magnetic
+              >
                 ${ICON_TELEGRAM}
-                Message Wafig
+                <span>Message ${esc(p.contact.telegram)} on Telegram</span>
               </a>
-              <div class="contact-banner__social">
-                <a href="${esc(p.contact.instagramUrl)}" target="_blank" rel="noopener noreferrer">Instagram</a>
-                <span>•</span>
-                <a href="${esc(p.contact.whatsappUrl)}" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-              </div>
+              <ul class="contact-banner__links">
+                <li><a href="mailto:${esc(p.contact.email)}">${esc(p.contact.email)}</a></li>
+                <li><a href="tel:${esc(p.contact.phone.replace(/\s/g, ""))}">${esc(p.contact.phone)}</a></li>
+                <li><a href="${esc(p.contact.instagramUrl)}" target="_blank" rel="noopener noreferrer">${esc(p.contact.instagram)}</a></li>
+                <li><a href="${esc(p.contact.whatsappUrl)}" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
+              </ul>
+              <p class="contact-banner__studio">
+                <strong>${esc(p.chaosStudio.title)}</strong> —
+                <a href="${esc(p.chaosStudio.studioContact.instagramUrl)}" target="_blank" rel="noopener noreferrer">${esc(p.chaosStudio.studioContact.instagram)}</a>
+                · <a href="tel:+9607339104">+960 7339104</a>
+                · <a href="mailto:${esc(p.chaosStudio.studioContact.email)}">${esc(p.chaosStudio.studioContact.email)}</a>
+              </p>
             </div>
           </div>
         </div>
@@ -332,327 +328,434 @@ export function renderPage(p: Portfolio): string {
     </main>
 
     <footer class="site-footer">
-      <div class="footer-inner">
-        <div class="footer-brand">
-          ${CHAOS_LOGO_SVG}
-          <p class="footer-tagline">Visual stories that connect.</p>
-        </div>
-        <div class="footer-copy">
-          <p>&copy; ${new Date().getFullYear()} Ibrahim Wafig. All rights reserved.</p>
-          <div class="footer-links">
-             <a href="#top">Back to top</a>
-          </div>
-        </div>
-      </div>
+      <p>© ${new Date().getFullYear()} ${esc(p.profile.name)} · ${esc(p.profile.role)}</p>
+      <a href="${esc(p.contact.telegramUrl)}" target="_blank" rel="noopener noreferrer">${esc(p.contact.telegram)} on Telegram</a>
     </footer>
   `;
 }
 
 export function renderStudioPage(p: Portfolio): string {
-  const s = p.chaosStudio;
+  const studio = p.chaosStudio;
+  const sc = studio.studioContact;
   return `
-    ${renderSiteChrome(p, { mode: "studio", logoHref: studioUrl(), nav: STUDIO_NAV })}
-
-    <main id="main">
-      <section id="studio-hero" class="hero hero--studio">
-        <p class="hero-eyebrow eyebrow" data-parallax="6">${esc(s.tagline)}</p>
-        <h1 class="hero-title" data-parallax="10">
-          <span class="hero-line">${esc(s.headline)}</span>
-        </h1>
-        <p class="hero-sub">${esc(s.pitch)}</p>
-        <div class="hero-actions" data-parallax="8">
-          <a class="btn btn-primary" href="#packages" data-magnetic>View packages</a>
-          <a class="btn btn-ghost" href="#studio-contact" data-magnetic>Get a quote</a>
-        </div>
-        ${renderWorkMarquee({})}
-      </section>
-
-      <section id="services" class="section">
-        <div class="section-head" data-reveal>
-          <p class="eyebrow">Services</p>
-          <h2>${esc(s.title)} offerings</h2>
-        </div>
-        <div class="grid-3" data-reveal>
-          ${s.services
-            .map(
-              (svc) => `
-            <div class="glass-card svc-card">
-              <h3>${esc(svc)}</h3>
-            </div>
-          `,
-            )
-            .join("")}
-        </div>
-      </section>
-
-      <section id="packages" class="section">
-        <div class="section-head" data-reveal>
-          <p class="eyebrow">Pricing</p>
-          <h2>Select a package</h2>
-        </div>
-        <div class="packages-grid">
-          ${s.packages
-            .map(
-              (pkg) => `
-            <div class="glass-card pkg-card ${pkg.recommended ? "pkg-card--featured" : ""}" data-reveal>
-              ${pkg.recommended ? '<span class="pkg-badge">Recommended</span>' : ""}
-              <div class="pkg-icon">${studioPackageIcon(pkg.id)}</div>
-              <h3>${esc(pkg.name)}</h3>
-              <p class="pkg-tagline">${esc(pkg.tagline)}</p>
-              <div class="pkg-price">
-                <span class="pkg-currency">${esc(pkg.currency)}</span>
-                <span class="pkg-amount">${esc(pkg.price)}</span>
-              </div>
-              <ul class="pkg-features">
-                ${pkg.features.map((f) => `<li>${ICON_CHECK} ${esc(f)}</li>`).join("")}
-              </ul>
-              <a class="btn ${pkg.recommended ? "btn-primary" : "btn-ghost"} btn-block" href="${esc(s.studioContact.instagramUrl)}" target="_blank" rel="noopener noreferrer">Get started</a>
-            </div>
-          `,
-            )
-            .join("")}
-        </div>
-        <p class="pricing-note" data-reveal>${esc(s.pricingNote)}</p>
-      </section>
-
-      ${p.sections?.showProcess ? renderProcessSteps(s.process || []) : ""}
-
-      ${s.testimonials && s.testimonials.length > 0 ? renderTestimonialsSection(s.testimonials) : ""}
-
-      ${s.featuredWork && s.featuredWork.length > 0 ? `
-        <section class="section">
-          <div class="section-head" data-reveal>
-            <p class="eyebrow">Work</p>
-            <h2>Featured studio projects</h2>
+    ${renderSiteChrome(p, { mode: "studio", logoHref: portfolioUrl(), nav: STUDIO_NAV, showPrint: false })}
+    <main id="main" class="page-studio">
+      <section class="studio-page-hero" aria-labelledby="studio-page-title">
+        <div class="studio-page-hero__frame" data-reveal>
+          <div class="studio-page-logo" aria-hidden="true">
+            <div class="studio-page-logo__dither-ring" aria-hidden="true"></div>
+            <div class="studio-page-logo__mark">${CHAOS_LOGO_SVG_HERO}</div>
           </div>
-          <div class="grid-2">
-            ${s.featuredWork.map(w => `
-              <a href="${esc(w.link)}" class="glass-card studio-work-card" data-reveal target="_blank" rel="noopener noreferrer">
-                <img src="${esc(w.image)}" alt="${esc(w.title)}" loading="lazy" />
-                <div class="studio-work-content">
-                  <span class="eyebrow">${esc(w.category)}</span>
-                  <h3>${esc(w.title)}</h3>
-                  ${w.results ? `<p class="results">${esc(w.results)}</p>` : ""}
-                </div>
-              </a>
+          <p class="eyebrow studio-page-hero__eyebrow">${esc(studio.tagline)}</p>
+          <h1 id="studio-page-title" class="studio-page-hero__title">${esc(studio.title)}</h1>
+          <p class="studio-page-hero__headline">${esc(studio.headline)}</p>
+          <p class="studio-page-hero__pitch lead">${esc(studio.pitch)}</p>
+          <div class="studio-services studio-page-hero__services" aria-label="Services we provide">
+            ${renderStudioServicePills(studio.services)}
+          </div>
+          <div class="studio-page-hero__actions">
+            <a class="btn btn-primary" href="#packages" data-magnetic>View packages</a>
+            <a class="btn btn-ghost" href="${esc(sc.instagramUrl)}" target="_blank" rel="noopener noreferrer" data-magnetic>${esc(sc.instagram)}</a>
+          </div>
+        </div>
+      </section>
+      <div class="studio-page-body section section--studio">
+        ${renderStudioContent(studio, { omitHero: true })}
+        ${studio.stats ? `
+          <div class="section-head" data-reveal>
+            <p class="eyebrow">${esc(studio.stats.subtitle || "Our impact")}</p>
+          </div>
+          <div class="stats-grid" data-reveal>
+            ${studio.stats.metrics.map((metric) => `
+              <div class="stat-card glass-card" data-stat-card>
+                <div class="stat-value" data-count-up="${esc(metric.value)}">${esc(metric.value)}</div>
+                <div class="stat-label">${esc(metric.label)}</div>
+                ${metric.description ? `<div class="stat-desc">${esc(metric.description)}</div>` : ""}
+              </div>
             `).join("")}
           </div>
-        </section>
-      ` : ""}
-
-      <section id="studio-contact" class="section">
-        <div class="glass-card contact-card" data-reveal>
-          <div class="contact-grid">
-            <div class="contact-info">
-              <p class="eyebrow">Contact</p>
-              <h2>Start your project</h2>
-              <p>${esc(s.description)}</p>
-              <div class="contact-methods">
-                <a href="${esc(s.studioContact.instagramUrl)}" class="contact-method" target="_blank" rel="noopener noreferrer">
-                  <span>Instagram</span>
-                  <strong>${esc(s.studioContact.instagram)}</strong>
-                </a>
-                <div class="contact-method">
-                  <span>Email</span>
-                  <strong>${esc(s.studioContact.email)}</strong>
-                </div>
-                <div class="contact-method">
-                  <span>Phone</span>
-                  <strong>${esc(s.studioContact.phones)}</strong>
-                </div>
-              </div>
-            </div>
-            <div class="contact-visual">
-              <div class="contact-glow"></div>
-              ${CHAOS_LOGO_SVG}
-            </div>
-          </div>
-        </div>
-      </section>
+        ` : ""}
+        ${p.sections?.showProcess && studio.process && studio.process.length ? renderProcessSteps(studio.process) : ""}
+        ${studio.testimonials && studio.testimonials.length ? renderTestimonialsSection(studio.testimonials) : ""}
+      </div>
+      ${renderStudioFinale(studio)}
     </main>
+    <footer class="site-footer site-footer--studio">
+      <p>© ${new Date().getFullYear()} ${esc(studio.title)} · Malé, Maldives</p>
+    </footer>
   `;
 }
 
 export function renderGalleryPage(p: Portfolio): string {
   const gallery = p.gallery;
-  const posts = p.galleryPosts.items || [];
-  const clients = Array.from(new Set(posts.map((p) => p.client))).sort();
-  const tabs = ["All", ...clients]
-    .map(
-      (c, i) =>
-        `<button type="button" class="posts-tabs__btn ${i === 0 ? "is-active" : ""}" data-filter="${c === "All" ? "all" : esc(c)}">${esc(c)}</button>`,
-    )
-    .join("");
-
   return `
-    ${renderSiteChrome(p, { mode: "portfolio", logoHref: portfolioUrl(), nav: GALLERY_NAV })}
-    <main id="main">
-      <section class="gallery-hero">
-        <div class="gallery-hero__inner">
-          <p class="eyebrow" data-reveal>${esc(gallery.tagline)}</p>
-          <h1 data-reveal>${esc(gallery.headline)}</h1>
-          <p class="lead" data-reveal>${esc(gallery.pitch)}</p>
+    ${renderSiteChrome(p, { mode: "studio", logoHref: portfolioUrl(), nav: GALLERY_NAV, showPrint: false })}
+    <main id="main" class="page-gallery">
+      <div class="pano__loader" data-pano-loader role="status" aria-live="polite" aria-busy="true" aria-label="Loading gallery">
+        <div class="pano__loader-glow" aria-hidden="true"></div>
+        <div class="pano__loader-logo">${CHAOS_LOGO_SVG}</div>
+        <p class="pano__loader-label">Chaos Studio</p>
+        <div class="pano__loader-track" aria-hidden="true"><span class="pano__loader-bar" data-pano-loader-bar></span></div>
+      </div>
+      <div class="pano" data-pano-root data-view="grid">
+        <div class="pano__stage" data-pano-stage aria-label="Panoramic gallery — drag to explore">
+          <div class="pano__plane" data-pano-plane></div>
         </div>
-      </section>
-      <div class="posts-feed" data-posts-feed>
-        <div class="posts-tabs-wrap" data-posts-tabs-wrap>
-          <button class="posts-tabs-nav posts-tabs-nav--prev" data-posts-tabs-prev aria-label="Scroll tabs left">${ICON_CHEVRON_LEFT}</button>
-          <div class="posts-tabs" data-posts-tabs role="tablist">
-            ${tabs}
+        <div class="pano__fx" aria-hidden="true">
+          <div class="pano__edge-blur"></div>
+          <div class="pano__vignette"></div>
+        </div>
+        <div class="pano__corner">
+          <p class="eyebrow">${esc(gallery.tagline)}</p>
+          <h1 class="pano__title">${esc(gallery.title)}</h1>
+        </div>
+        <div class="pano__list" data-pano-list role="list"></div>
+        <div class="pano__hint" data-pano-hint aria-hidden="true">
+          <span class="pano__hint-dot"></span> Drag to explore · click to open
+        </div>
+        <div class="pano__controls">
+          <div class="pano__views" role="group" aria-label="Gallery layout">
+            <button type="button" class="pano__view" data-pano-view="grid" aria-pressed="true" aria-label="Panoramic view">${ICON_GRID}</button>
+            <button type="button" class="pano__view" data-pano-view="list" aria-pressed="false" aria-label="List view">${ICON_LIST}</button>
           </div>
-          <button class="posts-tabs-nav posts-tabs-nav--next" data-posts-tabs-next aria-label="Scroll tabs right">${ICON_CHEVRON_RIGHT}</button>
-        </div>
-        <div class="posts-rail-viewport" data-posts-rail-viewport>
-          <div class="posts-rail" data-posts-rail>
-            ${posts.map((p) => renderPostCard(p, { feed: "rail" })).join("")}
+          <div class="pano__filter-wrap">
+            <button type="button" class="pano__filter-btn" data-pano-filter-btn aria-expanded="false" aria-haspopup="menu">
+              ${ICON_FILTER}<span data-pano-filter-label>Filter</span>
+            </button>
+            <div class="pano__filter" data-pano-filter role="menu"></div>
           </div>
-        </div>
-        <div class="posts-rail-nav">
-          <button class="btn-icon" data-posts-prev aria-label="Previous posts">${ICON_CHEVRON_LEFT}</button>
-          <button class="btn-icon" data-posts-next aria-label="Next posts">${ICON_CHEVRON_RIGHT}</button>
         </div>
       </div>
     </main>
   `;
 }
 
-function renderStudioTeaser(s: Portfolio["chaosStudio"]): string {
+function renderStudioTeaser(studio: ChaosStudio): string {
   return `
-    <div class="studio-teaser" data-reveal>
-      <div class="studio-teaser__content">
-        <p class="eyebrow">Chaos Studio</p>
-        <h2>${esc(s.headline)}</h2>
-        <p>${esc(s.pitch)}</p>
-        <div class="studio-teaser__actions">
-          <a class="btn btn-primary" href="${studioUrl()}" data-route-link data-magnetic>View studio</a>
-          <a class="btn btn-ghost" href="${esc(s.studioContact.instagramUrl)}" target="_blank" rel="noopener noreferrer" data-magnetic>Instagram</a>
-        </div>
-      </div>
-      <div class="studio-teaser__visual">
-        <div class="studio-teaser__glow"></div>
-        ${CHAOS_LOGO_SVG_HERO}
-      </div>
-    </div>
-  `;
+        <div class="studio-teaser" data-reveal>
+          <div class="studio-teaser__glow" aria-hidden="true"></div>
+          <div class="studio-teaser__inner">
+            <div class="studio-teaser__copy">
+              <p class="eyebrow">${esc(studio.tagline)}</p>
+              <h2 class="studio-teaser__title">${esc(studio.title)}</h2>
+              <p class="lead studio-teaser__pitch">${esc(studio.headline)}</p>
+              <p class="muted studio-teaser__hint">Services, packages, and studio contact — on a dedicated page.</p>
+            </div>
+            <div class="studio-teaser__actions">
+              <a class="btn btn-primary" href="${studioUrl()}" data-route-link data-magnetic>Explore Chaos Studio</a>
+              <a class="btn btn-ghost" href="${esc(studio.studioContact.instagramUrl)}" target="_blank" rel="noopener noreferrer">${esc(studio.studioContact.instagram)}</a>
+            </div>
+          </div>
+        </div>`;
 }
 
-function renderPostsSection(s: Portfolio["socialPosts"]): string {
-  const posts = s.items || [];
-  const clients = Array.from(new Set(posts.map((p) => p.client))).sort();
-  const tabs = ["All", ...clients]
+type SocialPost = Portfolio["socialPosts"]["items"][0];
+type ChaosStudio = Portfolio["chaosStudio"];
+
+function renderStudioServicePills(services: string[]): string {
+  return services.map((s) => `<span class="studio-service">${esc(s)}</span>`).join("");
+}
+
+function renderStudioPackage(pkg: Portfolio["chaosStudio"]["packages"][0]): string {
+  const featureItems = pkg.features
     .map(
-      (c, i) =>
-        `<button type="button" class="posts-tabs__btn ${i === 0 ? "is-active" : ""}" data-filter="${c === "All" ? "all" : esc(c)}">${esc(c)}</button>`,
+      (f) => `
+            <li class="studio-package__feature">
+              <span class="studio-package__check">${ICON_CHECK}</span>
+              <span class="studio-package__feature-text">${esc(f)}</span>
+            </li>`,
     )
     .join("");
-
+  const badge = pkg.recommended
+    ? `<span class="studio-package__badge">Recommended</span>`
+    : "";
+  const icon = studioPackageIcon(pkg.id);
   return `
-    <div class="section-head" data-reveal>
-      <p class="eyebrow">Campaigns</p>
-      <h2>${esc(s.subtitle)}</h2>
-    </div>
-    <div class="posts-feed" data-posts-feed>
-      <div class="posts-tabs-wrap" data-posts-tabs-wrap>
-        <button class="posts-tabs-nav posts-tabs-nav--prev" data-posts-tabs-prev aria-label="Scroll tabs left">${ICON_CHEVRON_LEFT}</button>
-        <div class="posts-tabs" data-posts-tabs role="tablist">
-          ${tabs}
+        <article class="studio-package ${pkg.recommended ? "studio-package--recommended" : ""}" data-package-id="${esc(pkg.id)}" data-pano-tilt="7">
+          <div class="studio-package__glow" aria-hidden="true"></div>
+          <header class="studio-package__header">
+            <div class="studio-package__identity">
+              <span class="studio-package__icon studio-package__icon--${esc(pkg.id)}">${icon}</span>
+              <div class="studio-package__intro">
+                <div class="studio-package__title-row">
+                  <h3 class="studio-package__name">${esc(pkg.name)}</h3>
+                  ${badge}
+                </div>
+                <p class="studio-package__tagline">${esc(pkg.tagline)}</p>
+              </div>
+            </div>
+            <p class="studio-package__meta">${pkg.features.length} deliverables included</p>
+          </header>
+          <ul class="studio-package__features" role="list">
+            ${featureItems}
+          </ul>
+          <footer class="studio-package__footer">
+            <div class="studio-package__price">
+              <span class="studio-package__price-label">Starting at</span>
+              <p class="studio-package__price-row">
+                <span class="studio-package__amount">${esc(pkg.price)}</span>
+                <span class="studio-package__currency">${esc(pkg.currency)}</span>
+              </p>
+            </div>
+            <a class="studio-package__cta btn btn-ghost" href="#studio-contact" data-magnetic>Enquire</a>
+          </footer>
+        </article>`;
+}
+
+function renderStudioFinale(studio: ChaosStudio): string {
+  const sc = studio.studioContact;
+  return `
+      <section class="studio-finale" id="studio-contact" aria-labelledby="studio-finale-cta">
+        <div class="studio-finale__wash" aria-hidden="true"></div>
+        <div class="studio-finale__inner" data-reveal>
+          <h2 class="studio-finale__cta" id="studio-finale-cta">Let's create something bold!</h2>
+          <ul class="studio-finale__links">
+            <li><a href="${esc(sc.instagramUrl)}" target="_blank" rel="noopener noreferrer">${esc(sc.instagram)}</a></li>
+            <li><a href="tel:${esc(sc.phones.replace(/\s/g, "").replace(/\//g, ","))}">${esc(sc.phones)}</a></li>
+            <li><a href="mailto:${esc(sc.email)}">${esc(sc.email)}</a></li>
+          </ul>
         </div>
-        <button class="posts-tabs-nav posts-tabs-nav--next" data-posts-tabs-next aria-label="Scroll tabs right">${ICON_CHEVRON_RIGHT}</button>
-      </div>
-      <div class="posts-rail-viewport" data-posts-rail-viewport>
-        <div class="posts-rail" data-posts-rail>
-          ${posts.map((p) => renderPostCard(p, { feed: "rail" })).join("")}
+      </section>`;
+}
+
+function renderStudioContent(studio: ChaosStudio, opts?: { omitHero?: boolean }): string {
+  const services = renderStudioServicePills(studio.services);
+  const whyUs = studio.whyUs
+    .map(
+      (w) => `
+        <article class="studio-why">
+          <h4>${esc(w.title)}</h4>
+          <p>${esc(w.body)}</p>
+        </article>`,
+    )
+    .join("");
+  const packages = studio.packages.map((pkg) => renderStudioPackage(pkg)).join("");
+  const hero = opts?.omitHero
+    ? ""
+    : `
+        <div class="studio-hero" data-reveal>
+          <p class="eyebrow">${esc(studio.tagline)}</p>
+          <h2 class="studio-hero__title">${esc(studio.headline)}</h2>
+          <p class="studio-hero__pitch lead">${esc(studio.pitch)}</p>
+        </div>`;
+  const servicesBlock = opts?.omitHero
+    ? ""
+    : `
+        <div class="studio-services" data-reveal aria-label="Services offered">
+          ${services}
+        </div>`;
+  return `
+        ${hero}
+        ${servicesBlock}
+        <div class="studio-why-grid" data-reveal>
+          <div class="studio-why-label" aria-hidden="true">Why us?</div>
+          ${whyUs}
         </div>
-      </div>
-      <div class="posts-rail-nav">
-        <button class="btn-icon" data-posts-prev aria-label="Previous posts">${ICON_CHEVRON_LEFT}</button>
-        <button class="btn-icon" data-posts-next aria-label="Next posts">${ICON_CHEVRON_RIGHT}</button>
-      </div>
+        <div class="glass-card studio-about" data-reveal>
+          <h3 class="studio-about__title">${esc(studio.title)}</h3>
+          <p class="lead">${esc(studio.description)}</p>
+          <ul class="bullet-list">${studio.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul>
+        </div>
+        <div class="studio-pricing" id="packages" data-reveal>
+          <div class="section-head section-head--compact">
+            <p class="eyebrow">Packages & pricing</p>
+            <h3>Service packages</h3>
+            <p class="studio-pricing__note">${esc(studio.pricingNote)}</p>
+          </div>
+          <div class="studio-packages">${packages}</div>
+        </div>`;
+}
+
+function visiblePosts(items: SocialPost[]): SocialPost[] {
+  return items.filter((post) => !post.id.startsWith("_"));
+}
+
+/** First visible frame for a post — mirrors the gallery tile cover logic. */
+function renderPostsSection(social: Portfolio["socialPosts"]): string {
+  const items = visiblePosts(social.items);
+  return `
+        <div class="section-head section-head--posts" data-reveal>
+          <div class="section-head__copy">
+            <p class="eyebrow">Campaign & feed</p>
+            <h2>${esc(social.subtitle)}</h2>
+          </div>
+        </div>
+        <div class="posts-panel" id="posts-panel" data-posts-panel data-reveal>
+          <div class="posts-rail" data-posts-carousel>
+            <div class="posts-rail__shell">
+              <button type="button" class="posts-rail__btn posts-rail__btn--prev" aria-label="Previous campaign posts">
+                ${ICON_CHEVRON_LEFT}
+              </button>
+              <div class="posts-viewport" tabindex="0" aria-label="Campaign and feed posts carousel">
+                <div class="posts-track">
+                  ${renderPostsTrack(items)}
+                </div>
+              </div>
+              <button type="button" class="posts-rail__btn posts-rail__btn--next" aria-label="Next campaign posts">
+                ${ICON_CHEVRON_RIGHT}
+              </button>
+            </div>
+            <p class="posts-rail__hint">Auto-scrolls smoothly · drag or use arrows · browse our panoramic gallery below</p>
+          </div>
+        </div>
+        <div class="posts-pano-cta" data-reveal>
+          <a class="btn btn-primary" href="${galleryUrl()}" data-route-link data-magnetic>
+            Enter the panoramic gallery
+          </a>
+        </div>`;
+}
+
+function groupPostsByClient(items: SocialPost[]): { client: string; posts: SocialPost[] }[] {
+  const groups: { client: string; posts: SocialPost[] }[] = [];
+  for (const post of items) {
+    const last = groups[groups.length - 1];
+    if (last?.client === post.client) last.posts.push(post);
+    else groups.push({ client: post.client, posts: [post] });
+  }
+  return groups;
+}
+
+function postCardLayout(post: SocialPost): "poster" | "media-kit" | null {
+  if (post.cardLayout === "poster" || post.cardLayout === "media-kit") return post.cardLayout;
+  if (post.id.includes("poster") || post.tags.some((t) => /poster/i.test(t))) return "poster";
+  if (
+    post.platform === "Media kit" ||
+    post.tags.some((t) => /media\s*kit/i.test(t)) ||
+    (post.slides && post.slides.length >= 4 && post.mediaAspect === "landscape")
+  ) {
+    return "media-kit";
+  }
+  return null;
+}
+
+function postKindLabel(post: SocialPost): string {
+  if (post.video) return "Reel";
+  if (postCardLayout(post) === "poster") return "Poster";
+  if (postCardLayout(post) === "media-kit") {
+    const n = post.slides?.length ?? 0;
+    return n > 0 ? `Media kit · ${n} pages` : "Media kit";
+  }
+  const n = post.slides?.length ?? 0;
+  if (n > 1) return `${n} slides`;
+  return "Image";
+}
+
+function renderPostsTrack(items: SocialPost[]): string {
+  const groups = groupPostsByClient(items);
+  const renderGroups = () =>
+    groups
+      .map(
+        (g) => `
+      <div class="posts-group">
+        <div class="posts-group__head">
+          <span class="posts-group__name">${esc(g.client)}</span>
+          <span class="posts-group__count">${g.posts.length}</span>
+        </div>
+        <div class="posts-group__cards">
+          ${g.posts.map((post) => renderPostCard(post)).join("")}
+        </div>
+      </div>`,
+      )
+      .join("");
+  return renderGroups() + renderGroups();
+}
+
+function postImageBase(post: SocialPost): string {
+  return post.image?.trim() || post.id;
+}
+
+function postSlideSrc(post: Portfolio["socialPosts"]["items"][0], slide: string): string {
+  if (post.slides?.length) {
+    return `/images/posts/${post.id}/${slide}.webp`;
+  }
+  const base = postImageBase(post);
+  return `/images/posts/${base}.webp`;
+}
+
+function renderPostVideo(post: SocialPost): string {
+  const dir = `/images/posts/${post.id}`;
+  const videoSrc = `${dir}/${post.video}`;
+  const posterSrc = `${dir}/${post.poster ?? "poster.webp"}`;
+  return `
+        <video
+          class="post-card__video"
+          data-post-id="${esc(post.id)}"
+          src="${esc(videoSrc)}"
+          poster="${esc(posterSrc)}"
+          muted
+          autoplay
+          loop
+          playsinline
+          preload="metadata"
+          aria-label="${esc(post.title)}"
+        ></video>
+        <button type="button" class="post-card__unmute" aria-pressed="true" aria-label="Unmute ${esc(post.title)}">Unmute</button>`;
+}
+
+function renderPostViewButton(post: SocialPost): string {
+  const label = post.video ? `Play ${post.title} full screen` : `View ${post.title} full screen`;
+  return `<button type="button" class="post-card__view" data-post-view aria-label="${esc(label)}"></button>`;
+}
+
+function postMediaAspect(post: SocialPost): "portrait" | "landscape" | "square" {
+  return post.mediaAspect ?? "portrait";
+}
+
+function postSlideDimensions(post: SocialPost): { width: number; height: number } {
+  switch (postMediaAspect(post)) {
+    case "landscape":
+      return { width: 841, height: 596 };
+    case "square":
+      return { width: 1080, height: 1080 };
+    default:
+      return { width: 1080, height: 1350 };
+  }
+}
+
+function postAspectClass(post: SocialPost): string {
+  const aspect = postMediaAspect(post);
+  if (aspect === "landscape") return "post-card--landscape";
+  if (aspect === "square") return "post-card--square";
+  return "";
+}
+
+function renderPostSlideImg(
+  post: SocialPost,
+  slide: string,
+  opts: { slideIndex: number; slideCount: number; eager?: boolean; filmstrip?: boolean },
+): string {
+  const src = postSlideSrc(post, slide);
+  const imageBase = post.slides?.length ? `${post.id}/${slide}` : postImageBase(post);
+  const { width, height } = postSlideDimensions(post);
+  const slideClass = opts.slideCount > 1 && !opts.filmstrip ? " post-card__slide" : "";
+  return `
+        <img
+          class="post-card__img${slideClass}"
+          data-post-id="${esc(post.id)}"
+          data-image-base="${esc(imageBase)}"
+          src="${esc(src)}"
+          alt="${esc(post.title)} — ${esc(post.client)}${opts.slideCount > 1 ? ` (${opts.slideIndex + 1}/${opts.slideCount})` : ""}"
+          width="${width}"
+          height="${height}"
+          loading="${opts.eager ? "eager" : "lazy"}"
+          ${opts.slideCount > 1 && !opts.filmstrip ? `style="--slide-i:${opts.slideIndex};--slide-count:${opts.slideCount}"` : ""}
+        />`;
+}
+
+function renderPostPosterFull(post: SocialPost): string {
+  const slide = postImageBase(post);
+  return `
+    <div class="post-card__poster-full">
+      ${renderPostSlideImg(post, slide, { slideIndex: 0, slideCount: 1, eager: true })}
     </div>
-  `;
-}
-
-function postCardLayout(post: Portfolio["socialPosts"]["items"][0]): string {
-  return post.cardLayout || "default";
-}
-
-function postAspectClass(post: Portfolio["socialPosts"]["items"][0]): string {
-  const a = post.mediaAspect || "portrait";
-  return `post-card--aspect-${a}`;
-}
-
-function postImageBase(post: Portfolio["socialPosts"]["items"][0]): string {
-  return post.image || post.id;
-}
-
-function postKindLabel(post: Portfolio["socialPosts"]["items"][0]): string {
-  if (post.video) return "Video / Reel";
-  const layout = postCardLayout(post);
-  if (layout === "poster") return "Poster";
-  if (layout === "media-kit") return "Media Kit";
-  if (post.slides && post.slides.length > 1) return "Carousel";
-  return "Static Post";
-}
-
-function renderPostViewButton(post: Portfolio["socialPosts"]["items"][0]): string {
-  return `<button type="button" class="post-card__view-btn" data-post-expand="${esc(post.id)}" aria-label="View ${esc(post.title)} details">View Details</button>`;
+    ${renderPostViewButton(post)}`;
 }
 
 function renderSlideCounter(current: number, total: number): string {
   return `<span class="post-card__slide-counter" data-slide-counter aria-hidden="true">${current} / ${total}</span>`;
 }
 
-function renderPostSlideImg(
-  post: Portfolio["socialPosts"]["items"][0],
-  slide: string,
-  opts: { slideIndex: number; slideCount: number; eager: boolean; filmstrip?: boolean },
-): string {
-  const base = postImageBase(post);
-  // If post has slides, use directory path. Otherwise use direct file path.
-  const hasSlides = post.slides && post.slides.length > 0;
-  const src = hasSlides ? `/images/posts/${post.id}/${slide}.webp` : `/images/posts/${post.id}.webp`;
-  const loading = opts.eager ? "eager" : "lazy";
-  const className = opts.filmstrip ? "post-card__filmstrip-img" : "post-card__img";
-  return `
-    <img
-      class="${className}"
-      src="${src}"
-      alt="${esc(post.title)} — slide ${opts.slideIndex + 1} of ${opts.slideCount}"
-      loading="${loading}"
-      data-post-id="${esc(post.id)}"
-      data-image-base="${esc(base)}"
-      data-slide-index="${opts.slideIndex}"
-    />`;
-}
-
-function renderPostVideo(post: Portfolio["socialPosts"]["items"][0]): string {
-  const videoSrc = `/images/posts/${post.id}/${post.video}`;
-  const posterSrc = post.poster ? `/images/posts/${post.id}/${post.poster}` : "";
-  return `
-    <div class="post-card__video-wrap">
-      <video
-        class="post-card__video"
-        src="${videoSrc}"
-        poster="${posterSrc}"
-        loop
-        muted
-        playsinline
-        preload="metadata"
-      ></video>
-      <button type="button" class="post-card__unmute" aria-label="Toggle audio" aria-pressed="true">Unmute</button>
-    </div>`;
-}
-
-function renderPostPosterFull(post: Portfolio["socialPosts"]["items"][0]): string {
-  const slide = post.slides?.[0] || post.id;
-  return `
-    <div class="post-card__poster-full">
-      ${renderPostSlideImg(post, slide, { slideIndex: 0, slideCount: 1, eager: false })}
-    </div>
-    ${renderPostViewButton(post)}`;
-}
-
-function renderPostMediaKitGrid(post: Portfolio["socialPosts"]["items"][0], slides: string[]): string {
+function renderPostMediaKitGrid(post: SocialPost, slides: string[]): string {
   const count = slides.length;
   const cells = slides
     .map(
@@ -670,7 +773,7 @@ function renderPostMediaKitGrid(post: Portfolio["socialPosts"]["items"][0], slid
     ${renderPostViewButton(post)}`;
 }
 
-function renderPostFilmstrip(post: Portfolio["socialPosts"]["items"][0], slides: string[]): string {
+function renderPostFilmstrip(post: SocialPost, slides: string[]): string {
   const count = slides.length;
   const figures = slides
     .map(
@@ -694,7 +797,7 @@ function renderPostFilmstrip(post: Portfolio["socialPosts"]["items"][0], slides:
     ${renderPostViewButton(post)}`;
 }
 
-function renderPostMedia(post: Portfolio["socialPosts"]["items"][0], mode: "rail" | "expanded" = "rail"): string {
+function renderPostMedia(post: SocialPost, mode: "rail" | "expanded" = "rail"): string {
   if (post.video) {
     return `${renderPostVideo(post)}${renderPostViewButton(post)}`;
   }
@@ -703,7 +806,7 @@ function renderPostMedia(post: Portfolio["socialPosts"]["items"][0], mode: "rail
   const slides =
     post.slides?.length && post.slides.length > 0
       ? post.slides
-      : [post.id];
+      : [postImageBase(post)];
 
   if (layout === "poster") {
     return renderPostPosterFull(post);
@@ -733,7 +836,7 @@ function renderPostMedia(post: Portfolio["socialPosts"]["items"][0], mode: "rail
     ${renderPostViewButton(post)}`;
 }
 
-function renderPostCard(post: Portfolio["socialPosts"]["items"][0], opts?: { feed?: "rail" | "expanded" }): string {
+function renderPostCard(post: SocialPost, opts?: { feed?: "rail" | "expanded" }): string {
   const feed = opts?.feed ?? "rail";
   const isFeed = feed === "expanded";
   const accent = POST_ACCENTS[post.accent] ?? "post-card--purple";
@@ -840,8 +943,8 @@ function renderPhoneFrame(media: DeviceMedia, label: string, logo?: string): str
   `;
 }
 
-function renderProjectHead(proj: any, featured: boolean): string {
-  const label = featured ? "Featured product" : (proj.category || "Web & mobile");
+function renderProjectHead(proj: Portfolio["featuredWork"]["projects"][0], featured: boolean): string {
+  const label = featured ? "Featured product" : "Web & mobile";
   const logo = PROJECT_LOGOS[proj.id];
   if (!logo) {
     return `<span class="work-showcase__label">${label}</span><h3>${esc(proj.name)}</h3>`;
@@ -856,7 +959,7 @@ function renderProjectHead(proj: any, featured: boolean): string {
           </div>`;
 }
 
-function renderProject(proj: any, index: number): string {
+function renderProject(proj: Portfolio["featuredWork"]["projects"][0], index: number): string {
   const media = PROJECT_MEDIA[proj.id] ?? {};
   const liveUrl = PROJECT_LIVE_URL[proj.id] ?? proj.name;
   const featured = index === 0;
@@ -870,26 +973,19 @@ function renderProject(proj: any, index: number): string {
     devices.length > 1
       ? `<div class="work-showcase__composition">${devices.join("")}</div>`
       : devices.join("");
-
-  let deviceBlock = "";
-  if (devices.length > 0) {
-    deviceBlock = `<div class="work-showcase__devices ${devices.length > 1 ? "work-showcase__devices--dual" : "work-showcase__devices--solo"}" data-tilt-showcase>
+  const deviceBlock =
+    devices.length > 0
+      ? `<div class="work-showcase__devices ${devices.length > 1 ? "work-showcase__devices--dual" : "work-showcase__devices--solo"}" data-tilt-showcase>
           ${deviceInner}
-        </div>`;
-  } else if (proj.cover) {
-    deviceBlock = `<div class="work-showcase__devices work-showcase__devices--cover" data-tilt-showcase>
-      <img class="work-showcase__cover-img" src="${esc(proj.cover)}" alt="${esc(proj.coverAlt)}" loading="lazy" />
-    </div>`;
-  } else {
-    deviceBlock = `<div class="work-showcase__devices work-showcase__devices--placeholder"><span>${esc(proj.name)}</span></div>`;
-  }
+        </div>`
+      : `<div class="work-showcase__devices work-showcase__devices--placeholder"><span>${esc(proj.name)}</span></div>`;
 
-  const highlights = proj.highlights && proj.highlights.length > 0
-    ? `<ul class="work-showcase__highlights">${proj.highlights.map((h: string) => `<li>${esc(h)}</li>`).join("")}</ul>`
+  const highlights = proj.highlights
+    ? `<ul class="work-showcase__highlights">${proj.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul>`
     : "";
 
-  const tags = proj.tags && proj.tags.length > 0
-    ? `<div class="work-showcase__tags">${proj.tags.slice(0, 6).map((t: string) => `<span>${esc(t)}</span>`).join("")}</div>`
+  const tags = proj.tags
+    ? `<div class="work-showcase__tags">${proj.tags.slice(0, 6).map((t) => `<span>${esc(t)}</span>`).join("")}</div>`
     : "";
 
   return `
