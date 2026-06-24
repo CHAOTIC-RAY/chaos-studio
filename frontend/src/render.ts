@@ -215,18 +215,16 @@ export function renderPage(p: Portfolio): string {
         </div>
         <div class="work-stack">
           ${(p.workCards || []).map((card, i) => {
-            const extra = p.featuredWork.projects.find(proj => proj.id.toLowerCase() === card.slug.toLowerCase());
             const merged = {
-              ...extra,
               id: card.slug,
               name: card.title,
-              tagline: extra?.tagline || card.category,
-              description: extra?.description || "",
+              tagline: card.tagline || card.category,
+              description: card.description || "",
               href: card.href,
-              cta: extra?.cta || "View Project",
-              accent: extra?.accent || "neutral",
-              highlights: extra?.highlights || [],
-              tags: extra?.tags || [],
+              cta: card.cta || "View Project",
+              accent: card.accent || "neutral",
+              highlights: card.highlights || [],
+              tags: card.tags || [],
               slug: card.slug,
               year: card.year,
               cover: card.cover,

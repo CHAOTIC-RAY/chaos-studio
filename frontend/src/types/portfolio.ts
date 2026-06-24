@@ -96,10 +96,16 @@ export interface WorkCard {
   title: string;
   category: string;
   year: string;
+  tagline?: string;
+  description?: string;
   cover: string;
   coverAlt: string;
   href: string;
+  cta?: string;
   featured?: boolean;
+  accent?: string;
+  highlights?: string[];
+  tags?: string[];
 }
 
 export interface Portfolio {

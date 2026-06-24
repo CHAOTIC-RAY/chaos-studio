@@ -488,10 +488,30 @@ collections:
               - { label: Title, name: title, widget: string }
               - { label: Category, name: category, widget: string }
               - { label: Year, name: year, widget: string }
+              - { label: Tagline, name: tagline, widget: string, required: false }
+              - { label: Description, name: description, widget: text, required: false }
               - { label: Cover path, name: cover, widget: string }
               - { label: Cover alt, name: coverAlt, widget: string }
               - { label: Link, name: href, widget: string }
+              - { label: CTA label, name: cta, widget: string, required: false }
               - { label: Featured, name: featured, widget: boolean, required: false }
+              - label: Accent
+                name: accent
+                widget: select
+                required: false
+                options: ["pink", "neutral", "green"]
+              - label: Highlights
+                name: highlights
+                widget: list
+                required: false
+                hint: "One line per row"
+                collapsed: true
+              - label: Tags
+                name: tags
+                widget: list
+                required: false
+                hint: "One tag per row"
+                collapsed: true
           - label: Client logos
             name: clients
             widget: list
