@@ -95,9 +95,9 @@
       merged.chaosStudio = data;
     }
 
-    const portalFrame = window.parent.document.getElementById("cms-preview-frame");
-    if (portalFrame?.contentWindow) {
-      portalFrame.contentWindow.postMessage({ type: "cms-update", portfolio: merged }, "*");
+    const previewFrame = document.getElementById("cms-preview-frame");
+    if (previewFrame?.contentWindow) {
+      previewFrame.contentWindow.postMessage({ type: "cms-update", portfolio: merged }, "*");
     }
 
     try {
