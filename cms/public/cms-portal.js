@@ -82,7 +82,7 @@
   }
 
   function previewUrl() {
-    const origin = window.location.origin.includes('localhost') ? 'http://localhost:5173' : 'https://chaotic.studio';
+    const origin = window.location.origin.includes('localhost') ? 'http://localhost:5173' : 'https://portfolio.chaoticstudio.workers.dev';
     const h = window.location.hash;
     if (h.includes('/collections/chaos-studio')) return `${origin}/studio`;
     if (h.includes('/collections/campaign')) return `${origin}/gallery`;
