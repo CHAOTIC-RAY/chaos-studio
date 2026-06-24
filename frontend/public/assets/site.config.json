@@ -4,6 +4,11 @@
     "logoMark": "/assets/brand/logo-mark.svg",
     "logoAlt": "Chaos Studio"
   },
+  "meta": {
+    "title": "Ibrahim Wafig · Graphic Design Portfolio",
+    "description": "ChaosStudio.mv — brand identity, social campaigns, and digital product design.",
+    "ogImage": "/assets/meta/og-image.svg"
+  },
   "about": {
     "portrait": "/assets/about/portrait.svg",
     "portraitAlt": "Ibrahim Wafig — graphic designer",
@@ -16,11 +21,6 @@
       "Photo Editing",
       "Motion"
     ]
-  },
-  "meta": {
-    "ogImage": "/assets/meta/og-image.svg",
-    "title": "Ibrahim Wafig · Graphic Design Portfolio",
-    "description": "ChaosStudio.mv — brand identity, social campaigns, and digital product design."
   },
   "social": {
     "github": "https://github.com/CHAOTIC-RAY",
@@ -56,6 +56,26 @@
       "cover": "/assets/work/faisa/cover.webp",
       "coverAlt": "FaisaMobileXYZ — MIB banking app design concept",
       "href": "#"
+    },
+    {
+      "slug": "QuePulse",
+      "title": "QuePulse",
+      "category": "Android App + WebApp",
+      "year": "2026",
+      "cover": "/assets/work/quepulse/cover.webp",
+      "coverAlt": "Live hospital queue tracking for the Maldives — open source, mobile-first, and free to use.",
+      "href": "https://quepulse.chaoticstudio.workers.dev/",
+      "featured": true
+    },
+    {
+      "slug": "GexTag",
+      "title": "GexTag",
+      "category": "WebApp/Tool",
+      "year": "2026",
+      "cover": "/assets/work/gextag/cover.webp",
+      "coverAlt": "A free bulk geotagging utility to inject EXIF location metadata into photos.",
+      "href": "https://gextag.chaoticstudio.workers.dev/",
+      "featured": false
     }
   ],
   "clients": [
