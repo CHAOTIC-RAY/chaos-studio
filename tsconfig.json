@@ -7,5 +7,5 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "exclude": ["node_modules", "frontend/dist", "worker/dist"]
+  "exclude": ["node_modules", "frontend/dist", "worker/dist", "frontend", "worker"]
 }

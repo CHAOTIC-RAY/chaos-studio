@@ -3,8 +3,6 @@ import { CHAOS_LOGO_SVG, CHAOS_LOGO_SVG_HERO } from "./brand/logo";
 import { portfolioUrl, studioUrl, galleryUrl } from "./router";
 import {
   ICON_CHECK,
-  ICON_CHEVRON_LEFT,
-  ICON_CHEVRON_RIGHT,
   ICON_CLOSE,
   ICON_FILTER,
   ICON_GRID,
@@ -16,12 +14,6 @@ import {
 import { renderToolTag } from "./skill-icons";
 import { studioPackageIcon } from "./studio-package-icons";
 import { renderWorkMarquee } from "./render-work-marquee";
-import {
-  type DeviceMedia,
-  PROJECT_MEDIA,
-  PROJECT_LIVE_URL,
-  PROJECT_LOGOS,
-} from "./project-media";
 import { renderStatsSection } from "./components/stats-section";
 import { renderAwardsSection } from "./components/awards-section";
 import { renderNewsSection } from "./components/news-section";
@@ -31,14 +23,9 @@ import { renderProcessSteps } from "./components/process-steps";
 import { renderProject } from "./components/work-card";
 import { renderPostsSection } from "./components/social-post";
 
-const POST_ACCENTS: Record<string, string> = {
-  purple: "post-card--purple",
-  pink: "post-card--pink",
-  gold: "post-card--gold",
-  teal: "post-card--teal",
-};
 
-function esc(s: string): string {
+
+export function esc(s: string): string {
   const d = document.createElement("div");
   d.textContent = s;
   return d.innerHTML;
@@ -451,7 +438,6 @@ function renderStudioTeaser(studio: ChaosStudio): string {
         </div>`;
 }
 
-type SocialPost = Portfolio["socialPosts"]["items"][0];
 type ChaosStudio = Portfolio["chaosStudio"];
 
 function renderStudioServicePills(services: string[]): string {
@@ -568,4 +554,3 @@ function renderStudioContent(studio: ChaosStudio, opts?: { omitHero?: boolean })
         </div>`;
 }
 
-import { renderPostsSection } from "./components/social-post";

@@ -47,6 +47,7 @@
     "frontend"
   ],
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260625.1",
     "@sveltia/cms": "^0.167.3",
     "playwright": "^1.60.0",
     "sharp": "^0.34.5",

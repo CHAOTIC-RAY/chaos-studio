@@ -27,9 +27,9 @@ function filesEqual(a, b) {
   const pa = path.join(root, a);
   const pb = path.join(root, b);
   if (!fs.existsSync(pa) || !fs.existsSync(pb)) return false;
-  const ba = fs.readFileSync(pa);
-  const bb = fs.readFileSync(pb);
-  return ba.equals(bb);
+  const sa = fs.readFileSync(pa, "utf8").replace(/\r\n/g, "\n");
+  const sb = fs.readFileSync(pb, "utf8").replace(/\r\n/g, "\n");
+  return sa === sb;
 }
 
 function readText(rel) {
@@ -68,8 +68,8 @@ function verifyMirrors() {
   if (!fs.existsSync(path.join(root, publicCampaign))) {
     fail(`Missing ${publicCampaign} (run: npm run sync:content)`);
   } else {
-    const merged = readCampaignPublicMerged();
-    const onDisk = fs.readFileSync(path.join(root, publicCampaign), "utf8");
+    const merged = readCampaignPublicMerged().replace(/\r\n/g, "\n");
+    const onDisk = fs.readFileSync(path.join(root, publicCampaign), "utf8").replace(/\r\n/g, "\n");
     if (merged !== onDisk) {
       fail(
         `Out of sync: campaign meta+posts !== ${publicCampaign}\n` +

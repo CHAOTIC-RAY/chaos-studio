@@ -1,4 +1,4 @@
-import { esc } from "../render-blocks";
+import { esc } from "../render";
 import { ICON_CHEVRON_LEFT, ICON_CHEVRON_RIGHT } from "../icons";
 import { galleryUrl } from "../router";
 import type { Portfolio, SocialPostItem as SocialPost } from "../types/portfolio";
@@ -78,10 +78,10 @@ function postKindLabel(post: SocialPost): string {
   if (postCardLayout(post) === "poster") return "Poster";
   if (postCardLayout(post) === "media-kit") {
     const n = post.slides?.length ?? 0;
-    return n > 0 ? \`Media kit · \${n} pages\` : "Media kit";
+    return n > 0 ? `Media kit · ${n} pages` : "Media kit";
   }
   const n = post.slides?.length ?? 0;
-  if (n > 1) return \`\${n} slides\`;
+  if (n > 1) return `${n} slides`;
   return "Image";
 }
 
@@ -93,11 +93,11 @@ function renderPostsTrack(items: SocialPost[]): string {
         (g) => `
       <div class="posts-group">
         <div class="posts-group__head">
-          <span class="posts-group__name">\${esc(g.client)}</span>
-          <span class="posts-group__count">\${g.posts.length}</span>
+          <span class="posts-group__name">${esc(g.client)}</span>
+          <span class="posts-group__count">${g.posts.length}</span>
         </div>
         <div class="posts-group__cards">
-          \${g.posts.map((post) => renderPostCard(post)).join("")}
+          ${g.posts.map((post) => renderPostCard(post)).join("")}
         </div>
       </div>`,
       )
@@ -111,35 +111,35 @@ function postImageBase(post: SocialPost): string {
 
 function postSlideSrc(post: Portfolio["socialPosts"]["items"][0], slide: string): string {
   if (post.slides?.length) {
-    return \`/images/posts/\${post.id}/\${slide}.webp\`;
+    return `/images/posts/${post.id}/${slide}.webp`;
   }
   const base = postImageBase(post);
-  return \`/images/posts/\${base}.webp\`;
+  return `/images/posts/${base}.webp`;
 }
 
 function renderPostVideo(post: SocialPost): string {
-  const dir = \`/images/posts/\${post.id}\`;
-  const videoSrc = \`\${dir}/\${post.video}\`;
-  const posterSrc = \`\${dir}/\${post.poster ?? "poster.webp"}\`;
+  const dir = `/images/posts/${post.id}`;
+  const videoSrc = `${dir}/${post.video}`;
+  const posterSrc = `${dir}/${post.poster ?? "poster.webp"}`;
   return `
         <video
           class="post-card__video"
-          data-post-id="\${esc(post.id)}"
-          src="\${esc(videoSrc)}"
-          poster="\${esc(posterSrc)}"
+          data-post-id="${esc(post.id)}"
+          src="${esc(videoSrc)}"
+          poster="${esc(posterSrc)}"
           muted
           autoplay
           loop
           playsinline
           preload="metadata"
-          aria-label="\${esc(post.title)}"
+          aria-label="${esc(post.title)}"
         ></video>
-        <button type="button" class="post-card__unmute" aria-pressed="true" aria-label="Unmute \${esc(post.title)}">Unmute</button>`;
+        <button type="button" class="post-card__unmute" aria-pressed="true" aria-label="Unmute ${esc(post.title)}">Unmute</button>`;
 }
 
 function renderPostViewButton(post: SocialPost): string {
-  const label = post.video ? \`Play \${post.title} full screen\` : \`View \${post.title} full screen\`;
-  return \`<button type="button" class="post-card__view" data-post-view aria-label="\${esc(label)}"></button>\`;
+  const label = post.video ? `Play ${post.title} full screen` : `View ${post.title} full screen`;
+  return `<button type="button" class="post-card__view" data-post-view aria-label="${esc(label)}"></button>`;
 }
 
 function postMediaAspect(post: SocialPost): "portrait" | "landscape" | "square" {
@@ -170,81 +170,81 @@ function renderPostSlideImg(
   opts: { slideIndex: number; slideCount: number; eager?: boolean; filmstrip?: boolean },
 ): string {
   const src = postSlideSrc(post, slide);
-  const imageBase = post.slides?.length ? \`\${post.id}/\${slide}\` : postImageBase(post);
+  const imageBase = post.slides?.length ? `${post.id}/${slide}` : postImageBase(post);
   const { width, height } = postSlideDimensions(post);
   const slideClass = opts.slideCount > 1 && !opts.filmstrip ? " post-card__slide" : "";
-  return \`
+  return `
         <img
-          class="post-card__img\${slideClass}"
-          data-post-id="\${esc(post.id)}"
-          data-image-base="\${esc(imageBase)}"
-          src="\${esc(src)}"
-          alt="\${esc(post.title)} — \${esc(post.client)}\${opts.slideCount > 1 ? \` (\${opts.slideIndex + 1}/\${opts.slideCount})\` : ""}"
-          width="\${width}"
-          height="\${height}"
-          loading="\${opts.eager ? "eager" : "lazy"}"
-          \${opts.slideCount > 1 && !opts.filmstrip ? \`style="--slide-i:\${opts.slideIndex};--slide-count:\${opts.slideCount}"\` : ""}
-        />\`;
+          class="post-card__img${slideClass}"
+          data-post-id="${esc(post.id)}"
+          data-image-base="${esc(imageBase)}"
+          src="${esc(src)}"
+          alt="${esc(post.title)} — ${esc(post.client)}${opts.slideCount > 1 ? ` (${opts.slideIndex + 1}/${opts.slideCount})` : ""}"
+          width="${width}"
+          height="${height}"
+          loading="${opts.eager ? "eager" : "lazy"}"
+          ${opts.slideCount > 1 && !opts.filmstrip ? `style="--slide-i:${opts.slideIndex};--slide-count:${opts.slideCount}"` : ""}
+        />`;
 }
 
 function renderPostPosterFull(post: SocialPost): string {
   const slide = postImageBase(post);
-  return \`
+  return `
     <div class="post-card__poster-full">
-      \${renderPostSlideImg(post, slide, { slideIndex: 0, slideCount: 1, eager: true })}
+      ${renderPostSlideImg(post, slide, { slideIndex: 0, slideCount: 1, eager: true })}
     </div>
-    \${renderPostViewButton(post)}\`;
+    ${renderPostViewButton(post)}`;
 }
 
 function renderSlideCounter(current: number, total: number): string {
-  return \`<span class="post-card__slide-counter" data-slide-counter aria-hidden="true">\${current} / \${total}</span>\`;
+  return `<span class="post-card__slide-counter" data-slide-counter aria-hidden="true">${current} / ${total}</span>`;
 }
 
 function renderPostMediaKitGrid(post: SocialPost, slides: string[]): string {
   const count = slides.length;
   const cells = slides
     .map(
-      (slide, i) => \`
+      (slide, i) => `
         <figure class="post-card__kit-cell">
-          \${renderPostSlideImg(post, slide, { slideIndex: i, slideCount: count, eager: i < 3 })}
-          <span class="post-card__kit-page" aria-hidden="true">\${i + 1}</span>
-        </figure>\`,
+          ${renderPostSlideImg(post, slide, { slideIndex: i, slideCount: count, eager: i < 3 })}
+          <span class="post-card__kit-page" aria-hidden="true">${i + 1}</span>
+        </figure>`,
     )
     .join("");
-  return \`
-    <div class="post-card__kit-grid post-card__kit-grid--\${count}" data-media-kit-grid aria-label="\${esc(post.title)} — \${count} pages, full media kit">
-      \${cells}
+  return `
+    <div class="post-card__kit-grid post-card__kit-grid--${count}" data-media-kit-grid aria-label="${esc(post.title)} — ${count} pages, full media kit">
+      ${cells}
     </div>
-    \${renderPostViewButton(post)}\`;
+    ${renderPostViewButton(post)}`;
 }
 
 function renderPostFilmstrip(post: SocialPost, slides: string[]): string {
   const count = slides.length;
   const figures = slides
     .map(
-      (slide, i) => \`
+      (slide, i) => `
         <figure class="post-card__filmstrip-slide">
-          \${renderPostSlideImg(post, slide, { slideIndex: i, slideCount: count, eager: i < 2, filmstrip: true })}
-        </figure>\`,
+          ${renderPostSlideImg(post, slide, { slideIndex: i, slideCount: count, eager: i < 2, filmstrip: true })}
+        </figure>`,
     )
     .join("");
-  return \`
+  return `
     <div class="post-card__filmstrip" data-filmstrip>
       <div
         class="post-card__filmstrip-track"
         tabindex="0"
-        aria-label="\${esc(post.title)} — \${count} slides, swipe horizontally"
+        aria-label="${esc(post.title)} — ${count} slides, swipe horizontally"
       >
-        \${figures}
+        ${figures}
       </div>
-      \${renderSlideCounter(1, count)}
+      ${renderSlideCounter(1, count)}
     </div>
-    \${renderPostViewButton(post)}\`;
+    ${renderPostViewButton(post)}`;
 }
 
 function renderPostMedia(post: SocialPost, mode: "rail" | "expanded" = "rail"): string {
   if (post.video) {
-    return \`\${renderPostVideo(post)}\${renderPostViewButton(post)}\`;
+    return `${renderPostVideo(post)}${renderPostViewButton(post)}`;
   }
 
   const layout = postCardLayout(post);
@@ -262,7 +262,7 @@ function renderPostMedia(post: SocialPost, mode: "rail" | "expanded" = "rail"): 
   }
 
   if (slides.length === 1) {
-    return \`\${renderPostSlideImg(post, slides[0], { slideIndex: 0, slideCount: 1, eager: false })}\${renderPostViewButton(post)}\`;
+    return `${renderPostSlideImg(post, slides[0], { slideIndex: 0, slideCount: 1, eager: false })}${renderPostViewButton(post)}`;
   }
 
   if (mode === "expanded") {
@@ -273,12 +273,12 @@ function renderPostMedia(post: SocialPost, mode: "rail" | "expanded" = "rail"): 
   const imgs = slides
     .map((slide, i) => renderPostSlideImg(post, slide, { slideIndex: i, slideCount: count, eager: i === 0 }))
     .join("");
-  return \`
-    <div class="post-card__carousel post-card__carousel--\${count}" style="--slide-count:\${count}" aria-label="\${esc(post.title)} carousel">
-      \${imgs}
-      \${renderSlideCounter(1, count)}
+  return `
+    <div class="post-card__carousel post-card__carousel--${count}" style="--slide-count:${count}" aria-label="${esc(post.title)} carousel">
+      ${imgs}
+      ${renderSlideCounter(1, count)}
     </div>
-    \${renderPostViewButton(post)}\`;
+    ${renderPostViewButton(post)}`;
 }
 
 export function renderPostCard(post: SocialPost, opts?: { feed?: "rail" | "expanded" }): string {
@@ -311,24 +311,24 @@ export function renderPostCard(post: SocialPost, opts?: { feed?: "rail" | "expan
           : slideCount > 1
             ? "carousel"
             : "image";
-  const meta = \`
+  const meta = `
         <div class="post-card__meta">
-          <span class="post-card__platform">\${esc(post.platform)}</span>
-          <span class="post-card__kind">\${esc(postKindLabel(post))}</span>
-        </div>\`;
+          <span class="post-card__platform">${esc(post.platform)}</span>
+          <span class="post-card__kind">${esc(postKindLabel(post))}</span>
+        </div>`;
 
-  return \`
-    <article class="post-card \${accent} \${aspect} \${kind}\${isFeed ? " post-card--feed post-card--feed-grid" : ""}\${layout ? \` post-card--layout-\${layout}\` : ""}" data-post-kind="\${postKind}" data-post-id="\${esc(post.id)}">
-      <div class="post-card__media\${filmstrip ? " post-card__media--filmstrip" : ""}\${layout === "poster" ? " post-card__media--poster-full" : ""}\${layout === "media-kit" ? " post-card__media--kit-full" : ""}">
-        \${renderPostMedia(post, feed)}
+  return `
+    <article class="post-card ${accent} ${aspect} ${kind}${isFeed ? " post-card--feed post-card--feed-grid" : ""}${layout ? ` post-card--layout-${layout}` : ""}" data-post-kind="${postKind}" data-post-id="${esc(post.id)}">
+      <div class="post-card__media${filmstrip ? " post-card__media--filmstrip" : ""}${layout === "poster" ? " post-card__media--poster-full" : ""}${layout === "media-kit" ? " post-card__media--kit-full" : ""}">
+        ${renderPostMedia(post, feed)}
         <div class="post-card__shine" aria-hidden="true"></div>
       </div>
       <div class="post-card__body">
-        \${isFeed ? meta : \`<p class="post-card__client">\${esc(post.client)}</p>\`}
-        <h3 class="post-card__title">\${esc(post.title)}</h3>
-        \${post.description?.trim() ? \`<p class="post-desc">\${esc(post.description)}</p>\` : ""}
-        <div class="post-tags">\${post.tags.map((t) => \`<span>\${esc(t)}</span>\`).join("")}</div>
+        ${isFeed ? meta : `<p class="post-card__client">${esc(post.client)}</p>`}
+        <h3 class="post-card__title">${esc(post.title)}</h3>
+        ${post.description?.trim() ? `<p class="post-desc">${esc(post.description)}</p>` : ""}
+        <div class="post-tags">${post.tags.map((t) => `<span>${esc(t)}</span>`).join("")}</div>
       </div>
     </article>
-  \`;
+  `;
 }

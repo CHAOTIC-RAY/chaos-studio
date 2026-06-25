@@ -18,7 +18,7 @@ function normalizePortfolioBase<T extends typeof portfolioBase>(base: T): T {
     },
     featuredWork: {
       ...base.featuredWork,
-      projects: base.featuredWork.projects?.map((proj) => ({
+      projects: (base.featuredWork as any).projects?.map((proj: any) => ({
         ...proj,
         highlights: proj.highlights ? toStringList(proj.highlights, "line") : undefined,
         tags: proj.tags ? toStringList(proj.tags, "tag") : undefined,

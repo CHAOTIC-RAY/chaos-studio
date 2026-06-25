@@ -96,7 +96,7 @@ export default {
       );
     }
 
-    if (url.method === "OPTIONS" && url.pathname.startsWith("/api/")) {
+    if (request.method === "OPTIONS" && url.pathname.startsWith("/api/")) {
       return new Response(null, {
         status: 204,
         headers: {

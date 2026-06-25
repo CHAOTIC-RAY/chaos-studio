@@ -250,7 +250,7 @@ function initPostsRail(): () => void {
     }, ms);
   };
 
-    document.querySelector("[data-posts-panel]")?.classList.contains("posts-panel--expanded");
+
 
   let hoverPause = false;
   let railInView = true;

@@ -1,4 +1,4 @@
-import { esc } from "../render-blocks";
+import { esc } from "../render";
 import { PROJECT_MEDIA, PROJECT_LIVE_URL, PROJECT_LOGOS, type DeviceMedia } from "../project-media";
 import type { Portfolio } from "../types/portfolio";
 
