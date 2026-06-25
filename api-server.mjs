@@ -42,6 +42,7 @@ function buildPortfolio() {
   const socialRaw = readJson("social-posts.json");
   const galleryPostsRaw = readJson("gallery-posts.json");
   const meta = readJson("campaign-meta.json");
+  const siteConfigRaw = JSON.parse(readFileSync(join(__dirname, "frontend/public/assets/site.config.json"), "utf-8"));
 
   const base = {
     ...portfolioBase,
@@ -95,6 +96,7 @@ function buildPortfolio() {
     gallery: galleryRaw,
     socialPosts,
     galleryPosts,
+    workCards: siteConfigRaw.work,
   };
 }
 

@@ -27,16 +27,16 @@ fs.copyFileSync(sveltiaSrc, path.join(distDir, "sveltia-cms.js"));
 const iconsSrc = path.join(root, "frontend/public/icons");
 fs.cpSync(iconsSrc, path.join(distDir, "icons"), { recursive: true });
 
-let index = fs.readFileSync(path.join(distDir, "index.html"), "utf8");
-index = index.replace(
+let sveltia = fs.readFileSync(path.join(distDir, "sveltia.html"), "utf8");
+sveltia = sveltia.replace(
   /(\/(?:cms-app|cms-hooks|cms-assistant|cms-portal|sveltia-cms)\.js)("|')/g,
   `$1?v=${buildId}$2`,
 );
-index = index.replace(
+sveltia = sveltia.replace(
   /(\/(?:cms-app|cms-assistant|cms-portal|editor-frame)\.css)("|')/g,
   `$1?v=${buildId}$2`,
 );
-fs.writeFileSync(path.join(distDir, "index.html"), index);
+fs.writeFileSync(path.join(distDir, "sveltia.html"), sveltia);
 
 fs.writeFileSync(
   path.join(distDir, "build-id.json"),
@@ -83,6 +83,9 @@ function syncCmsToPortfolioAdmin() {
 
   const indexPath = path.join(portfolioAdminDir, "index.html");
   fs.writeFileSync(indexPath, prefixRootPaths(fs.readFileSync(indexPath, "utf8")));
+
+  const sveltiaPath = path.join(portfolioAdminDir, "sveltia.html");
+  fs.writeFileSync(sveltiaPath, prefixRootPaths(fs.readFileSync(sveltiaPath, "utf8")));
 
   const editorFramePath = path.join(portfolioAdminDir, "editor-frame.html");
   let editorFrame = fs.readFileSync(editorFramePath, "utf8");

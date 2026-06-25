@@ -210,4 +210,20 @@ export interface Portfolio {
     telegramUrl: string;
     whatsappUrl: string;
   };
+  workCards?: {
+    slug: string;
+    title: string;
+    category: string;
+    year: string;
+    tagline?: string;
+    description?: string;
+    cover: string;
+    coverAlt: string;
+    href: string;
+    cta?: string;
+    featured?: boolean;
+    accent?: string;
+    highlights?: string[];
+    tags?: string[];
+  }[];
 }

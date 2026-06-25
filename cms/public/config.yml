@@ -171,31 +171,6 @@ collections:
             collapsed: true
             fields:
               - { label: Subtitle, name: subtitle, widget: string }
-              - label: Projects
-                name: projects
-                widget: list
-                summary: "{{fields.name}}"
-                fields:
-                  - { label: ID, name: id, widget: string }
-                  - { label: Name, name: name, widget: string }
-                  - { label: Tagline, name: tagline, widget: string }
-                  - { label: Description, name: description, widget: text }
-                  - { label: Link, name: href, widget: string }
-                  - { label: CTA label, name: cta, widget: string }
-                  - label: Highlights
-                    name: highlights
-                    widget: list
-                    hint: "One line per row"
-                    collapsed: true
-                  - label: Tags
-                    name: tags
-                    widget: list
-                    hint: "One tag per row"
-                    collapsed: true
-                  - label: Accent
-                    name: accent
-                    widget: select
-                    options: ["pink", "neutral", "green"]
           - label: Skills
             name: skills
             widget: object

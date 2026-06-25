@@ -122,31 +122,10 @@
     `;
     document.body.appendChild(bar);
 
-    // Preview pane
-    const previewPane = document.createElement('div');
-    previewPane.id = 'cms-preview-pane';
-    previewPane.innerHTML = `
-      <div class="cms-preview__bar">
-        <span class="cms-preview__title">Mockup</span>
-        <span class="cms-preview__url" id="cms-preview-url">...</span>
-        <div class="cms-bar__group" id="cms-device-group">
-          <button class="cms-bar__btn is-active" data-device="desktop">${ICONS['monitor']}</button>
-          <button class="cms-bar__btn" data-device="tablet">${ICONS['tablet']}</button>
-          <button class="cms-bar__btn" data-device="mobile">${ICONS['smartphone']}</button>
-        </div>
-        <button class="cms-preview__refresh" id="cms-preview-refresh" title="Refresh frame">${ICONS['refresh']}</button>
-      </div>
-      <div class="cms-preview__viewport" id="cms-preview-viewport">
-        <iframe id="cms-preview-frame"></iframe>
-        <div class="cms-preview__highlight" id="cms-preview-hl"></div>
-      </div>
-    `;
-    layout.appendChild(previewPane);
-
-    // Resizer
-    const resizer = document.createElement('div');
-    resizer.id = 'cms-resizer';
-    layout.insertBefore(resizer, previewPane);
+    // Resizer (removed for Sveltia mode since preview is gone)
+    // const resizer = document.createElement('div');
+    // resizer.id = 'cms-resizer';
+    // layout.insertBefore(resizer, previewPane);
 
     // Sections Panel
     const sectionsPanel = document.createElement('div');
@@ -197,52 +176,9 @@
 
   // ── Event bindings ────────────────────────────────────────────
   function bindEvents() {
-    document.getElementById('cms-split-btn')?.addEventListener('click', togglePreview);
-    document.getElementById('cms-preview-refresh')?.addEventListener('click', refreshPreview);
-    document.getElementById('cms-device-group')?.addEventListener('click', e => {
-      const btn = e.target.closest('[data-device]');
-      if (!btn) return;
-      setDevice(btn.dataset.device);
-    });
     document.getElementById('cms-sections-btn')?.addEventListener('click', () => toggleSections());
     document.getElementById('cms-sections-close')?.addEventListener('click', () => toggleSections(false));
     document.getElementById('cms-sections-save')?.addEventListener('click', saveSections);
-
-    // Resizer drag
-    const resizer = document.getElementById('cms-resizer');
-    if (resizer) {
-      let dragging = false;
-      resizer.addEventListener('mousedown', e => {
-        const pane = document.getElementById('cms-preview-pane');
-        if (!pane || !previewOpen) return;
-        dragging = true;
-        resizer.classList.add('is-dragging');
-        e.preventDefault();
-      });
-      document.addEventListener('mousemove', e => {
-        if (!dragging) return;
-        const pane = document.getElementById('cms-preview-pane');
-        const layout = document.getElementById('cms-layout');
-        if (!pane || !layout) return;
-
-        const isMobile = window.innerWidth <= 900;
-        if (isMobile) {
-          const layoutH = layout.getBoundingClientRect().height;
-          const rect = layout.getBoundingClientRect();
-          const newH = Math.min(Math.max(rect.bottom - e.clientY, 100), layoutH - 100);
-          pane.style.flexBasis = `${newH}px`;
-        } else {
-          const layoutW = layout.getBoundingClientRect().width;
-          const rect = layout.getBoundingClientRect();
-          const newW = Math.min(Math.max(rect.right - e.clientX, 300), layoutW - 300);
-          pane.style.flexBasis = `${newW}px`;
-        }
-      });
-      document.addEventListener('mouseup', () => {
-        dragging = false;
-        resizer.classList.remove('is-dragging');
-      });
-    }
 
     window.addEventListener('hashchange', onRouteChange);
     onRouteChange();
@@ -405,7 +341,6 @@
 
   function boot() {
     buildPortal();
-    togglePreview(true);
     setInterval(loadSyncBadge, 30000);
     setInterval(() => { githubToken = null; }, 60000);
   }
