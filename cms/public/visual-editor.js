@@ -1,6 +1,5 @@
 (function () {
   const iframe = document.getElementById('preview');
-  const overlay = document.getElementById('overlay');
   const enableBtn = document.getElementById('enable-edit');
   const publishBtn = document.getElementById('publish');
   const status = document.getElementById('status');
@@ -51,10 +50,9 @@
 
   function init() {
     if (!getToken()) {
-      overlay.style.display = 'flex';
+      window.location.href = 'index.html';
       return;
     }
-    overlay.style.display = 'none';
 
     iframe.onload = () => {
       status.textContent = 'Site loaded. Ready.';

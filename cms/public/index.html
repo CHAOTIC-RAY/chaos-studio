@@ -62,21 +62,55 @@
         color: #9ca3af;
         line-height: 1.5;
       }
+      .loading {
+        font-size: 1.5rem;
+        color: #9ca3af;
+      }
     </style>
   </head>
   <body>
-    <h1>Select CMS Mode</h1>
-    <div class="modes">
-      <a href="visual-editor.html" class="mode-card">
-        <div class="mode-icon">✨</div>
-        <div class="mode-title">Visual Editor</div>
-        <div class="mode-desc">Edit your site directly on the live mockup. Changes are pushed directly to Github.</div>
-      </a>
-      <a href="sveltia.html" class="mode-card">
-        <div class="mode-icon">⚙️</div>
-        <div class="mode-title">Sveltia CMS</div>
-        <div class="mode-desc">Standard form-based content management. Advanced settings and configuration.</div>
-      </a>
+    <div id="auth-check" class="loading">Checking authentication...</div>
+    <div id="content" style="display: none;">
+      <h1>Select CMS Mode</h1>
+      <div class="modes">
+        <a href="visual-editor.html" class="mode-card">
+          <div class="mode-icon">✨</div>
+          <div class="mode-title">Visual Editor</div>
+          <div class="mode-desc">Edit your site directly on the live mockup. Changes are pushed directly to Github.</div>
+        </a>
+        <a href="sveltia.html" class="mode-card">
+          <div class="mode-icon">⚙️</div>
+          <div class="mode-title">Sveltia CMS</div>
+          <div class="mode-desc">Standard form-based content management. Advanced settings and configuration.</div>
+        </a>
+      </div>
     </div>
+    <script>
+      (function() {
+        function checkAuth() {
+          const auth = localStorage.getItem('sveltia-cms.user') || localStorage.getItem('decap-cms-user');
+          if (!auth) {
+            // Not authenticated, redirect to login with return URL
+            window.location.href = 'sveltia.html#?return=index.html';
+            return;
+          }
+          try {
+            const parsed = JSON.parse(auth);
+            if (parsed?.token) {
+              // Authenticated, show content
+              document.getElementById('auth-check').style.display = 'none';
+              document.getElementById('content').style.display = 'block';
+            } else {
+              // Invalid token, redirect to login
+              window.location.href = 'sveltia.html#?return=index.html';
+            }
+          } catch {
+            // Parse error, redirect to login
+            window.location.href = 'sveltia.html#?return=index.html';
+          }
+        }
+        checkAuth();
+      })();
+    </script>
   </body>
 </html>
