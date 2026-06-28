@@ -11,7 +11,7 @@
 
   function getToken() {
     if (githubToken) return githubToken;
-    const auth = localStorage.getItem('decap-cms-user');
+    const auth = localStorage.getItem('sveltia-cms.user') || localStorage.getItem('decap-cms-user');
     if (!auth) return null;
     try {
       const parsed = JSON.parse(auth);

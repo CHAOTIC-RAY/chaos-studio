@@ -1091,6 +1091,11 @@
             cacheCmsGithubToken(user.token);
             onAuthChange();
             clearInterval(poll);
+            // Check for return URL parameter
+            const returnParam = new URLSearchParams(window.location.hash.split('?')[1]).get('return');
+            if (returnParam) {
+              window.location.href = returnParam;
+            }
             return;
           }
         } catch {
