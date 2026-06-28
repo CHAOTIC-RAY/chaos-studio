@@ -1091,10 +1091,11 @@
             cacheCmsGithubToken(user.token);
             onAuthChange();
             clearInterval(poll);
-            // Check for return URL parameter
-            const returnParam = new URLSearchParams(window.location.hash.split('?')[1]).get('return');
-            if (returnParam) {
-              window.location.href = returnParam;
+            // Check for return URL in sessionStorage
+            const returnUrl = sessionStorage.getItem('cmsReturnUrl');
+            if (returnUrl) {
+              sessionStorage.removeItem('cmsReturnUrl');
+              window.location.href = returnUrl;
             }
             return;
           }
@@ -1160,6 +1161,24 @@
     watchEditorLayout();
     renderLogsOverlay();
     setInterval(renderLogsOverlay, 30000); // Refresh every 30s
+
+    // Check for return URL immediately (for already-authenticated users)
+    const returnUrl = sessionStorage.getItem('cmsReturnUrl');
+    if (returnUrl) {
+      const raw = localStorage.getItem("sveltia-cms.user") || localStorage.getItem("decap-cms-user");
+      if (raw) {
+        try {
+          const user = JSON.parse(raw);
+          if (user?.token) {
+            sessionStorage.removeItem('cmsReturnUrl');
+            window.location.href = returnUrl;
+            return; // Exit early to prevent other setup
+          }
+        } catch {
+          /* ignore */
+        }
+      }
+    }
 
     window.addEventListener("load", () => {
       registerCmsHooks();

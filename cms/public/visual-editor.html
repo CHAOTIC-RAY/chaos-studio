@@ -23,7 +23,7 @@
       <div class="auth-box">
         <h2>Authentication Required</h2>
         <p>Please log in via Sveltia CMS first.</p>
-        <button onclick="location.href='sveltia.html#?return=visual-editor.html'">Go to Login</button>
+        <button onclick="sessionStorage.setItem('cmsReturnUrl', 'visual-editor.html'); location.href='sveltia.html'">Go to Login</button>
       </div>
     </div>
     

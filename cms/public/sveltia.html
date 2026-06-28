@@ -20,6 +20,23 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="cms-config-url" type="text/yaml" href="/config.yml" />
     <link rel="stylesheet" href="/cms-portal.css" />
+    <script>
+      (function() {
+        const returnUrl = sessionStorage.getItem('cmsReturnUrl');
+        if (returnUrl) {
+          const raw = localStorage.getItem('sveltia-cms.user') || localStorage.getItem('decap-cms-user');
+          if (raw) {
+            try {
+              const user = JSON.parse(raw);
+              if (user?.token) {
+                sessionStorage.removeItem('cmsReturnUrl');
+                window.location.href = returnUrl;
+              }
+            } catch (e) {}
+          }
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="nc-root"></div>
