@@ -54,28 +54,52 @@
       return;
     }
 
+    let loadTimeout;
     iframe.onload = () => {
+      clearTimeout(loadTimeout);
       status.textContent = 'Site loaded. Ready.';
       enableBtn.disabled = false;
     };
+
+    iframe.onerror = () => {
+      clearTimeout(loadTimeout);
+      status.textContent = 'Error loading site preview.';
+      console.error('Failed to load iframe');
+    };
+
+    // Timeout fallback in case iframe never loads
+    loadTimeout = setTimeout(() => {
+      status.textContent = 'Preview loaded (timeout fallback).';
+      enableBtn.disabled = false;
+      console.warn('Iframe load timeout - enabling edit anyway');
+    }, 5000);
 
     enableBtn.addEventListener('click', toggleEdit);
     publishBtn.addEventListener('click', publishChanges);
   }
 
   function toggleEdit() {
-    const doc = iframe.contentDocument;
-    if (!doc) return;
+    try {
+      const doc = iframe.contentDocument || iframe.contentWindow?.document;
+      if (!doc) {
+        status.textContent = 'Error: Cannot access iframe content (cross-origin?).';
+        console.error('Cannot access iframe document');
+        return;
+      }
 
-    isEditing = !isEditing;
-    doc.designMode = isEditing ? 'on' : 'off';
-    enableBtn.textContent = isEditing ? 'Disable Editing' : 'Enable Editing';
-    publishBtn.disabled = !isEditing;
-    
-    if (isEditing) {
-      status.textContent = 'Editing enabled (web-edit mode).';
-    } else {
-      status.textContent = 'Editing disabled.';
+      isEditing = !isEditing;
+      doc.designMode = isEditing ? 'on' : 'off';
+      enableBtn.textContent = isEditing ? 'Disable Editing' : 'Enable Editing';
+      publishBtn.disabled = !isEditing;
+
+      if (isEditing) {
+        status.textContent = 'Editing enabled (web-edit mode).';
+      } else {
+        status.textContent = 'Editing disabled.';
+      }
+    } catch (e) {
+      status.textContent = 'Error: ' + e.message;
+      console.error('Toggle edit error:', e);
     }
   }
 
