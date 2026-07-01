@@ -2746,6 +2746,9 @@ body.route-gallery {
   font-size: 0.9rem;
   max-width: 48ch;
 }
+.studio-pricing {
+  margin-bottom: 3rem;
+}
 .studio-packages {
   display: grid;
   gap: 1.25rem;
@@ -4379,7 +4382,7 @@ main { position: relative; z-index: 1; }
   font-weight: 700;
   line-height: 1;
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  background: linear-gradient(135deg, var(--purple) 0%, var(--purple-bright) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
