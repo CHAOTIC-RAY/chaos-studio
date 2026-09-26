@@ -86,4 +86,5 @@ export const PROJECT_LIVE_URL: Record<string, string> = {
 export const PROJECT_LOGOS: Record<string, string> = {
   cookxpert: "/images/projects/logos/cookxpert.webp",
   forge: "/images/projects/logos/forge.webp",
+  kora: "/images/projects/logos/kora.svg",
 };
