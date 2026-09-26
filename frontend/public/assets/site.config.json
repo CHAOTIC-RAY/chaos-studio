@@ -162,6 +162,33 @@
         "Batch Processing",
         "Photography"
       ]
+    },
+    {
+      "slug": "kora",
+      "title": "Kora",
+      "category": "Mobile / Web App",
+      "year": "2026",
+      "tagline": "Your bookshelf, narrator, and morning paper. All in one place.",
+      "description": "Open-source ebook reader, audiobook player, and news aggregator with on-device text-to-speech. Read EPUB, PDF, and TXT; listen with neural voices; browse RSS feeds; sync across devices; and works offline as a PWA on web and Android.",
+      "cover": "/assets/work/kora/cover.webp",
+      "coverAlt": "Kora — reader, narrator, and morning paper in one app",
+      "href": "https://kora.chaoticstudio.workers.dev",
+      "cta": "Open App",
+      "featured": true,
+      "accent": "neutral",
+      "highlights": [
+        "EPUB, PDF, and TXT reading with offline PWA support",
+        "On-device narrator with Web Speech API and Android TTS",
+        "RSS morning paper with daily news brief and save flows"
+      ],
+      "tags": [
+        "Kora",
+        "Ebook Reader",
+        "Audiobook",
+        "News Aggregator",
+        "PWA",
+        "Offline First"
+      ]
     }
   ],
   "clients": [

@@ -34,6 +34,20 @@
     "subtitle": "5+years",
     "items": [
       {
+        "id": "adk-hospital",
+        "company": "ADK Hospital",
+        "role": "Content & Creative Marketing Officer Grade 2",
+        "period": "2026 - Now",
+        "featured": true,
+        "description": "Creates graphic design, video content, event coverage, and social media posts for ADK Hospital.",
+        "bullets": [
+          "Graphic design for campaigns, print, and digital channels",
+          "Video creation, shooting, and event coverage",
+          "Social media posts and creative marketing assets"
+        ],
+        "logo": "AD"
+      },
+      {
         "id": "rainbow",
         "company": "Rainbow Enterprise",
         "role": "Content Designer",
