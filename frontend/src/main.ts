@@ -109,6 +109,11 @@ function bindRouteLinks(): () => void {
         : href === "/gallery" || href.endsWith("/gallery")
         ? "gallery"
         : "portfolio";
+    // /studio and /gallery are standalone static pages now — full navigation
+    if (route !== "portfolio") {
+      window.location.href = route === "studio" ? "/studio/" : "/gallery/";
+      return;
+    }
     navigateTo(route);
     void mount(route);
     closeMobileNav();

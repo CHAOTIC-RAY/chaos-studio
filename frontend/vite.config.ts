@@ -3,7 +3,8 @@ import { join } from "node:path";
 import { defineConfig, type Plugin } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
-const SPA_ROUTES = ["studio", "gallery"];
+// /studio and /gallery are static pages in public/ (Chaos Studio v4) — do not overwrite with the SPA shell
+const SPA_ROUTES: string[] = [];
 
 function copySpaRoutes(): Plugin {
   return {
@@ -91,11 +92,7 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html,ico,svg,webp,png,json,woff2}"],
         globIgnores: ["**/*.pano.webp", "**/preview.mp4", "admin/**"],
         navigateFallback: "/index.html",
-        navigateFallbackDenylist: [/^\/api\//, /^\/admin/],
-        additionalManifestEntries: [
-          { url: "/studio/", revision: null },
-          { url: "/gallery/", revision: null },
-        ],
+        navigateFallbackDenylist: [/^\/api\//, /^\/admin/, /^\/studio/, /^\/gallery/],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,

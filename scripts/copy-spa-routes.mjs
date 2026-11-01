@@ -8,7 +8,8 @@ import { join } from "node:path";
 
 const dist = process.argv[2] || join(process.cwd(), "frontend/dist");
 const index = join(dist, "index.html");
-const routes = ["studio", "gallery"];
+// /studio and /gallery are static Chaos Studio pages (frontend/public/{studio,gallery}) — keep them.
+const routes = [];
 
 for (const route of routes) {
   const dir = join(dist, route);
