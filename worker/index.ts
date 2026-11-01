@@ -11,7 +11,9 @@ export interface Env extends AdminAiEnv, GithubApplyEnv {
 }
 
 /** Client-side routes that must serve index.html on direct navigation */
-const SPA_ROUTES = new Set(["/studio", "/gallery"]);
+const SPA_ROUTES = new Set<string>([]);
+/** /gallery/<slug> deep links → static gallery shell (client opens the project) */
+const GALLERY_DEEP = /^\/gallery\/[a-z0-9-]+\/?$/;
 
 function isAssetPath(pathname: string): boolean {
   return /\.[a-zA-Z0-9]+$/.test(pathname);
@@ -113,6 +115,10 @@ export default {
     }
     if (url.pathname.startsWith("/admin/")) {
       return env.ASSETS.fetch(request);
+    }
+
+    if ((request.method === "GET" || request.method === "HEAD") && GALLERY_DEEP.test(url.pathname)) {
+      return env.ASSETS.fetch(new Request(new URL("/gallery/", url.origin).toString(), request));
     }
 
     const spa = await serveSpaDocument(request, env);
