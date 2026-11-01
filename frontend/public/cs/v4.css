@@ -87,3 +87,9 @@ body{font-size:var(--fs-body);line-height:1.55}
 @media (min-width:901px){.hero .hero-logo{grid-row:2/6;align-self:end}}
 .pano-corner .tape{width:auto;height:auto}
 .fin-tag{color:var(--white)}
+/* v5: centred floating nav; hides during the full-screen finale */
+.hdr{left:50%;right:auto;transform:translateX(-50%);transition:transform .35s var(--out,ease),opacity .25s}
+@media (max-width:600px){.hdr{left:50%;max-width:calc(100% - 24px)}}
+body.nav-hide .hdr{transform:translate(-50%,calc(-100% - 32px));opacity:0;pointer-events:none}
+body.nav-hide .hdr:focus-within{transform:translateX(-50%);opacity:1;pointer-events:auto}
+@media (prefers-reduced-motion:reduce){.hdr{transition:none!important}}

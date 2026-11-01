@@ -15,3 +15,6 @@ if(g){
   }
 }
 })();
+/* v5: hide floating nav while a full-screen final section fills the view */
+(function(){const f=document.querySelector(".studio-finale,[data-final-fullscreen]");if(!f||!("IntersectionObserver"in window))return;
+new IntersectionObserver(es=>es.forEach(e=>document.body.classList.toggle("nav-hide",e.intersectionRatio>=.5)),{threshold:[0,.5,1]}).observe(f)})();
