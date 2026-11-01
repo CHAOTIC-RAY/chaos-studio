@@ -98,7 +98,7 @@ body::after{opacity:var(--grain);animation:grain-jit 600ms steps(3) infinite;ins
 .whys .why-brace{background:var(--lilac);color:var(--ink)}
 .pks-sec .pk{background:var(--plum);border:0}
 .pks-sec .pk--rec{background:var(--lime);color:var(--ink);position:relative;transform:none}
-.pks-sec .pk--rec::after{content:"BEST VALUE";position:absolute;top:-16px;right:24px;font:400 16px/1 Anton;letter-spacing:.06em;background:var(--ink);color:var(--lime);padding:10px 14px;border-radius:999px;transform:rotate(-8deg)}
+.pks-sec .pk--rec::after{content:"RECOMMENDED";position:absolute;top:-16px;right:24px;font:400 16px/1 Anton;letter-spacing:.06em;background:var(--ink);color:var(--lime);padding:10px 14px;border-radius:999px;transform:rotate(-8deg)}
 .pks-sec .pk .amt{font-size:56px;color:inherit}
 .pks-sec .pk-head h2 .hl{background:var(--purple)}
 .imp .rings{display:none}

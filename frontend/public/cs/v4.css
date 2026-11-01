@@ -93,3 +93,4 @@ body{font-size:var(--fs-body);line-height:1.55}
 body.nav-hide .hdr{transform:translate(-50%,calc(-100% - 32px));opacity:0;pointer-events:none}
 body.nav-hide .hdr:focus-within{transform:translateX(-50%);opacity:1;pointer-events:auto}
 @media (prefers-reduced-motion:reduce){.hdr{transition:none!important}}
+@media (max-width:600px){.pano-hint{display:none!important}}

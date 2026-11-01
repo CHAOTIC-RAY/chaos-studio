@@ -5,6 +5,10 @@ const P="/images/posts",WA=window.__WA__||"https://wa.me/9609401011";
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const reduced=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* Remove invented claims (awards/rankings) from captions; fall back to neutral labels. */
+const TITLE_FIX={"rioga-03":"Travel branding post"};
+const CLAIM=/\b(best|award(s|ed)?|winner|top\s*\d+|#\s*1|no\.?\s*1|number one|leading)\b/i;
+function fixClaims(n){const t=TITLE_FIX[n.id]||(CLAIM.test(n.title||"")?(n.client+" post"):n.title);return{...n,title:t,tags:(n.tags||[]).filter(x=>!/^(awards?|best.*)$/i.test(x))}}
 const slugify=s=>s.normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
 const pad=n=>String(n).padStart(3,"0");
 const panoSrc=u=>u.replace(/\.webp$/i,".pano.webp");
@@ -25,7 +29,7 @@ function cats(n){const t=(n.tags||[]).join(" ").toLowerCase(),k=(n.slides||[]).l
 function fmt(n){const p=(n.platform||"post").toLowerCase(),k=(n.slides||[]).length;
   if(n.video)return"reel · video";if(/poster/.test(n.id)||(n.tags||[]).some(t=>/poster/i.test(t)))return"poster · print";
   return k>1?`${p} · ${k} slides`:`${p} · single`}
-function toItem(n,i){const cover=n.video?`${P}/${n.id}/${n.poster||"poster.webp"}`:(n.slides&&n.slides.length?slideSrc(n,n.slides[0]):`${P}/${base(n)}.webp`);
+function toItem(n,i){n=fixClaims(n);const cover=n.video?`${P}/${n.id}/${n.poster||"poster.webp"}`:(n.slides&&n.slides.length?slideSrc(n,n.slides[0]):`${P}/${base(n)}.webp`);
   const media=n.video?[{type:"video",src:`${P}/${n.id}/${n.video}`,poster:cover}]:(n.slides&&n.slides.length?n.slides.map(s=>({type:"image",src:slideSrc(n,s)})):[{type:"image",src:cover}]);
   const c=cats(n);const year=((n.tags||[]).join(" ").match(/\b20\d\d\b/)||[])[0]||"";
   return{n:i+1,id:n.id,slug:slugify(n.client+" "+n.title),client:n.client,cslug:slugify(n.client),title:n.title,desc:n.description||"",tags:n.tags||[],platform:n.platform||"",
@@ -34,7 +38,7 @@ function items(d){const g=(d.galleryPosts&&d.galleryPosts.items)||[],s=(d.social
   const all=g.length?[...g,...s.filter(x=>!g.some(y=>y.id===x.id))]:s;return all.filter(x=>!x.id.startsWith("_")).map(toItem)}
 async function load(){
   try{const r=await fetch("/api/portfolio",{headers:{accept:"application/json"}});if(!r.ok)throw 0;const d=await r.json();if(!d.socialPosts)throw 0;return{d,src:"live"}}
-  catch(e){const r=await fetch("/cs/gallery-snapshot.json");if(!r.ok)throw new Error("offline");return{d:await r.json(),src:"snapshot"}}}
+  catch(e){const r=await fetch("/gallery-snapshot.json");if(!r.ok)throw new Error("offline");return{d:await r.json(),src:"snapshot"}}}
 
 let ALL=[],VIEW=[],cat="",client="",mode=reduced()?"grid":"canvas",pano=null;
 const grid=$("#grid"),chips=$("#chips"),sel=$("#client"),live=$("#g-live"),state=$("#g-state");
