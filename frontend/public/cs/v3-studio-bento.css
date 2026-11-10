@@ -689,6 +689,41 @@
   box-sizing: border-box;
   justify-content: center;
   text-align: center;
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.showcase-cta-row .cta-portfolio-short {
+  display: none;
+}
+
+@media (max-width: 520px) {
+  .showcase-cta-row .sticker-cta {
+    font-size: clamp(15px, 4vw, 18px);
+    padding: 14px 18px;
+    justify-content: flex-start;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .showcase-cta-row .cta-portfolio-long {
+    display: none;
+  }
+
+  .showcase-cta-row .cta-portfolio-short {
+    display: inline;
+  }
+}
+
+@media (min-width: 521px) {
+  .showcase-cta-row .sticker-cta {
+    white-space: nowrap;
+    width: auto;
+    max-width: 100%;
+  }
 }
 
 @media (max-width: 520px) {

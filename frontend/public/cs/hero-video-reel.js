@@ -204,9 +204,9 @@ window.HeroVideoReel = (function () {
       }
 
       function bracket(ctx, x, y, w, h, col) {
-        const len = Math.min(18, w * 0.22, h * 0.22);
+        const len = Math.min(mobile ? 22 : 28, w * 0.26, h * 0.26);
         ctx.strokeStyle = col;
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = mobile ? 2 : 2.25;
         ctx.beginPath();
         ctx.moveTo(x, y + len);
         ctx.lineTo(x, y);
@@ -231,19 +231,21 @@ window.HeroVideoReel = (function () {
 
       function drawHud(ctx, w, h, palette, clip) {
         ctx.save();
-        const mono = `${mobile ? 9 : 10}px "Space Mono", monospace`;
+        const mono = `${mobile ? 11 : 13}px "Space Mono", monospace`;
         const t = performance.now() / 1000;
         ctx.font = mono;
         ctx.fillStyle = palette.fg;
-        ctx.globalAlpha = 0.85;
+        ctx.globalAlpha = 0.92;
         const tag = (clip && clip.category) || "FEED";
-        ctx.fillText(`CHAOS.TRK // ${tag.toUpperCase()}`, 12, mobile ? 18 : 22);
-        ctx.fillText(`TC ${t.toFixed(2)}`, w - (mobile ? 72 : 88), mobile ? 18 : 22);
-        ctx.globalAlpha = 0.55;
+        const pad = mobile ? 14 : 18;
+        ctx.fillText(`CHAOS.TRK // ${tag.toUpperCase()}`, pad, mobile ? 22 : 26);
+        const tc = `TC ${t.toFixed(2)}`;
+        ctx.fillText(tc, w - ctx.measureText(tc).width - pad, mobile ? 22 : 26);
+        ctx.globalAlpha = 0.35;
         ctx.strokeStyle = palette.mid;
         ctx.lineWidth = 1;
-        const cx = w * 0.5;
-        const cy = h * 0.46;
+        const cx = w * (mobile ? 0.72 : 0.78);
+        const cy = h * (mobile ? 0.28 : 0.32);
         ctx.beginPath();
         ctx.moveTo(cx - 14, cy);
         ctx.lineTo(cx + 14, cy);

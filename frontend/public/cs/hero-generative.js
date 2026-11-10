@@ -63,8 +63,8 @@
   let glyphPool = "mixed";
   let cellSize = 10;
   let ditherMode = "bayer";
-  let rawMix = 0.04;
-  let glyphCrush = 0.97;
+  let rawMix = 0.3;
+  let glyphCrush = 0.58;
   let sceneStart = 0;
   let sceneDuration = 5600;
   let sceneCutAt = 0;
@@ -112,8 +112,8 @@
     size.w = Math.max(1, Math.floor(rect.width));
     size.h = Math.max(1, Math.floor(rect.height));
     size.dpr = dpr;
-    size.sw = Math.max(1, Math.floor(size.w * (mobile ? 0.48 : 0.58)));
-    size.sh = Math.max(1, Math.floor(size.h * (mobile ? 0.48 : 0.58)));
+    size.sw = Math.max(1, Math.floor(size.w * (mobile ? 0.58 : 0.68)));
+    size.sh = Math.max(1, Math.floor(size.h * (mobile ? 0.58 : 0.68)));
     canvas.width = Math.floor(size.w * dpr);
     canvas.height = Math.floor(size.h * dpr);
     canvas.style.width = size.w + "px";
@@ -245,7 +245,7 @@
     const pool = poolGlyphs(glyphPool);
     gctx.fillStyle = palette.bg;
     gctx.fillRect(0, 0, size.sw, size.sh);
-    const stamp = cellSize * (mobile ? 0.94 : 0.96);
+    const stamp = cellSize * (mobile ? 0.78 : 0.82);
 
     for (let gy = 0; gy < size.gh; gy++) {
       for (let gx = 0; gx < size.gw; gx++) {
@@ -254,7 +254,7 @@
         const bx = gx * cellSize;
         const by = gy * cellSize;
         const t = B4[(gy & 3) * 4 + (gx & 3)] / 16;
-        const on = L > 98 - t * 22;
+        const on = L > 128 - t * 26;
 
         if (!on) {
           if (glyphCrush > 0.8) {
@@ -288,12 +288,13 @@
     if (!videoReel || !videoReel.clips.length) return;
     const clip = videoReel.pickClip();
     palette = pick(PALETTES);
-    if (Math.random() < 0.12) palette = { ...palette, fg: palette.bg, bg: palette.fg };
+    if (Math.random() < 0.04) palette = { ...palette, fg: palette.bg, bg: palette.fg };
     glyphPool = pick(["mixed", "marks", "shapes", "logo", "icons", "logo"]);
-    cellSize = mobile ? pick([10, 11, 12]) : pick([11, 12, 13, 14]);
+    cellSize = mobile ? pick([9, 10, 11]) : pick([10, 11, 12]);
     ditherMode = mobile ? "bayer" : pick(["bayer", "bayer", "floyd"]);
-    rawMix = mobile ? 0.02 + Math.random() * 0.04 : 0.03 + Math.random() * 0.05;
-    glyphCrush = 0.94 + Math.random() * 0.05;
+    rawMix = 0.25 + Math.random() * 0.1;
+    glyphCrush = 0.48 + Math.random() * 0.18;
+    if (Math.random() < 0.35) palette = pick(PALETTES.filter((p) => p.id !== "plum" && p.id !== "purple"));
     sceneDuration = mobile ? 4800 + Math.random() * 1200 : 5400 + Math.random() * 1400;
     sceneCutAt = performance.now() + sceneDuration;
     sceneStart = performance.now();
@@ -381,8 +382,8 @@
       }
     }
 
-    ctx.fillStyle = "rgba(0,0,0,0.055)";
-    for (let y = 0; y < size.h; y += mobile ? 4 : 3) ctx.fillRect(0, y, size.w, 1);
+    ctx.fillStyle = "rgba(0,0,0,0.022)";
+    for (let y = 0; y < size.h; y += mobile ? 5 : 4) ctx.fillRect(0, y, size.w, 1);
   }
 
   function frame(t) {

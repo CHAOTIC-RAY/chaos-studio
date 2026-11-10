@@ -1,0 +1,127 @@
+/* Studio hero — bottom-left stack, full viewport, WCAG body contrast */
+
+.page-studio .hero {
+  min-height: 100svh;
+  padding-bottom: calc(var(--sp-4) + env(safe-area-inset-bottom, 0px));
+  padding-top: 0;
+}
+
+.page-studio .hero .wrap {
+  align-content: end;
+  justify-items: start;
+  gap: var(--sp-2);
+  padding-bottom: var(--sp-2);
+}
+
+.page-studio .hero-h {
+  margin: 0;
+}
+
+.page-studio .hero .headline {
+  margin: 0;
+  font: 500 clamp(17px, 4.2vw, 22px) / 1.35 "DM Sans", sans-serif;
+  max-width: 38ch;
+}
+
+.page-studio .hero .pitch-panel {
+  margin: 0;
+}
+
+.page-studio .hero .pitch-panel .pitch {
+  max-width: 46ch;
+  font-size: clamp(15px, 3.6vw, 17px);
+  line-height: 1.5;
+  color: rgba(237, 230, 218, 0.94);
+  text-shadow: 0 1px 2px rgba(14, 14, 15, 0.9);
+}
+
+.page-studio .hero .ctas {
+  margin-top: var(--sp-1);
+  width: 100%;
+  max-width: 420px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--sp-2);
+}
+
+.page-studio .hero .ctas .btn {
+  min-height: 48px;
+  justify-content: center;
+  text-align: center;
+}
+
+.page-studio .hero .ctas .btn-lime {
+  width: 100%;
+  box-shadow: 4px 4px 0 var(--purple);
+}
+
+.page-studio .hero .ctas .btn-line {
+  width: 100%;
+  background: transparent;
+}
+
+.page-studio .hero .cta-long {
+  display: none;
+}
+
+.page-studio .hero .cta-short {
+  display: inline;
+}
+
+@media (min-width: 521px) {
+  .page-studio .hero .ctas {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    max-width: none;
+  }
+
+  .page-studio .hero .ctas .btn-lime,
+  .page-studio .hero .ctas .btn-line {
+    width: auto;
+  }
+
+  .page-studio .hero .cta-long {
+    display: inline;
+  }
+
+  .page-studio .hero .cta-short {
+    display: none;
+  }
+}
+
+.page-studio .hero .hero-scroll-cue {
+  position: absolute;
+  right: var(--m);
+  bottom: calc(var(--sp-3) + env(safe-area-inset-bottom, 0px));
+  z-index: 3;
+  font: 400 12px/1 "Space Mono", monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(237, 230, 218, 0.72);
+  text-decoration: none;
+  padding: var(--sp-1);
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.page-studio .hero .hero-scroll-cue::after {
+  content: "↓";
+  font-size: 14px;
+  color: var(--lilac);
+}
+
+@media (max-width: 520px) {
+  .page-studio .hero .pitch-panel .pitch {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+
+  .page-studio .hero .hero-scroll-cue {
+    display: none;
+  }
+}

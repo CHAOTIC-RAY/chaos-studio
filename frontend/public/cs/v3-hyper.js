@@ -44,6 +44,24 @@
     return `<span class="wordmark-pair"><span class="wordmark-chaos">CHAOS</span> <span class="wordmark-studio wordmark-studio--solid">STUDIO</span>${extra}</span>`;
   }
 
+  function studioServiceNames() {
+    const fromList = [...document.querySelectorAll(".svc-list .cond")].map((el) => el.textContent.trim()).filter(Boolean);
+    if (fromList.length) return fromList;
+    if (window.ChaosStudioServices) return window.ChaosStudioServices();
+    return [];
+  }
+
+  function marqueeServiceChunk() {
+    const names = studioServiceNames();
+    if (!names.length) return `<span class="v3-marquee__item v3-marquee__item--paper">CHAOS STUDIO</span>`;
+    return names
+      .map((name, i) => {
+        const tone = i % 2 === 0 ? "v3-marquee__item--paper" : "v3-marquee__item--lilac";
+        return `<span class="v3-marquee__item ${tone}">${name}</span><span class="v3-marquee__sep shock" aria-hidden="true">✶</span>`;
+      })
+      .join("");
+  }
+
   function spawnMotifs() {
     const layer = document.createElement("div");
     layer.className = "v3-motif-layer";
@@ -97,34 +115,47 @@
       band = document.createElement("div");
       band.className = "v3-marquee";
       band.setAttribute("aria-hidden", "true");
-      band.innerHTML = `<div class="v3-marquee__track" data-marquee>${csWordmark(' <span class="shock">✱</span> ')}</div>`;
+      band.innerHTML = `<div class="v3-marquee__track" data-marquee>${marqueeServiceChunk()}</div>`;
       svc.parentElement.insertBefore(band, svc);
     }
     const track = band.querySelector("[data-marquee]");
     if (!track || track.dataset.ready) return;
     track.dataset.ready = "1";
-    const chunk = track.innerHTML;
-    track.innerHTML = chunk.repeat(12);
-    window.ChaosDotMatrixText && window.ChaosDotMatrixText.boot();
+    const chunk = marqueeServiceChunk();
+    track.innerHTML = chunk.repeat(coarse ? 8 : 10);
     if (RM) {
-      track.style.transform = "translateX(-12%)";
+      track.style.transform = "translateX(-8%)";
       return;
     }
-  const marqueeTween = gsap.to(track, {
+    const marqueeTween = gsap.to(track, {
       xPercent: -50,
       ease: "none",
-      duration: 28,
+      duration: coarse ? 42 : 36,
       repeat: -1,
+      paused: true,
     });
     ST.create({
       trigger: band,
       start: "top bottom",
       end: "bottom top",
+      onEnter: () => marqueeTween.play(),
+      onLeave: () => marqueeTween.pause(),
+      onEnterBack: () => marqueeTween.play(),
+      onLeaveBack: () => marqueeTween.pause(),
       onUpdate: (self) => {
         const v = self.getVelocity() / 800;
-        marqueeTween.timeScale(1 + Math.min(2.5, Math.abs(v)) * (v < 0 ? -1 : 1));
+        marqueeTween.timeScale(1 + Math.min(2.2, Math.abs(v)) * (v < 0 ? -1 : 1));
       },
     });
+    const vis = new IntersectionObserver(
+      (entries) => {
+        const on = entries.some((e) => e.isIntersecting);
+        if (on) marqueeTween.play();
+        else marqueeTween.pause();
+      },
+      { threshold: 0.05, rootMargin: "40px" },
+    );
+    vis.observe(band);
   }
 
   function heroTypeMotion() {
@@ -678,28 +709,92 @@
     gsap.set(nodes, { opacity: 0, y: 32, skewX: -4 });
   }
 
-  function growShape2() {
-    const g = document.getElementById("grow2");
-    if (!g) return;
+  function whySectionMotion() {
+    const sec = document.querySelector(".whys");
+    if (!sec) return;
+    const title = sec.querySelector(".why-title__inner");
+    const brace = sec.querySelector(".why-brace__inner");
+    const motif = sec.querySelector(".why-motif img");
+    const cards = [...sec.querySelectorAll("[data-why-card]")];
+
     if (RM) {
-      g.classList.add("on", "done");
-      g.style.setProperty("--g2", "1");
+      [title, brace, ...cards].forEach((el) => el && el.classList.add("why-in"));
       return;
     }
-    ST.create({
-      trigger: g.parentElement,
-      start: "top 80%",
-      end: "bottom 30%",
-      scrub: 0.6,
-      onUpdate: (self) => {
-        const p = Math.max(0, Math.min(1, self.progress));
-        g.style.setProperty("--g2", p.toFixed(3));
-        if (p > 0.05 && !g.classList.contains("on")) {
-          g.classList.add("on");
-          const n = g.querySelectorAll("rect").length;
-          setTimeout(() => g.classList.add("done"), n * 24 + 200);
-        }
-      },
+
+    const wrapTitle = sec.querySelector(".why-title");
+    if (wrapTitle && title) {
+      gsap.set(wrapTitle, { overflow: "hidden" });
+      gsap.fromTo(title, { yPercent: 108, skewY: 6 }, {
+        yPercent: 0,
+        skewY: 0,
+        duration: 0.75,
+        ease: "power3.out",
+        scrollTrigger: { trigger: wrapTitle, start: "top 88%", once: true },
+      });
+    }
+
+    if (brace) {
+      gsap.set(brace.parentElement, { overflow: "hidden" });
+      gsap.fromTo(
+        brace,
+        { xPercent: -108, opacity: 0.2 },
+        {
+          xPercent: 0,
+          opacity: 1,
+          duration: 0.65,
+          ease: "power3.out",
+          scrollTrigger: { trigger: brace, start: "top 90%", once: true },
+        },
+      );
+    }
+
+    if (motif) {
+      gsap.fromTo(
+        motif,
+        { scale: coarse ? 0.88 : 0.82, rotate: -18, opacity: 0.12 },
+        {
+          scale: 1,
+          rotate: 0,
+          opacity: 0.22,
+          ease: "none",
+          scrollTrigger: { trigger: sec, start: "top 92%", end: "bottom 40%", scrub: coarse ? 1.1 : 0.85 },
+        },
+      );
+    }
+
+    cards.forEach((card, i) => {
+      const rule = card.querySelector(".why-rule");
+      const num = card.querySelector(".num");
+      const h3 = card.querySelector("h3");
+      const body = card.querySelector("p");
+      const st = { trigger: card, start: "top 92%", once: true };
+
+      if (rule) {
+        gsap.fromTo(rule, { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 0.55, ease: "power2.out", scrollTrigger: st });
+      }
+      if (num) {
+        gsap.fromTo(num, { scale: 0.72, opacity: 0, y: coarse ? 12 : 18 }, {
+          scale: 1,
+          opacity: 1,
+          y: 0,
+          duration: 0.55,
+          delay: 0.08,
+          ease: "back.out(1.4)",
+          scrollTrigger: st,
+        });
+      }
+      if (h3 || body) {
+        gsap.fromTo([h3, body].filter(Boolean), { y: coarse ? 16 : 22, opacity: 0 }, {
+          y: 0,
+          opacity: 1,
+          duration: 0.5,
+          stagger: 0.08,
+          delay: 0.12 + i * 0.04,
+          ease: "power3.out",
+          scrollTrigger: st,
+        });
+      }
     });
   }
 
@@ -790,7 +885,7 @@
     pricingBentoMotion();
     sectionWipesAndShock();
     revealBatch();
-    growShape2();
+    whySectionMotion();
     finaleNavHide();
     galleryCards();
     impactStats();

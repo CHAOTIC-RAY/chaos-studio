@@ -71,13 +71,47 @@
   will-change: transform;
 }
 
-.v3-marquee__track span {
-  font-size: clamp(28px, 4.5vw, 48px);
+.v3-marquee__track {
+  align-items: baseline;
+  padding-left: 24px;
+}
+
+.v3-marquee__item {
+  font-family: Anton, sans-serif;
+  font-size: clamp(22px, 3.8vw, 40px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
-.v3-marquee__track .shock {
+.v3-marquee__item--paper {
+  color: var(--paper);
+}
+
+.v3-marquee__item--lilac {
+  color: var(--lilac);
+}
+
+.v3-marquee__sep {
+  font-family: Anton, sans-serif;
+  font-size: clamp(22px, 3.8vw, 40px);
+  line-height: 1;
+  letter-spacing: 0.04em;
   color: var(--shock);
+}
+
+.v3-marquee__track .wordmark-pair,
+.v3-marquee__track .wordmark-chaos,
+.v3-marquee__track .wordmark-studio {
+  font-family: Anton, sans-serif !important;
+  font-size: clamp(22px, 3.8vw, 40px) !important;
+  line-height: 1 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  color: var(--paper) !important;
+  font-weight: 400 !important;
 }
 
 /* Horizontal services strip */

@@ -27,31 +27,45 @@
 
 .hero .wrap {
   position: relative;
-  z-index: 2;
+  z-index: 3;
 }
 
 .hero .hero-logo {
   display: none;
 }
 
-.hero .wrap::before {
+/* Full-bleed legibility wash — section edge to edge, no box on .wrap */
+.page-studio .hero::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
   background: linear-gradient(
-    180deg,
-    rgba(14, 14, 15, 0.5) 0%,
-    rgba(14, 14, 15, 0.18) 42%,
-    rgba(14, 14, 15, 0.72) 78%,
-    rgba(14, 14, 15, 0.92) 100%
+    to top,
+    rgba(14, 14, 15, 0.88) 0%,
+    rgba(14, 14, 15, 0.62) 22%,
+    rgba(14, 14, 15, 0.18) 40%,
+    rgba(14, 14, 15, 0) 45%
   );
+}
+
+@media (min-width: 900px) {
+  .page-studio .hero::before {
+    background:
+      linear-gradient(
+        to top,
+        rgba(14, 14, 15, 0.85) 0%,
+        rgba(14, 14, 15, 0.55) 20%,
+        rgba(14, 14, 15, 0) 45%
+      ),
+      linear-gradient(90deg, rgba(14, 14, 15, 0.42) 0%, rgba(14, 14, 15, 0) 38%);
+  }
 }
 
 .hero.scanlines::after {
   z-index: 1;
-  opacity: 0.35;
+  opacity: 0.14;
 }
 
 .hero-h,

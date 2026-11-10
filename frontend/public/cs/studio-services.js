@@ -1,4 +1,10 @@
 (function () {
+  window.ChaosStudioServices = function chaosStudioServices() {
+    const list = document.querySelector(".svc-list");
+    if (!list) return [];
+    return [...list.querySelectorAll(".cond")].map((el) => el.textContent.trim()).filter(Boolean);
+  };
+
   const ICONS = window.ChaosStudioIcons || {};
   const keys = [
     "interior",
