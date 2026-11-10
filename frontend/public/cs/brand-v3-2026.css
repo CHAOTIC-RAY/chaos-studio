@@ -115,10 +115,14 @@ body::after {
 }
 
 .mono {
-  font-family: Anton, sans-serif;
+  font-family: "Space Mono", monospace;
   font-size: var(--fs-label);
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+.nav .nl {
+  font-family: Anton, sans-serif;
 }
 
 .brace {
@@ -135,6 +139,33 @@ body::after {
 .lime-strip,
 .g-cta .ast {
   display: none !important;
+}
+
+/* Legacy v2 print-room blocks stay off; hyper marquee uses .v3-marquee */
+
+[data-reveal].in {
+  animation: none !important;
+}
+
+.pks-sec .pk--rec {
+  background: var(--plum) !important;
+  color: var(--white) !important;
+}
+
+.pks-sec .pk--rec::after {
+  background: var(--shock) !important;
+  color: var(--white) !important;
+}
+
+.finale .lime-t,
+.svc .svc-list .mono {
+  color: var(--shock);
+}
+
+.finale .cta {
+  background: var(--shock) !important;
+  color: var(--white) !important;
+  border-radius: 0;
 }
 
 .frame .tape.fine {
@@ -312,4 +343,23 @@ body.nav-hide .hdr {
     transform: none;
     opacity: 1;
   }
+
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
+
+/* Pano / gallery chips — shock not legacy lime */
+.chip[aria-pressed="true"],
+.cpill.on select {
+  background: var(--shock);
+  color: var(--white);
+  border-color: var(--shock);
+}
+
+.pano-corner h1 .hl {
+  background: var(--shock);
+  color: var(--white);
 }

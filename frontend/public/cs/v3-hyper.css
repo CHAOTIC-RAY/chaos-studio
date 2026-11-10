@@ -1,0 +1,177 @@
+/* V3 hyper scroll layer — transforms/opacity only; load after brand-v3-2026.css */
+
+.v3-motif-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.v3-motif {
+  position: absolute;
+  width: var(--motif-size, 96px);
+  height: auto;
+  opacity: var(--motif-op, 0.35);
+  will-change: transform;
+  filter: drop-shadow(0 0 0 transparent);
+}
+
+.v3-motif img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.v3-motif--mark {
+  color: var(--lilac);
+}
+
+.v3-motif--shape {
+  color: var(--purple);
+}
+
+.v3-section-wipe {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 6px;
+  background: var(--shock);
+  transform: scaleX(0);
+  transform-origin: left center;
+  z-index: 6;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.v3-shock-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: none;
+  background: var(--shock);
+  opacity: 0;
+}
+
+/* Infinite marquee — CHAOS STUDIO ✱ */
+.v3-marquee {
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  background: var(--plum);
+  border-block: 1px solid rgba(214, 144, 232, 0.35);
+  padding: 18px 0;
+}
+
+.v3-marquee__track {
+  display: flex;
+  width: max-content;
+  gap: 48px;
+  will-change: transform;
+}
+
+.v3-marquee__track span {
+  font-family: Anton, sans-serif;
+  font-size: clamp(32px, 5vw, 56px);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--white);
+  white-space: nowrap;
+}
+
+.v3-marquee__track .shock {
+  color: var(--shock);
+}
+
+/* Horizontal services strip */
+.v3-hscroll {
+  grid-column: 1 / -1;
+  position: relative;
+}
+
+.v3-hscroll__viewport {
+  overflow: hidden;
+}
+
+.v3-hscroll__track {
+  display: flex;
+  gap: 32px;
+  width: max-content;
+  padding: 24px 0 48px;
+  will-change: transform;
+}
+
+.v3-hscroll__track .svc-card {
+  flex: 0 0 min(72vw, 420px);
+  background: var(--ink);
+  border: 1px solid rgba(214, 144, 232, 0.3);
+  padding: 24px 28px;
+  display: grid;
+  gap: 12px;
+  box-shadow: 6px 6px 0 var(--purple);
+}
+
+.v3-hscroll__track .svc-card .mono {
+  font-family: "Space Mono", monospace;
+  color: var(--shock);
+  font-size: 14px;
+}
+
+.v3-hscroll__track .svc-card .cond {
+  font-family: Syne, sans-serif;
+  font-weight: 800;
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 0.9;
+  text-transform: lowercase;
+  letter-spacing: -0.03em;
+}
+
+.v3-hscroll-label {
+  grid-column: 1 / -1;
+  font-family: Anton, sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: var(--lilac);
+  margin-bottom: 8px;
+}
+
+/* Hero type motion targets */
+.hero-h .hero-split {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* Gallery grid tilt */
+.g-grid-sec .card {
+  will-change: transform, opacity;
+  transform-style: preserve-3d;
+}
+
+.g-grid-sec .card .fr {
+  transform: rotateX(0deg) rotateY(0deg);
+  will-change: transform;
+}
+
+@media (max-width: 900px) {
+  .v3-hscroll__track .svc-card {
+    flex-basis: 85vw;
+  }
+
+  .v3-motif {
+    --motif-size: 64px;
+    opacity: 0.22;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v3-marquee__track {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .v3-shock-flash,
+  .v3-section-wipe {
+    display: none !important;
+  }
+}
