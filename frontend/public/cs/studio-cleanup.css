@@ -1,0 +1,94 @@
+/* Studio editorial cleanup — solid studio, no section eyebrows */
+
+.wordmark-studio--solid {
+  font-family: Syne, sans-serif;
+  font-weight: 800;
+  text-transform: none;
+  color: var(--lilac);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  -webkit-text-stroke: 0 transparent;
+}
+
+.v3-marquee__track .wordmark-studio--solid {
+  color: var(--lilac);
+}
+
+.pattern-track .wordmark-studio--solid {
+  color: var(--purple);
+}
+
+.page-studio .rot-label,
+.page-studio .fin-tag,
+.page-studio .frame .tape,
+.page-studio .frame > .fine.dot-num,
+.page-studio .frame > .fine:not(.tag):not(.pk-sticker) {
+  display: none !important;
+}
+
+.page-studio .frame {
+  margin-bottom: 0;
+  min-height: 0;
+}
+
+.page-studio .frame .crop {
+  display: none;
+}
+
+.page-studio .hero .frame {
+  display: none;
+}
+
+.hero-h {
+  display: block;
+  position: relative;
+  z-index: 3;
+  margin-right: 0;
+}
+
+.hero-h .hero-studio {
+  display: block;
+  margin-top: 0.08em;
+  font-family: Syne, sans-serif;
+  font-weight: 800;
+  font-size: clamp(42px, 12vw, 88px);
+  line-height: 0.95;
+  color: var(--lilac);
+  letter-spacing: -0.03em;
+  text-transform: lowercase;
+}
+
+.hero .headline {
+  position: relative;
+  z-index: 3;
+  margin-top: clamp(12px, 3vw, 20px);
+}
+
+.hero .pitch-panel,
+.hero .ctas {
+  position: relative;
+  z-index: 3;
+}
+
+.hero .wrap {
+  padding-top: clamp(8px, 2vw, 16px);
+  gap: clamp(12px, 3vw, 20px);
+}
+
+@media (max-width: 520px) {
+  .hero-h .hero-studio {
+    margin-top: 0.12em;
+  }
+
+  .hero .headline {
+    margin-top: 14px;
+  }
+
+  .hero .pitch-panel {
+    margin-top: 8px;
+  }
+
+  .hero .ctas {
+    margin-top: 12px;
+  }
+}

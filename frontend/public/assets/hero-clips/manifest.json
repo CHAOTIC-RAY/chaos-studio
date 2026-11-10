@@ -5,52 +5,104 @@
   "licenseNote": "Free for commercial use; no attribution required.",
   "clips": [
     {
+      "id": "traffic",
+      "label": "City traffic during the day",
+      "category": "city",
+      "mp4": "/assets/hero-clips/traffic.mp4",
+      "webm": "/assets/hero-clips/traffic.webm",
+      "poster": "/assets/hero-clips/traffic-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/city-traffic-during-the-day-16552/",
+      "duration": 6
+    },
+    {
+      "id": "crowd",
+      "label": "Crowd walking in a Japanese street",
+      "category": "people",
+      "mp4": "/assets/hero-clips/crowd.mp4",
+      "webm": "/assets/hero-clips/crowd.webm",
+      "poster": "/assets/hero-clips/crowd-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/people-walking-in-the-street-in-japan-4437/",
+      "duration": 6
+    },
+    {
+      "id": "hands",
+      "label": "Hands sorting through clothes",
+      "category": "hands",
+      "mp4": "/assets/hero-clips/hands.mp4",
+      "webm": "/assets/hero-clips/hands.webm",
+      "poster": "/assets/hero-clips/hands-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/hand-selecting-through-clothes-23327/",
+      "duration": 6
+    },
+    {
+      "id": "fashion",
+      "label": "Fashion — stylish woman by a Camaro",
+      "category": "fashion",
+      "mp4": "/assets/hero-clips/fashion.mp4",
+      "webm": "/assets/hero-clips/fashion.webm",
+      "poster": "/assets/hero-clips/fashion-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/stylish-woman-leaning-in-a-camaro-44556/",
+      "duration": 6
+    },
+    {
+      "id": "sport",
+      "label": "Basketball slam dunk",
+      "category": "sport",
+      "mp4": "/assets/hero-clips/sport.mp4",
+      "webm": "/assets/hero-clips/sport.webm",
+      "poster": "/assets/hero-clips/sport-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/man-doing-a-slam-dunk-2289/",
+      "duration": 6
+    },
+    {
       "id": "waves",
       "label": "Ocean waves on shore",
+      "category": "ocean",
       "mp4": "/assets/hero-clips/waves.mp4",
       "webm": "/assets/hero-clips/waves.webm",
       "poster": "/assets/hero-clips/waves-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/waves-coming-to-the-shore-1228/"
+      "source": "https://mixkit.co/free-stock-video/waves-coming-to-the-shore-1228/",
+      "duration": 6
     },
     {
-      "id": "palms",
-      "label": "Palm trees by the beach",
-      "mp4": "/assets/hero-clips/palms.mp4",
-      "webm": "/assets/hero-clips/palms.webm",
-      "poster": "/assets/hero-clips/palms-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/palm-trees-by-the-beach-1244/"
+      "id": "neon",
+      "label": "Electronic ticker / city lights",
+      "category": "abstract",
+      "mp4": "/assets/hero-clips/neon.mp4",
+      "webm": "/assets/hero-clips/neon.webm",
+      "poster": "/assets/hero-clips/neon-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/electronic-ticker-in-the-street-4128/",
+      "duration": 6
     },
     {
       "id": "aerial",
-      "label": "Aerial beach and sea",
+      "label": "Aerial roundabout traffic",
+      "category": "city",
       "mp4": "/assets/hero-clips/aerial.mp4",
       "webm": "/assets/hero-clips/aerial.webm",
       "poster": "/assets/hero-clips/aerial-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/aerial-view-of-a-beach-and-the-sea-3985/"
+      "source": "https://mixkit.co/free-stock-video/city-traffic-going-around-a-roundabout-from-above-1615/",
+      "duration": 6
     },
     {
       "id": "reef",
-      "label": "Coral reef underwater",
+      "label": "Underwater coral reef",
+      "category": "ocean",
       "mp4": "/assets/hero-clips/reef.mp4",
       "webm": "/assets/hero-clips/reef.webm",
       "poster": "/assets/hero-clips/reef-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/underwater-coral-reef-and-tropical-fish-5061/"
+      "source": "https://mixkit.co/free-stock-video/underwater-coral-reef-and-tropical-fish-5061/",
+      "duration": 6
     },
     {
-      "id": "birds",
-      "label": "Birds over the ocean",
-      "mp4": "/assets/hero-clips/birds.mp4",
-      "webm": "/assets/hero-clips/birds.webm",
-      "poster": "/assets/hero-clips/birds-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/birds-flying-over-the-ocean-1176/"
-    },
-    {
-      "id": "rain",
-      "label": "Rain on tropical plants",
-      "mp4": "/assets/hero-clips/rain.mp4",
-      "webm": "/assets/hero-clips/rain.webm",
-      "poster": "/assets/hero-clips/rain-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/rain-falling-on-green-leaves-5071/"
+      "id": "tourist",
+      "label": "Busy tourist district timelapse",
+      "category": "crowd",
+      "mp4": "/assets/hero-clips/tourist.mp4",
+      "webm": "/assets/hero-clips/tourist.webm",
+      "poster": "/assets/hero-clips/tourist-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/very-busy-tourist-area-time-lapse-static-shot-19544/",
+      "duration": 6
     }
   ]
 }

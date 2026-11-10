@@ -1,7 +1,5 @@
-/* Nature clip layer for generative hero — lazy video, HUD, terminal, grading hooks. */
+/* Full-bleed hero video reel — one decoder, preload next, motion HUD. */
 window.HeroVideoReel = (function () {
-  const CHARS = " .:-=+*#%@";
-
   function canPlayWebm() {
     const v = document.createElement("video");
     return v.canPlayType('video/webm; codecs="vp9"') !== "";
@@ -9,7 +7,7 @@ window.HeroVideoReel = (function () {
 
   function createPool(host) {
     const el = document.createElement("div");
-    el.id = "hero-video-pool";
+    el.className = "hero-video-pool";
     el.hidden = true;
     el.setAttribute("aria-hidden", "true");
     host.appendChild(el);
@@ -23,123 +21,169 @@ window.HeroVideoReel = (function () {
       return r.json();
     },
 
-  createState({ hero, mobile, reduced }) {
+    createState({ hero, mobile, reduced }) {
       const poolEl = createPool(hero);
       const videos = new Map();
       const useWebm = canPlayWebm();
-      const state = { clips: [] };
-      let loaded = new Set();
+      let clips = [];
+      let index = -1;
+      let active = null;
+      let preloadId = null;
+
       const track = document.createElement("canvas");
       const trackCtx = track.getContext("2d", { willReadFrequently: true });
-      const TW = mobile ? 48 : 80;
-      const TH = mobile ? 27 : 45;
+      const TW = mobile ? 40 : 64;
+      const TH = mobile ? 23 : 36;
       track.width = TW;
       track.height = TH;
       let prev = new Uint8ClampedArray(TW * TH);
-      let boxes = [];
-      let active = null;
-      let fx = { hud: true, terminal: true, ascii: false };
+      let tracks = [];
+      let hudT = 0;
 
-      function clipList(all) {
-        if (mobile) return all.filter((c) => ["waves", "aerial", "palms"].includes(c.id));
-        return all;
+      function srcFor(clip) {
+        return useWebm ? clip.webm : clip.mp4;
       }
 
-      function ensureVideo(clip, preload) {
+      function ensureVideo(clip, { preload } = { preload: false }) {
         if (videos.has(clip.id)) return videos.get(clip.id);
         const v = document.createElement("video");
         v.muted = true;
         v.playsInline = true;
-        v.loop = true;
-        v.preload = preload ? "auto" : "none";
+        v.loop = false;
+        v.preload = preload ? "auto" : "metadata";
         v.crossOrigin = "anonymous";
         v.poster = clip.poster;
-        const src = document.createElement("source");
-        src.src = useWebm ? clip.webm : clip.mp4;
-        src.type = useWebm ? "video/webm" : "video/mp4";
-        v.appendChild(src);
+        v.src = srcFor(clip);
         poolEl.appendChild(v);
         videos.set(clip.id, v);
         return v;
       }
 
+      function pauseExcept(id) {
+        videos.forEach((v, cid) => {
+          if (cid !== id) {
+            v.pause();
+            try {
+              v.currentTime = 0;
+            } catch {
+              /* */
+            }
+          }
+        });
+      }
+
+      function preloadNext(nextClip) {
+        if (!nextClip || preloadId === nextClip.id) return;
+        preloadId = nextClip.id;
+        const v = ensureVideo(nextClip, { preload: true });
+        v.load();
+      }
+
       async function prepareFirst(all) {
-        state.clips = clipList(all);
-        if (!state.clips.length) return;
-        const v = ensureVideo(state.clips[0], true);
-        try {
-          await v.play();
-          v.pause();
-          v.currentTime = 0;
-          loaded.add(state.clips[0].id);
-        } catch {
-          /* autoplay policy — ok until visible */
-        }
+        clips = reduced ? all.slice(0, 1) : all;
+        if (!clips.length) return;
+        index = -1;
+        ensureVideo(clips[0], { preload: true });
+        preloadNext(clips[1] || clips[0]);
+      }
+
+      function nextClip() {
+        if (clips.length < 2) return clips[0];
+        return clips[(index + 1) % clips.length];
       }
 
       async function setScene(clip) {
-        const v = ensureVideo(clip, loaded.has(clip.id));
-        if (!loaded.has(clip.id)) {
-          v.load();
-          loaded.add(clip.id);
-        }
+        const i = clips.findIndex((c) => c.id === clip.id);
+        if (i >= 0) index = i;
+        pauseExcept(clip.id);
+        const v = ensureVideo(clip, { preload: true });
         active = { clip, video: v, started: performance.now() };
-        fx = {
-          hud: Math.random() < 0.85,
-          terminal: !mobile && Math.random() < 0.7,
-          ascii: !mobile && Math.random() < 0.35,
-        };
+        tracks = [];
         try {
           v.currentTime = 0;
           await v.play();
         } catch {
-          /* will play on user gesture / visible */
+          /* until visible */
         }
+        preloadNext(nextClip());
+      }
+
+      function pickClip() {
+        if (!clips.length) return null;
+        index = (index + 1) % clips.length;
+        return clips[index];
       }
 
       function detectMotion() {
         const v = active && active.video;
         if (!v || v.readyState < 2) {
-          boxes = [];
+          tracks = tracks.slice(0, 0);
           return;
         }
         trackCtx.drawImage(v, 0, 0, TW, TH);
         const img = trackCtx.getImageData(0, 0, TW, TH);
-        const grid = 8;
+        const grid = mobile ? 5 : 7;
         const bw = TW / grid;
         const bh = TH / grid;
-        const next = [];
+        const found = [];
         for (let gy = 0; gy < grid; gy++) {
           for (let gx = 0; gx < grid; gx++) {
             let sum = 0;
             let n = 0;
-            for (let y = gy * bh; y < (gy + 1) * bh; y++) {
-              for (let x = gx * bw; x < (gx + 1) * bw; x++) {
+            for (let y = (gy * bh) | 0; y < ((gy + 1) * bh) | 0; y++) {
+              for (let x = (gx * bw) | 0; x < ((gx + 1) * bw) | 0; x++) {
                 const i = y * TW + x;
-                const d = Math.abs(img.data[i * 4] - prev[i]);
-                sum += d;
+                sum += Math.abs(img.data[i * 4] - prev[i]);
                 n++;
               }
             }
             const avg = sum / Math.max(1, n);
-            if (avg > (mobile ? 14 : 10)) {
-              next.push({
+            if (avg > (mobile ? 12 : 9)) {
+              found.push({
                 x: gx / grid,
                 y: gy / grid,
                 w: 1 / grid,
                 h: 1 / grid,
-                conf: Math.min(99, Math.round(55 + avg * 2)),
+                conf: Math.min(99, Math.round(52 + avg * 2.2)),
+                vx: (Math.sin(hudT * 0.02 + gx) * 0.012).toFixed(3),
+                vy: (Math.cos(hudT * 0.017 + gy) * 0.012).toFixed(3),
               });
             }
           }
         }
         for (let i = 0; i < img.data.length / 4; i++) prev[i] = img.data[i * 4];
-        boxes = next.slice(0, mobile ? 6 : 12);
+        const merge = [];
+        found.slice(0, mobile ? 5 : 9).forEach((b, i) => {
+          const old = tracks[i];
+          if (old) {
+            merge.push({
+              ...b,
+              x: old.x * 0.72 + b.x * 0.28,
+              y: old.y * 0.72 + b.y * 0.28,
+            });
+          } else merge.push(b);
+        });
+        tracks = merge;
       }
 
       function drawVideo(wctx, sw, sh, palette) {
         const v = active && active.video;
         if (!v || v.readyState < 2) {
+          if (active && active.clip) {
+            const img = new Image();
+            img.src = active.clip.poster;
+            wctx.fillStyle = palette.bg;
+            wctx.fillRect(0, 0, sw, sh);
+            if (img.complete) {
+              const iw = img.naturalWidth || 1280;
+              const ih = img.naturalHeight || 720;
+              const sc = Math.max(sw / iw, sh / ih);
+              const dw = iw * sc;
+              const dh = ih * sc;
+              wctx.drawImage(img, (sw - dw) / 2, (sh - dh) / 2, dw, dh);
+              return true;
+            }
+          }
           wctx.fillStyle = palette.bg;
           wctx.fillRect(0, 0, sw, sh);
           return false;
@@ -154,76 +198,90 @@ window.HeroVideoReel = (function () {
         wctx.fillStyle = palette.bg;
         wctx.fillRect(0, 0, sw, sh);
         wctx.drawImage(v, dx, dy, dw, dh);
-        detectMotion();
-
-        if (fx.terminal) {
-          wctx.save();
-          wctx.globalAlpha = 0.12;
-          wctx.fillStyle = palette.accent;
-          wctx.font = `${mobile ? 9 : 11}px "Space Mono", monospace`;
-          const t = performance.now() / 1000;
-          for (let i = 0; i < (mobile ? 4 : 8); i++) {
-            const y = 16 + i * 14;
-            const lat = (3 + Math.sin(t * 0.7 + i) * 0.8).toFixed(3);
-            wctx.fillText(`${String(i).padStart(2, "0")} | TC ${t.toFixed(2)} | ${lat}N 073.2E`, 12, y);
-          }
-          wctx.restore();
-        }
-
-        if (fx.ascii && prev.length) {
-          wctx.save();
-          wctx.globalAlpha = 0.16;
-          wctx.fillStyle = palette.fg;
-          wctx.font = `10px "Space Mono", monospace`;
-          const cols = TW;
-          const rows = TH;
-          for (let y = 0; y < rows; y++) {
-            let line = "";
-            for (let x = 0; x < cols; x++) {
-              const lum = prev[y * TW + x];
-              const chIdx = Math.floor((lum / 255) * (CHARS.length - 1));
-              line += CHARS[chIdx];
-            }
-            wctx.fillText(line, 8, 14 + y * 11);
-          }
-          wctx.restore();
-        }
+        hudT++;
+        if (hudT % (mobile ? 2 : 1) === 0) detectMotion();
         return true;
       }
 
-      function drawHud(ctx, w, h, palette) {
-        if (!fx.hud || !boxes.length) return;
+      function bracket(ctx, x, y, w, h, col) {
+        const len = Math.min(18, w * 0.22, h * 0.22);
+        ctx.strokeStyle = col;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(x, y + len);
+        ctx.lineTo(x, y);
+        ctx.lineTo(x + len, y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x + w - len, y);
+        ctx.lineTo(x + w, y);
+        ctx.lineTo(x + w, y + len);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, y + h - len);
+        ctx.lineTo(x, y + h);
+        ctx.lineTo(x + len, y + h);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x + w - len, y + h);
+        ctx.lineTo(x + w, y + h);
+        ctx.lineTo(x + w, y + h - len);
+        ctx.stroke();
+      }
+
+      function drawHud(ctx, w, h, palette, clip) {
         ctx.save();
-        ctx.strokeStyle = palette.accent;
+        const mono = `${mobile ? 9 : 10}px "Space Mono", monospace`;
+        const t = performance.now() / 1000;
+        ctx.font = mono;
         ctx.fillStyle = palette.fg;
-        ctx.font = `${mobile ? 9 : 11}px "Space Mono", monospace`;
-        boxes.forEach((b, i) => {
+        ctx.globalAlpha = 0.85;
+        const tag = (clip && clip.category) || "FEED";
+        ctx.fillText(`CHAOS.TRK // ${tag.toUpperCase()}`, 12, mobile ? 18 : 22);
+        ctx.fillText(`TC ${t.toFixed(2)}`, w - (mobile ? 72 : 88), mobile ? 18 : 22);
+        ctx.globalAlpha = 0.55;
+        ctx.strokeStyle = palette.mid;
+        ctx.lineWidth = 1;
+        const cx = w * 0.5;
+        const cy = h * 0.46;
+        ctx.beginPath();
+        ctx.moveTo(cx - 14, cy);
+        ctx.lineTo(cx + 14, cy);
+        ctx.moveTo(cx, cy - 14);
+        ctx.lineTo(cx, cy + 14);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+
+        tracks.forEach((b, i) => {
           const rx = b.x * w;
           const ry = b.y * h;
-          const bw = b.w * w;
-          const bh = b.h * h;
-          const pad = 4;
-          ctx.strokeRect(rx + pad, ry + pad, Math.max(8, bw - pad * 2), Math.max(8, bh - pad * 2));
-          ctx.fillText(`OBJ-${100 + i} ${b.conf}%`, rx + 6, ry + bh - 4);
-          const corner = 10;
-          ctx.beginPath();
-          ctx.moveTo(rx, ry + corner);
-          ctx.lineTo(rx, ry);
-          ctx.lineTo(rx + corner, ry);
-          ctx.stroke();
+          const bw = Math.max(28, b.w * w * 0.92);
+          const bh = Math.max(24, b.h * h * 0.92);
+          const pad = 3;
+          bracket(ctx, rx + pad, ry + pad, bw - pad * 2, bh - pad * 2, palette.accent);
+          ctx.fillStyle = palette.fg;
+          ctx.globalAlpha = 0.92;
+          ctx.font = mono;
+          const id = 100 + i;
+          ctx.fillText(`OBJ-${id} ${b.conf}%`, rx + 6, ry + bh - 5);
+          ctx.globalAlpha = 0.65;
+          ctx.fillText(`${b.vx}, ${b.vy}`, rx + 6, ry + 12);
+          ctx.globalAlpha = 1;
         });
+
+        ctx.globalAlpha = 0.18;
+        ctx.strokeStyle = palette.accent;
+        for (let y = 0; y < h; y += mobile ? 5 : 4) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(w, y);
+          ctx.stroke();
+        }
         ctx.restore();
       }
 
-      function pickClip() {
-        if (!state.clips.length) return null;
-        return state.clips[(Math.random() * state.clips.length) | 0];
-      }
-
       function pauseAll() {
-        videos.forEach((v) => {
-          v.pause();
-        });
+        videos.forEach((v) => v.pause());
       }
 
       function stillFrame(wctx, sw, sh, palette, clip) {
@@ -233,12 +291,14 @@ window.HeroVideoReel = (function () {
         wctx.fillRect(0, 0, sw, sh);
         if (img.complete) {
           wctx.drawImage(img, 0, 0, sw, sh);
+        } else {
+          img.onload = () => wctx.drawImage(img, 0, 0, sw, sh);
         }
       }
 
       return {
         get clips() {
-          return state.clips;
+          return clips;
         },
         prepareFirst,
         setScene,

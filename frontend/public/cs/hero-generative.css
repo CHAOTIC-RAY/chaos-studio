@@ -31,8 +31,21 @@
 }
 
 .hero .hero-logo {
-  opacity: 0;
+  display: none;
+}
+
+.hero .wrap::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(14, 14, 15, 0.55) 0%,
+    rgba(14, 14, 15, 0.28) 38%,
+    rgba(14, 14, 15, 0.62) 100%
+  );
 }
 
 .hero.scanlines::after {

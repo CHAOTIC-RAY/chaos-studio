@@ -41,7 +41,7 @@
   const lenis = lenisSetup();
 
   function csWordmark(extra = "") {
-    return `<span class="wordmark-pair"><span class="wordmark-chaos">CHAOS</span> <span class="wordmark-studio" data-dot-text="STUDIO" data-dot-size="${narrow ? "11" : "14"}" data-dot-font="Anton, sans-serif">STUDIO</span>${extra}</span>`;
+    return `<span class="wordmark-pair"><span class="wordmark-chaos">CHAOS</span> <span class="wordmark-studio wordmark-studio--solid">STUDIO</span>${extra}</span>`;
   }
 
   function spawnMotifs() {
@@ -130,7 +130,7 @@
   function heroTypeMotion() {
     const hero = document.querySelector(".hero-h");
     if (!hero || RM) return;
-    hero.querySelectorAll(".glitch, .st, .dot-display").forEach((node) => {
+    hero.querySelectorAll(".glitch, .hero-studio").forEach((node) => {
       node.classList.add("hero-split");
       gsap.fromTo(
         node,

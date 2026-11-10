@@ -77,7 +77,7 @@
       if (!el.getAttribute("data-dot-text")) el.setAttribute("data-dot-text", el.textContent.trim());
       render(el);
     });
-    document.querySelectorAll(".wordmark-studio:not([data-dot-text])").forEach((el) => {
+    document.querySelectorAll(".wordmark-studio:not([data-dot-text]):not(.wordmark-studio--solid)").forEach((el) => {
       el.setAttribute("data-dot-text", "STUDIO");
       el.setAttribute("data-dot-size", matchMedia("(max-width: 520px)").matches ? "11" : "13");
       el.setAttribute("data-dot-font", "Anton, sans-serif");
