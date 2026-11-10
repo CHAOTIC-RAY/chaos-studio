@@ -63,9 +63,15 @@
   isolation: isolate;
 }
 
-.about .about-wrap {
+.about .wrap {
   position: relative;
   z-index: 3;
+}
+
+@media (max-width: 520px) {
+  .about {
+    min-height: min(92vh, 720px);
+  }
 }
 
 .pattern-matter {
@@ -168,6 +174,10 @@
   width: 36%;
   height: 28%;
   clip-path: polygon(12% 0, 100% 4%, 88% 100%, 0 92%);
+}
+
+.about.is-exploding .about-shards i {
+  box-shadow: 0 0 0 1px rgba(255, 68, 68, 0.35);
 }
 
 .v3-split-word {

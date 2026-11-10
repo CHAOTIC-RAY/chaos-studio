@@ -1,8 +1,9 @@
-/* Scroll “director’s cut” — transform/opacity only */
+/* Scroll “director’s cut” — transform/opacity only (blur sparingly on desktop) */
 
 .cine-shot {
   position: relative;
   transform: translateZ(0);
+  overflow-x: clip;
 }
 
 .cine-shot__letterbox::before,
@@ -11,13 +12,16 @@
   position: absolute;
   left: 0;
   right: 0;
-  height: clamp(6px, 1.8vw, 14px);
+  height: clamp(8px, 2.4vw, 18px);
   background: var(--void);
   opacity: 0;
-  z-index: 5;
+  z-index: 8;
   pointer-events: none;
   transform: scaleY(0);
   transform-origin: center top;
+  transition:
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.45s ease;
 }
 
 .cine-shot__letterbox::before {
@@ -29,30 +33,80 @@
   transform-origin: center bottom;
 }
 
-.cine-shot.is-framed .cine-shot__letterbox::before,
-.cine-shot.is-framed .cine-shot__letterbox::after {
-  opacity: 0.85;
+.cine-shot.is-framed.cine-shot__letterbox::before,
+.cine-shot.is-framed.cine-shot__letterbox::after,
+.cine-shot--titlecard.is-framed::before,
+.cine-shot--titlecard.is-framed::after {
+  opacity: 0.92;
   transform: scaleY(1);
-  transition: transform 0.5s ease, opacity 0.4s ease;
 }
 
 .cine-title {
-  will-change: transform, opacity, filter;
+  will-change: transform, opacity;
 }
 
-.cine-focus-out {
-  filter: blur(6px);
-  opacity: 0.65;
+.cine-depth {
+  will-change: transform;
+}
+
+.cine-focus-layer.cine-focus-out {
+  opacity: 0.55;
+  transform: scale(1.02);
+}
+
+.cine-match-wipe {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: clamp(4px, 1.2vw, 10px);
+  z-index: 7;
+  pointer-events: none;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: linear-gradient(90deg, var(--shock), var(--lilac), var(--shock));
+  opacity: 0.95;
+}
+
+.cine-shot--titlecard .cine-title h2,
+.cine-shot--titlecard .studio-finale__cta {
+  letter-spacing: 0.02em;
+}
+
+.cine-shot--closeup .feat-devices,
+.cine-shot--closeup .featured-bento {
+  transform: translateZ(0);
+}
+
+@media (max-width: 520px) {
+  .cine-shot {
+    overflow-x: clip;
+  }
+
+  .featured-bento .feat-link,
+  .feat-devices {
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 521px) {
+  .cine-focus-target.cine-focus-out {
+    filter: blur(5px);
+    opacity: 0.72;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .cine-shot__letterbox::before,
-  .cine-shot__letterbox::after {
+  .cine-shot__letterbox::after,
+  .cine-match-wipe {
     display: none;
   }
 
-  .cine-focus-out {
+  .cine-focus-out,
+  .cine-focus-target.cine-focus-out {
     filter: none;
     opacity: 1;
+    transform: none;
   }
 }

@@ -185,14 +185,26 @@
     }
     if (RM) return;
     const rows = matter.querySelectorAll(".pattern-track");
+    const rowTweens = [];
     rows.forEach((track, i) => {
       const dir = i % 2 ? 1 : -1;
-      gsap.to(track, {
-        xPercent: dir * 12,
-        ease: "none",
-        duration: 22 + i * 2,
-        repeat: -1,
-      });
+      rowTweens.push(
+        gsap.to(track, {
+          xPercent: dir * 12,
+          ease: "none",
+          duration: 22 + i * 2,
+          repeat: -1,
+        }),
+      );
+    });
+    ST.create({
+      trigger: about,
+      start: "top bottom",
+      end: "bottom top",
+      onLeave: () => rowTweens.forEach((t) => t.timeScale(0)),
+      onEnterBack: () => rowTweens.forEach((t) => t.timeScale(1)),
+      onEnter: () => rowTweens.forEach((t) => t.timeScale(1)),
+      onLeaveBack: () => rowTweens.forEach((t) => t.timeScale(0)),
     });
     if (!narrow && !RM) {
       let skewRaf = 0;
@@ -216,7 +228,7 @@
   function aboutChaosReveal() {
     const about = document.querySelector(".about");
     if (!about) return;
-    about.classList.add("cine-shot", "cine-shot__letterbox");
+    about.classList.add("cine-shot", "cine-shot--reveal", "cine-shot__letterbox");
 
     let veil = about.querySelector(".about-veil");
     let shards = about.querySelector(".about-shards");
@@ -230,9 +242,12 @@
       shards = document.createElement("div");
       shards.className = "about-shards";
       shards.setAttribute("aria-hidden", "true");
-      shards.innerHTML = "<i></i><i></i><i></i>";
       about.appendChild(shards);
     }
+    shards.innerHTML = "<i></i><i></i><i></i><i></i><i></i>";
+
+    const matter = about.querySelector(".pattern-matter");
+    if (matter) matter.classList.add("cine-focus-layer", "cine-depth");
 
     if (RM) {
       gsap.set(veil, { opacity: 0, pointerEvents: "none" });
@@ -240,54 +255,67 @@
     }
 
     const shardEls = shards.querySelectorAll("i");
-    const shardMotion = [
-      { x: -80, y: -40, r: -12 },
-      { x: 90, y: -28, r: 18 },
-      { x: -40, y: 72, r: 8 },
-    ];
+    const shardMotion = narrow
+      ? [
+          { x: -58, y: -118, r: -20, peak: 0.96 },
+          { x: 62, y: -72, r: 22, peak: 0.94 },
+          { x: -42, y: 98, r: 14, peak: 0.92 },
+          { x: -78, y: 38, r: -10, peak: 0.9 },
+          { x: 70, y: 115, r: 16, peak: 0.88 },
+        ]
+      : [
+          { x: -110, y: -62, r: -16, peak: 0.85 },
+          { x: 120, y: -48, r: 20, peak: 0.82 },
+          { x: -55, y: 95, r: 10, peak: 0.8 },
+          { x: -105, y: 55, r: -8, peak: 0.78 },
+          { x: 95, y: 108, r: 14, peak: 0.76 },
+        ];
     shardEls.forEach((el, i) => {
-      gsap.set(el, { opacity: 0, scale: 0.92, x: 0, y: 0, rotate: 0, force3D: true });
-      if (shardMotion[i]) gsap.set(el, { transformOrigin: "50% 50%" });
+      gsap.set(el, { opacity: 0, scale: 0.88, x: 0, y: 0, rotate: 0, force3D: true, transformOrigin: "50% 50%" });
     });
 
     gsap.set(veil, {
       opacity: 1,
       scale: 1,
-      transformOrigin: "50% 38%",
+      transformOrigin: "50% 35%",
       force3D: true,
       webkitClipPath: "inset(0% 0% 0% 0%)",
       clipPath: "inset(0% 0% 0% 0%)",
     });
 
-    const endLen = narrow ? innerHeight * 0.85 : innerHeight * 1.05;
     const stOpts = {
       trigger: about,
-      start: narrow ? "top 88%" : "top top",
-      end: `+=${endLen}`,
-      scrub: narrow ? 0.65 : 0.85,
+      start: narrow ? "top 82%" : "top 75%",
+      end: narrow ? "top 8%" : "top 5%",
+      scrub: narrow ? 0.5 : 0.72,
       invalidateOnRefresh: true,
-      onEnter: () => about.classList.add("is-framed"),
-      onLeave: () => about.classList.remove("is-framed"),
-      onEnterBack: () => about.classList.add("is-framed"),
-      onLeaveBack: () => about.classList.remove("is-framed"),
+      onUpdate: (self) => {
+        about.classList.toggle("is-exploding", self.progress > 0.08 && self.progress < 0.92);
+        about.classList.toggle("is-framed", self.progress > 0.05 && self.progress < 0.98);
+        if (matter) matter.classList.toggle("cine-focus-out", self.progress < 0.45);
+      },
+      onLeave: () => {
+        about.classList.remove("is-framed", "is-exploding");
+        gsap.set(veil, { opacity: 0 });
+      },
+      onLeaveBack: () => {
+        about.classList.remove("is-framed", "is-exploding");
+        gsap.set(veil, { opacity: 1, scale: 1, clipPath: "inset(0% 0% 0% 0%)", webkitClipPath: "inset(0% 0% 0% 0%)" });
+        gsap.set(shardEls, { opacity: 0, x: 0, y: 0, scale: 0.88 });
+      },
     };
-    if (!narrow) {
-      stOpts.pin = true;
-      stOpts.anticipatePin = 1;
-      stOpts.pinSpacing = true;
-    }
 
     const tl = gsap.timeline({ scrollTrigger: stOpts });
 
     tl.to(
       veil,
       {
-        scale: narrow ? 1.55 : 1.75,
+        scale: narrow ? 1.72 : 1.9,
         opacity: 0,
         duration: 1,
-        ease: "power2.in",
-        webkitClipPath: "inset(0% 0% 100% 0%)",
-        clipPath: "inset(0% 0% 100% 0%)",
+        ease: "power3.in",
+        webkitClipPath: "inset(0% 0% 102% 0%)",
+        clipPath: "inset(0% 0% 102% 0%)",
       },
       0,
     );
@@ -297,55 +325,221 @@
       tl.to(
         el,
         {
-          opacity: 0.7,
+          opacity: m.peak,
           x: m.x,
           y: m.y,
           rotate: m.r,
-          scale: 1.05,
-          duration: 0.35,
+          scale: narrow ? 1.18 : 1.12,
+          duration: 0.32,
           ease: "power2.out",
         },
-        0.12 + i * 0.04,
-      ).to(el, { opacity: 0, duration: 0.25 }, 0.55);
+        0.08 + i * 0.05,
+      ).to(el, { opacity: 0, scale: narrow ? 1.28 : 1.22, duration: 0.38, ease: "power2.in" }, 0.48);
+    });
+  }
+
+  const CINE_SHOTS = [
+    { sel: ".hero", type: "establishing", letterbox: false },
+    { sel: ".about", type: "reveal", letterbox: true, skip: true },
+    { sel: ".showcase-strip", type: "closeup", letterbox: false },
+    { sel: ".svc", type: "establishing", letterbox: false },
+    { sel: ".whys", type: "closeup", letterbox: false },
+    { sel: ".pks-sec", type: "reveal", letterbox: true },
+    { sel: ".imp", type: "closeup", letterbox: false },
+    { sel: ".kw", type: "titlecard", letterbox: true },
+    { sel: ".studio-finale", type: "establishing", letterbox: false },
+  ];
+
+  function cineHeroEstablishing() {
+    const hero = document.querySelector(".hero");
+    if (!hero || RM) return;
+    hero.classList.add("cine-shot", "cine-shot--establishing");
+    const wrap = hero.querySelector(".wrap");
+    if (!wrap) return;
+    wrap.classList.add("cine-title");
+    gsap.fromTo(
+      wrap,
+      { scale: narrow ? 1.04 : 1.07, y: 0, transformOrigin: "50% 18%" },
+      {
+        scale: 1,
+        ease: "none",
+        scrollTrigger: {
+          trigger: hero,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      },
+    );
+    const label = hero.querySelector(".rot-label");
+    if (label) {
+      label.classList.add("cine-depth");
+      gsap.to(label, {
+        y: narrow ? 36 : 72,
+        ease: "none",
+        scrollTrigger: { trigger: hero, start: "top top", end: "bottom top", scrub: 0.85 },
+      });
+    }
+  }
+
+  function cineParallaxLayers() {
+    if (RM) return;
+    document.querySelectorAll("main .sec").forEach((sec) => {
+      const label = sec.querySelector(".rot-label");
+      const frame = sec.querySelector(".frame");
+      const lime = sec.querySelector(".lime-strip");
+      [
+        [label, narrow ? 14 : 28],
+        [frame, narrow ? 8 : 16],
+        [lime, narrow ? -10 : -18],
+      ].forEach(([el, drift]) => {
+        if (!el) return;
+        el.classList.add("cine-depth");
+        gsap.to(el, {
+          y: drift,
+          ease: "none",
+          force3D: true,
+          scrollTrigger: {
+            trigger: sec,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: coarse ? 1.2 : 0.65,
+          },
+        });
+      });
+    });
+  }
+
+  function cineMatchCuts() {
+    if (RM) return;
+    const secs = [...document.querySelectorAll("main .sec")];
+    secs.forEach((sec, i) => {
+      if (i === 0) return;
+      const prev = secs[i - 1];
+      const prevWrap = prev.querySelector(".wrap") || prev;
+      const wrap = sec.querySelector(".wrap") || sec;
+      let cut = sec.querySelector(".cine-match-wipe");
+      if (!cut) {
+        cut = document.createElement("div");
+        cut.className = "cine-match-wipe";
+        cut.setAttribute("aria-hidden", "true");
+        sec.prepend(cut);
+      }
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sec,
+          start: "top 98%",
+          end: "top 58%",
+          scrub: 0.55,
+        },
+      });
+      tl.fromTo(prevWrap, { scale: 1, opacity: 1, force3D: true }, { scale: 0.982, opacity: narrow ? 0.9 : 0.82 }, 0).fromTo(
+        wrap,
+        { scale: 1.035, y: narrow ? 16 : 28, opacity: narrow ? 0.88 : 0.75, force3D: true },
+        { scale: 1, y: 0, opacity: 1, duration: 1 },
+        0,
+      );
+      if (cut) {
+        tl.fromTo(cut, { scaleX: 0, opacity: 1 }, { scaleX: 1, opacity: 1, duration: 0.25, ease: "power4.in" }, 0.05).to(
+          cut,
+          { opacity: 0, duration: 0.35 },
+          0.55,
+        );
+      }
+    });
+  }
+
+  function cineFocusPull(sec, focusEl) {
+    if (RM || !focusEl) return;
+    if (narrow) {
+      ST.create({
+        trigger: sec,
+        start: "top 78%",
+        end: "top 42%",
+        scrub: 0.45,
+        onUpdate: (self) => {
+          focusEl.style.opacity = `${0.55 + self.progress * 0.45}`;
+        },
+        onLeave: () => {
+          focusEl.style.opacity = "";
+        },
+        onLeaveBack: () => {
+          focusEl.style.opacity = "";
+        },
+      });
+      return;
+    }
+    focusEl.classList.add("cine-focus-target");
+    ST.create({
+      trigger: sec,
+      start: "top 76%",
+      end: "top 38%",
+      scrub: 0.4,
+      onUpdate: (self) => {
+        focusEl.classList.toggle("cine-focus-out", self.progress < 0.92);
+      },
+    });
+  }
+
+  function cineLetterboxPulse(sec) {
+    if (RM || !sec.classList.contains("cine-shot__letterbox")) return;
+    ST.create({
+      trigger: sec,
+      start: "top 62%",
+      end: "bottom 38%",
+      onEnter: () => sec.classList.add("is-framed"),
+      onLeave: () => sec.classList.remove("is-framed"),
+      onEnterBack: () => sec.classList.add("is-framed"),
+      onLeaveBack: () => sec.classList.remove("is-framed"),
     });
   }
 
   function cinemaDirecting() {
     if (RM) return;
-    const shots = document.querySelectorAll("main .sec:not(.hero)");
-    shots.forEach((sec, i) => {
-      sec.classList.add("cine-shot");
-      const inner = sec.querySelector(".wrap") || sec;
+    CINE_SHOTS.forEach((cfg) => {
+      const sec = document.querySelector(cfg.sel);
+      if (!sec || cfg.skip) return;
+      sec.classList.add("cine-shot", `cine-shot--${cfg.type}`);
+      if (cfg.letterbox) sec.classList.add("cine-shot__letterbox");
+      const inner = sec.querySelector(".wrap") || sec.querySelector(".studio-finale__inner") || sec;
       inner.classList.add("cine-title");
-      const blurFrom = narrow ? undefined : "blur(5px)";
+      const enter = { y: narrow ? 22 : 40, opacity: 0, scale: 0.98, force3D: true };
+      let enterScale = 1;
+      if (cfg.type === "establishing") enter.scale = narrow ? 1.03 : 1.05;
+      if (cfg.type === "closeup") {
+        enter.scale = narrow ? 0.96 : 0.94;
+        enterScale = 1.01;
+      }
+      if (cfg.type === "titlecard") {
+        enter.y = narrow ? 32 : 52;
+        enter.scale = 0.99;
+      }
+      const from = { ...enter };
+      if (!narrow && cfg.type !== "titlecard") from.filter = "blur(4px)";
       gsap.fromTo(
         inner,
-        { y: narrow ? 28 : 44, opacity: 0, scale: 0.985, filter: blurFrom },
+        from,
         {
           y: 0,
           opacity: 1,
-          scale: 1,
+          scale: enterScale,
           filter: narrow ? undefined : "blur(0px)",
           ease: "power2.out",
+          duration: narrow ? 0.5 : 0.72,
           scrollTrigger: {
             trigger: sec,
-            start: "top 86%",
+            start: "top 88%",
             toggleActions: "play none none reverse",
           },
-          duration: narrow ? 0.55 : 0.75,
         },
       );
-      if (i > 0) {
-        gsap.fromTo(
-          sec,
-          { opacity: 0.94 },
-          {
-            opacity: 1,
-            scrollTrigger: { trigger: sec, start: "top 92%", end: "top 55%", scrub: 0.5 },
-          },
-        );
-      }
+      cineLetterboxPulse(sec);
+      const bg = sec.querySelector(".pattern-matter, .studio-finale__wash, .lime-strip");
+      if (bg) cineFocusPull(sec, bg);
     });
+    cineHeroEstablishing();
+    cineParallaxLayers();
+    cineMatchCuts();
   }
 
   function scrollTextMotion() {
@@ -410,12 +604,16 @@
   }
 
   function featuredBentoMotion() {
-    const feats = document.querySelectorAll(".featured-bento .feat");
+    const feats = document.querySelectorAll(".featured-bento .feat:not(.in)");
     if (!feats.length || RM) return;
     ST.batch(feats, {
       start: "top 93%",
       onEnter: (batch) =>
-        gsap.fromTo(batch, { opacity: 0, y: 32 }, { opacity: 1, y: 0, stagger: 0.06, duration: 0.5, ease: "power3.out" }),
+        gsap.fromTo(
+          batch,
+          { y: 28, scale: 0.98 },
+          { y: 0, scale: 1, stagger: 0.06, duration: 0.48, ease: "power3.out", overwrite: true },
+        ),
     });
   }
 
@@ -613,7 +811,7 @@
   addEventListener("load", () => {
     window.ChaosDotMatrixText && window.ChaosDotMatrixText.boot();
     featuredBentoMotion();
-    ST.refresh(true);
+    ST.refresh();
   });
 
   if (document.fonts && document.fonts.ready) {

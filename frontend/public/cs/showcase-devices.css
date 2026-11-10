@@ -15,8 +15,10 @@
 .feat-devices--dual .feat-devices__composition {
   position: relative;
   width: min(100%, 100%);
-  max-width: 420px;
+  max-width: min(420px, 100%);
   margin: 0 auto;
+  padding-inline: clamp(4px, 2vw, 12px);
+  box-sizing: border-box;
 }
 
 .feat-devices--solo {
@@ -157,11 +159,12 @@
 
 .feat-devices--dual .device--phone {
   position: absolute;
-  right: 2%;
+  right: clamp(0px, 1%, 8px);
   top: 50%;
   transform: translateY(-42%);
   z-index: 3;
-  width: clamp(88px, 28%, 112px);
+  width: clamp(72px, 27%, 104px);
+  max-width: 42%;
 }
 
 .feat-devices--phone-hero .device--phone {
