@@ -1,8 +1,10 @@
 import portfolioBase from "../../../content/portfolio.json";
 import chaosStudioRaw from "../../../content/chaos-studio.json";
 import galleryRaw from "../../../content/gallery.json";
+import showcaseRaw from "../../../content/showcase-posts.json";
 import { getSocialPosts, getGalleryPosts } from "./campaign-posts";
 import { toStringList } from "./cms-list-shape";
+import { galleryEnabled } from "../features";
 
 function normalizePortfolioBase<T extends typeof portfolioBase>(base: T): T {
   return {
@@ -46,17 +48,15 @@ function normalizeChaosStudio<T extends typeof chaosStudioRaw>(studio: T): T {
   } as T;
 }
 
-function normalizeGallery<T extends typeof galleryRaw>(gallery: T): T {
-  return { ...gallery } as T;
-}
-
-/** Shape expected by /cs/gallery.js (same as legacy combined worker). */
 export const portfolio = {
   ...normalizePortfolioBase(portfolioBase),
   chaosStudio: normalizeChaosStudio(chaosStudioRaw),
-  gallery: normalizeGallery(galleryRaw),
+  gallery: galleryEnabled ? galleryRaw : { ...galleryRaw, disabled: true },
   socialPosts: getSocialPosts(),
-  galleryPosts: getGalleryPosts(),
+  galleryPosts: galleryEnabled ? getGalleryPosts() : { items: [] },
+  showcase: showcaseRaw,
 };
+
+export const showcase = showcaseRaw;
 
 export type Portfolio = typeof portfolio;

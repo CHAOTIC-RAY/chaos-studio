@@ -1,4 +1,5 @@
-import { portfolio } from "./src/data/portfolio";
+import { portfolio, showcase } from "./src/data/portfolio";
+import { galleryEnabled, portfolioGalleryUrl } from "./src/features";
 
 export interface Env {
   ASSETS: Fetcher;
@@ -12,6 +13,10 @@ const JSON_HEADERS: HeadersInit = {
   "Access-Control-Allow-Origin": "*",
 };
 
+function galleryRedirect(url: URL): Response {
+  return Response.redirect(`${url.origin}/studio/`, 302);
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
@@ -20,8 +25,18 @@ export default {
       return Response.json(portfolio, { headers: JSON_HEADERS });
     }
 
+    if (url.pathname === "/api/showcase" && request.method === "GET") {
+      return Response.json(
+        { ...showcase, portfolioGalleryUrl },
+        { headers: JSON_HEADERS },
+      );
+    }
+
     if (url.pathname === "/api/health" && request.method === "GET") {
-      return Response.json({ ok: true, service: "design" }, { headers: JSON_HEADERS });
+      return Response.json(
+        { ok: true, service: "design", galleryEnabled },
+        { headers: JSON_HEADERS },
+      );
     }
 
     if (request.method === "OPTIONS" && url.pathname.startsWith("/api/")) {
@@ -38,11 +53,22 @@ export default {
     if (url.pathname === "/studio" && request.method === "GET") {
       return Response.redirect(`${url.origin}/studio/`, 301);
     }
-    if (url.pathname === "/gallery" && request.method === "GET") {
-      return Response.redirect(`${url.origin}/gallery/`, 301);
-    }
 
-    if ((request.method === "GET" || request.method === "HEAD") && GALLERY_DEEP.test(url.pathname)) {
+    if (!galleryEnabled) {
+      if (
+        url.pathname === "/gallery" ||
+        url.pathname === "/gallery/" ||
+        GALLERY_DEEP.test(url.pathname)
+      ) {
+        return galleryRedirect(url);
+      }
+    } else if (url.pathname === "/gallery" && request.method === "GET") {
+      return Response.redirect(`${url.origin}/gallery/`, 301);
+    } else if (
+      galleryEnabled &&
+      (request.method === "GET" || request.method === "HEAD") &&
+      GALLERY_DEEP.test(url.pathname)
+    ) {
       return env.ASSETS.fetch(new Request(new URL("/gallery/", url.origin).toString(), request));
     }
 

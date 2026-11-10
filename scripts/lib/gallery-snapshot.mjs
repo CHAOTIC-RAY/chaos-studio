@@ -31,12 +31,23 @@ function visiblePosts(posts) {
     });
 }
 
+function readFeatures(root) {
+  try {
+    return readJson(root, "content/features.json");
+  } catch {
+    return { galleryEnabled: true };
+  }
+}
+
 export function buildGallerySnapshot(root) {
+  const features = readFeatures(root);
   const portfolioBase = readJson(root, "content/portfolio.json");
   const chaosStudio = readJson(root, "content/chaos-studio.json");
   const gallery = readJson(root, "content/gallery.json");
   const social = visiblePosts(readJson(root, "content/social-posts.json").posts);
-  const galleryPosts = visiblePosts(readJson(root, "content/gallery-posts.json").posts);
+  const galleryPosts = features.galleryEnabled
+    ? visiblePosts(readJson(root, "content/gallery-posts.json").posts)
+    : [];
   const meta = readJson(root, "content/campaign-meta.json");
 
   return {

@@ -1,0 +1,146 @@
+{
+  "title": "Selected work",
+  "tagline": "{a few hits from the wall}",
+  "headline": "Campaigns, reels, and print — same energy as the full gallery.",
+  "portfolioCta": "See everything on Ibrahim’s portfolio",
+  "posts": [
+    {
+      "id": "ayha-01",
+      "platform": "Instagram",
+      "client": "Ayha Maldives",
+      "title": "Custom jersey collection",
+      "description": "",
+      "tags": [
+        "jersey design",
+        "sports",
+        "carousel",
+        "football"
+      ],
+      "accent": "teal",
+      "slides": [
+        "slide-01",
+        "slide-02",
+        "slide-03",
+        "slide-04",
+        "slide-05",
+        "slide-06",
+        "slide-07",
+        "slide-08",
+        "slide-09",
+        "slide-10"
+      ]
+    },
+    {
+      "id": "choparts-01",
+      "platform": "Instagram",
+      "client": "Choparts Maldives",
+      "title": "Advertising Chopart's advertisement services",
+      "description": "",
+      "tags": [
+        "automotive",
+        "parts",
+        "carousel"
+      ],
+      "accent": "purple",
+      "slides": [
+        "slide-01",
+        "slide-02",
+        "slide-03",
+        "slide-04",
+        "slide-05",
+        "slide-06",
+        "slide-07",
+        "slide-08"
+      ]
+    },
+    {
+      "id": "fottcalm-01",
+      "platform": "Instagram",
+      "client": "Footcalm",
+      "title": "Product range",
+      "description": "",
+      "tags": [
+        "footcare",
+        "wellness",
+        "carousel",
+        "product"
+      ],
+      "accent": "pink",
+      "slides": [
+        "slide-01",
+        "slide-02",
+        "slide-03",
+        "slide-04",
+        "slide-05",
+        "slide-06",
+        "slide-07"
+      ]
+    },
+    {
+      "id": "lumeria-02",
+      "platform": "Instagram",
+      "client": "Lumeria Salon",
+      "title": "Services & packages",
+      "description": "",
+      "tags": [
+        "salon",
+        "beauty",
+        "carousel",
+        "packages"
+      ],
+      "accent": "pink",
+      "slides": [
+        "slide-01",
+        "slide-02",
+        "slide-03",
+        "slide-04",
+        "slide-05",
+        "slide-06",
+        "slide-07"
+      ]
+    },
+    {
+      "id": "rainbow-03",
+      "platform": "Instagram",
+      "client": "Rainbow Enterprise",
+      "title": "Room collection",
+      "description": "",
+      "tags": [
+        "furniture",
+        "interior",
+        "carousel",
+        "retail"
+      ],
+      "accent": "purple",
+      "slides": [
+        "slide-01",
+        "slide-02",
+        "slide-03",
+        "slide-04"
+      ]
+    },
+    {
+      "id": "rioga-02",
+      "platform": "Instagram",
+      "client": "Rioga Travel & Tours",
+      "title": "Tour itineraries",
+      "description": "",
+      "tags": [
+        "travel",
+        "tourism",
+        "carousel",
+        "packages"
+      ],
+      "accent": "teal",
+      "slides": [
+        "slide-01",
+        "slide-02",
+        "slide-03",
+        "slide-04",
+        "slide-05",
+        "slide-06",
+        "slide-07"
+      ]
+    }
+  ]
+}
