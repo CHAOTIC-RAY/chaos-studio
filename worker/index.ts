@@ -35,18 +35,11 @@ export default {
       });
     }
 
-    if (
-      (request.method === "GET" || request.method === "HEAD") &&
-      (url.pathname === "/studio" || url.pathname === "/studio/")
-    ) {
-      return env.ASSETS.fetch(new Request(new URL("/studio/index.html", url.origin).toString(), request));
+    if (url.pathname === "/studio" && request.method === "GET") {
+      return Response.redirect(`${url.origin}/studio/`, 301);
     }
-
-    if (
-      (request.method === "GET" || request.method === "HEAD") &&
-      (url.pathname === "/gallery" || url.pathname === "/gallery/")
-    ) {
-      return env.ASSETS.fetch(new Request(new URL("/gallery/index.html", url.origin).toString(), request));
+    if (url.pathname === "/gallery" && request.method === "GET") {
+      return Response.redirect(`${url.origin}/gallery/`, 301);
     }
 
     if ((request.method === "GET" || request.method === "HEAD") && GALLERY_DEEP.test(url.pathname)) {
