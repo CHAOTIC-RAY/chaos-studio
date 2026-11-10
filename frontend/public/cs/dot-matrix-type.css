@@ -1,0 +1,139 @@
+/* Dot-matrix display type (Doto) — replaces stroked / outline headlines */
+
+.dot-type,
+.dot-display {
+  font-family: Doto, "Space Mono", monospace;
+  font-weight: 700;
+  -webkit-text-stroke: 0 transparent !important;
+  color: var(--dot-type-fg, var(--lilac));
+  text-shadow: none;
+}
+
+.dot-type {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  line-height: 1.05;
+}
+
+.dot-display {
+  text-transform: lowercase;
+  letter-spacing: 0.06em;
+  line-height: 0.92;
+  display: inline-block;
+}
+
+.dot-display--purple {
+  --dot-type-fg: var(--purple);
+}
+
+.dot-display--lilac {
+  --dot-type-fg: var(--lilac);
+}
+
+.dot-display--lime {
+  --dot-type-fg: var(--lime);
+}
+
+.dot-display--ink {
+  --dot-type-fg: var(--ink);
+}
+
+.dot-display--white {
+  --dot-type-fg: var(--white);
+}
+
+/* CHAOS solid + STUDIO dot-matrix */
+.wordmark-pair {
+  display: inline;
+  white-space: nowrap;
+}
+
+.wordmark-chaos {
+  font-family: Anton, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  -webkit-text-stroke: 0 transparent;
+  color: inherit;
+}
+
+.v3-marquee__track .wordmark-chaos {
+  color: var(--white);
+}
+
+.pattern-track .wordmark-chaos {
+  color: var(--ink);
+}
+
+.wordmark-studio {
+  font-family: Doto, "Space Mono", monospace;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  -webkit-text-stroke: 0 !important;
+}
+
+.v3-marquee__track .wordmark-studio {
+  color: var(--white);
+  --dot-type-fg: var(--white);
+}
+
+.pattern-track .wordmark-studio {
+  color: var(--ink);
+  --dot-type-fg: var(--ink);
+}
+
+.pattern-track {
+  font-family: "Space Mono", monospace;
+  font-size: clamp(11px, 2.8vw, 15px);
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.v3-marquee__track .shock {
+  color: var(--shock);
+  font-family: Anton, sans-serif;
+}
+
+.hdr .wordmark-pair {
+  font-size: inherit;
+  letter-spacing: -0.02em;
+}
+
+.hdr .wordmark-chaos {
+  font-family: Syne, sans-serif;
+  font-weight: 800;
+  text-transform: none;
+  color: var(--white);
+}
+
+.hdr .wordmark-studio {
+  font-size: 0.92em;
+  text-transform: none;
+  --dot-type-fg: var(--lilac);
+  color: var(--lilac);
+}
+
+/* Legacy .outline — no stroke */
+.outline,
+.crush .outline,
+.hero-h .st.outline,
+.svc .cond.outline {
+  color: var(--dot-type-fg, var(--lilac)) !important;
+  -webkit-text-stroke: 0 transparent !important;
+  background: none !important;
+}
+
+.imp .stat .v,
+.imp .stat .v.outline {
+  font-family: Doto, Syne, sans-serif;
+  font-weight: 700;
+  color: var(--lilac) !important;
+  -webkit-text-stroke: 0 !important;
+  letter-spacing: 0.04em;
+}
+
+.whys .num {
+  -webkit-text-stroke: 0 !important;
+  color: transparent;
+}

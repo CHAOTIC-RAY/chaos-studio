@@ -39,6 +39,10 @@
 
   const lenis = lenisSetup();
 
+  function csWordmark(extra = "") {
+    return `<span class="wordmark-pair"><span class="wordmark-chaos">CHAOS</span> <span class="wordmark-studio dot-type">STUDIO</span>${extra}</span>`;
+  }
+
   function spawnMotifs() {
     const layer = document.createElement("div");
     layer.className = "v3-motif-layer";
@@ -91,8 +95,7 @@
       band = document.createElement("div");
       band.className = "v3-marquee";
       band.setAttribute("aria-hidden", "true");
-      band.innerHTML =
-        '<div class="v3-marquee__track" data-marquee><span>CHAOS STUDIO <span class="shock">✱</span></span></div>';
+      band.innerHTML = `<div class="v3-marquee__track" data-marquee>${csWordmark(' <span class="shock">✱</span> ')}</div>`;
       svc.parentElement.insertBefore(band, svc);
     }
     const track = band.querySelector("[data-marquee]");
@@ -124,7 +127,7 @@
   function heroTypeMotion() {
     const hero = document.querySelector(".hero-h");
     if (!hero || RM) return;
-    hero.querySelectorAll(".glitch, .st, .outline").forEach((node) => {
+    hero.querySelectorAll(".glitch, .st, .dot-display").forEach((node) => {
       node.classList.add("hero-split");
       gsap.fromTo(
         node,
@@ -155,58 +158,183 @@
     });
   }
 
-  function servicesHorizontal() {
-    const svc = document.querySelector(".svc");
-    const list = svc && svc.querySelector(".svc-list");
-    if (!svc || !list || svc.querySelector(".v3-hscroll")) return;
-
-    const wrap = document.createElement("div");
-    wrap.className = "v3-hscroll";
-    wrap.innerHTML =
-      '<p class="v3-hscroll-label">Drag the list →</p><div class="v3-hscroll__viewport"><div class="v3-hscroll__track"></div></div>';
-    const track = wrap.querySelector(".v3-hscroll__track");
-    list.querySelectorAll("li").forEach((li) => {
-      const num = li.querySelector(".mono");
-      const cond = li.querySelector(".cond");
-      const card = document.createElement("article");
-      card.className = "svc-card";
-      card.innerHTML = `<span class="mono">${num ? num.textContent : ""}</span><span class="cond">${cond ? cond.textContent : ""}</span>`;
-      track.appendChild(card);
+  function aboutPatternMatter() {
+    const about = document.querySelector(".about");
+    const legacy = about && about.querySelector(".pattern.rgb");
+    if (!about) return;
+    let matter = about.querySelector(".pattern-matter");
+    if (!matter) {
+      matter = document.createElement("div");
+      matter.className = "pattern-matter";
+      matter.setAttribute("aria-hidden", "true");
+      about.insertBefore(matter, about.firstChild);
+    }
+    if (legacy) legacy.remove();
+    const piece = csWordmark(" ✶ ");
+    const rowText = piece.repeat(14);
+    matter.innerHTML = "";
+    for (let i = 0; i < 7; i++) {
+      const row = document.createElement("div");
+      row.className = `pattern-row pattern-row--${i % 2 ? "rev" : "fwd"}`;
+      row.innerHTML = `<div class="pattern-track"><span>${rowText}</span></div>`;
+      matter.appendChild(row);
+    }
+    if (RM) return;
+    const rows = matter.querySelectorAll(".pattern-track");
+    rows.forEach((track, i) => {
+      const dir = i % 2 ? 1 : -1;
+      gsap.to(track, {
+        xPercent: dir * 12,
+        ease: "none",
+        duration: 22 + i * 2,
+        repeat: -1,
+      });
     });
-    list.style.display = "none";
-    list.setAttribute("aria-hidden", "true");
-    svc.querySelector(".wrap").appendChild(wrap);
-
-    if (RM || window.innerWidth < 720) return;
-
-    const cards = track.querySelectorAll(".svc-card");
-    gsap.set(cards, { opacity: 0.35, scale: 0.94, rotate: -2 });
-    gsap.to(cards, {
-      opacity: 1,
-      scale: 1,
-      rotate: 0,
-      stagger: 0.08,
-      ease: "power2.out",
-      scrollTrigger: {
-        trigger: wrap,
-        start: "top 80%",
-        toggleActions: "play none none reverse",
+    ST.create({
+      trigger: about,
+      start: "top bottom",
+      end: "bottom top",
+      onUpdate: (self) => {
+        const skew = Math.max(-6, Math.min(6, self.getVelocity() / 200));
+        matter.style.transform = `skewX(${skew}deg)`;
       },
     });
+  }
 
-    const scrollWidth = () => track.scrollWidth - wrap.clientWidth + 48;
-    gsap.to(track, {
-      x: () => -scrollWidth(),
-      ease: "none",
+  function aboutChaosReveal() {
+    const about = document.querySelector(".about");
+    if (!about || RM) return;
+    let veil = about.querySelector(".about-veil");
+    let shards = about.querySelector(".about-shards");
+    if (!veil) {
+      veil = document.createElement("div");
+      veil.className = "about-veil";
+      veil.setAttribute("aria-hidden", "true");
+      about.appendChild(veil);
+    }
+    if (!shards) {
+      shards = document.createElement("div");
+      shards.className = "about-shards";
+      shards.setAttribute("aria-hidden", "true");
+      shards.innerHTML = "<i></i><i></i><i></i><i></i><i></i>";
+      about.appendChild(shards);
+    }
+    const work = document.querySelector("#work");
+    if (!work) return;
+    const shardEls = shards.querySelectorAll("i");
+    gsap.set(shardEls, { opacity: 0, scale: 0.9 });
+    const tl = gsap.timeline({
       scrollTrigger: {
-        trigger: wrap,
-        start: "top 18%",
-        end: () => `+=${scrollWidth()}`,
-        pin: wrap,
-        scrub: 0.9,
-        invalidateOnRefresh: true,
+        trigger: about,
+        start: "top top",
+        end: () => `+=${Math.min(window.innerHeight * 1.1, 720)}`,
+        pin: true,
+        scrub: 0.85,
         anticipatePin: 1,
       },
+    });
+    tl.to(
+      veil,
+      {
+        clipPath:
+          "polygon(0% 0%, 100% 0%, 100% 18%, 88% 32%, 100% 48%, 72% 62%, 96% 78%, 54% 92%, 100% 100%, 0% 100%, 0% 82%, 22% 66%, 0% 50%, 28% 34%, 0% 18%)",
+        ease: "power2.in",
+      },
+      0,
+    )
+      .to(veil, { opacity: 0, scale: 1.08 }, 0.55)
+      .to(
+        shardEls,
+        {
+          opacity: 0.85,
+          x: () => (Math.random() - 0.5) * 140,
+          y: () => (Math.random() - 0.5) * 120,
+          rotate: () => (Math.random() - 0.5) * 40,
+          stagger: { each: 0.04, from: "random" },
+        },
+        0.15,
+      )
+      .to(shardEls, { opacity: 0 }, 0.75);
+  }
+
+  function scrollTextMotion() {
+    if (RM) return;
+    document.querySelectorAll(".about-h, .work-h, .svc-title, .pk-head h2, .imp-h, .t-h").forEach((el) => {
+      el.querySelectorAll(".hl").forEach((hl) => hl.classList.add("v3-hl-wipe"));
+      const rich = el.querySelector(".glitch, .dot-display, .hl");
+      if (rich) {
+        gsap.fromTo(
+          el,
+          { y: 36, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.6,
+            ease: "power3.out",
+            scrollTrigger: { trigger: el, start: "top 88%", toggleActions: "play none none reverse" },
+          },
+        );
+      } else {
+        const words = el.textContent.trim().split(/\s+/);
+        el.innerHTML = words.map((w) => `<span class="v3-split-word"><i>${w}</i></span> `).join("");
+        el.querySelectorAll(".v3-split-word i").forEach((w, i) => {
+          gsap.fromTo(
+            w,
+            { yPercent: 120, opacity: 0 },
+            {
+              yPercent: 0,
+              opacity: 1,
+              ease: "power3.out",
+              scrollTrigger: { trigger: el, start: "top 88%", toggleActions: "play none none reverse" },
+              delay: i * 0.04,
+              duration: 0.55,
+            },
+          );
+        });
+      }
+    });
+    gsap.utils.toArray(".v3-hl-wipe").forEach((hl) => {
+      gsap.fromTo(
+        hl,
+        { "--hlx": 0 },
+        {
+          "--hlx": 1,
+          ease: "power2.out",
+          duration: 0.5,
+          scrollTrigger: { trigger: hl, start: "top 90%", toggleActions: "play none none reverse" },
+        },
+      );
+    });
+  }
+
+  function servicesBentoMotion() {
+    const tiles = document.querySelectorAll(".svc-tile");
+    if (!tiles.length || RM) return;
+    ST.batch(tiles, {
+      start: "top 92%",
+      onEnter: (batch) =>
+        gsap.fromTo(batch, { opacity: 0, y: 28 }, { opacity: 1, y: 0, stagger: 0.05, duration: 0.45, ease: "power2.out" }),
+    });
+    gsap.set(tiles, { opacity: 0, y: 28 });
+  }
+
+  function featuredBentoMotion() {
+    const feats = document.querySelectorAll(".featured-bento .feat");
+    if (!feats.length || RM) return;
+    ST.batch(feats, {
+      start: "top 93%",
+      onEnter: (batch) =>
+        gsap.fromTo(batch, { opacity: 0, y: 32 }, { opacity: 1, y: 0, stagger: 0.06, duration: 0.5, ease: "power3.out" }),
+    });
+  }
+
+  function pricingBentoMotion() {
+    const pk = document.querySelectorAll(".pk-bento .pk");
+    if (!pk.length || RM) return;
+    ST.batch(pk, {
+      start: "top 93%",
+      onEnter: (batch) =>
+        gsap.fromTo(batch, { opacity: 0, scale: 0.97, y: 20 }, { opacity: 1, scale: 1, y: 0, stagger: 0.07, duration: 0.45 }),
     });
   }
 
@@ -364,7 +492,12 @@
     spawnMotifs();
     marqueeBand();
     heroTypeMotion();
-    servicesHorizontal();
+    aboutPatternMatter();
+    aboutChaosReveal();
+    scrollTextMotion();
+    servicesBentoMotion();
+    featuredBentoMotion();
+    pricingBentoMotion();
     sectionWipesAndShock();
     revealBatch();
     growShape2();
@@ -380,7 +513,15 @@
     init();
   }
 
-  addEventListener("load", () => ST.refresh());
+  document.addEventListener("cs-showcase-ready", () => {
+    featuredBentoMotion();
+    ST.refresh();
+  });
+
+  addEventListener("load", () => {
+    featuredBentoMotion();
+    ST.refresh();
+  });
   addEventListener(
     "resize",
     () => {

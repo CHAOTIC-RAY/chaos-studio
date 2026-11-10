@@ -28,7 +28,7 @@ opacity:calc(1 - var(--studio-logo-reveal,0)*.92);transform:scale(calc(1 - var(-
 .why-title{grid-column:1/-1;font-size:var(--fs-h1)}
 .why-brace{grid-column:1/-1;justify-self:start;background:var(--lilac);color:var(--ink);font-size:32px}
 .why{grid-column:span 4;display:flex;flex-direction:column;gap:16px;border-top:2px solid var(--ink);margin-top:48px}
-.num{font-family:Syne;font-weight:800;font-size:clamp(140px,17vw,240px);line-height:.8;margin-top:-24px;color:transparent;-webkit-text-stroke:6px var(--purple)}
+.num{font-size:0;line-height:0;margin-top:-24px}
 .why h3{font-family:Anton;text-transform:uppercase;font-weight:400;font-size:40px;line-height:1}
 .why p{font-size:18px;line-height:28px;max-width:32ch}
 /* 004 about */

@@ -72,11 +72,7 @@
 }
 
 .v3-marquee__track span {
-  font-family: Anton, sans-serif;
-  font-size: clamp(32px, 5vw, 56px);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--white);
+  font-size: clamp(28px, 4.5vw, 48px);
   white-space: nowrap;
 }
 

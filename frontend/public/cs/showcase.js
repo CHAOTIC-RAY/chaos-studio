@@ -1,82 +1,74 @@
 (function () {
-  const P = "/images/posts";
   const $ = (s, r = document) => r.querySelector(s);
   const esc = (s) =>
     String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const pad = (n) => String(n).padStart(3, "0");
-  const slugify = (s) =>
-    s
-      .normalize("NFKD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
-  const panoSrc = (u) => u.replace(/\.webp$/i, ".pano.webp");
-  const slideSrc = (n, s) => `${P}/${n.id}/${s}.webp`;
-  const LABEL = {
-    branding: "Branding",
-    social: "Social",
-    carousel: "Carousel",
-    reel: "Reel",
-    print: "Print",
-    jersey: "Jersey",
-    webapp: "Web/App",
-  };
-  function cats(n) {
-    const t = (n.tags || []).join(" ").toLowerCase();
-    const k = (n.slides || []).length;
-    const s = new Set();
-    if (n.video) s.add("reel");
-    if (k > 1) s.add("carousel");
-    if (/jersey|uniform/.test(t)) s.add("jersey");
-    if (/poster|print|banner|flyer/.test(t)) s.add("print");
-    if (/brand|logo|identity/.test(t)) s.add("branding");
-    const primary = ["reel", "jersey", "print", "branding", "carousel", "social"].find((c) => s.has(c)) || "social";
-    return primary;
-  }
-  function cover(n) {
-    if (n.video) return `${P}/${n.id}/${n.poster || "poster.webp"}`;
-    if (n.slides && n.slides.length) return slideSrc(n, n.slides[0]);
-    return `${P}/${n.id}.webp`;
-  }
+  const PLACEHOLDER = "/assets/work/_placeholders/default-cover.svg";
+
+  const FEATURED = [
+    { slug: "kora", mod: "feat--kora" },
+    { slug: "faisa", title: "Faisa Mobile", mod: "feat--faisa" },
+    {
+      slug: "xyz",
+      title: "XYZ",
+      cover: "/images/projects/frames/faisa/06-transfer.webp",
+      tagline: "Transfer & wallet flows — FaisaMobileXYZ",
+      mod: "feat--xyz",
+      from: "faisa",
+    },
+    { slug: "forge", mod: "feat--forge" },
+    { slug: "GexTag", title: "UtilityBox", mod: "feat--utility" },
+    { slug: "QuePulse", mod: "feat--quepulse" },
+  ];
 
   const grid = $("#showcase-grid");
   const headline = $("#showcase-headline");
   const cta = $("#showcase-portfolio-cta");
   if (!grid) return;
 
-  async function load() {
-    const r = await fetch("/api/showcase", { headers: { accept: "application/json" } });
-    if (!r.ok) throw new Error("showcase");
-    return r.json();
-  }
+  grid.classList.add("featured-bento");
 
-  function card(n, i, portfolioUrl) {
-    const cat = LABEL[cats(n)] || "Social";
-    const href = `${portfolioUrl.replace(/\/$/, "")}/gallery/${slugify(`${n.client} ${n.title}`)}`;
-    const img = panoSrc(cover(n));
-    return `<li class="card" style="--d:${Math.min(i, 8) * 55}ms" data-reveal>
-      <a class="fr" href="${esc(href)}" target="_blank" rel="noopener noreferrer">
-        <span class="top"><span class="num">${pad(i + 1)}</span><span class="cat">${esc(cat)}</span></span>
-        <span class="media"><img src="${esc(img)}" alt="${esc(n.title)} — ${esc(n.client)}" loading="lazy" decoding="async" width="416" height="520"></span>
-        <span class="cap"><span class="hl2">${esc(n.client)} — ${esc(n.title)}</span></span>
+  function tile(item, project, i) {
+    const title = item.title || project.title;
+    const cover = item.cover || project.cover || PLACEHOLDER;
+    const alt = project.coverAlt || title;
+    const href = project.href || "#";
+    const tag = item.tagline || project.tagline || project.category || "";
+    const num = String(i + 1).padStart(2, "0");
+    const placeholder = !project.cover && !item.cover;
+    return `<li class="feat ${item.mod || ""}" data-reveal style="--d:${i * 55}ms">
+      <a class="feat-link" href="${esc(href)}" target="_blank" rel="noopener noreferrer"${placeholder ? ' data-placeholder="1"' : ""}>
+        <span class="dot-num dot-num--sm dot-num--lime feat-num" data-dots="${num}" data-dot-variant="lime"></span>
+        <span class="feat-media"><img src="${esc(cover)}" alt="${esc(alt)}" loading="lazy" decoding="async" width="640" height="480"></span>
+        <span class="feat-meta">
+          <span class="feat-cat">${esc(project.category || "Product")}</span>
+          <span class="feat-title">${esc(title)}</span>
+          <span class="feat-tag">${esc(tag)}</span>
+        </span>
       </a>
     </li>`;
   }
 
-  load()
-    .then((data) => {
-      if (headline && data.headline) headline.textContent = data.headline;
-      if (cta) {
-        cta.href = data.portfolioGalleryUrl || "https://portfolio.chaoticstudio.workers.dev/gallery/";
-        const label = data.portfolioCta || "Full gallery on portfolio";
-        cta.textContent = `${label} →`;
-      }
-      const posts = (data.posts || []).slice(0, 6);
-      grid.innerHTML = posts.map((p, i) => card(p, i, data.portfolioGalleryUrl || "/")).join("");
+  fetch("/assets/site.config.json")
+    .then((r) => r.json())
+    .then((cfg) => {
+      const bySlug = Object.fromEntries((cfg.work || []).map((w) => [w.slug.toLowerCase(), w]));
+      const html = [];
+      const used = [];
+      FEATURED.forEach((item, i) => {
+        const key = (item.from || item.slug).toLowerCase();
+        const project = bySlug[key] || bySlug[item.slug.toLowerCase()];
+        if (!project) return;
+        used.push({ item, project, real: !!(item.cover || project.cover) });
+        html.push(tile(item, project, i));
+      });
+      grid.innerHTML = html.join("");
+      if (headline) headline.textContent = "Product design & tools we ship — six featured builds.";
+      grid.setAttribute("aria-busy", "false");
+      window.ChaosDotNumerals && grid.querySelectorAll("[data-dots]").forEach((el) => window.ChaosDotNumerals.renderDots(el));
+
       if (reduced()) {
-        grid.querySelectorAll(".card").forEach((c) => c.classList.add("in"));
+        grid.querySelectorAll(".feat").forEach((c) => c.classList.add("in"));
         return;
       }
       const io = new IntersectionObserver(
@@ -88,11 +80,14 @@
             }
           });
         },
-        { threshold: 0.08, rootMargin: "0px 0px -8% 0px" },
+        { threshold: 0.06, rootMargin: "0px 0px -6% 0px" },
       );
-      requestAnimationFrame(() => grid.querySelectorAll(".card").forEach((c) => io.observe(c)));
+      grid.querySelectorAll(".feat").forEach((c) => io.observe(c));
+      grid.dataset.featuredMeta = JSON.stringify(used.map((u) => u.item.slug));
+      document.dispatchEvent(new CustomEvent("cs-showcase-ready"));
     })
     .catch(() => {
       grid.innerHTML = "";
+      grid.setAttribute("aria-busy", "false");
     });
 })();
