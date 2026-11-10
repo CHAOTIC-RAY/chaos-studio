@@ -1,18 +1,19 @@
-/** Render brand dot-matrix numerals from /assets/motifs/dot-numerals/ */
+/** Brand dot-matrix numerals — SVG dot grids at readable scale (not shrunk to blobs). */
 (function () {
   const BASE = "/assets/motifs/dot-numerals/dot-numeral-";
   const cache = new Map();
 
-  function digitImg(d, variant) {
-    const key = `${variant}-${d}`;
-    if (cache.has(key)) return cache.get(key).cloneNode(true);
+  function digitImg(d) {
+    if (cache.has(d)) return cache.get(d).cloneNode(true);
     const img = document.createElement("img");
     img.src = `${BASE}${d}.svg`;
     img.alt = d;
     img.decoding = "async";
     img.loading = "lazy";
     img.className = "dot-digit";
-    cache.set(key, img);
+    img.width = 48;
+    img.height = 26;
+    cache.set(d, img);
     return img.cloneNode(true);
   }
 
@@ -27,7 +28,7 @@
     wrap.className = "dot-num__digits";
     wrap.setAttribute("aria-label", raw);
     for (const ch of digits) {
-      if (ch >= "0" && ch <= "9") wrap.appendChild(digitImg(ch, variant));
+      if (ch >= "0" && ch <= "9") wrap.appendChild(digitImg(ch));
     }
     el.appendChild(wrap);
   }
@@ -39,5 +40,5 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 
-  window.ChaosDotNumerals = { renderDots };
+  window.ChaosDotNumerals = { renderDots, boot };
 })();

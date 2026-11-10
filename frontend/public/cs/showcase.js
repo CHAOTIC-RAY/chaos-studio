@@ -39,7 +39,7 @@
     return `<li class="feat ${item.mod || ""}" data-reveal style="--d:${i * 55}ms">
       <a class="feat-link" href="${esc(href)}" target="_blank" rel="noopener noreferrer"${placeholder ? ' data-placeholder="1"' : ""}>
         <span class="dot-num dot-num--sm dot-num--lime feat-num" data-dots="${num}" data-dot-variant="lime"></span>
-        <span class="feat-media"><img src="${esc(cover)}" alt="${esc(alt)}" loading="lazy" decoding="async" width="640" height="480"></span>
+        <span class="feat-media"><img src="${esc(cover)}" alt="${esc(alt)}" loading="lazy" decoding="async" width="640" height="480" onerror="this.onerror=null;this.src='${PLACEHOLDER}'"></span>
         <span class="feat-meta">
           <span class="feat-cat">${esc(project.category || "Product")}</span>
           <span class="feat-title">${esc(title)}</span>

@@ -94,7 +94,7 @@
 
   function resize() {
     const rect = hero.getBoundingClientRect();
-    const dpr = Math.min(devicePixelRatio || 1, mobile ? 1.25 : 1.5);
+    const dpr = Math.min(devicePixelRatio || 1, mobile ? 1.15 : 1.5);
     size.w = Math.max(1, Math.floor(rect.width));
     size.h = Math.max(1, Math.floor(rect.height));
     size.dpr = dpr;
@@ -514,11 +514,15 @@
 
   const io = new IntersectionObserver(
     (entries) => {
-      visible = entries.some((e) => e.isIntersecting) && !document.hidden;
+      const on = entries.some((e) => e.isIntersecting && e.intersectionRatio > 0.02) && !document.hidden;
+      visible = on;
       if (visible && !RM) start();
-      else stop();
+      else {
+        stop();
+        videoReel && videoReel.pauseAll();
+      }
     },
-    { threshold: 0.08 },
+    { threshold: [0, 0.02, 0.08], rootMargin: "0px 0px -12% 0px" },
   );
 
   async function init() {

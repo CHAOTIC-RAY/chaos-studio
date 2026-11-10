@@ -2,6 +2,7 @@
 (function () {
   const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const coarse = matchMedia("(hover: none), (pointer: coarse)").matches;
+  const narrow = matchMedia("(max-width: 520px)").matches;
   const gsap = window.gsap;
   const ST = window.ScrollTrigger;
   if (!gsap || !ST) return;
@@ -40,7 +41,7 @@
   const lenis = lenisSetup();
 
   function csWordmark(extra = "") {
-    return `<span class="wordmark-pair"><span class="wordmark-chaos">CHAOS</span> <span class="wordmark-studio dot-type">STUDIO</span>${extra}</span>`;
+    return `<span class="wordmark-pair"><span class="wordmark-chaos">CHAOS</span> <span class="wordmark-studio" data-dot-text="STUDIO" data-dot-size="${narrow ? "11" : "14"}" data-dot-font="Anton, sans-serif">STUDIO</span>${extra}</span>`;
   }
 
   function spawnMotifs() {
@@ -48,7 +49,8 @@
     layer.className = "v3-motif-layer";
     layer.setAttribute("aria-hidden", "true");
     const pool = [...MARKS, ...SHAPES, ...DOTS];
-    const n = RM ? 4 : coarse ? 8 : 14;
+    const n = RM ? 0 : coarse ? 4 : 14;
+    if (n === 0) return;
     for (let i = 0; i < n; i++) {
       const el = document.createElement("div");
       el.className = "v3-motif" + (i % 3 === 0 ? " v3-motif--mark" : " v3-motif--shape");
@@ -103,6 +105,7 @@
     track.dataset.ready = "1";
     const chunk = track.innerHTML;
     track.innerHTML = chunk.repeat(12);
+    window.ChaosDotMatrixText && window.ChaosDotMatrixText.boot();
     if (RM) {
       track.style.transform = "translateX(-12%)";
       return;
@@ -173,7 +176,8 @@
     const piece = csWordmark(" ✶ ");
     const rowText = piece.repeat(14);
     matter.innerHTML = "";
-    for (let i = 0; i < 7; i++) {
+    const rowCount = narrow ? 4 : 6;
+    for (let i = 0; i < rowCount; i++) {
       const row = document.createElement("div");
       row.className = `pattern-row pattern-row--${i % 2 ? "rev" : "fwd"}`;
       row.innerHTML = `<div class="pattern-track"><span>${rowText}</span></div>`;
@@ -190,20 +194,30 @@
         repeat: -1,
       });
     });
-    ST.create({
-      trigger: about,
-      start: "top bottom",
-      end: "bottom top",
-      onUpdate: (self) => {
-        const skew = Math.max(-6, Math.min(6, self.getVelocity() / 200));
-        matter.style.transform = `skewX(${skew}deg)`;
-      },
-    });
+    if (!narrow && !RM) {
+      let skewRaf = 0;
+      ST.create({
+        trigger: about,
+        start: "top bottom",
+        end: "bottom top",
+        onUpdate: (self) => {
+          if (skewRaf) return;
+          skewRaf = requestAnimationFrame(() => {
+            skewRaf = 0;
+            const skew = Math.max(-3, Math.min(3, self.getVelocity() / 400));
+            matter.style.transform = `translate3d(0,0,0) skewX(${skew}deg)`;
+          });
+        },
+      });
+    }
+    window.ChaosDotMatrixText && window.ChaosDotMatrixText.boot();
   }
 
   function aboutChaosReveal() {
     const about = document.querySelector(".about");
-    if (!about || RM) return;
+    if (!about) return;
+    about.classList.add("cine-shot", "cine-shot__letterbox");
+
     let veil = about.querySelector(".about-veil");
     let shards = about.querySelector(".about-shards");
     if (!veil) {
@@ -216,45 +230,122 @@
       shards = document.createElement("div");
       shards.className = "about-shards";
       shards.setAttribute("aria-hidden", "true");
-      shards.innerHTML = "<i></i><i></i><i></i><i></i><i></i>";
+      shards.innerHTML = "<i></i><i></i><i></i>";
       about.appendChild(shards);
     }
-    const work = document.querySelector("#work");
-    if (!work) return;
+
+    if (RM) {
+      gsap.set(veil, { opacity: 0, pointerEvents: "none" });
+      return;
+    }
+
     const shardEls = shards.querySelectorAll("i");
-    gsap.set(shardEls, { opacity: 0, scale: 0.9 });
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: about,
-        start: "top top",
-        end: () => `+=${Math.min(window.innerHeight * 1.1, 720)}`,
-        pin: true,
-        scrub: 0.85,
-        anticipatePin: 1,
-      },
+    const shardMotion = [
+      { x: -80, y: -40, r: -12 },
+      { x: 90, y: -28, r: 18 },
+      { x: -40, y: 72, r: 8 },
+    ];
+    shardEls.forEach((el, i) => {
+      gsap.set(el, { opacity: 0, scale: 0.92, x: 0, y: 0, rotate: 0, force3D: true });
+      if (shardMotion[i]) gsap.set(el, { transformOrigin: "50% 50%" });
     });
+
+    gsap.set(veil, {
+      opacity: 1,
+      scale: 1,
+      transformOrigin: "50% 38%",
+      force3D: true,
+      webkitClipPath: "inset(0% 0% 0% 0%)",
+      clipPath: "inset(0% 0% 0% 0%)",
+    });
+
+    const endLen = narrow ? innerHeight * 0.85 : innerHeight * 1.05;
+    const stOpts = {
+      trigger: about,
+      start: narrow ? "top 88%" : "top top",
+      end: `+=${endLen}`,
+      scrub: narrow ? 0.65 : 0.85,
+      invalidateOnRefresh: true,
+      onEnter: () => about.classList.add("is-framed"),
+      onLeave: () => about.classList.remove("is-framed"),
+      onEnterBack: () => about.classList.add("is-framed"),
+      onLeaveBack: () => about.classList.remove("is-framed"),
+    };
+    if (!narrow) {
+      stOpts.pin = true;
+      stOpts.anticipatePin = 1;
+      stOpts.pinSpacing = true;
+    }
+
+    const tl = gsap.timeline({ scrollTrigger: stOpts });
+
     tl.to(
       veil,
       {
-        clipPath:
-          "polygon(0% 0%, 100% 0%, 100% 18%, 88% 32%, 100% 48%, 72% 62%, 96% 78%, 54% 92%, 100% 100%, 0% 100%, 0% 82%, 22% 66%, 0% 50%, 28% 34%, 0% 18%)",
+        scale: narrow ? 1.55 : 1.75,
+        opacity: 0,
+        duration: 1,
         ease: "power2.in",
+        webkitClipPath: "inset(0% 0% 100% 0%)",
+        clipPath: "inset(0% 0% 100% 0%)",
       },
       0,
-    )
-      .to(veil, { opacity: 0, scale: 1.08 }, 0.55)
-      .to(
-        shardEls,
+    );
+
+    shardEls.forEach((el, i) => {
+      const m = shardMotion[i] || shardMotion[0];
+      tl.to(
+        el,
         {
-          opacity: 0.85,
-          x: () => (Math.random() - 0.5) * 140,
-          y: () => (Math.random() - 0.5) * 120,
-          rotate: () => (Math.random() - 0.5) * 40,
-          stagger: { each: 0.04, from: "random" },
+          opacity: 0.7,
+          x: m.x,
+          y: m.y,
+          rotate: m.r,
+          scale: 1.05,
+          duration: 0.35,
+          ease: "power2.out",
         },
-        0.15,
-      )
-      .to(shardEls, { opacity: 0 }, 0.75);
+        0.12 + i * 0.04,
+      ).to(el, { opacity: 0, duration: 0.25 }, 0.55);
+    });
+  }
+
+  function cinemaDirecting() {
+    if (RM) return;
+    const shots = document.querySelectorAll("main .sec:not(.hero)");
+    shots.forEach((sec, i) => {
+      sec.classList.add("cine-shot");
+      const inner = sec.querySelector(".wrap") || sec;
+      inner.classList.add("cine-title");
+      const blurFrom = narrow ? undefined : "blur(5px)";
+      gsap.fromTo(
+        inner,
+        { y: narrow ? 28 : 44, opacity: 0, scale: 0.985, filter: blurFrom },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          filter: narrow ? undefined : "blur(0px)",
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: sec,
+            start: "top 86%",
+            toggleActions: "play none none reverse",
+          },
+          duration: narrow ? 0.55 : 0.75,
+        },
+      );
+      if (i > 0) {
+        gsap.fromTo(
+          sec,
+          { opacity: 0.94 },
+          {
+            opacity: 1,
+            scrollTrigger: { trigger: sec, start: "top 92%", end: "top 55%", scrub: 0.5 },
+          },
+        );
+      }
+    });
   }
 
   function scrollTextMotion() {
@@ -494,6 +585,7 @@
     heroTypeMotion();
     aboutPatternMatter();
     aboutChaosReveal();
+    cinemaDirecting();
     scrollTextMotion();
     servicesBentoMotion();
     featuredBentoMotion();
@@ -519,9 +611,17 @@
   });
 
   addEventListener("load", () => {
+    window.ChaosDotMatrixText && window.ChaosDotMatrixText.boot();
     featuredBentoMotion();
-    ST.refresh();
+    ST.refresh(true);
   });
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => {
+      window.ChaosDotMatrixText && window.ChaosDotMatrixText.boot();
+      ST.refresh(true);
+    });
+  }
   addEventListener(
     "resize",
     () => {

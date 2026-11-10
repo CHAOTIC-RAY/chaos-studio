@@ -14,9 +14,10 @@
 }
 
 .dot-digit {
-  height: var(--dot-h, 18px);
+  height: var(--dot-h, 26px);
   width: auto;
   display: block;
+  image-rendering: auto;
 }
 
 .dot-num--lime .dot-digit {
@@ -32,11 +33,15 @@
 }
 
 .dot-num--sm {
-  --dot-h: 14px;
+  --dot-h: 22px;
 }
 
 .dot-num--md {
-  --dot-h: 22px;
+  --dot-h: 28px;
+}
+
+.feat-num.dot-num--sm {
+  --dot-h: 20px;
 }
 
 .dot-num--lg {
@@ -628,4 +633,115 @@
 .work-h .outline {
   color: var(--lilac);
   -webkit-text-stroke: 0;
+}
+
+/* --- Mobile (360–430) --- */
+.showcase-strip .wrap {
+  overflow-x: hidden;
+}
+
+.showcase-strip .showcase-headline {
+  max-width: none;
+  width: 100%;
+  margin: 0 0 1.25rem;
+  font-size: 14px;
+  line-height: 1.45;
+  order: 0;
+}
+
+.showcase-strip #showcase-grid {
+  order: 1;
+  width: 100%;
+}
+
+@media (max-width: 520px) {
+  .featured-bento {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  .featured-bento .feat--kora,
+  .featured-bento .feat--forge,
+  .featured-bento .feat--faisa,
+  .featured-bento .feat--xyz,
+  .featured-bento .feat--utility,
+  .featured-bento .feat--quepulse {
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
+  }
+
+  .featured-bento .feat-meta {
+    padding: 10px 12px 12px;
+  }
+
+  .featured-bento .feat-tag {
+    font-size: 14px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  .featured-bento .feat-title {
+    font-size: 22px;
+    overflow-wrap: anywhere;
+  }
+
+  .svc-bento {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .svc-tile--wide {
+    grid-column: span 1;
+  }
+
+  .svc-tile__head {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "num icon chev"
+      "title title title";
+    gap: 8px 10px;
+    padding: 12px;
+    min-height: 48px;
+  }
+
+  .svc-tile__head .dot-num {
+    grid-area: num;
+    --dot-h: 18px;
+  }
+
+  .svc-ico {
+    grid-area: icon;
+    width: 22px;
+    height: 22px;
+  }
+
+  .svc-tile__chev {
+    grid-area: chev;
+    justify-self: end;
+  }
+
+  .svc-tile__head h3 {
+    grid-area: title;
+    font-size: 17px;
+    line-height: 1.25;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+  }
+
+  .hero-h .dot-matrix-canvas {
+    --dot-matrix-h: clamp(36px, 11vw, 52px);
+  }
+
+  .work-h .dot-matrix-canvas {
+    --dot-matrix-h: clamp(28px, 8vw, 44px);
+  }
+
+  .dot-num--xl {
+    --dot-h: clamp(48px, 14vw, 88px);
+  }
+}
+
+.page-studio {
+  overflow-x: clip;
 }

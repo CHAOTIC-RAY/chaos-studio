@@ -2,11 +2,26 @@
 
 .dot-type,
 .dot-display {
-  font-family: Doto, "Space Mono", monospace;
-  font-weight: 700;
   -webkit-text-stroke: 0 transparent !important;
-  color: var(--dot-type-fg, var(--lilac));
   text-shadow: none;
+}
+
+.dot-display:not(.dot-matrix-text) {
+  color: var(--dot-type-fg, var(--lilac));
+}
+
+.dot-matrix-text {
+  display: inline-block;
+  line-height: 0;
+  vertical-align: middle;
+}
+
+.dot-matrix-canvas {
+  display: block;
+  height: var(--dot-matrix-h, auto);
+  width: auto;
+  max-width: 100%;
+  image-rendering: auto;
 }
 
 .dot-type {
@@ -66,11 +81,9 @@
 }
 
 .wordmark-studio {
-  font-family: Doto, "Space Mono", monospace;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  -webkit-text-stroke: 0 !important;
+  display: inline-block;
+  vertical-align: baseline;
+  line-height: 0;
 }
 
 .v3-marquee__track .wordmark-studio {
@@ -124,13 +137,8 @@
   background: none !important;
 }
 
-.imp .stat .v,
-.imp .stat .v.outline {
-  font-family: Doto, Syne, sans-serif;
-  font-weight: 700;
-  color: var(--lilac) !important;
+.imp .stat .v.dot-type {
   -webkit-text-stroke: 0 !important;
-  letter-spacing: 0.04em;
 }
 
 .whys .num {
