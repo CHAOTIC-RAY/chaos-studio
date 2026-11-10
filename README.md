@@ -37,7 +37,7 @@ Output: `frontend/dist/` (static site + `gallery-snapshot.json`).
 
 ## Deploy to Cloudflare
 
-**Worker name:** `chaos-studio` (see `wrangler.jsonc`) → `https://chaos-studio.chaoticstudio.workers.dev`
+**Worker name:** `design` (see `wrangler.jsonc`) → `https://design.chaoticstudio.workers.dev`
 
 ```bash
 npm install
@@ -54,7 +54,7 @@ Or: `npm run deploy` (build + deploy).
 - Assets: binding `ASSETS` → `./frontend/dist`
 - `run_worker_first`: `/api/*`, `/gallery/*` (API + gallery deep links)
 
-**Optional later:** custom domain (e.g. `chaosstudio.mv`) on worker `chaos-studio`, env vars/secrets only if you add CMS or auth.
+**Optional later:** custom domain (e.g. `chaosstudio.mv`) on worker `design`, env vars/secrets only if you add CMS or auth.
 
 This repo does **not** include the Ibrahim portfolio CMS; edit JSON under `content/` and campaign images under `frontend/public/images/posts/`, then rebuild.
 

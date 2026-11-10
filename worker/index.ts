@@ -21,7 +21,7 @@ export default {
     }
 
     if (url.pathname === "/api/health" && request.method === "GET") {
-      return Response.json({ ok: true, service: "chaos-studio" }, { headers: JSON_HEADERS });
+      return Response.json({ ok: true, service: "design" }, { headers: JSON_HEADERS });
     }
 
     if (request.method === "OPTIONS" && url.pathname.startsWith("/api/")) {

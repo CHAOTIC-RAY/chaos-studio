@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "chaos-studio",
+  "name": "design",
   "main": "worker/index.ts",
   "build": {
     "command": "sh -c 'test -n \"$WRANGLER_SKIP_BUILD\" || npm run build'"

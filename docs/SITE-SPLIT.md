@@ -5,7 +5,7 @@ This branch is the **Chaos Studio-only** codebase. The Ibrahim Wafig portfolio l
 | Site | Worker name | workers.dev host |
 |------|-------------|------------------|
 | Ibrahim portfolio | `portfolio` | `portfolio.chaoticstudio.workers.dev` |
-| Chaos Studio | `chaos-studio` | `chaos-studio.chaoticstudio.workers.dev` |
+| Chaos Studio | `design` | `design.chaoticstudio.workers.dev` |
 
 ## Push to new GitHub repo
 
