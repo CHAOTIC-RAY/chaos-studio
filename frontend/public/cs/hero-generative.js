@@ -54,6 +54,8 @@
   let glitch = { rgb: 0, tear: 0, blocks: 0, skip: false };
   let sprites = [];
   let layout = "orbit";
+  let sceneType = "motif";
+  let videoReel = null;
   let size = { w: 0, h: 0, dpr: 1, sw: 0, sh: 0 };
 
   const easeOutBack = (t) => {
@@ -139,6 +141,34 @@
   }
 
   function newScene() {
+    const useVideo =
+      videoReel && videoReel.clips && videoReel.clips.length && !RM && Math.random() < (mobile ? 0.32 : 0.42);
+    if (useVideo) {
+      const clip = videoReel.pickClip();
+      sceneType = "video";
+      palette = pick(PALETTES);
+      if (Math.random() < 0.2) palette = { ...palette, bg: palette.fg, fg: palette.bg };
+      dither = mobile ? pick(["bayer", "halftone", "floyd"]) : pick(DITHER_WEIGHTED);
+      ditherMix = 0.42 + Math.random() * 0.4;
+      sceneDuration = mobile ? 4200 + Math.random() * 1200 : 4800 + Math.random() * 1600;
+      sceneCutAt = performance.now() + sceneDuration;
+      glitch = {
+        rgb: 6 + Math.random() * 12,
+        tear: Math.random() < 0.7 ? 3 + Math.random() * 8 : 0,
+        blocks: Math.random() < 0.5 ? 4 + ((Math.random() * 6) | 0) : 0,
+        skip: Math.random() < 0.18,
+      };
+      transition = 1;
+      wipe = { dir: Math.random() < 0.5 ? 1 : -1, t: 0 };
+      sceneStart = performance.now();
+      sceneIndex++;
+      videoReel.setScene(clip);
+      pulseHeadline("cut");
+      return;
+    }
+
+    sceneType = "motif";
+    videoReel && videoReel.pauseAll();
     palette = pick(PALETTES);
     if (Math.random() < 0.18) palette = { ...palette, bg: palette.fg, fg: palette.bg };
     dither = mobile ? pick(["bayer", "halftone", "threshold"]) : pick(DITHER_WEIGHTED);
@@ -241,6 +271,16 @@
   }
 
   function drawSprites(t) {
+    if (sceneType === "video" && videoReel) {
+      const ok = videoReel.drawVideo(wctx, size.sw, size.sh, palette);
+      if (!ok && videoReel.active) {
+        wctx.fillStyle = palette.bg;
+        wctx.fillRect(0, 0, size.sw, size.sh);
+      }
+      const elapsed = t - sceneStart;
+      ditherMix = clamp(0.45 + (elapsed / sceneDuration) * 0.4 + transition * 0.2, 0.35, 0.95);
+      return;
+    }
     const elapsed = t - sceneStart;
     const build = clamp(elapsed / (sceneDuration * 0.75), 0, 1);
     const punch = 1 + (beatIndex(t) % 4 === 0 ? 0.06 : 0) * Math.sin(((t - sceneStart) % BEAT) / BEAT * Math.PI);
@@ -385,6 +425,10 @@
     ctx.drawImage(work, 0, 0, size.w, size.h);
     ctx.restore();
 
+    if (sceneType === "video" && videoReel) {
+      videoReel.drawHud(ctx, size.w, size.h, palette);
+    }
+
     if (tr > 0.05) {
       const g = glitch;
       const shift = Math.floor(g.rgb * tr);
@@ -412,7 +456,11 @@
   function frame(t) {
     if (!ready) return;
     if (RM) {
-      drawSprites(t);
+      if (videoReel && videoReel.clips && videoReel.clips[0]) {
+        videoReel.stillFrame(wctx, size.sw, size.sh, palette, videoReel.clips[0]);
+      } else {
+        drawSprites(t);
+      }
       const img = wctx.getImageData(0, 0, size.sw, size.sh);
       applyDither(img);
       wctx.putImageData(img, 0, 0);
@@ -454,6 +502,7 @@
   function stop() {
     running = false;
     cancelAnimationFrame(raf);
+    videoReel && videoReel.pauseAll();
   }
 
   function visibility() {
@@ -475,6 +524,15 @@
   async function init() {
     resize();
     await preload();
+    if (window.HeroVideoReel) {
+      try {
+        const manifest = await window.HeroVideoReel.loadManifest();
+        videoReel = window.HeroVideoReel.createState({ hero, mobile, reduced: RM });
+        await videoReel.prepareFirst(manifest.clips);
+      } catch {
+        videoReel = null;
+      }
+    }
     if (RM) {
       newScene();
       frame(performance.now());

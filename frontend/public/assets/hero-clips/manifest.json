@@ -1,0 +1,56 @@
+{
+  "provider": "Mixkit",
+  "licenseName": "Mixkit License",
+  "licenseUrl": "https://mixkit.co/license/",
+  "licenseNote": "Free for commercial use; no attribution required.",
+  "clips": [
+    {
+      "id": "waves",
+      "label": "Ocean waves on shore",
+      "mp4": "/assets/hero-clips/waves.mp4",
+      "webm": "/assets/hero-clips/waves.webm",
+      "poster": "/assets/hero-clips/waves-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/waves-coming-to-the-shore-1228/"
+    },
+    {
+      "id": "palms",
+      "label": "Palm trees by the beach",
+      "mp4": "/assets/hero-clips/palms.mp4",
+      "webm": "/assets/hero-clips/palms.webm",
+      "poster": "/assets/hero-clips/palms-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/palm-trees-by-the-beach-1244/"
+    },
+    {
+      "id": "aerial",
+      "label": "Aerial beach and sea",
+      "mp4": "/assets/hero-clips/aerial.mp4",
+      "webm": "/assets/hero-clips/aerial.webm",
+      "poster": "/assets/hero-clips/aerial-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/aerial-view-of-a-beach-and-the-sea-3985/"
+    },
+    {
+      "id": "reef",
+      "label": "Coral reef underwater",
+      "mp4": "/assets/hero-clips/reef.mp4",
+      "webm": "/assets/hero-clips/reef.webm",
+      "poster": "/assets/hero-clips/reef-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/underwater-coral-reef-and-tropical-fish-5061/"
+    },
+    {
+      "id": "birds",
+      "label": "Birds over the ocean",
+      "mp4": "/assets/hero-clips/birds.mp4",
+      "webm": "/assets/hero-clips/birds.webm",
+      "poster": "/assets/hero-clips/birds-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/birds-flying-over-the-ocean-1176/"
+    },
+    {
+      "id": "rain",
+      "label": "Rain on tropical plants",
+      "mp4": "/assets/hero-clips/rain.mp4",
+      "webm": "/assets/hero-clips/rain.webm",
+      "poster": "/assets/hero-clips/rain-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/rain-falling-on-green-leaves-5071/"
+    }
+  ]
+}
