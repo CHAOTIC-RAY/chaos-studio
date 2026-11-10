@@ -619,7 +619,7 @@
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(() => {
       window.ChaosDotMatrixText && window.ChaosDotMatrixText.boot();
-      ST.refresh(true);
+      ST.refresh();
     });
   }
   addEventListener(
