@@ -1,8 +1,22 @@
 # Chaos Studio
 
-Independent creative studio site for **Chaos Studio** (Malé, Maldives) — static v4 `/studio` and `/gallery` experience on Cloudflare Workers.
+**Chaos Studio** (Malé, Maldives) — branding, social campaigns, jerseys, and product design.  
+Public site: studio landing at `/studio/`, client work gallery at `/gallery/`, served from **Cloudflare Workers** with static assets and a small TypeScript worker for the gallery API.
 
-This tree is prepared as a **standalone repository**. Push branch `chaos-studio-split` to GitHub as `CHAOTIC-RAY/chaos-studio`.
+| Route | What it is |
+|-------|------------|
+| `/` | Redirects to `/studio/` |
+| `/studio/` | Studio packages, services, contact |
+| `/gallery/` | Filterable work wall (live JSON + offline snapshot) |
+| `/gallery/<slug>` | Deep link into a project (gallery shell) |
+| `GET /api/portfolio` | Posts and copy for the gallery client |
+
+Cross-link: nav **Ibrahim** → [portfolio.chaoticstudio.workers.dev](https://portfolio.chaoticstudio.workers.dev).
+
+## Requirements
+
+- Node.js **20+**
+- Cloudflare account (only for deploy; local dev needs no credentials)
 
 ## Local development
 
@@ -11,30 +25,62 @@ npm install
 npm run dev
 ```
 
-- Root `/` redirects to `/studio/`.
-- Gallery loads live data from `GET /api/portfolio` with fallback to `gallery-snapshot.json`.
+`npm run dev` runs a full build, then `wrangler dev` (default **http://127.0.0.1:8787**).
 
-## Deploy (when ready — does not affect the live combined worker until you run this)
+Build only:
 
 ```bash
 npm run build
-wrangler deploy
 ```
 
-**Worker name:** `chaos-studio` → [https://chaos-studio.chaoticstudio.workers.dev](https://chaos-studio.chaoticstudio.workers.dev)
+Output: `frontend/dist/` (static site + `gallery-snapshot.json`).
 
-**Portfolio cross-link:** Studio/gallery nav includes [Ibrahim Wafig's portfolio](https://portfolio.chaoticstudio.workers.dev).
+## Deploy to Cloudflare
 
-## Content
+**Worker name:** `chaos-studio` (see `wrangler.jsonc`) → `https://chaos-studio.chaoticstudio.workers.dev`
 
-| File | Purpose |
+```bash
+npm install
+npm run build
+npx wrangler deploy
+```
+
+Or: `npm run deploy` (build + deploy).
+
+**Wrangler / dashboard**
+
+- Build command: `npm run build` (or rely on `wrangler.jsonc` `build.command`)
+- Deploy command: `npx wrangler deploy` or `npm run deploy`
+- Assets: binding `ASSETS` → `./frontend/dist`
+- `run_worker_first`: `/api/*`, `/gallery/*` (API + gallery deep links)
+
+**Optional later:** custom domain (e.g. `chaosstudio.mv`) on worker `chaos-studio`, env vars/secrets only if you add CMS or auth.
+
+This repo does **not** include the Ibrahim portfolio CMS; edit JSON under `content/` and campaign images under `frontend/public/images/posts/`, then rebuild.
+
+## Content layout
+
+| Path | Purpose |
 |------|---------|
-| `content/chaos-studio.json` | Studio page copy & packages |
-| `content/gallery.json` | Gallery page headings |
-| `content/social-posts.json` | Feed / gallery items |
-| `content/gallery-posts.json` | Gallery-priority posts |
-| `content/portfolio.json` | Profile context for gallery API (duplicated from personal portfolio repo) |
+| `content/chaos-studio.json` | Studio page copy, packages, contact |
+| `content/gallery.json` | Gallery headings |
+| `content/social-posts.json` | Campaign / feed posts |
+| `content/gallery-posts.json` | Gallery-first posts |
+| `content/campaign-meta.json` | Feed section subtitle |
+| `content/portfolio.json` | Profile context for `/api/portfolio` (gallery snapshot shape) |
 
-## Split from `portfolio` monorepo
+`npm run sync:content` mirrors post JSON into `frontend/public/content/` before build.
 
-See [`docs/SITE-SPLIT.md`](docs/SITE-SPLIT.md) in the Ibrahim Wafig portfolio repo for shared history, CMS notes, and cutover steps.
+## Repository layout
+
+```
+worker/           # Cloudflare Worker (API + routing)
+frontend/public/  # Source static files (studio, gallery, cs, images)
+frontend/dist/    # Build output (generated; deployed assets)
+scripts/          # build, pano thumbs, content sync
+content/          # Editable JSON
+```
+
+## Split from the portfolio monorepo
+
+This project was split from [CHAOTIC-RAY/portfolio](https://github.com/CHAOTIC-RAY/portfolio). Cutover notes: [docs/SITE-SPLIT.md](docs/SITE-SPLIT.md).
