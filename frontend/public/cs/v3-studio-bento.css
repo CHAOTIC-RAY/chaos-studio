@@ -301,11 +301,16 @@
   grid-row: span 2;
 }
 
+.featured-bento .feat-meta__top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .featured-bento .feat-num {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 2;
+  position: static;
+  flex-shrink: 0;
 }
 
 @media (min-width: 901px) {
@@ -649,7 +654,15 @@
 
 /* --- Mobile (360–430) --- */
 .showcase-strip .wrap {
-  overflow-x: hidden;
+  overflow-x: clip;
+  width: 100%;
+}
+
+.showcase-strip .wrap > * {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .showcase-strip .showcase-headline {
@@ -658,20 +671,39 @@
   margin: 0 0 1.25rem;
   font-size: 14px;
   line-height: 1.45;
-  order: 0;
 }
 
 .showcase-strip #showcase-grid {
-  order: 1;
+  width: 100%;
+  max-width: 100%;
+}
+
+.showcase-cta-row {
+  grid-column: 1 / -1;
   width: 100%;
 }
 
+.showcase-cta-row .sticker-cta {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  justify-content: center;
+  text-align: center;
+}
+
 @media (max-width: 520px) {
-  .featured-bento {
-    grid-template-columns: 1fr !important;
-    gap: 12px;
+  .showcase-strip .sec,
+  .showcase-strip {
+    overflow-x: clip;
   }
 
+  .featured-bento {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .featured-bento .feat,
   .featured-bento .feat--kora,
   .featured-bento .feat--forge,
   .featured-bento .feat--faisa,
@@ -679,21 +711,45 @@
   .featured-bento .feat--quepulse {
     grid-column: 1 / -1 !important;
     grid-row: auto !important;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .featured-bento .feat-link {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .featured-bento .feat-meta {
     padding: 10px 12px 12px;
   }
 
+  .featured-bento .feat-tag,
+  .featured-bento .feat-title {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    hyphens: auto;
+  }
+
   .featured-bento .feat-tag {
     font-size: 14px;
     line-height: 1.4;
-    overflow-wrap: anywhere;
   }
 
   .featured-bento .feat-title {
     font-size: 22px;
-    overflow-wrap: anywhere;
+  }
+
+  .feat-devices--dual .feat-devices__composition {
+    max-width: 100%;
+    transform: scale(0.98);
+    transform-origin: center top;
+  }
+
+  .device__url {
+    max-width: 12ch;
   }
 
   .svc-bento {

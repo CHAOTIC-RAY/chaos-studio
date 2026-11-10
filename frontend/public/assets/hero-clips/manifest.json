@@ -5,59 +5,9 @@
   "licenseNote": "Free for commercial use; no attribution required.",
   "clips": [
     {
-      "id": "traffic",
-      "label": "City traffic during the day",
-      "category": "city",
-      "mp4": "/assets/hero-clips/traffic.mp4",
-      "webm": "/assets/hero-clips/traffic.webm",
-      "poster": "/assets/hero-clips/traffic-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/city-traffic-during-the-day-16552/",
-      "duration": 6
-    },
-    {
-      "id": "crowd",
-      "label": "Crowd walking in a Japanese street",
-      "category": "people",
-      "mp4": "/assets/hero-clips/crowd.mp4",
-      "webm": "/assets/hero-clips/crowd.webm",
-      "poster": "/assets/hero-clips/crowd-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/people-walking-in-the-street-in-japan-4437/",
-      "duration": 6
-    },
-    {
-      "id": "hands",
-      "label": "Hands sorting through clothes",
-      "category": "hands",
-      "mp4": "/assets/hero-clips/hands.mp4",
-      "webm": "/assets/hero-clips/hands.webm",
-      "poster": "/assets/hero-clips/hands-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/hand-selecting-through-clothes-23327/",
-      "duration": 6
-    },
-    {
-      "id": "fashion",
-      "label": "Fashion — stylish woman by a Camaro",
-      "category": "fashion",
-      "mp4": "/assets/hero-clips/fashion.mp4",
-      "webm": "/assets/hero-clips/fashion.webm",
-      "poster": "/assets/hero-clips/fashion-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/stylish-woman-leaning-in-a-camaro-44556/",
-      "duration": 6
-    },
-    {
-      "id": "sport",
-      "label": "Basketball slam dunk",
-      "category": "sport",
-      "mp4": "/assets/hero-clips/sport.mp4",
-      "webm": "/assets/hero-clips/sport.webm",
-      "poster": "/assets/hero-clips/sport-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/man-doing-a-slam-dunk-2289/",
-      "duration": 6
-    },
-    {
       "id": "waves",
       "label": "Ocean waves on shore",
-      "category": "ocean",
+      "category": "scenery",
       "mp4": "/assets/hero-clips/waves.mp4",
       "webm": "/assets/hero-clips/waves.webm",
       "poster": "/assets/hero-clips/waves-poster.jpg",
@@ -65,29 +15,59 @@
       "duration": 6
     },
     {
-      "id": "neon",
-      "label": "Electronic ticker / city lights",
-      "category": "abstract",
-      "mp4": "/assets/hero-clips/neon.mp4",
-      "webm": "/assets/hero-clips/neon.webm",
-      "poster": "/assets/hero-clips/neon-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/electronic-ticker-in-the-street-4128/",
+      "id": "mountains",
+      "label": "Sunset over mountains",
+      "category": "scenery",
+      "mp4": "/assets/hero-clips/mountains.mp4",
+      "webm": "/assets/hero-clips/mountains.webm",
+      "poster": "/assets/hero-clips/mountains-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/beautiful-sunset-over-mountains-2125/",
       "duration": 6
     },
     {
-      "id": "aerial",
-      "label": "Aerial roundabout traffic",
-      "category": "city",
-      "mp4": "/assets/hero-clips/aerial.mp4",
-      "webm": "/assets/hero-clips/aerial.webm",
-      "poster": "/assets/hero-clips/aerial-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/city-traffic-going-around-a-roundabout-from-above-1615/",
+      "id": "forest",
+      "label": "Aerial forest morning",
+      "category": "scenery",
+      "mp4": "/assets/hero-clips/forest.mp4",
+      "webm": "/assets/hero-clips/forest.webm",
+      "poster": "/assets/hero-clips/forest-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/aerial-view-of-the-forest-in-the-morning-10234/",
+      "duration": 6
+    },
+    {
+      "id": "beach",
+      "label": "Aerial beach and sea",
+      "category": "scenery",
+      "mp4": "/assets/hero-clips/beach.mp4",
+      "webm": "/assets/hero-clips/beach.webm",
+      "poster": "/assets/hero-clips/beach-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/aerial-view-of-a-beach-and-the-sea-3985/",
+      "duration": 6
+    },
+    {
+      "id": "palms",
+      "label": "Palm trees by the beach",
+      "category": "scenery",
+      "mp4": "/assets/hero-clips/palms.mp4",
+      "webm": "/assets/hero-clips/palms.webm",
+      "poster": "/assets/hero-clips/palms-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/palm-trees-by-the-beach-1244/",
+      "duration": 6
+    },
+    {
+      "id": "birds",
+      "label": "Birds flying over the ocean",
+      "category": "animals",
+      "mp4": "/assets/hero-clips/birds.mp4",
+      "webm": "/assets/hero-clips/birds.webm",
+      "poster": "/assets/hero-clips/birds-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/birds-flying-over-the-ocean-1176/",
       "duration": 6
     },
     {
       "id": "reef",
-      "label": "Underwater coral reef",
-      "category": "ocean",
+      "label": "Coral reef and tropical fish",
+      "category": "animals",
       "mp4": "/assets/hero-clips/reef.mp4",
       "webm": "/assets/hero-clips/reef.webm",
       "poster": "/assets/hero-clips/reef-poster.jpg",
@@ -95,13 +75,33 @@
       "duration": 6
     },
     {
-      "id": "tourist",
-      "label": "Busy tourist district timelapse",
-      "category": "crowd",
-      "mp4": "/assets/hero-clips/tourist.mp4",
-      "webm": "/assets/hero-clips/tourist.webm",
-      "poster": "/assets/hero-clips/tourist-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/very-busy-tourist-area-time-lapse-static-shot-19544/",
+      "id": "rain",
+      "label": "Rain on tropical leaves",
+      "category": "scenery",
+      "mp4": "/assets/hero-clips/rain.mp4",
+      "webm": "/assets/hero-clips/rain.webm",
+      "poster": "/assets/hero-clips/rain-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/rain-falling-on-green-leaves-5071/",
+      "duration": 6
+    },
+    {
+      "id": "snowpeak",
+      "label": "Skier at snowy mountain peak",
+      "category": "scenery",
+      "mp4": "/assets/hero-clips/snowpeak.mp4",
+      "webm": "/assets/hero-clips/snowpeak.webm",
+      "poster": "/assets/hero-clips/snowpeak-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/skier-at-the-peak-of-a-snowy-mountain-3362/",
+      "duration": 6
+    },
+    {
+      "id": "flowers",
+      "label": "Calla lily arrangement",
+      "category": "abstract",
+      "mp4": "/assets/hero-clips/flowers.mp4",
+      "webm": "/assets/hero-clips/flowers.webm",
+      "poster": "/assets/hero-clips/flowers-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/flower-arrangement-with-flowers-and-calla-lilies-5209/",
       "duration": 6
     }
   ]

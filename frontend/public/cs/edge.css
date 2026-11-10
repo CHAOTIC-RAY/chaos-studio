@@ -60,7 +60,7 @@ body::after{opacity:var(--grain);animation:grain-jit 600ms steps(3) infinite;ins
 .hero-st{position:absolute;right:12%;bottom:4%;z-index:3;font-size:16px;--tilt:-6deg}
 .redact-brief{grid-column:1/8;opacity:.3;font-size:14px}
 .hero .headline{font:500 20px/28px 'DM Sans',sans-serif;color:var(--white)}
-.pitch-panel{grid-column:1/8;background:var(--void);padding:0}
+.pitch-panel{grid-column:1/-1;background:transparent;padding:0}
 .hero .ctas .btn-line{border:1px solid var(--white)}
 .hero .ast{display:none}
 .about{clip-path:polygon(0 32px,8% 32px,8% 0,100% 0,100% 100%,0 100%);padding-top:calc(var(--sp-16) + 32px)}

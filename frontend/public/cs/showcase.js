@@ -119,10 +119,12 @@
     const slugKey = item.slug.toLowerCase();
     return `<li class="feat ${item.mod || ""}" data-reveal style="--d:${i * 55}ms">
       <a class="feat-link" href="${esc(href)}" target="_blank" rel="noopener noreferrer">
-        <span class="dot-num dot-num--sm dot-num--lime feat-num" data-dots="${num}" data-dot-variant="lime"></span>
         ${devicesHtml(slugKey, title)}
         <span class="feat-meta">
-          <span class="feat-cat">${esc(project.category || "Product")}</span>
+          <span class="feat-meta__top">
+            <span class="dot-num dot-num--sm dot-num--lime feat-num" data-dots="${num}" data-dot-variant="lime"></span>
+            <span class="feat-cat">${esc(project.category || "Product")}</span>
+          </span>
           <span class="feat-title">${esc(title)}</span>
           <span class="feat-tag">${esc(tag)}</span>
         </span>
