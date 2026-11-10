@@ -1,0 +1,315 @@
+/* Chaos Studio — Brand Guide V3 (Nov 2026). Load after edge.css; supersedes v4.css. */
+:root {
+  --void: #0e0e0f;
+  --ink: #1a1a1b;
+  --plum: #28122c;
+  --purple: #c16be0;
+  --lilac: #d690e8;
+  --shock: #ff4444;
+  --lime: var(--shock);
+  --kraft: #a79a89;
+  --paper: #ede6da;
+  --white: #fff;
+  /* Type scale — site px column */
+  --fs-hero: clamp(56px, 9vw, 120px);
+  --fs-h1: clamp(40px, 6vw, 96px);
+  --fs-h2: clamp(32px, 4.5vw, 72px);
+  --fs-h3: clamp(24px, 3vw, 40px);
+  --fs-body: clamp(16px, 1.2vw, 20px);
+  --fs-label: 14px;
+  --lh-hero: 0.88;
+  --lh-display: 0.92;
+  --track-hero: -0.04em;
+  --hdr-h: 64px;
+  --grain-tex: url("/assets/motifs/noise-tile.png");
+}
+
+html,
+body {
+  background: var(--void);
+  color: var(--white);
+}
+
+/* grain: guide texture tile */
+body::after {
+  background-image: var(--grain-tex);
+  background-size: 240px 240px;
+  opacity: 0.35;
+  mix-blend-mode: soft-light;
+}
+
+/* ----- Navigation: ink bar (not floating pill / v2 kraft) ----- */
+.hdr {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  transform: none;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  border-radius: 0;
+  border: 0;
+  border-bottom: 1px solid rgba(214, 144, 232, 0.28);
+  background: var(--void);
+  backdrop-filter: none;
+  box-shadow: none;
+  height: var(--hdr-h);
+  padding: 0 var(--m);
+}
+
+.brand svg {
+  height: 32px;
+  color: var(--purple);
+}
+
+.nav .nl {
+  font-family: Anton, sans-serif;
+  font-size: var(--fs-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.nav .nl:hover,
+.nav .nl[aria-current="page"] {
+  color: var(--shock);
+}
+
+.hpill,
+.btn-lime,
+.chip[aria-pressed="true"],
+.seg [aria-current="page"],
+.seg [aria-pressed="true"] {
+  background: var(--shock);
+  color: var(--white);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 var(--purple);
+}
+
+.hpill:hover,
+.btn-lime:hover {
+  background: var(--white);
+  color: var(--ink);
+}
+
+/* ----- Type ----- */
+.disp,
+.crush {
+  line-height: var(--lh-hero);
+  letter-spacing: var(--track-hero);
+}
+
+.cond,
+.fine,
+.num.cat,
+.chip,
+.hpill {
+  font-family: Anton, "Bebas Neue", Impact, sans-serif;
+}
+
+.fine {
+  font-family: Anton, sans-serif;
+  font-size: var(--fs-label);
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+}
+
+.mono {
+  font-family: Anton, sans-serif;
+  font-size: var(--fs-label);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.brace {
+  font-family: "DM Sans", sans-serif;
+  font-style: italic;
+}
+
+/* ----- Drop v2 print-room / tape / crop motifs ----- */
+.tape,
+.regmark,
+.frame .crop,
+.cropmarks::before,
+.hero .ast,
+.lime-strip,
+.g-cta .ast {
+  display: none !important;
+}
+
+.frame .tape.fine {
+  display: inline-block !important;
+  clip-path: none;
+  background: var(--plum);
+  color: var(--lilac);
+  transform: none;
+  padding: 6px 12px;
+  border: 1px solid rgba(214, 144, 232, 0.35);
+}
+
+.print {
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}
+
+.wt {
+  transform: none !important;
+  margin-right: 0 !important;
+}
+
+.wts {
+  gap: var(--gut);
+}
+
+.wt-pill,
+.sticker {
+  background: var(--purple);
+  color: var(--white);
+  font-family: Anton, sans-serif;
+  border-radius: 0;
+  transform: none;
+  box-shadow: 3px 3px 0 var(--shock);
+}
+
+/* ----- Sections: dark grounds + motif accents ----- */
+.sec[data-ground="void"],
+.sec[data-ground="ink"],
+.sec[data-ground="plum"] {
+  background-color: var(--void);
+}
+
+.g-paper {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.g-kraft {
+  background: var(--kraft);
+  color: var(--ink);
+}
+
+/* Dot chaos mark — section accent (varied, not framed boxes) */
+.pk-head,
+.g-hero .wrap {
+  position: relative;
+}
+
+.pk-head::after,
+.g-hero .wrap::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: clamp(72px, 12vw, 160px);
+  height: clamp(72px, 12vw, 160px);
+  background: center / contain no-repeat url("/assets/motifs/marks/chaos-mark-a.svg");
+  opacity: 0.35;
+  pointer-events: none;
+  color: var(--lilac);
+}
+
+.imp::before {
+  content: "";
+  position: absolute;
+  left: -8%;
+  bottom: 10%;
+  width: min(280px, 40vw);
+  aspect-ratio: 1;
+  background: center / contain no-repeat url("/assets/motifs/shapes/chaos-shape-2.svg");
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+/* Packages: shock for recommended, not full lime panel */
+.pk--rec {
+  background: var(--plum) !important;
+  color: var(--white) !important;
+  outline: 3px solid var(--shock);
+  outline-offset: 4px;
+}
+
+.pk--rec .tag {
+  background: var(--shock) !important;
+  color: var(--white) !important;
+}
+
+.pk--rec .btn {
+  background: var(--shock) !important;
+  color: var(--white) !important;
+}
+
+.pk .btn {
+  border-radius: 0;
+  box-shadow: 4px 4px 0 var(--purple);
+}
+
+/* Gallery cards: sharp frames */
+.fr {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.fr:hover {
+  box-shadow: 6px 6px 0 var(--shock);
+}
+
+.chip,
+.pill.line {
+  border-radius: 0;
+}
+
+/* Finale CTA */
+.finale .cta,
+.studio-finale__links a:hover {
+  border-color: var(--shock);
+  color: var(--shock);
+}
+
+.glitch::after {
+  color: var(--shock);
+}
+
+/* Pano (gallery) — keep v4 behaviour without v4.css */
+.pano-corner h1 {
+  font-size: clamp(48px, 8vw, 96px);
+  line-height: var(--lh-hero);
+  letter-spacing: var(--track-hero);
+}
+
+body.nav-hide .hdr {
+  transform: translateY(calc(-100% - 8px));
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.35s ease, opacity 0.25s;
+}
+
+@media (max-width: 375px) {
+  :root {
+    --m: 20px;
+    --fs-hero: clamp(48px, 14vw, 72px);
+    --fs-h1: clamp(36px, 10vw, 56px);
+  }
+
+  .nav .nl {
+    display: none;
+  }
+
+  .hpill {
+    display: none;
+  }
+
+  .menu-btn {
+    display: inline-flex;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.nav-hide .hdr {
+    transform: none;
+    opacity: 1;
+  }
+}
