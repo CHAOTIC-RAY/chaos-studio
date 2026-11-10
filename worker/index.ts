@@ -1,36 +1,10 @@
 import { portfolio } from "./src/data/portfolio";
-import { handleAdminAiChat, type AdminAiEnv } from "./src/admin-ai";
-import {
-  handleGithubApply,
-  handleGithubVerify,
-  type GithubApplyEnv,
-} from "./src/admin-github";
 
-export interface Env extends AdminAiEnv, GithubApplyEnv {
+export interface Env {
   ASSETS: Fetcher;
 }
 
-/** Client-side routes that must serve index.html on direct navigation */
-const SPA_ROUTES = new Set<string>([]);
-/** /gallery/<slug> deep links → static gallery shell (client opens the project) */
 const GALLERY_DEEP = /^\/gallery\/[a-z0-9-]+\/?$/;
-
-function isAssetPath(pathname: string): boolean {
-  return /\.[a-zA-Z0-9]+$/.test(pathname);
-}
-
-async function serveSpaDocument(request: Request, env: Env): Promise<Response | null> {
-  const url = new URL(request.url);
-  if (request.method !== "GET" && request.method !== "HEAD") return null;
-  if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/admin")) return null;
-  if (isAssetPath(url.pathname)) return null;
-
-  const path = url.pathname.replace(/\/$/, "") || "/";
-  if (!SPA_ROUTES.has(path)) return null;
-
-  const indexUrl = new URL("/index.html", url.origin);
-  return env.ASSETS.fetch(new Request(indexUrl.toString(), request));
-}
 
 const JSON_HEADERS: HeadersInit = {
   "Content-Type": "application/json; charset=utf-8",
@@ -47,55 +21,7 @@ export default {
     }
 
     if (url.pathname === "/api/health" && request.method === "GET") {
-      return Response.json({ ok: true, service: "portfolio" }, { headers: JSON_HEADERS });
-    }
-
-    if (url.pathname === "/api/profile" && request.method === "GET") {
-      return Response.json(
-        {
-          name: portfolio.profile.name,
-          title: portfolio.profile.role,
-          tagline: portfolio.profile.tagline,
-          links: {
-            github: "https://github.com/CHAOTIC-RAY",
-            instagram: portfolio.contact.instagramUrl,
-            portfolio: portfolio.profile.portfolioUrl,
-          },
-        },
-        { headers: JSON_HEADERS },
-      );
-    }
-
-    if (url.pathname === "/api/admin/ai/chat") {
-      return handleAdminAiChat(request, env);
-    }
-
-    if (url.pathname === "/api/admin/github/apply") {
-      return handleGithubApply(request, env);
-    }
-
-    if (url.pathname === "/api/admin/github/verify") {
-      return handleGithubVerify(request, env);
-    }
-
-    if (url.pathname === "/api/contact" && request.method === "POST") {
-      let body: { name?: string; email?: string; message?: string };
-      try {
-        body = (await request.json()) as typeof body;
-      } catch {
-        return Response.json({ error: "Invalid JSON body" }, { status: 400, headers: JSON_HEADERS });
-      }
-      const { name, email, message } = body;
-      if (!name?.trim() || !email?.trim() || !message?.trim()) {
-        return Response.json(
-          { error: "name, email, and message are required" },
-          { status: 400, headers: JSON_HEADERS },
-        );
-      }
-      return Response.json(
-        { ok: true, message: "Thanks for reaching out. Your message was received." },
-        { headers: JSON_HEADERS },
-      );
+      return Response.json({ ok: true, service: "chaos-studio" }, { headers: JSON_HEADERS });
     }
 
     if (request.method === "OPTIONS" && url.pathname.startsWith("/api/")) {
@@ -103,26 +29,33 @@ export default {
         status: 204,
         headers: {
           ...JSON_HEADERS,
-          "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          "Access-Control-Allow-Methods": "GET, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
         },
       });
     }
 
-    // CMS admin is static under /admin/ — must not fall through to portfolio SPA
-    if (url.pathname === "/admin" || url.pathname === "/admin/index.html") {
-      return Response.redirect(`${url.origin}/admin/`, 302);
+    if (
+      (request.method === "GET" || request.method === "HEAD") &&
+      (url.pathname === "/studio" || url.pathname === "/studio/")
+    ) {
+      return env.ASSETS.fetch(new Request(new URL("/studio/index.html", url.origin).toString(), request));
     }
-    if (url.pathname.startsWith("/admin/")) {
-      return env.ASSETS.fetch(request);
+
+    if (
+      (request.method === "GET" || request.method === "HEAD") &&
+      (url.pathname === "/gallery" || url.pathname === "/gallery/")
+    ) {
+      return env.ASSETS.fetch(new Request(new URL("/gallery/index.html", url.origin).toString(), request));
     }
 
     if ((request.method === "GET" || request.method === "HEAD") && GALLERY_DEEP.test(url.pathname)) {
       return env.ASSETS.fetch(new Request(new URL("/gallery/", url.origin).toString(), request));
     }
 
-    const spa = await serveSpaDocument(request, env);
-    if (spa) return spa;
+    if (url.pathname === "/" && request.method === "GET") {
+      return Response.redirect(`${url.origin}/studio/`, 302);
+    }
 
     return env.ASSETS.fetch(request);
   },

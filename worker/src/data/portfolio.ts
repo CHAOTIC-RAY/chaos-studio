@@ -1,7 +1,6 @@
 import portfolioBase from "../../../content/portfolio.json";
 import chaosStudioRaw from "../../../content/chaos-studio.json";
 import galleryRaw from "../../../content/gallery.json";
-import siteConfig from "../../../frontend/public/assets/site.config.json";
 import { getSocialPosts, getGalleryPosts } from "./campaign-posts";
 import { toStringList } from "./cms-list-shape";
 
@@ -18,11 +17,12 @@ function normalizePortfolioBase<T extends typeof portfolioBase>(base: T): T {
     },
     featuredWork: {
       ...base.featuredWork,
-      projects: (base.featuredWork as any).projects?.map((proj: any) => ({
-        ...proj,
-        highlights: proj.highlights ? toStringList(proj.highlights, "line") : undefined,
-        tags: proj.tags ? toStringList(proj.tags, "tag") : undefined,
-      })) ?? [],
+      projects:
+        (base.featuredWork as { projects?: unknown[] }).projects?.map((proj: Record<string, unknown>) => ({
+          ...proj,
+          highlights: proj.highlights ? toStringList(proj.highlights as string[], "line") : undefined,
+          tags: proj.tags ? toStringList(proj.tags as string[], "tag") : undefined,
+        })) ?? [],
     },
     skills: {
       ...base.skills,
@@ -47,18 +47,16 @@ function normalizeChaosStudio<T extends typeof chaosStudioRaw>(studio: T): T {
 }
 
 function normalizeGallery<T extends typeof galleryRaw>(gallery: T): T {
-  return {
-    ...gallery,
-  } as T;
+  return { ...gallery } as T;
 }
 
+/** Shape expected by /cs/gallery.js (same as legacy combined worker). */
 export const portfolio = {
   ...normalizePortfolioBase(portfolioBase),
   chaosStudio: normalizeChaosStudio(chaosStudioRaw),
   gallery: normalizeGallery(galleryRaw),
   socialPosts: getSocialPosts(),
   galleryPosts: getGalleryPosts(),
-  workCards: siteConfig.work,
 };
 
 export type Portfolio = typeof portfolio;

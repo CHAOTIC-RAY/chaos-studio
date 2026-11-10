@@ -1,6 +1,8 @@
-# Ibrahim Wafig — Portfolio
+# Chaos Studio
 
-Graphic design portfolio (ChaosStudio.mv) on **Cloudflare Workers**: React frontend, `/api/portfolio` data, static assets.
+Independent creative studio site for **Chaos Studio** (Malé, Maldives) — static v4 `/studio` and `/gallery` experience on Cloudflare Workers.
+
+This tree is prepared as a **standalone repository**. Push branch `chaos-studio-split` to GitHub as `CHAOTIC-RAY/chaos-studio`.
 
 ## Local development
 
@@ -9,20 +11,30 @@ npm install
 npm run dev
 ```
 
-Opens Wrangler dev with the Worker API and Vite-built frontend.
+- Root `/` redirects to `/studio/`.
+- Gallery loads live data from `GET /api/portfolio` with fallback to `gallery-snapshot.json`.
 
-## Deploy
+## Deploy (when ready — does not affect the live combined worker until you run this)
 
 ```bash
-npm run deploy
+npm run build
+wrangler deploy
 ```
 
-**Cloudflare Workers Builds** — set **Deploy command** to `npm run deploy` (not `npx wrangler deploy` alone).
+**Worker name:** `chaos-studio` → [https://chaos-studio.chaoticstudio.workers.dev](https://chaos-studio.chaoticstudio.workers.dev)
 
-Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` — see **[docs/DEPLOY-CLOUDFLARE.md](docs/DEPLOY-CLOUDFLARE.md)** if deploy fails with auth error `10000`.
+**Portfolio cross-link:** Studio/gallery nav includes [Ibrahim Wafig's portfolio](https://portfolio.chaoticstudio.workers.dev).
 
 ## Content
 
-- Portfolio data: `worker/src/data/portfolio.ts`
-- Project screenshots: `frontend/public/images/projects/`
-- Styles: purple glass CV theme in `frontend/src/App.css` and `frontend/src/styles/global.css`
+| File | Purpose |
+|------|---------|
+| `content/chaos-studio.json` | Studio page copy & packages |
+| `content/gallery.json` | Gallery page headings |
+| `content/social-posts.json` | Feed / gallery items |
+| `content/gallery-posts.json` | Gallery-priority posts |
+| `content/portfolio.json` | Profile context for gallery API (duplicated from personal portfolio repo) |
+
+## Split from `portfolio` monorepo
+
+See [`docs/SITE-SPLIT.md`](docs/SITE-SPLIT.md) in the Ibrahim Wafig portfolio repo for shared history, CMS notes, and cutover steps.
