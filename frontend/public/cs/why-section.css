@@ -61,18 +61,26 @@
   padding: var(--sp-2) 0 var(--sp-1);
   border-top: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--sp-1);
+  grid-template-columns: 44px 1fr;
+  grid-template-rows: auto auto auto;
+  grid-template-areas:
+    "rule rule"
+    "ico title"
+    "body body";
+  column-gap: 12px;
+  row-gap: 12px;
   position: relative;
+  align-items: start;
 }
 
 .whys .why-rule {
+  grid-area: rule;
   display: block;
   height: 2px;
   width: 100%;
   background: var(--shock);
   transform-origin: left center;
-  margin-bottom: var(--sp-1);
+  margin: 0 0 4px;
 }
 
 .whys .why .num {
@@ -84,17 +92,22 @@
 }
 
 .whys .why .why-dot-ico {
+  grid-area: ico;
   display: block;
-  overflow: visible;
+  overflow: hidden;
   line-height: 0;
+  width: 44px;
+  height: 44px;
+  justify-self: start;
 }
 
 .whys .why .why-dot-ico .dot-icon {
-  width: clamp(48px, 12vw, 64px);
-  height: clamp(48px, 12vw, 64px);
+  width: 44px;
+  height: 44px;
 }
 
 .whys .why h3 {
+  grid-area: title;
   font-family: Anton, sans-serif;
   font-weight: 400;
   text-transform: uppercase;
@@ -102,9 +115,13 @@
   line-height: 1;
   letter-spacing: 0.04em;
   margin: 0;
+  align-self: center;
+  min-width: 0;
 }
 
 .whys .why p {
+  grid-area: body;
+  grid-column: 1 / -1;
   font-family: "DM Sans", sans-serif;
   font-size: clamp(16px, 3.6vw, 18px);
   line-height: 1.45;

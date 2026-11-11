@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Chaos Studio · CMS</title>
+  <link rel="stylesheet" href="/cs/showcase-devices.css">
+  <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body class="admin-body">
+  <div id="login" class="login-panel">
+    <div class="brand-lockup"><span class="brand-mark" aria-hidden="true">✶</span><h1>Chaos Studio CMS</h1></div>
+    <p class="muted">Sign in with your deploy secret password.</p>
+    <form id="login-form" class="stack">
+      <label class="field"><span>Password</span><input type="password" name="password" required autocomplete="current-password" class="input"></label>
+      <p class="error" id="login-err" hidden></p>
+      <button class="btn btn--primary" type="submit">Log in</button>
+    </form>
+  </div>
+
+  <div id="app" hidden>
+    <header class="admin-hdr">
+      <div class="admin-hdr__brand">CMS</div>
+      <h1 class="admin-hdr__title">Chaos Studio</h1>
+      <motion class="admin-hdr__actions">
+        <a class="btn btn--ghost" href="/studio/" target="_blank" rel="noopener">Preview site</a>
+        <button type="button" class="btn btn--ghost" id="logout">Log out</button>
+      </motion>
+    </header>
+
+    <nav class="tabs" id="tabs" aria-label="CMS sections">
+      <button type="button" data-tab="hero" class="tabs__btn is-active">Hero & contact</button>
+      <button type="button" data-tab="services" class="tabs__btn">Services</button>
+      <button type="button" data-tab="packages" class="tabs__btn">Packages</button>
+      <button type="button" data-tab="why" class="tabs__btn">Why us</button>
+      <button type="button" data-tab="projects" class="tabs__btn">Projects</button>
+      <button type="button" data-tab="footer" class="tabs__btn">Footer & SEO</button>
+      <button type="button" data-tab="history" class="tabs__btn">History</button>
+    </nav>
+
+    <p class="status" id="status" role="status"></p>
+    <main id="panel" class="panel-main"></main>
+
+    <footer class="admin-foot">
+      <button type="button" class="btn btn--primary" id="save">Save to live site</button>
+      <button type="button" class="btn btn--danger" id="restore">Restore defaults</button>
+    </footer>
+  </div>
+
+  <script src="/cs/showcase.js"></script>
+  <script src="/admin/admin.js" type="module"></script>
+</body>
+</html>

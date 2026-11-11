@@ -12,8 +12,23 @@
 
   grid.classList.add("featured-bento");
 
+  function resolveLayout(item) {
+    if (item.deviceLayout) return item.deviceLayout;
+    if (item.layout === "phone-hero") return "phone-only";
+    if (item.layout === "dual") return "dual";
+    if (item.layout === "solo") return "browser";
+    return item.layout || "browser";
+  }
+
+  function shot(item, slot) {
+    const s = item.screenshots || {};
+    if (s[slot]) return s[slot];
+    if (slot === "laptop" || slot === "browser" || slot === "tablet") return item.desktop;
+    return item.mobile;
+  }
+
   function screenImg(src, alt, eager) {
-    return `<img class="device__media" src="${esc(src)}" alt="${esc(alt)}" loading="${eager ? "eager" : "lazy"}" decoding="async" width="${mobile() ? 390 : 800}" height="${mobile() ? 844 : 500}" onerror="this.onerror=null;this.src='${PLACEHOLDER}'">`;
+    return `<img class="device__media" src="${esc(src || PLACEHOLDER)}" alt="${esc(alt)}" loading="${eager ? "eager" : "lazy"}" decoding="async" width="${mobile() ? 390 : 800}" height="${mobile() ? 844 : 500}" onerror="this.onerror=null;this.src='${PLACEHOLDER}'">`;
   }
 
   function browserFrame(src, alt, url) {
@@ -23,6 +38,24 @@
         <span class="device__chrome-brand"><span class="device__url">${esc(url)}</span></span>
       </div>
       <div class="device__screen">${screenImg(src, alt, false)}</div>
+    </div>`;
+  }
+
+  function laptopFrame(src, alt, url) {
+    return `<div class="device device--browser device--laptop" aria-hidden="true">
+      <div class="device__chrome">
+        <span class="device__dots"><i></i><i></i><i></i></span>
+        <span class="device__chrome-brand"><span class="device__url">${esc(url)}</span></span>
+      </div>
+      <div class="device__screen device__screen--laptop">${screenImg(src, alt, false)}</div>
+    </div>`;
+  }
+
+  function tabletFrame(src, alt) {
+    return `<div class="device device--tablet" aria-hidden="true">
+      <div class="device__bezel device__bezel--tablet">
+        <div class="device__screen">${screenImg(src, alt, false)}</div>
+      </div>
     </div>`;
   }
 
@@ -37,39 +70,63 @@
 
   function devicesHtml(item, title) {
     const alt = `${title} preview`;
-    const layout = item.layout || "solo";
+    const layout = resolveLayout(item);
     const url = item.url || item.slug || title;
-    if (layout === "dual" && item.desktop && item.mobile) {
+    const phone = shot(item, "phone");
+    const phone2 = shot(item, "phone2");
+    const laptop = shot(item, "laptop") || shot(item, "browser");
+    const browser = shot(item, "browser") || shot(item, "laptop");
+
+    if (layout === "phone-only") {
+      return `<div class="feat-devices feat-devices--phone-only">
+        <div class="feat-devices__composition">${phoneFrame(phone, alt)}</div>
+      </div>`;
+    }
+    if (layout === "dual-phone") {
+      return `<div class="feat-devices feat-devices--dual-phone">
+        <div class="feat-devices__composition">
+          ${phoneFrame(phone, `${alt} A`)}
+          ${phoneFrame(phone2 || phone, `${alt} B`)}
+        </div>
+      </div>`;
+    }
+    if (layout === "dual" || layout === "laptop") {
+      const desk = layout === "laptop" ? laptopFrame(laptop, `${alt} laptop`, url) : browserFrame(browser, `${alt} desktop`, url);
       return `<div class="feat-devices feat-devices--dual feat-devices--${layout}">
         <div class="feat-devices__composition">
-          ${browserFrame(item.desktop, `${alt} desktop`, url)}
-          ${phoneFrame(item.mobile, `${alt} mobile`)}
-        </div>
-      </div>`;
-    }
-    if (layout === "phone-hero" && item.mobile) {
-      const desk = item.desktop ? browserFrame(item.desktop, `${alt} desktop`, url) : "";
-      return `<div class="feat-devices feat-devices--dual feat-devices--phone-hero">
-        <div class="feat-devices__composition">
           ${desk}
-          ${phoneFrame(item.mobile, `${alt} mobile`)}
+          ${phone ? phoneFrame(phone, `${alt} mobile`) : ""}
         </div>
       </div>`;
     }
-    return `<div class="feat-devices feat-devices--solo">${browserFrame(item.desktop || item.mobile || PLACEHOLDER, alt, url)}</div>`;
+    if (layout === "phone") {
+      return `<div class="feat-devices feat-devices--phone-only">${phoneFrame(phone, alt)}</div>`;
+    }
+    if (layout === "tablet") {
+      return `<div class="feat-devices feat-devices--solo">${tabletFrame(shot(item, "tablet"), alt)}</div>`;
+    }
+  return `<div class="feat-devices feat-devices--solo">${browserFrame(browser || phone || PLACEHOLDER, alt, url)}</div>`;
+  }
+
+  function featIcon(item, i) {
+    const url = item.appIconUrl;
+    if (url) {
+      return `<img class="feat-app-icon" src="${esc(url)}" alt="" width="48" height="48" loading="lazy" decoding="async">`;
+    }
+    const num = String(i + 1).padStart(2, "0");
+    return `<span class="dot-num dot-num--sm dot-num--lime feat-num" data-dots="${num}" data-dot-variant="lime"></span>`;
   }
 
   function tile(item, i) {
     const title = item.title || item.slug;
     const href = item.href || "#";
     const tag = item.tagline || item.category || "";
-    const num = String(i + 1).padStart(2, "0");
     return `<li class="feat ${item.mod || ""}" data-reveal style="--d:${i * 55}ms">
       <a class="feat-link" href="${esc(href)}" target="_blank" rel="noopener noreferrer">
         ${devicesHtml(item, title)}
         <span class="feat-meta">
           <span class="feat-meta__top">
-            <span class="dot-num dot-num--sm dot-num--lime feat-num" data-dots="${num}" data-dot-variant="lime"></span>
+            ${featIcon(item, i)}
             <span class="feat-cat">${esc(item.category || "Product")}</span>
           </span>
           <span class="feat-title">${esc(title)}</span>
@@ -81,8 +138,7 @@
 
   function renderFromCms(c) {
     const items = [...(c.featuredWork || [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-    const html = items.map((item, i) => tile(item, i));
-    grid.innerHTML = html.join("");
+    grid.innerHTML = items.map((item, i) => tile(item, i)).join("");
     if (headline && c.showcaseHeadline) headline.textContent = c.showcaseHeadline;
     grid.setAttribute("aria-busy", "false");
     window.ChaosDotNumerals && grid.querySelectorAll("[data-dots]").forEach((el) => window.ChaosDotNumerals.renderDots(el));
@@ -107,36 +163,6 @@
     document.dispatchEvent(new CustomEvent("cs-showcase-ready"));
   }
 
-  function renderLegacy() {
-    fetch("/assets/site.config.json")
-      .then((r) => r.json())
-      .then((cfg) => {
-        const FEATURED = [
-          { slug: "kora", mod: "feat--kora" },
-          { slug: "faisa", title: "FaisaMobileXYZ", mod: "feat--faisa" },
-          { slug: "forge", mod: "feat--forge" },
-          { slug: "GexTag", title: "UtilityBox", mod: "feat--utility" },
-          { slug: "QuePulse", mod: "feat--quepulse" },
-        ];
-        const bySlug = Object.fromEntries((cfg.work || []).map((w) => [w.slug.toLowerCase(), w]));
-        const html = [];
-        FEATURED.forEach((item, i) => {
-          const key = item.slug.toLowerCase();
-          const project = bySlug[key];
-          if (!project) return;
-          const merged = { ...project, ...item, title: item.title || project.title };
-          html.push(tile(merged, i));
-        });
-        grid.innerHTML = html.join("");
-        grid.setAttribute("aria-busy", "false");
-        document.dispatchEvent(new CustomEvent("cs-showcase-ready"));
-      })
-      .catch(() => {
-        grid.innerHTML = "";
-        grid.setAttribute("aria-busy", "false");
-      });
-  }
-
   document.addEventListener(
     "cms-content-ready",
     (e) => {
@@ -148,10 +174,11 @@
   if (window.__SITE_CONTENT__) {
     renderFromCms(window.__SITE_CONTENT__);
   } else {
-    setTimeout(() => {
-      if (!grid.getAttribute("aria-busy") || grid.getAttribute("aria-busy") === "true") {
-        if (!window.__SITE_CONTENT__) renderLegacy();
-      }
-    }, 2500);
+    fetch("/api/content")
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null)
+      .then((c) => c && renderFromCms(c));
   }
+
+  window.ChaosShowcasePreview = { devicesHtml, resolveLayout, shot, esc };
 })();

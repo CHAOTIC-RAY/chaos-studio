@@ -44,10 +44,6 @@ export default {
       );
     }
 
-    if (url.pathname === "/admin" && request.method === "GET") {
-      return Response.redirect(`${url.origin}/admin/`, 301);
-    }
-
     if (url.pathname === "/studio" && request.method === "GET") {
       return Response.redirect(`${url.origin}/studio/`, 301);
     }

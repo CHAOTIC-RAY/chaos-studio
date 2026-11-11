@@ -259,6 +259,7 @@
     }
   ],
   "pricingNote": "All-in-one solutions with creativity, efficiency, and care. Prices are negotiable based on design or post type.",
+  "whyBrace": "{no middlemen}",
   "whyUs": [
     {
       "id": "affordable",
@@ -287,9 +288,14 @@
       "category": "Product",
       "tagline": "Your bookshelf, narrator, and morning paper.",
       "href": "https://kora.chaoticstudio.workers.dev",
-      "layout": "dual",
-      "desktop": "/assets/work/kora/cover.png",
-      "mobile": "/assets/work/kora/cover.png",
+      "deviceLayout": "dual",
+      "appIconUrl": "/assets/work/app-icons/kora.png",
+      "screenshots": {
+        "laptop": "/assets/work/kora/desktop-ui.webp",
+        "phone": "/assets/work/kora/mobile-ui.webp"
+      },
+      "desktop": "/assets/work/kora/desktop-ui.webp",
+      "mobile": "/assets/work/kora/mobile-ui.webp",
       "url": "kora.chaoticstudio.workers.dev",
       "order": 0
     },
@@ -300,9 +306,13 @@
       "category": "Product",
       "tagline": "MIB banking app design concept.",
       "href": "https://xd.adobe.com/view/b36c0490-3f96-4e44-b508-e7eec72ac2f4-e63f/screen/ff1f537b-4355-4368-a948-171625c7b7dc/?fullscreen&hints=off",
-      "layout": "phone-hero",
+      "deviceLayout": "phone-only",
+      "appIconUrl": "/assets/work/app-icons/faisa.png",
+      "screenshots": {
+        "phone": "/images/projects/frames/faisa/02-home.webp",
+        "phone2": "/images/projects/frames/faisa/06-transfer.webp"
+      },
       "mobile": "/images/projects/frames/faisa/02-home.webp",
-      "desktop": "/images/projects/frames/faisa/06-transfer.webp",
       "url": "FaisaMobileXYZ prototype",
       "order": 1
     },
@@ -312,8 +322,13 @@
       "mod": "feat--forge",
       "category": "Product",
       "tagline": "Content scheduler & idea creator.",
-      "href": "https://forge.app",
-      "layout": "dual",
+      "href": "https://forge.chaoticstudio.workers.dev",
+      "deviceLayout": "dual",
+      "appIconUrl": "/assets/work/app-icons/forge.webp",
+      "screenshots": {
+        "laptop": "/images/projects/frames/forge/desktop/02-dashboard.webp",
+        "phone": "/images/projects/frames/forge/mobile/02-dashboard.webp"
+      },
       "desktop": "/images/projects/frames/forge/desktop/02-dashboard.webp",
       "mobile": "/images/projects/frames/forge/mobile/02-dashboard.webp",
       "url": "forge.chaoticstudio.workers.dev",
@@ -326,7 +341,9 @@
       "category": "Product",
       "tagline": "Bulk geotagging utility.",
       "href": "https://gextag.chaoticstudio.workers.dev/",
-      "layout": "solo",
+      "deviceLayout": "browser",
+      "appIconUrl": "/assets/work/app-icons/utility.webp",
+      "screenshots": { "browser": "/assets/work/gextag/cover.webp" },
       "desktop": "/assets/work/gextag/cover.webp",
       "url": "gextag.chaoticstudio.workers.dev",
       "order": 3
@@ -338,7 +355,12 @@
       "category": "Product",
       "tagline": "Live hospital queue tracking.",
       "href": "https://quepulse.chaoticstudio.workers.dev/",
-      "layout": "dual",
+      "deviceLayout": "dual",
+      "appIconUrl": "/assets/work/app-icons/quepulse.webp",
+      "screenshots": {
+        "laptop": "/assets/work/quepulse/cover.webp",
+        "phone": "/assets/work/quepulse/cover.webp"
+      },
       "desktop": "/assets/work/quepulse/cover.webp",
       "mobile": "/assets/work/quepulse/cover.webp",
       "url": "quepulse.chaoticstudio.workers.dev",

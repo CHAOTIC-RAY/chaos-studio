@@ -136,7 +136,10 @@
       )
       .join("");
     const brace = document.querySelector("[data-why-brace] .why-brace__inner");
-    if (brace && c.finale?.brace) brace.textContent = c.finale.brace;
+    if (brace) {
+      const tag = c.whyBrace || "{no middlemen}";
+      brace.textContent = tag;
+    }
   }
 
   function waLink(base, text) {

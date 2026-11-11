@@ -22,7 +22,6 @@ MDP_extract/
 artifacts/
 .cursor/skills/**/__pycache__/
 cms/dist/
-frontend/public/admin/
 # Generated at build time by scripts/generate-pano-thumbs.mjs
 *.pano.webp
 **/preview.mp4

@@ -1,4 +1,4 @@
-/* Ensure halftone dot icons read on void/plum (mobile + desktop). */
+/* Halftone dot icons — sized in-layout, no transform clipping. */
 
 .page-studio .dot-icon {
   display: block;
@@ -7,17 +7,22 @@
   max-width: 56px;
   max-height: 56px;
   object-fit: contain;
+  object-position: center;
   image-rendering: auto;
-  transform: scale(2.35);
-  transform-origin: center center;
 }
 
 .page-studio .svc-ico,
 .page-studio .why-dot-ico,
 .page-studio .pk-dot-icon,
 .page-studio .deliverable-ico {
-  overflow: visible;
-  color: #d690e8;
+  overflow: hidden;
+  flex-shrink: 0;
+  contain: layout paint;
+}
+
+.page-studio .svc-ico {
+  width: 44px;
+  height: 44px;
 }
 
 .page-studio .svc-ico .dot-icon {
@@ -25,9 +30,14 @@
   height: 44px;
 }
 
+.page-studio .why-dot-ico {
+  width: 44px;
+  height: 44px;
+}
+
 .page-studio .why-dot-ico .dot-icon {
-  width: clamp(48px, 12vw, 56px);
-  height: clamp(48px, 12vw, 56px);
+  width: 44px;
+  height: 44px;
 }
 
 .page-studio .pk-dot-icon .dot-icon {
@@ -40,7 +50,25 @@
   height: 32px;
 }
 
-/* Icons paint immediately; motion only nudges. */
+@media (min-width: 900px) {
+  .page-studio .svc-ico,
+  .page-studio .svc-ico .dot-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .page-studio .why-dot-ico,
+  .page-studio .why-dot-ico .dot-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .page-studio .pk-dot-icon .dot-icon {
+    width: 56px;
+    height: 56px;
+  }
+}
+
 .page-studio .svc-tile,
 .page-studio .whys .why .why-dot-ico,
 .page-studio .whys .why .num {

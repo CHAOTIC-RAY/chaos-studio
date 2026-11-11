@@ -167,8 +167,61 @@
   max-width: 42%;
 }
 
-.feat-devices--phone-hero .device--phone {
+.feat-devices--phone-hero .device--phone,
+.feat-devices--phone-only .device--phone {
+  position: static;
+  transform: none;
   width: clamp(120px, 42%, 168px);
+}
+
+.feat-devices--phone-only {
+  justify-content: center;
+}
+
+.feat-devices--phone-only .feat-devices__composition {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.feat-devices--dual-phone .feat-devices__composition {
+  display: flex;
+  gap: clamp(8px, 4vw, 16px);
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.feat-devices--dual-phone .device--phone {
+  position: static;
+  transform: none;
+  width: clamp(88px, 38%, 130px);
+}
+
+.device__screen--laptop {
+  aspect-ratio: 16 / 10;
+}
+
+.device--tablet {
+  width: clamp(140px, 55%, 220px);
+  padding: 6px;
+  border-radius: 14px;
+  background: linear-gradient(160deg, #3a3a42, #1a1a20);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+}
+
+.device__bezel--tablet .device__screen {
+  aspect-ratio: 4 / 3;
+}
+
+.feat-app-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  object-fit: cover;
+  display: block;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(214, 144, 232, 0.35);
 }
 
 .feat-devices--phone-hero .device--browser {

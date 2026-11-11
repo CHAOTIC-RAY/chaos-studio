@@ -1,0 +1,3 @@
+# Copy to .dev.vars for local `wrangler dev` only (never commit .dev.vars).
+ADMIN_PASSWORD=local-test-password
+SESSION_SECRET=dev-session-secret-change-me-32chars-min

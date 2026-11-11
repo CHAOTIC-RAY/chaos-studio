@@ -31,6 +31,23 @@ export type WhyItem = {
   iconKey: string;
 };
 
+export type DeviceLayout =
+  | "laptop"
+  | "browser"
+  | "tablet"
+  | "phone"
+  | "dual"
+  | "phone-only"
+  | "dual-phone";
+
+export type FeaturedScreenshots = {
+  laptop?: string;
+  browser?: string;
+  tablet?: string;
+  phone?: string;
+  phone2?: string;
+};
+
 export type FeaturedWorkItem = {
   slug: string;
   title: string;
@@ -38,7 +55,11 @@ export type FeaturedWorkItem = {
   category?: string;
   tagline?: string;
   href: string;
+  /** @deprecated use deviceLayout */
   layout?: string;
+  deviceLayout?: DeviceLayout;
+  appIconUrl?: string;
+  screenshots?: FeaturedScreenshots;
   desktop?: string;
   mobile?: string;
   url?: string;
@@ -83,6 +104,7 @@ export type SiteContent = {
   packages: PackageItem[];
   pricingNote: string;
   whyUs: WhyItem[];
+  whyBrace?: string;
   featuredWork: FeaturedWorkItem[];
   showcaseHeadline?: string;
   footer: { line: string };
