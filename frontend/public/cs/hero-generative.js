@@ -29,6 +29,13 @@
     "/assets/motifs/dot-icons/dot-rocket.svg",
   ];
   const B4 = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+  const BRAND_GRAD = [
+    { t: 0, c: [14, 14, 15] },
+    { t: 0.28, c: [40, 18, 44] },
+    { t: 0.52, c: [93, 37, 128] },
+    { t: 0.74, c: [193, 107, 224] },
+    { t: 1, c: [214, 144, 232] },
+  ];
 
   const PALETTES = [
     { id: "void", bg: "#0e0e0f", fg: "#ffffff", accent: "#ff4444", mid: "#c16be0" },
@@ -65,6 +72,7 @@
   let ditherMode = "bayer";
   let rawMix = 0.32;
   let glyphCrush = 0.42;
+  let videoStrength = 0.4;
   let sceneStart = 0;
   let sceneDuration = 6200;
   let sceneCutAt = 0;
@@ -353,6 +361,42 @@
     }
   }
 
+  function mapBrandLuma(L) {
+    const t = Math.max(0, Math.min(1, L));
+    for (let i = 0; i < BRAND_GRAD.length - 1; i++) {
+      const a = BRAND_GRAD[i];
+      const b = BRAND_GRAD[i + 1];
+      if (t >= a.t && t <= b.t) {
+        const u = (t - a.t) / (b.t - a.t || 1);
+        return [
+          (a.c[0] + (b.c[0] - a.c[0]) * u) | 0,
+          (a.c[1] + (b.c[1] - a.c[1]) * u) | 0,
+          (a.c[2] + (b.c[2] - a.c[2]) * u) | 0,
+        ];
+      }
+    }
+    const last = BRAND_GRAD[BRAND_GRAD.length - 1].c;
+    return [last[0], last[1], last[2]];
+  }
+
+  /** Luminance → void/plum/purple/lilac (+ sparse red accents); ~35–45% video visibility. */
+  function applyBrandGradientMap() {
+    const vw = videoStrength;
+    const img = wctx.getImageData(0, 0, size.sw, size.sh);
+    const data = img.data;
+    const bg = rgb(palette.bg);
+    for (let px = 0, i = 0; i < data.length; i += 4, px++) {
+      const L = lum(data[i], data[i + 1], data[i + 2]) / 255;
+      let m = mapBrandLuma(L);
+      if (L > 0.84 && (px + sceneIndex) % 47 === 0) m = [255, 68, 68];
+      data[i] = (bg[0] * (1 - vw) + m[0] * vw) | 0;
+      data[i + 1] = (bg[1] * (1 - vw) + m[1] * vw) | 0;
+      data[i + 2] = (bg[2] * (1 - vw) + m[2] * vw) | 0;
+      data[i + 3] = 255;
+    }
+    wctx.putImageData(img, 0, 0);
+  }
+
   function applyHeavyDither() {
     const src = wctx.getImageData(0, 0, size.sw, size.sh);
     const lumaGrid = sampleCellLuma(src);
@@ -371,7 +415,8 @@
     cellSize = defaultCellSize();
     ditherMode = mobile ? "bayer" : pick(["bayer", "bayer", "floyd"]);
     rawMix = 0.28 + Math.random() * 0.1;
-    glyphCrush = mobile ? 0.5 + Math.random() * 0.12 : 0.44 + Math.random() * 0.12;
+    videoStrength = 0.36 + Math.random() * 0.08;
+    glyphCrush = mobile ? 0.54 + Math.random() * 0.1 : 0.48 + Math.random() * 0.1;
     sceneStart = performance.now();
     sceneIndex++;
     transition = 0.35;
@@ -422,7 +467,10 @@
 
     if (RM) {
       const c0 = videoReel && videoReel.clips[0];
-      if (c0) videoReel.stillFrame(wctx, size.sw, size.sh, palette, c0);
+      if (c0) {
+        videoReel.stillFrame(wctx, size.sw, size.sh, palette, c0);
+        applyBrandGradientMap();
+      }
       applyHeavyDither();
       composite();
       return;
@@ -438,6 +486,7 @@
       if (mix > 0.12 && transition < 0.5) refreshScenePalette();
       if (transition > 0) transition = Math.max(0, transition - dt / transitionDur);
       videoReel.drawVideo(wctx, size.sw, size.sh, palette);
+      applyBrandGradientMap();
     }
     else {
       wctx.fillStyle = palette.bg;
@@ -488,6 +537,7 @@
     palette = PALETTES[0];
     if (RM && videoReel && videoReel.clips[0]) {
       videoReel.stillFrame(wctx, size.sw, size.sh, palette, videoReel.clips[0]);
+      applyBrandGradientMap();
       applyHeavyDither();
       composite();
       return;

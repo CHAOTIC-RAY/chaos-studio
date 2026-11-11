@@ -1,8 +1,9 @@
 /* Full-bleed hero video reel — dual-decoder crossfade, preload, HUD. */
 window.HeroVideoReel = (function () {
-  const CLIP_HOLD_MS = 6200;
-  const CROSSFADE_MS = 880;
+  const CROSSFADE_MS = 960;
   const IN_POINT = 0.15;
+  const LEAD_SEC = 1.5;
+  const PRELOAD_SEC = 2.6;
 
   function canPlayWebm() {
     const v = document.createElement("video");
@@ -59,6 +60,8 @@ window.HeroVideoReel = (function () {
       let sceneStart = 0;
       let posterFade = 1;
       let loadFade = 0;
+      let crossfadePending = false;
+      let primedId = null;
 
       const track = document.createElement("canvas");
       const trackCtx = track.getContext("2d", { willReadFrequently: true });
@@ -105,6 +108,68 @@ window.HeroVideoReel = (function () {
         videos.forEach((v, cid) => {
           if (!ids.includes(cid)) v.pause();
         });
+      }
+
+      function segmentEnd(v) {
+        const d = v && v.duration;
+        if (!d || !Number.isFinite(d)) return IN_POINT + 5.5;
+        return Math.max(IN_POINT + 0.8, d - 0.06);
+      }
+
+      function keepPlaying(v) {
+        if (!v) return false;
+        if (v.ended) {
+          try {
+            v.currentTime = Math.max(IN_POINT, segmentEnd(v) - 0.35);
+          } catch {
+            /* */
+          }
+        }
+        if (v.paused && v.readyState >= 2) v.play().catch(() => {});
+        return v.readyState >= 2 && !v.ended;
+      }
+
+      function waitFirstFrame(v) {
+        return new Promise((resolve) => {
+          if (!v) return resolve();
+          const finish = () => {
+            if (typeof v.requestVideoFrameCallback === "function") {
+              try {
+                v.requestVideoFrameCallback(() => resolve());
+                return;
+              } catch {
+                /* */
+              }
+            }
+            resolve();
+          };
+          const warm = () => {
+            try {
+              v.currentTime = IN_POINT;
+            } catch {
+              /* */
+            }
+            v.play().catch(() => {});
+            if (v.readyState >= 2) finish();
+            else v.addEventListener("canplay", finish, { once: true });
+          };
+          if (v.readyState >= 1) warm();
+          else v.addEventListener("loadeddata", warm, { once: true });
+        });
+      }
+
+      async function primeIncoming(next) {
+        if (!next || primedId === next.id) return;
+        const v = ensureVideo(next, { preload: true });
+        primedId = next.id;
+        v.load();
+        await waitFirstFrame(v);
+        if (!v.paused) v.pause();
+        try {
+          v.currentTime = IN_POINT;
+        } catch {
+          /* */
+        }
       }
 
       function preloadNext(nextClip) {
@@ -168,42 +233,61 @@ window.HeroVideoReel = (function () {
         return clips[index];
       }
 
-      function beginCrossfade(next) {
-        if (!next || blending || !active) return;
+      async function beginCrossfade(next) {
+        if (!next || blending || !active || crossfadePending) return;
+        crossfadePending = true;
         const v = ensureVideo(next, { preload: true });
+        await waitFirstFrame(v);
+        crossfadePending = false;
+        if (blending || !active) return;
         blending = true;
         blendT = 0;
         blendStart = performance.now();
         incoming = { clip: next, video: v };
-        try {
-          v.currentTime = IN_POINT;
-          v.play().catch(() => {});
-        } catch {
-          /* */
-        }
-        pauseExcept(active.clip.id, next.id);
+        keepPlaying(active.video);
+        keepPlaying(v);
+        primedId = null;
       }
 
       function tickTiming() {
         if (reduced || !active) return;
         const now = performance.now();
+        const outV = active.video;
+        const end = segmentEnd(outV);
+        const remain = outV && Number.isFinite(outV.currentTime) ? end - outV.currentTime : 0;
+        const next = nextClip();
+
         if (blending) {
+          keepPlaying(active.video);
+          if (incoming) keepPlaying(incoming.video);
           blendT = Math.min(1, (now - blendStart) / CROSSFADE_MS);
           if (blendT >= 1) {
             const outId = active.clip.id;
+            pauseExcept(incoming.clip.id);
             active = incoming;
             incoming = null;
             blending = false;
             blendT = 0;
             sceneStart = now;
             index = clips.findIndex((c) => c.id === active.clip.id);
+            keepPlaying(active.video);
             preloadNext(nextClip());
             if (mobile) dropVideo(outId);
           }
           return;
         }
-        if (now - sceneStart >= CLIP_HOLD_MS) {
-          beginCrossfade(nextClip());
+
+        keepPlaying(outV);
+
+        const lead = Math.min(LEAD_SEC, Math.max(0.55, (end - IN_POINT) * 0.22));
+        const preloadAt = Math.min(PRELOAD_SEC, lead + 1.1);
+
+        if (remain > 0 && remain <= preloadAt && next && primedId !== next.id) {
+          primeIncoming(next);
+        }
+
+        if (!blending && !crossfadePending && next && (outV.ended || remain <= lead)) {
+          beginCrossfade(next);
         }
       }
 
@@ -298,6 +382,8 @@ window.HeroVideoReel = (function () {
         const octx = off.getContext("2d");
 
         if (mix > 0 && incoming) {
+          keepPlaying(active?.video);
+          keepPlaying(incoming?.video);
           drawOne(octx, sw, sh, palette, active);
           wctx.drawImage(off, 0, 0);
           octx.clearRect(0, 0, sw, sh);
@@ -307,6 +393,7 @@ window.HeroVideoReel = (function () {
           wctx.drawImage(off, 0, 0);
           wctx.restore();
         } else if (active) {
+          keepPlaying(active.video);
           drawOne(wctx, sw, sh, palette, active);
         } else {
           wctx.fillStyle = palette.bg;
