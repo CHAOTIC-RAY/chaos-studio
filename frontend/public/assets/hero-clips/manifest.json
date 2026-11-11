@@ -3,70 +3,41 @@
   "licenseName": "Mixkit License",
   "licenseUrl": "https://mixkit.co/license/",
   "licenseNote": "Free for commercial use; no attribution required.",
+  "policy": "Faceless only: animals and macro scenery; no people.",
   "clips": [
     {
-      "id": "waves",
-      "label": "Ocean waves on shore",
+      "id": "watertexture",
+      "label": "Blue sea water texture (macro)",
       "category": "scenery",
-      "mp4": "/assets/hero-clips/waves.mp4",
-      "webm": "/assets/hero-clips/waves.webm",
-      "poster": "/assets/hero-clips/waves-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/waves-coming-to-the-shore-1228/",
+      "mp4": "/assets/hero-clips/watertexture.mp4",
+      "webm": "/assets/hero-clips/watertexture.webm",
+      "poster": "/assets/hero-clips/watertexture-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/blue-sea-water-texture-waving-gently-50165/",
       "duration": 6
     },
     {
-      "id": "mountains",
-      "label": "Sunset over mountains",
+      "id": "flames",
+      "label": "Blazing orange flames (macro)",
       "category": "scenery",
-      "mp4": "/assets/hero-clips/mountains.mp4",
-      "webm": "/assets/hero-clips/mountains.webm",
-      "poster": "/assets/hero-clips/mountains-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/beautiful-sunset-over-mountains-2125/",
+      "mp4": "/assets/hero-clips/flames.mp4",
+      "webm": "/assets/hero-clips/flames.webm",
+      "poster": "/assets/hero-clips/flames-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/close-up-of-blazing-orange-flames-over-a-pitch-dark-52306/",
       "duration": 6
     },
     {
-      "id": "forest",
-      "label": "Aerial forest morning",
-      "category": "scenery",
-      "mp4": "/assets/hero-clips/forest.mp4",
-      "webm": "/assets/hero-clips/forest.webm",
-      "poster": "/assets/hero-clips/forest-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/aerial-view-of-the-forest-in-the-morning-10234/",
-      "duration": 6
-    },
-    {
-      "id": "beach",
-      "label": "Aerial beach and sea",
-      "category": "scenery",
-      "mp4": "/assets/hero-clips/beach.mp4",
-      "webm": "/assets/hero-clips/beach.webm",
-      "poster": "/assets/hero-clips/beach-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/aerial-view-of-a-beach-and-the-sea-3985/",
-      "duration": 6
-    },
-    {
-      "id": "palms",
-      "label": "Palm trees by the beach",
-      "category": "scenery",
-      "mp4": "/assets/hero-clips/palms.mp4",
-      "webm": "/assets/hero-clips/palms.webm",
-      "poster": "/assets/hero-clips/palms-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/palm-trees-by-the-beach-1244/",
-      "duration": 6
-    },
-    {
-      "id": "birds",
-      "label": "Birds flying over the ocean",
+      "id": "jellyfish",
+      "label": "Spotted jellyfish (close-up)",
       "category": "animals",
-      "mp4": "/assets/hero-clips/birds.mp4",
-      "webm": "/assets/hero-clips/birds.webm",
-      "poster": "/assets/hero-clips/birds-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/birds-flying-over-the-ocean-1176/",
+      "mp4": "/assets/hero-clips/jellyfish.mp4",
+      "webm": "/assets/hero-clips/jellyfish.webm",
+      "poster": "/assets/hero-clips/jellyfish-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/jellyfish-with-spots-25353/",
       "duration": 6
     },
     {
       "id": "reef",
-      "label": "Coral reef and tropical fish",
+      "label": "Coral reef tropical fish",
       "category": "animals",
       "mp4": "/assets/hero-clips/reef.mp4",
       "webm": "/assets/hero-clips/reef.webm",
@@ -75,33 +46,63 @@
       "duration": 6
     },
     {
-      "id": "rain",
+      "id": "butterfly",
+      "label": "Butterfly on flower (macro)",
+      "category": "animals",
+      "mp4": "/assets/hero-clips/butterfly.mp4",
+      "webm": "/assets/hero-clips/butterfly.webm",
+      "poster": "/assets/hero-clips/butterfly-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/black-and-red-butterfly-fluttering-on-a-flower-4088/",
+      "duration": 6
+    },
+    {
+      "id": "bee",
+      "label": "Bumblebee macro",
+      "category": "animals",
+      "mp4": "/assets/hero-clips/bee.mp4",
+      "webm": "/assets/hero-clips/bee.webm",
+      "poster": "/assets/hero-clips/bee-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/bumblebee-macro-close-up-32477/",
+      "duration": 6
+    },
+    {
+      "id": "lion",
+      "label": "Lion head portrait in sun",
+      "category": "animals",
+      "mp4": "/assets/hero-clips/lion.mp4",
+      "webm": "/assets/hero-clips/lion.webm",
+      "poster": "/assets/hero-clips/lion-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/lion-head-portrait-in-the-sun-6736/",
+      "duration": 6
+    },
+    {
+      "id": "hummingbird",
+      "label": "Green hummingbird on stem",
+      "category": "animals",
+      "mp4": "/assets/hero-clips/hummingbird.mp4",
+      "webm": "/assets/hero-clips/hummingbird.webm",
+      "poster": "/assets/hero-clips/hummingbird-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/closeup-of-green-hummingbird-sitting-on-stem-8549/",
+      "duration": 6
+    },
+    {
+      "id": "rainlake",
+      "label": "Rain ripples on lake",
+      "category": "scenery",
+      "mp4": "/assets/hero-clips/rainlake.mp4",
+      "webm": "/assets/hero-clips/rainlake.webm",
+      "poster": "/assets/hero-clips/rainlake-poster.jpg",
+      "source": "https://mixkit.co/free-stock-video/rain-falling-on-the-water-of-a-lake-seen-up-18312/",
+      "duration": 6
+    },
+    {
+      "id": "rainleaf",
       "label": "Rain on tropical leaves",
       "category": "scenery",
-      "mp4": "/assets/hero-clips/rain.mp4",
-      "webm": "/assets/hero-clips/rain.webm",
-      "poster": "/assets/hero-clips/rain-poster.jpg",
+      "mp4": "/assets/hero-clips/rainleaf.mp4",
+      "webm": "/assets/hero-clips/rainleaf.webm",
+      "poster": "/assets/hero-clips/rainleaf-poster.jpg",
       "source": "https://mixkit.co/free-stock-video/rain-falling-on-green-leaves-5071/",
-      "duration": 6
-    },
-    {
-      "id": "snowpeak",
-      "label": "Skier at snowy mountain peak",
-      "category": "scenery",
-      "mp4": "/assets/hero-clips/snowpeak.mp4",
-      "webm": "/assets/hero-clips/snowpeak.webm",
-      "poster": "/assets/hero-clips/snowpeak-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/skier-at-the-peak-of-a-snowy-mountain-3362/",
-      "duration": 6
-    },
-    {
-      "id": "flowers",
-      "label": "Calla lily arrangement",
-      "category": "abstract",
-      "mp4": "/assets/hero-clips/flowers.mp4",
-      "webm": "/assets/hero-clips/flowers.webm",
-      "poster": "/assets/hero-clips/flowers-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/flower-arrangement-with-flowers-and-calla-lilies-5209/",
       "duration": 6
     }
   ]

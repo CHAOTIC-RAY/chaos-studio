@@ -370,8 +370,8 @@
 .svc-tile__head {
   width: 100%;
   display: grid;
-  grid-template-columns: auto auto 1fr auto;
-  gap: 10px;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
   align-items: center;
   padding: 14px 14px;
   background: transparent;
@@ -392,10 +392,53 @@
 }
 
 .svc-ico {
-  width: 28px;
-  height: 28px;
-  color: var(--lilac);
+  width: 44px;
+  height: 44px;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.svc-ico .dot-icon {
+  width: 44px;
+  height: 44px;
+  display: block;
+}
+
+.page-studio .svc-list .mono {
+  display: none !important;
+}
+
+.pk-dot-icon {
+  margin: 0 0 var(--sp-1);
+}
+
+.pk-dot-icon__img,
+.pk-dot-icon .dot-icon {
+  width: 56px;
+  height: 56px;
+  display: block;
+}
+
+.deliverable-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.deliverable-ico .dot-icon,
+.deliverable-dot {
+  width: 32px;
+  height: 32px;
+}
+
+.pk-bento .pk li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: start;
 }
 
 .svc-tile__chev {
@@ -798,23 +841,19 @@
 
   .svc-tile__head {
     grid-template-columns: auto 1fr auto;
-    grid-template-areas:
-      "num icon chev"
-      "title title title";
     gap: 8px 10px;
     padding: 12px;
     min-height: 48px;
   }
 
-  .svc-tile__head .dot-num {
-    grid-area: num;
-    --dot-h: 18px;
+  .svc-ico {
+    width: 40px;
+    height: 40px;
   }
 
-  .svc-ico {
-    grid-area: icon;
-    width: 22px;
-    height: 22px;
+  .svc-ico .dot-icon {
+    width: 40px;
+    height: 40px;
   }
 
   .svc-tile__chev {

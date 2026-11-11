@@ -5,7 +5,7 @@
     return [...list.querySelectorAll(".cond")].map((el) => el.textContent.trim()).filter(Boolean);
   };
 
-  const ICONS = window.ChaosStudioIcons || {};
+  const D = window.ChaosStudioDotIcons;
   const keys = [
     "interior",
     "architecture",
@@ -40,16 +40,15 @@
   list.querySelectorAll("li").forEach((li, i) => {
     const cond = li.querySelector(".cond");
     const title = cond ? cond.textContent.trim() : "";
-    const num = String(i + 1).padStart(2, "0");
     const wide = i === 0 || i === 7;
     const tile = document.createElement("article");
     tile.className = "svc-tile" + (wide ? " svc-tile--wide" : "");
     tile.setAttribute("role", "listitem");
-    const icon = ICONS[keys[i]] || ICONS.brand;
+    const dotFile = D && D.SERVICE[keys[i]] ? D.SERVICE[keys[i]] : "dot-logo.svg";
+    const iconMarkup = D ? D.img(dotFile, "svc-dot", 44) : "";
     tile.innerHTML = `
       <button type="button" class="svc-tile__head" aria-expanded="false">
-        <span class="dot-num dot-num--sm dot-num--lime" data-dots="${num}" data-dot-variant="lime"></span>
-        <span class="svc-ico">${icon}</span>
+        <span class="svc-ico" aria-hidden="true">${iconMarkup}</span>
         <h3>${title}</h3>
         <span class="svc-tile__chev" aria-hidden="true"></span>
       </button>
@@ -68,34 +67,9 @@
   });
 
   svc.querySelector(".wrap").appendChild(bento);
-  window.ChaosDotNumerals && bento.querySelectorAll("[data-dots]").forEach((el) => window.ChaosDotNumerals.renderDots(el));
 
   document.querySelectorAll(".svc-list .cond.outline").forEach((el) => {
     el.classList.remove("outline");
     el.classList.add("dot-display", "dot-display--lilac");
-  });
-
-  document.querySelectorAll(".pk-bento .pk li").forEach((li) => {
-    const num = li.querySelector("span:first-child");
-    const label = li.querySelector("span:last-child");
-    if (!num || !label) return;
-    const digits = num.textContent.trim();
-    if (/^\d+$/.test(digits)) {
-      num.className = "dot-num dot-num--sm dot-num--lime";
-      num.setAttribute("data-dots", digits.padStart(2, "0"));
-      num.setAttribute("data-dot-variant", "lime");
-      window.ChaosDotNumerals && window.ChaosDotNumerals.renderDots(num);
-    }
-    const iconKey =
-      /reel/i.test(label.textContent) ? "reel" : /strateg/i.test(label.textContent) ? "strategy" : /logo/i.test(label.textContent) ? "logo" : /post/i.test(label.textContent) ? "post" : "post";
-    const ico = ICONS[iconKey] || ICONS.post;
-    const wrap = document.createElement("span");
-    wrap.className = "deliverable-ico";
-    wrap.innerHTML = ico;
-    num.after(wrap);
-  });
-
-  document.querySelectorAll("[data-dots]").forEach((el) => {
-    if (!el.querySelector(".dot-num__digits") && window.ChaosDotNumerals) window.ChaosDotNumerals.renderDots(el);
   });
 })();
