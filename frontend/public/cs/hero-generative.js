@@ -61,10 +61,10 @@
 
   let palette = PALETTES[0];
   let glyphPool = "mixed";
-  let cellSize = 10;
+  let cellSize = 16;
   let ditherMode = "bayer";
-  let rawMix = 0.3;
-  let glyphCrush = 0.58;
+  let rawMix = 0.32;
+  let glyphCrush = 0.42;
   let sceneStart = 0;
   let sceneDuration = 6200;
   let sceneCutAt = 0;
@@ -106,14 +106,18 @@
     ready = true;
   }
 
+  function defaultCellSize() {
+    return mobile ? 16 + ((Math.random() * 4) | 0) : 22 + ((Math.random() * 5) | 0);
+  }
+
   function resize() {
     const rect = hero.getBoundingClientRect();
-    const dpr = Math.min(devicePixelRatio || 1, mobile ? 1.08 : 1.3);
+    const dpr = Math.min(Math.max(1, devicePixelRatio || 1), mobile ? 2 : 2.25);
     size.w = Math.max(1, Math.floor(rect.width));
     size.h = Math.max(1, Math.floor(rect.height));
     size.dpr = dpr;
-    size.sw = Math.max(1, Math.floor(size.w * (mobile ? 0.58 : 0.68)));
-    size.sh = Math.max(1, Math.floor(size.h * (mobile ? 0.58 : 0.68)));
+    size.sw = Math.max(1, Math.floor(size.w * (mobile ? 0.72 : 0.78)));
+    size.sh = Math.max(1, Math.floor(size.h * (mobile ? 0.72 : 0.78)));
     canvas.width = Math.floor(size.w * dpr);
     canvas.height = Math.floor(size.h * dpr);
     canvas.style.width = size.w + "px";
@@ -125,8 +129,8 @@
     glyphs.height = size.sh;
     size.gw = Math.max(1, Math.ceil(size.sw / cellSize));
     size.gh = Math.max(1, Math.ceil(size.sh / cellSize));
-    sample.width = size.gw;
-    sample.height = size.gh;
+    sample.width = size.sw;
+    sample.height = size.sh;
   }
 
   function poolGlyphs(kind) {
@@ -137,42 +141,102 @@
     return [...MARKS, ...SHAPES, ...ICONS, ...(logoPath ? ["logo"] : [])];
   }
 
-  function pickGlyphId(gx, gy, pool) {
+  function pickGlyphId(gx, gy, L, pool) {
     if (pool.length === 1 && pool[0] === "logo") return "logo";
-    const idx = (gx * 7 + gy * 11 + sceneIndex * 3) % pool.length;
-    return pool[idx];
+  let band;
+    if (L >= 205) band = logoPath ? ["logo", MARKS[0], MARKS[2], MARKS[4]] : [MARKS[0], MARKS[2], ICONS[2]];
+    else if (L >= 168) band = [MARKS[0], MARKS[1], MARKS[2], MARKS[3], MARKS[4]];
+    else if (L >= 128) band = [...SHAPES, MARKS[1], MARKS[3]];
+    else if (L >= 88) band = [...ICONS, SHAPES[2], SHAPES[4]];
+    else band = pool;
+    const idx = (gx * 7 + gy * 11 + sceneIndex * 3 + ((L / 12) | 0)) % band.length;
+    return band[idx];
+  }
+
+  function glyphColor(L) {
+    if (L >= 200) return palette.fg;
+    if (L >= 155) return palette.mid;
+    return palette.fg;
   }
 
   function glyphAtlasKey(id, color) {
     return `${id}|${color}`;
   }
 
-  function getAtlasStamp(id, color, stamp) {
+  function getAtlasStamp(id, color) {
     const key = glyphAtlasKey(id, color);
     if (atlas.has(key)) return atlas.get(key);
+    const logical = Math.max(32, Math.round(cellSize * (mobile ? 3.25 : 3.1)));
+    const dprA = Math.min(2, size.dpr || 1);
     const c = document.createElement("canvas");
-    const n = mobile ? 20 : 28;
-    c.width = n;
-    c.height = n;
+    c.width = Math.round(logical * dprA);
+    c.height = Math.round(logical * dprA);
     const cx = c.getContext("2d");
-    cx.clearRect(0, 0, n, n);
+    cx.setTransform(dprA, 0, 0, dprA, 0, 0);
+    cx.clearRect(0, 0, logical, logical);
+    cx.imageSmoothingEnabled = true;
     if (id === "logo" && logoPath) {
+      const pad = logical * 0.08;
+      const sc = (logical - pad * 2) / 245;
       cx.fillStyle = color;
-      cx.scale(n / 245, n / 245);
+      cx.translate(pad + (logical - pad * 2) / 2, pad + (logical - pad * 2) / 2);
+      cx.scale(sc, sc);
       cx.translate(-122.5, -167);
       cx.fill(logoPath);
     } else {
       const img = assets.get(id);
       if (img) {
-        cx.drawImage(img, 0, 0, n, n);
+        const pad = logical * 0.06;
+        cx.drawImage(img, pad, pad, logical - pad * 2, logical - pad * 2);
         cx.globalCompositeOperation = "source-in";
         cx.fillStyle = color;
-        cx.fillRect(0, 0, n, n);
+        cx.fillRect(0, 0, logical, logical);
       }
     }
     atlas.set(key, c);
-    if (atlas.size > 48) atlas.clear();
+    if (atlas.size > 96) {
+      const first = atlas.keys().next().value;
+      atlas.delete(first);
+    }
     return c;
+  }
+
+  /** Box-average luma per glyph cell (avoids row downsample banding). */
+  function sampleCellLuma(src) {
+    const w = size.sw;
+    const h = size.sh;
+    const data = src.data;
+    const grid = new Float32Array(size.gw * size.gh * 3);
+    const cs = cellSize;
+
+    for (let gy = 0; gy < size.gh; gy++) {
+      const y0 = gy * cs;
+      const y1 = Math.min(h, y0 + cs);
+      for (let gx = 0; gx < size.gw; gx++) {
+        const x0 = gx * cs;
+        const x1 = Math.min(w, x0 + cs);
+        let rs = 0;
+        let gs = 0;
+        let bs = 0;
+        let n = 0;
+        for (let y = y0; y < y1; y++) {
+          for (let x = x0; x < x1; x++) {
+            const i = (y * w + x) * 4;
+            rs += data[i];
+            gs += data[i + 1];
+            bs += data[i + 2];
+            n++;
+          }
+        }
+        const k = gy * size.gw + gx;
+        if (n) {
+          grid[k * 3] = rs / n;
+          grid[k * 3 + 1] = gs / n;
+          grid[k * 3 + 2] = bs / n;
+        }
+      }
+    }
+    return grid;
   }
 
   function crushPixels() {
@@ -184,9 +248,10 @@
     const fg = rgb(palette.fg);
     const ac = rgb(palette.accent);
     const mid = rgb(palette.mid);
-    const keep = rawMix;
+    const keep = mobile ? Math.max(rawMix, 0.38) : rawMix;
+    const cell = cellSize;
 
-    if (ditherMode === "floyd" && w * h < (mobile ? 220000 : 500000)) {
+    if (ditherMode === "floyd" && !mobile && w * h < 500000) {
       const L = new Float32Array(w * h);
       for (let y = 0; y < h; y++) {
         for (let x = 0; x < w; x++) {
@@ -224,60 +289,75 @@
         }
       }
     } else {
-      for (let y = 0; y < h; y++) {
-        for (let x = 0; x < w; x++) {
-          const i = (y * w + x) * 4;
-          const L = lum(data[i], data[i + 1], data[i + 2]);
-          const t = (B4[(y & 3) * 4 + (x & 3)] + 0.5) / 16;
-          const on = L / 255 > t - 0.1;
-          const shock = on && (x + y * 3 + sceneIndex) % 11 === 0;
-          const c = shock ? ac : on ? (L > 190 && x % 6 === 0 ? mid : fg) : bg;
-          data[i] = data[i] * keep + c[0] * (1 - keep);
-          data[i + 1] = data[i + 1] * keep + c[1] * (1 - keep);
-          data[i + 2] = data[i + 2] * keep + c[2] * (1 - keep);
+      for (let gy = 0; gy < size.gh; gy++) {
+        for (let gx = 0; gx < size.gw; gx++) {
+          const y0 = gy * cell;
+          const y1 = Math.min(h, y0 + cell);
+          const x0 = gx * cell;
+          const x1 = Math.min(w, x0 + cell);
+          let Ls = 0;
+          let n = 0;
+          for (let y = y0; y < y1; y++) {
+            for (let x = x0; x < x1; x++) {
+              const i = (y * w + x) * 4;
+              Ls += lum(data[i], data[i + 1], data[i + 2]);
+              n++;
+            }
+          }
+          const L = n ? Ls / n : 0;
+          const t = (B4[(gy & 3) * 4 + (gx & 3)] + 0.5) / 16;
+          const on = L / 255 > t - 0.08;
+          const shock = on && L > 198 && (gx + gy + sceneIndex) % 13 === 0;
+          const c = shock ? ac : on ? (L > 180 ? mid : fg) : bg;
+          const blend = on ? (1 - keep) * (mobile ? 0.55 : 0.72) : (1 - keep) * 0.35;
+          for (let y = y0; y < y1; y++) {
+            for (let x = x0; x < x1; x++) {
+              const i = (y * w + x) * 4;
+              data[i] = data[i] * keep + c[0] * blend;
+              data[i + 1] = data[i + 1] * keep + c[1] * blend;
+              data[i + 2] = data[i + 2] * keep + c[2] * blend;
+            }
+          }
         }
       }
     }
     wctx.putImageData(img, 0, 0);
   }
 
-  function buildGlyphField(luma) {
+  function buildGlyphField(lumaGrid) {
     const pool = poolGlyphs(glyphPool);
-    gctx.fillStyle = palette.bg;
-    gctx.fillRect(0, 0, size.sw, size.sh);
-    const stamp = cellSize * (mobile ? 0.78 : 0.82);
+    gctx.clearRect(0, 0, size.sw, size.sh);
+    const stamp = Math.max(12, cellSize - (mobile ? 2 : 3));
+    const pad = (cellSize - stamp) / 2;
 
     for (let gy = 0; gy < size.gh; gy++) {
       for (let gx = 0; gx < size.gw; gx++) {
-        const i = (gy * size.gw + gx) * 4;
-        const L = lum(luma[i], luma[i + 1], luma[i + 2]);
+        const k = gy * size.gw + gx;
+        const r = lumaGrid[k * 3];
+        const g = lumaGrid[k * 3 + 1];
+        const b = lumaGrid[k * 3 + 2];
+        const L = lum(r, g, b);
         const bx = gx * cellSize;
         const by = gy * cellSize;
-        const t = B4[(gy & 3) * 4 + (gx & 3)] / 16;
-        const on = L > 128 - t * 26;
+        const t = (B4[(gy & 3) * 4 + (gx & 3)] + 0.5) / 16;
+        const on = L / 255 > t - 0.06;
 
-        if (!on) {
-          if (glyphCrush > 0.8) {
-            gctx.fillStyle = palette.bg;
-            gctx.fillRect(bx, by, cellSize, cellSize);
-          }
-          continue;
-        }
+        if (!on) continue;
 
-        const shock = L > 200 && (gx + gy) % 9 === 0;
-        const col = shock ? palette.accent : L > 175 ? palette.fg : palette.mid;
-        const id = pickGlyphId(gx, gy, pool);
-        const tile = getAtlasStamp(id, col, stamp);
-        gctx.drawImage(tile, bx + (cellSize - stamp) / 2, by + (cellSize - stamp) / 2, stamp, stamp);
+        const shock = L > 200 && (gx + gy) % 11 === 0;
+        const col = shock ? palette.accent : glyphColor(L);
+        const id = pickGlyphId(gx, gy, L, pool);
+        const tile = getAtlasStamp(id, col);
+        gctx.drawImage(tile, bx + pad, by + pad, stamp, stamp);
       }
     }
   }
 
   function applyHeavyDither() {
-    sctx.drawImage(work, 0, 0, size.gw, size.gh);
-    const sampleData = sctx.getImageData(0, 0, size.gw, size.gh).data;
+    const src = wctx.getImageData(0, 0, size.sw, size.sh);
+    const lumaGrid = sampleCellLuma(src);
     crushPixels();
-    buildGlyphField(sampleData);
+    buildGlyphField(lumaGrid);
     wctx.globalAlpha = glyphCrush;
     wctx.globalCompositeOperation = "source-over";
     wctx.drawImage(glyphs, 0, 0);
@@ -288,10 +368,10 @@
     if (!videoReel || !videoReel.clips.length) return;
     palette = pick(PALETTES);
     glyphPool = pick(["mixed", "marks", "shapes", "icons", "logo"]);
-    cellSize = mobile ? pick([9, 10, 11]) : pick([10, 11, 12]);
+    cellSize = defaultCellSize();
     ditherMode = mobile ? "bayer" : pick(["bayer", "bayer", "floyd"]);
-    rawMix = 0.26 + Math.random() * 0.08;
-    glyphCrush = 0.5 + Math.random() * 0.14;
+    rawMix = 0.28 + Math.random() * 0.1;
+    glyphCrush = mobile ? 0.38 + Math.random() * 0.08 : 0.44 + Math.random() * 0.12;
     sceneStart = performance.now();
     sceneIndex++;
     transition = 0.35;
