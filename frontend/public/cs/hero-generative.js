@@ -107,7 +107,7 @@
   }
 
   function defaultCellSize() {
-    return mobile ? 16 + ((Math.random() * 4) | 0) : 22 + ((Math.random() * 5) | 0);
+    return mobile ? 18 + ((Math.random() * 3) | 0) : 24 + ((Math.random() * 5) | 0);
   }
 
   function resize() {
@@ -327,7 +327,7 @@
   function buildGlyphField(lumaGrid) {
     const pool = poolGlyphs(glyphPool);
     gctx.clearRect(0, 0, size.sw, size.sh);
-    const stamp = Math.max(12, cellSize - (mobile ? 2 : 3));
+    const stamp = Math.max(14, cellSize - (mobile ? 1 : 2));
     const pad = (cellSize - stamp) / 2;
 
     for (let gy = 0; gy < size.gh; gy++) {
@@ -356,7 +356,7 @@
   function applyHeavyDither() {
     const src = wctx.getImageData(0, 0, size.sw, size.sh);
     const lumaGrid = sampleCellLuma(src);
-    crushPixels();
+    if (!mobile) crushPixels();
     buildGlyphField(lumaGrid);
     wctx.globalAlpha = glyphCrush;
     wctx.globalCompositeOperation = "source-over";
@@ -371,7 +371,7 @@
     cellSize = defaultCellSize();
     ditherMode = mobile ? "bayer" : pick(["bayer", "bayer", "floyd"]);
     rawMix = 0.28 + Math.random() * 0.1;
-    glyphCrush = mobile ? 0.38 + Math.random() * 0.08 : 0.44 + Math.random() * 0.12;
+    glyphCrush = mobile ? 0.5 + Math.random() * 0.12 : 0.44 + Math.random() * 0.12;
     sceneStart = performance.now();
     sceneIndex++;
     transition = 0.35;
@@ -411,8 +411,10 @@
       }
     }
 
-    ctx.fillStyle = "rgba(0,0,0,0.022)";
-    for (let y = 0; y < size.h; y += mobile ? 5 : 4) ctx.fillRect(0, y, size.w, 1);
+    if (!mobile) {
+      ctx.fillStyle = "rgba(0,0,0,0.018)";
+      for (let y = 0; y < size.h; y += 4) ctx.fillRect(0, y, size.w, 1);
+    }
   }
 
   function frame(t) {
