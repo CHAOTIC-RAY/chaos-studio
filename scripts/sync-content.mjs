@@ -7,6 +7,7 @@ const socialPath = path.join(root, "content", "social-posts.json");
 const galleryPath = path.join(root, "content", "gallery-posts.json");
 const metaPath = path.join(root, "content", "campaign-meta.json");
 const publicDir = path.join(root, "frontend", "public", "content");
+const siteDefaultsSrc = path.join(root, "content", "site-content.defaults.json");
 
 if (!fs.existsSync(socialPath)) {
   console.error("Missing content/social-posts.json");
@@ -19,6 +20,14 @@ const meta = fs.existsSync(metaPath)
   : { subtitle: "Campaign & feed highlights" };
 
 fs.mkdirSync(publicDir, { recursive: true });
+
+if (fs.existsSync(siteDefaultsSrc)) {
+  fs.copyFileSync(
+    siteDefaultsSrc,
+    path.join(publicDir, "site-content.defaults.json"),
+  );
+  console.log("Synced site defaults → frontend/public/content/site-content.defaults.json");
+}
 
 fs.writeFileSync(
   path.join(publicDir, "social-posts.json"),

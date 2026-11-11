@@ -11,11 +11,25 @@
     "enabled": true,
     "head_sampling_rate": 1
   },
+  "kv_namespaces": [
+    {
+      "binding": "CONTENT",
+      "id": "cd318685a7f14897ac4b8960ac8f6a03",
+      "preview_id": "cd318685a7f14897ac4b8960ac8f6a03"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "cs-media",
+      "preview_bucket_name": "cs-media"
+    }
+  ],
   "assets": {
     "directory": "./frontend/dist",
     "binding": "ASSETS",
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "404-page",
-    "run_worker_first": ["/api/*", "/gallery/*"]
+    "run_worker_first": ["/api/*", "/gallery/*", "/admin", "/admin/*", "/media/*"]
   }
 }

@@ -82,6 +82,8 @@ body::after{opacity:var(--grain);animation:grain-jit 600ms steps(3) infinite;ins
 .sticker-cta{grid-column:1/-1;justify-self:start;font-size:20px;padding:16px 24px;margin-top:48px;--tilt:-4deg;min-height:48px}
 .sticker-cta:hover{transform:rotate(0) scale(1.05)}
 .svc{padding-bottom:calc(var(--sp-16) + 120px)}
+.page-studio .svc{padding-bottom:var(--sp-6)}
+@media (min-width:521px){.page-studio .svc{padding-bottom:calc(var(--sp-8) + 72px)}}
 .svc .svc-list{grid-column:1/-1;border-color:rgba(255,255,255,.22)}
 .svc .svc-list li{grid-template-columns:64px 1fr auto;min-height:72px;border-color:rgba(255,255,255,.22);position:relative}
 .svc .svc-list .mono{color:var(--lime)}

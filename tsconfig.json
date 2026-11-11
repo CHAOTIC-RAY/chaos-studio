@@ -5,7 +5,9 @@
     "moduleResolution": "bundler",
     "strict": true,
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+    "resolveJsonModule": true
   },
-  "exclude": ["node_modules", "frontend/dist", "worker/dist", "frontend", "worker"]
+  "include": ["worker/**/*.ts", "content/site-content.defaults.json"],
+  "exclude": ["node_modules", "frontend/dist", "worker/dist", "frontend"]
 }

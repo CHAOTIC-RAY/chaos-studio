@@ -66,10 +66,10 @@
   let rawMix = 0.3;
   let glyphCrush = 0.58;
   let sceneStart = 0;
-  let sceneDuration = 5600;
+  let sceneDuration = 6200;
   let sceneCutAt = 0;
   let transition = 0;
-  let transitionDur = 520;
+  let transitionDur = 880;
   let glitch = { rgb: 8, tear: 5, slices: 4 };
   let wipe = { dir: 1 };
 
@@ -284,101 +284,50 @@
     wctx.globalAlpha = 1;
   }
 
-  function newScene() {
+  function refreshScenePalette() {
     if (!videoReel || !videoReel.clips.length) return;
-    const clip = videoReel.pickClip();
     palette = pick(PALETTES);
-    if (Math.random() < 0.04) palette = { ...palette, fg: palette.bg, bg: palette.fg };
-    glyphPool = pick(["mixed", "marks", "shapes", "logo", "icons", "logo"]);
+    glyphPool = pick(["mixed", "marks", "shapes", "icons", "logo"]);
     cellSize = mobile ? pick([9, 10, 11]) : pick([10, 11, 12]);
     ditherMode = mobile ? "bayer" : pick(["bayer", "bayer", "floyd"]);
-    rawMix = 0.25 + Math.random() * 0.1;
-    glyphCrush = 0.48 + Math.random() * 0.18;
-    if (Math.random() < 0.35) palette = pick(PALETTES.filter((p) => p.id !== "plum" && p.id !== "purple"));
-    sceneDuration = mobile ? 4800 + Math.random() * 1200 : 5400 + Math.random() * 1400;
-    sceneCutAt = performance.now() + sceneDuration;
+    rawMix = 0.26 + Math.random() * 0.08;
+    glyphCrush = 0.5 + Math.random() * 0.14;
     sceneStart = performance.now();
     sceneIndex++;
-    transition = 1;
-    wipe.dir = Math.random() < 0.5 ? 1 : -1;
-    glitch = { rgb: 8 + Math.random() * 14, tear: 3 + Math.random() * 8, slices: 3 + ((Math.random() * 4) | 0) };
+    transition = 0.35;
+    glitch = { rgb: 3 + Math.random() * 4, tear: 1 + Math.random() * 3, slices: 1 + ((Math.random() * 2) | 0) };
     resize();
     atlas.clear();
-    videoReel.setScene(clip);
-    pulseHeadline();
   }
 
-  function pulseHeadline() {
-    const h = document.querySelector(".hero-h");
-    if (!h || RM) return;
-    h.classList.add("hero-glitch-flash");
-    setTimeout(() => h.classList.remove("hero-glitch-flash"), 360);
-  }
-
-  function drawLogoFlash(a) {
-    if (!logoPath || a < 0.05) return;
-    ctx.save();
-    ctx.globalAlpha = a * 0.45;
-    ctx.fillStyle = palette.mid;
-    const sc = Math.min(size.w, size.h) * 0.38;
-    ctx.translate(size.w * 0.5, size.h * 0.46);
-    ctx.scale(sc / 245, sc / 245);
-    ctx.translate(-122.5, -167);
-    ctx.fill(logoPath);
-    ctx.restore();
+  function newScene() {
+    refreshScenePalette();
   }
 
   function composite() {
     ctx.fillStyle = palette.bg;
     ctx.fillRect(0, 0, size.w, size.h);
 
-    const tr = transition;
-    ctx.save();
-    if (tr > 0.02) {
-      const wx = size.w * (1 - tr);
-      ctx.beginPath();
-      if (wipe.dir > 0) ctx.rect(0, 0, wx, size.h);
-      else ctx.rect(size.w - wx, 0, wx, size.h);
-      ctx.clip();
-    }
+    const blend = videoReel && videoReel.getBlendMix ? videoReel.getBlendMix() : 0;
+    const tr = Math.max(transition * 0.35, blend * 0.22);
 
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(work, 0, 0, size.w, size.h);
     ctx.imageSmoothingEnabled = true;
 
     if (videoReel) {
-      videoReel.drawHud(ctx, size.w, size.h, palette, videoReel.active && videoReel.active.clip);
+      videoReel.drawHud(ctx, size.w, size.h, palette);
     }
-    ctx.restore();
 
-    if (tr > 0.08) drawLogoFlash(tr);
-
-    if (tr > 0.04) {
+    if (tr > 0.06) {
       const g = glitch;
-      const shift = Math.floor(g.rgb * tr);
+      const shift = Math.floor(g.rgb * tr * 0.6);
       if (shift) {
         ctx.save();
         ctx.globalCompositeOperation = "lighter";
-        ctx.fillStyle = "rgba(255,68,68,0.16)";
+        ctx.fillStyle = "rgba(193,107,224,0.07)";
         ctx.fillRect(shift, 0, size.w, size.h);
-        ctx.fillStyle = "rgba(193,107,224,0.12)";
-        ctx.fillRect(-shift, 2, size.w, size.h);
         ctx.restore();
-      }
-      for (let s = 0; s < g.slices; s++) {
-        const y = ((performance.now() / 40 + s * 47) | 0) % size.h;
-        const h = 6 + (s % 3) * 4;
-        ctx.fillStyle = s % 2 ? palette.mid : palette.accent;
-        ctx.globalAlpha = 0.2 * tr;
-        ctx.fillRect(-shift + s * 3, y, size.w, h);
-      }
-      ctx.globalAlpha = 1;
-      if (g.tear > 0) {
-        const y = (performance.now() / 45) % size.h;
-        ctx.fillStyle = palette.accent;
-        ctx.globalAlpha = 0.28 * tr;
-        ctx.fillRect(0, y, size.w, g.tear);
-        ctx.globalAlpha = 1;
       }
     }
 
@@ -401,10 +350,13 @@
     const dt = Math.min(32, t - (lastT || t));
     lastT = t;
 
-    if (t >= sceneCutAt) newScene();
-    if (transition > 0) transition = Math.max(0, transition - dt / transitionDur);
-
-    if (videoReel) videoReel.drawVideo(wctx, size.sw, size.sh, palette);
+    if (videoReel) {
+      videoReel.tickPoster && videoReel.tickPoster(dt);
+      const mix = videoReel.getBlendMix ? videoReel.getBlendMix() : 0;
+      if (mix > 0.12 && transition < 0.5) refreshScenePalette();
+      if (transition > 0) transition = Math.max(0, transition - dt / transitionDur);
+      videoReel.drawVideo(wctx, size.sw, size.sh, palette);
+    }
     else {
       wctx.fillStyle = palette.bg;
       wctx.fillRect(0, 0, size.sw, size.sh);
@@ -418,7 +370,7 @@
     if (running) return;
     running = true;
     lastT = 0;
-    if (!sceneCutAt) newScene();
+    if (!sceneStart) refreshScenePalette();
     cancelAnimationFrame(raf);
     raf = requestAnimationFrame(frame);
   }

@@ -52,7 +52,7 @@
 
 .page-studio .hero .ctas .btn-lime {
   width: 100%;
-  box-shadow: 4px 4px 0 var(--purple);
+  box-shadow: none;
 }
 
 .page-studio .hero .ctas .btn-line {

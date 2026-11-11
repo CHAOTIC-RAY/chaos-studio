@@ -14,7 +14,7 @@ const CLIPS = [
   { id: "watertexture", mixkitId: 50165, label: "Blue sea water texture (macro)", category: "scenery", source: "https://mixkit.co/free-stock-video/blue-sea-water-texture-waving-gently-50165/" },
   { id: "flames", mixkitId: 52306, label: "Blazing orange flames (macro)", category: "scenery", source: "https://mixkit.co/free-stock-video/close-up-of-blazing-orange-flames-over-a-pitch-dark-52306/" },
   { id: "jellyfish", mixkitId: 25353, label: "Spotted jellyfish (close-up)", category: "animals", source: "https://mixkit.co/free-stock-video/jellyfish-with-spots-25353/" },
-  { id: "reef", mixkitId: 5061, label: "Coral reef tropical fish", category: "animals", source: "https://mixkit.co/free-stock-video/underwater-coral-reef-and-tropical-fish-5061/" },
+  { id: "reef", mixkitId: 44869, label: "Coral reef Moorish Idol fish", category: "animals", source: "https://mixkit.co/free-stock-video/coral-reef-in-the-red-sea-with-moorish-idol-fish-swimming-44869/" },
   { id: "butterfly", mixkitId: 4088, label: "Butterfly on flower (macro)", category: "animals", source: "https://mixkit.co/free-stock-video/black-and-red-butterfly-fluttering-on-a-flower-4088/" },
   { id: "bee", mixkitId: 32477, label: "Bumblebee macro", category: "animals", source: "https://mixkit.co/free-stock-video/bumblebee-macro-close-up-32477/" },
   { id: "lion", mixkitId: 6736, label: "Lion head portrait in sun", category: "animals", source: "https://mixkit.co/free-stock-video/lion-head-portrait-in-the-sun-6736/" },
@@ -56,7 +56,10 @@ for (const clip of CLIPS) {
   fs.unlinkSync(raw);
 }
 
+const assetVersion = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+
 const manifest = {
+  version: assetVersion,
   provider: "Mixkit",
   licenseName: "Mixkit License",
   licenseUrl: "https://mixkit.co/license/",
@@ -66,9 +69,10 @@ const manifest = {
     id: c.id,
     label: c.label,
     category: c.category,
-    mp4: `/assets/hero-clips/${c.id}.mp4`,
-    webm: `/assets/hero-clips/${c.id}.webm`,
-    poster: `/assets/hero-clips/${c.id}-poster.jpg`,
+    version: assetVersion,
+    mp4: `/assets/hero-clips/${c.id}.mp4?v=${assetVersion}`,
+    webm: `/assets/hero-clips/${c.id}.webm?v=${assetVersion}`,
+    poster: `/assets/hero-clips/${c.id}-poster.jpg?v=${assetVersion}`,
     source: c.source,
     duration: 6,
   })),

@@ -1,9 +1,8 @@
+import { handleApi, serveMedia, type WorkerEnv } from "./src/api/content-handlers";
 import { portfolio, showcase } from "./src/data/portfolio";
 import { galleryEnabled, portfolioGalleryUrl } from "./src/features";
 
-export interface Env {
-  ASSETS: Fetcher;
-}
+export interface Env extends WorkerEnv {}
 
 const GALLERY_DEEP = /^\/gallery\/[a-z0-9-]+\/?$/;
 
@@ -20,6 +19,12 @@ function galleryRedirect(url: URL): Response {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+
+    const api = await handleApi(request, env, url);
+    if (api) return api;
+
+    const media = await serveMedia(request, env, url);
+    if (media) return media;
 
     if (url.pathname === "/api/portfolio" && request.method === "GET") {
       return Response.json(portfolio, { headers: JSON_HEADERS });
@@ -39,15 +44,8 @@ export default {
       );
     }
 
-    if (request.method === "OPTIONS" && url.pathname.startsWith("/api/")) {
-      return new Response(null, {
-        status: 204,
-        headers: {
-          ...JSON_HEADERS,
-          "Access-Control-Allow-Methods": "GET, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type",
-        },
-      });
+    if (url.pathname === "/admin" && request.method === "GET") {
+      return Response.redirect(`${url.origin}/admin/`, 301);
     }
 
     if (url.pathname === "/studio" && request.method === "GET") {

@@ -1,4 +1,5 @@
 {
+  "version": "20261111",
   "provider": "Mixkit",
   "licenseName": "Mixkit License",
   "licenseUrl": "https://mixkit.co/license/",
@@ -37,12 +38,13 @@
     },
     {
       "id": "reef",
-      "label": "Coral reef tropical fish",
+      "label": "Coral reef Moorish Idol fish",
       "category": "animals",
-      "mp4": "/assets/hero-clips/reef.mp4",
-      "webm": "/assets/hero-clips/reef.webm",
-      "poster": "/assets/hero-clips/reef-poster.jpg",
-      "source": "https://mixkit.co/free-stock-video/underwater-coral-reef-and-tropical-fish-5061/",
+      "version": "20261111",
+      "mp4": "/assets/hero-clips/reef.mp4?v=20261111",
+      "webm": "/assets/hero-clips/reef.webm?v=20261111",
+      "poster": "/assets/hero-clips/reef-poster.jpg?v=20261111",
+      "source": "https://mixkit.co/free-stock-video/coral-reef-in-the-red-sea-with-moorish-idol-fish-swimming-44869/",
       "duration": 6
     },
     {

@@ -1,8 +1,16 @@
-/* Full-bleed hero video reel — one decoder, preload next, motion HUD. */
+/* Full-bleed hero video reel — dual-decoder crossfade, preload, HUD. */
 window.HeroVideoReel = (function () {
+  const CLIP_HOLD_MS = 6200;
+  const CROSSFADE_MS = 880;
+  const IN_POINT = 0.15;
+
   function canPlayWebm() {
     const v = document.createElement("video");
     return v.canPlayType('video/webm; codecs="vp9"') !== "";
+  }
+
+  function easeInOut(t) {
+    return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
   }
 
   function createPool(host) {
@@ -14,11 +22,27 @@ window.HeroVideoReel = (function () {
     return el;
   }
 
+  function drawCover(wctx, sw, sh, palette, src, vw, vh) {
+    const scale = Math.max(sw / vw, sh / vh);
+    const dw = vw * scale;
+    const dh = vh * scale;
+    const dx = (sw - dw) / 2;
+    const dy = (sh - dh) / 2;
+    wctx.fillStyle = palette.bg;
+    wctx.fillRect(0, 0, sw, sh);
+    wctx.drawImage(src, dx, dy, dw, dh);
+  }
+
   return {
     async loadManifest() {
       const r = await fetch("/assets/hero-clips/manifest.json");
       if (!r.ok) throw new Error("manifest");
-      return r.json();
+      const data = await r.json();
+      const v = data.version;
+      if (v && Array.isArray(data.clips)) {
+        data.clips = data.clips.map((c) => ({ ...c, version: c.version || v }));
+      }
+      return data;
     },
 
     createState({ hero, mobile, reduced }) {
@@ -28,7 +52,13 @@ window.HeroVideoReel = (function () {
       let clips = [];
       let index = -1;
       let active = null;
-      let preloadId = null;
+      let incoming = null;
+      let blendT = 0;
+      let blending = false;
+      let blendStart = 0;
+      let sceneStart = 0;
+      let posterFade = 1;
+      let loadFade = 0;
 
       const track = document.createElement("canvas");
       const trackCtx = track.getContext("2d", { willReadFrequently: true });
@@ -41,7 +71,8 @@ window.HeroVideoReel = (function () {
       let hudT = 0;
 
       function srcFor(clip) {
-        return useWebm ? clip.webm : clip.mp4;
+        const path = useWebm ? clip.webm : clip.mp4;
+        return clip.version ? `${path}${path.includes("?") ? "&" : "?"}v=${clip.version}` : path;
       }
 
       function ensureVideo(clip, { preload } = { preload: false }) {
@@ -51,6 +82,7 @@ window.HeroVideoReel = (function () {
         v.playsInline = true;
         v.loop = false;
         v.preload = preload ? "auto" : "metadata";
+        v.playbackRate = 1;
         v.crossOrigin = "anonymous";
         v.poster = clip.poster;
         v.src = srcFor(clip);
@@ -59,22 +91,24 @@ window.HeroVideoReel = (function () {
         return v;
       }
 
-      function pauseExcept(id) {
+      function dropVideo(id) {
+        const v = videos.get(id);
+        if (!v) return;
+        v.pause();
+        v.removeAttribute("src");
+        v.load();
+        v.remove();
+        videos.delete(id);
+      }
+
+      function pauseExcept(...ids) {
         videos.forEach((v, cid) => {
-          if (cid !== id) {
-            v.pause();
-            try {
-              v.currentTime = 0;
-            } catch {
-              /* */
-            }
-          }
+          if (!ids.includes(cid)) v.pause();
         });
       }
 
       function preloadNext(nextClip) {
-        if (!nextClip || preloadId === nextClip.id) return;
-        preloadId = nextClip.id;
+        if (!nextClip) return;
         const v = ensureVideo(nextClip, { preload: true });
         v.load();
       }
@@ -82,9 +116,25 @@ window.HeroVideoReel = (function () {
       async function prepareFirst(all) {
         clips = reduced ? all.slice(0, 1) : all;
         if (!clips.length) return;
-        index = -1;
-        ensureVideo(clips[0], { preload: true });
+        index = 0;
+        const v = ensureVideo(clips[0], { preload: true });
+        active = { clip: clips[0], video: v };
+        tracks = [];
+        sceneStart = performance.now();
+        posterFade = reduced ? 0 : 1;
+        loadFade = 0;
+        try {
+          v.currentTime = IN_POINT;
+          await v.play();
+        } catch {
+          /* wait for visibility */
+        }
         preloadNext(clips[1] || clips[0]);
+        if (!reduced) {
+          requestAnimationFrame(() => {
+            loadFade = 1;
+          });
+        }
       }
 
       function nextClip() {
@@ -97,13 +147,17 @@ window.HeroVideoReel = (function () {
         if (i >= 0) index = i;
         pauseExcept(clip.id);
         const v = ensureVideo(clip, { preload: true });
-        active = { clip, video: v, started: performance.now() };
+        active = { clip, video: v };
+        incoming = null;
+        blending = false;
+        blendT = 0;
         tracks = [];
+        sceneStart = performance.now();
         try {
-          v.currentTime = 0;
+          v.currentTime = IN_POINT;
           await v.play();
         } catch {
-          /* until visible */
+          /* */
         }
         preloadNext(nextClip());
       }
@@ -114,10 +168,63 @@ window.HeroVideoReel = (function () {
         return clips[index];
       }
 
-      function detectMotion() {
-        const v = active && active.video;
+      function beginCrossfade(next) {
+        if (!next || blending || !active) return;
+        const v = ensureVideo(next, { preload: true });
+        blending = true;
+        blendT = 0;
+        blendStart = performance.now();
+        incoming = { clip: next, video: v };
+        try {
+          v.currentTime = IN_POINT;
+          v.play().catch(() => {});
+        } catch {
+          /* */
+        }
+        pauseExcept(active.clip.id, next.id);
+      }
+
+      function tickTiming() {
+        if (reduced || !active) return;
+        const now = performance.now();
+        if (blending) {
+          blendT = Math.min(1, (now - blendStart) / CROSSFADE_MS);
+          if (blendT >= 1) {
+            const outId = active.clip.id;
+            active = incoming;
+            incoming = null;
+            blending = false;
+            blendT = 0;
+            sceneStart = now;
+            index = clips.findIndex((c) => c.id === active.clip.id);
+            preloadNext(nextClip());
+            if (mobile) dropVideo(outId);
+          }
+          return;
+        }
+        if (now - sceneStart >= CLIP_HOLD_MS) {
+          beginCrossfade(nextClip());
+        }
+      }
+
+      function getBlendMix() {
+        return blending ? easeInOut(blendT) : 0;
+      }
+
+      function posterAlpha() {
+        if (reduced) return 0;
+        const load = Math.min(1, loadFade);
+        return posterFade * (1 - load) * 0.92;
+      }
+
+      function tickPoster(dt) {
+        if (posterFade <= 0) return;
+        posterFade = Math.max(0, posterFade - dt / (reduced ? 400 : 700));
+      }
+
+      function detectMotion(v) {
         if (!v || v.readyState < 2) {
-          tracks = tracks.slice(0, 0);
+          tracks = [];
           return;
         }
         trackCtx.drawImage(v, 0, 0, TW, TH);
@@ -155,51 +262,72 @@ window.HeroVideoReel = (function () {
         const merge = [];
         found.slice(0, mobile ? 5 : 9).forEach((b, i) => {
           const old = tracks[i];
-          if (old) {
-            merge.push({
-              ...b,
-              x: old.x * 0.72 + b.x * 0.28,
-              y: old.y * 0.72 + b.y * 0.28,
-            });
-          } else merge.push(b);
+          if (old) merge.push({ ...b, x: old.x * 0.72 + b.x * 0.28, y: old.y * 0.72 + b.y * 0.28 });
+          else merge.push(b);
         });
         tracks = merge;
       }
 
-      function drawVideo(wctx, sw, sh, palette) {
-        const v = active && active.video;
-        if (!v || v.readyState < 2) {
-          if (active && active.clip) {
-            const img = new Image();
-            img.src = active.clip.poster;
-            wctx.fillStyle = palette.bg;
-            wctx.fillRect(0, 0, sw, sh);
-            if (img.complete) {
-              const iw = img.naturalWidth || 1280;
-              const ih = img.naturalHeight || 720;
-              const sc = Math.max(sw / iw, sh / ih);
-              const dw = iw * sc;
-              const dh = ih * sc;
-              wctx.drawImage(img, (sw - dw) / 2, (sh - dh) / 2, dw, dh);
-              return true;
-            }
-          }
-          wctx.fillStyle = palette.bg;
-          wctx.fillRect(0, 0, sw, sh);
-          return false;
+      function drawOne(wctx, sw, sh, palette, layer) {
+        if (!layer) return false;
+        const v = layer.video;
+        if (v && v.readyState >= 2) {
+          drawCover(wctx, sw, sh, palette, v, v.videoWidth || 1280, v.videoHeight || 720);
+          return true;
         }
-        const vw = v.videoWidth || 1280;
-        const vh = v.videoHeight || 720;
-        const scale = Math.max(sw / vw, sh / vh);
-        const dw = vw * scale;
-        const dh = vh * scale;
-        const dx = (sw - dw) / 2;
-        const dy = (sh - dh) / 2;
+        const poster = layer.clip.poster;
+        if (poster) {
+          const img = new Image();
+          img.src = poster;
+          if (img.complete && img.naturalWidth) {
+            drawCover(wctx, sw, sh, palette, img, img.naturalWidth, img.naturalHeight);
+            return true;
+          }
+        }
         wctx.fillStyle = palette.bg;
         wctx.fillRect(0, 0, sw, sh);
-        wctx.drawImage(v, dx, dy, dw, dh);
+        return false;
+      }
+
+      function drawVideo(wctx, sw, sh, palette) {
+        tickTiming();
+        const mix = getBlendMix();
+        const off = document.createElement("canvas");
+        off.width = sw;
+        off.height = sh;
+        const octx = off.getContext("2d");
+
+        if (mix > 0 && incoming) {
+          drawOne(octx, sw, sh, palette, active);
+          wctx.drawImage(off, 0, 0);
+          octx.clearRect(0, 0, sw, sh);
+          drawOne(octx, sw, sh, palette, incoming);
+          wctx.save();
+          wctx.globalAlpha = mix;
+          wctx.drawImage(off, 0, 0);
+          wctx.restore();
+        } else if (active) {
+          drawOne(wctx, sw, sh, palette, active);
+        } else {
+          wctx.fillStyle = palette.bg;
+          wctx.fillRect(0, 0, sw, sh);
+        }
+
+        const pf = posterAlpha();
+        if (pf > 0.02 && active && active.clip.poster) {
+          const img = new Image();
+          img.src = active.clip.poster;
+          if (img.complete && img.naturalWidth) {
+            wctx.save();
+            wctx.globalAlpha = pf;
+            drawCover(wctx, sw, sh, palette, img, img.naturalWidth, img.naturalHeight);
+            wctx.restore();
+          }
+        }
+
+        const hudV = incoming && mix > 0.35 ? incoming.video : active && active.video;
         hudT++;
-        if (hudT % (mobile ? 2 : 1) === 0) detectMotion();
+        if (hudT % (mobile ? 2 : 1) === 0) detectMotion(hudV);
         return true;
       }
 
@@ -229,14 +357,15 @@ window.HeroVideoReel = (function () {
         ctx.stroke();
       }
 
-      function drawHud(ctx, w, h, palette, clip) {
+      function drawHud(ctx, w, h, palette) {
+        const clip = (incoming && blendT > 0.5 ? incoming.clip : active && active.clip) || { category: "FEED" };
         ctx.save();
         const mono = `${mobile ? 11 : 13}px "Space Mono", monospace`;
         const t = performance.now() / 1000;
         ctx.font = mono;
         ctx.fillStyle = palette.fg;
         ctx.globalAlpha = 0.92;
-        const tag = (clip && clip.category) || "FEED";
+        const tag = clip.category || "FEED";
         const pad = mobile ? 14 : 18;
         ctx.fillText(`CHAOS.TRK // ${tag.toUpperCase()}`, pad, mobile ? 22 : 26);
         const tc = `TC ${t.toFixed(2)}`;
@@ -259,8 +388,8 @@ window.HeroVideoReel = (function () {
           const ry = b.y * h;
           const bw = Math.max(28, b.w * w * 0.92);
           const bh = Math.max(24, b.h * h * 0.92);
-          const pad = 3;
-          bracket(ctx, rx + pad, ry + pad, bw - pad * 2, bh - pad * 2, palette.accent);
+          const p = 3;
+          bracket(ctx, rx + p, ry + p, bw - p * 2, bh - p * 2, palette.accent);
           ctx.fillStyle = palette.fg;
           ctx.globalAlpha = 0.92;
           ctx.font = mono;
@@ -291,11 +420,8 @@ window.HeroVideoReel = (function () {
         img.src = clip.poster;
         wctx.fillStyle = palette.bg;
         wctx.fillRect(0, 0, sw, sh);
-        if (img.complete) {
-          wctx.drawImage(img, 0, 0, sw, sh);
-        } else {
-          img.onload = () => wctx.drawImage(img, 0, 0, sw, sh);
-        }
+        if (img.complete) wctx.drawImage(img, 0, 0, sw, sh);
+        else img.onload = () => wctx.drawImage(img, 0, 0, sw, sh);
       }
 
       return {
@@ -309,6 +435,8 @@ window.HeroVideoReel = (function () {
         pickClip,
         pauseAll,
         stillFrame,
+        tickPoster,
+        getBlendMix,
         get active() {
           return active;
         },

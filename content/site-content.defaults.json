@@ -1,0 +1,385 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-11-11T11:48:57.557Z",
+  "seo": {
+    "title": "Chaos Studio · Independent creative studio · Malé, Maldives",
+    "description": "Chaos Studio — independent creative studio in Malé, Maldives. Branding, social media, web & app design, jerseys, marketing videos.",
+    "themeColor": "#1A1A1B"
+  },
+  "hero": {
+    "wordmarkLine1": "chaos",
+    "wordmarkLine2": "studio",
+    "headline": "Your brand, <span class=\"hl hl-lime\">unleashed.</span> Your impact, amplified.",
+    "pitch": "Your brand deserves more than just design — it deserves visual dominance. At Chaos Studio, we don't just create graphics; we craft experiences that grab attention, spark engagement, and leave a lasting impact.",
+    "primaryCta": {
+      "label": "WhatsApp us",
+      "shortLabel": "WhatsApp us"
+    },
+    "secondaryCta": {
+      "label": "Telegram"
+    },
+    "scrollCue": {
+      "label": "Scroll"
+    }
+  },
+  "contact": {
+    "whatsappUrl": "https://wa.me/9609401011",
+    "telegramUrl": "https://t.me/+9609401011",
+    "email": "chaos.studio.mv@gmail.com",
+    "instagramHandle": "@chaosstudio.mv",
+    "instagramUrl": "https://instagram.com/chaosstudio.mv",
+    "portfolioGalleryUrl": "https://portfolio.chaoticstudio.workers.dev/gallery/",
+    "portfolioCtaLong": "See everything on Ibrahim’s portfolio →",
+    "portfolioCtaShort": "Ibrahim’s full portfolio →",
+    "finaleCta": "WhatsApp / Telegram +960 9401011",
+    "headerMenuLabel": "Menu"
+  },
+  "services": [
+    {
+      "id": "svc-1",
+      "title": "Interior designing",
+      "description": "Spatial concepts, mood boards, and finish packages for homes and retail.",
+      "iconKey": "interior",
+      "wide": true
+    },
+    {
+      "id": "svc-2",
+      "title": "Architecture",
+      "description": "Concept visuals and presentation-ready elevation studies.",
+      "iconKey": "architecture",
+      "wide": false
+    },
+    {
+      "id": "svc-3",
+      "title": "App designing",
+      "description": "Native-feel UI flows, component libraries, and handoff specs.",
+      "iconKey": "app",
+      "wide": false
+    },
+    {
+      "id": "svc-4",
+      "title": "Website designing",
+      "description": "Marketing sites and product pages — fast, responsive, on-brand.",
+      "iconKey": "web",
+      "wide": false
+    },
+    {
+      "id": "svc-5",
+      "title": "Branding & logo design",
+      "description": "Logos, kits, and guidelines that travel across print and social.",
+      "iconKey": "brand",
+      "wide": false
+    },
+    {
+      "id": "svc-6",
+      "title": "Jersey design",
+      "description": "Team kits and event jerseys with print-ready separations.",
+      "iconKey": "jersey",
+      "wide": false
+    },
+    {
+      "id": "svc-7",
+      "title": "Marketing videos",
+      "description": "Reels, promos, and motion-ready cuts for campaigns.",
+      "iconKey": "video",
+      "wide": false
+    },
+    {
+      "id": "svc-8",
+      "title": "Social media management & ads",
+      "description": "Content calendars, paid creative, and channel-specific formats.",
+      "iconKey": "social",
+      "wide": true
+    },
+    {
+      "id": "svc-9",
+      "title": "Graphic design: posters & flyers",
+      "description": "Posters, flyers, and print collateral with bold type systems.",
+      "iconKey": "print",
+      "wide": false
+    }
+  ],
+  "packages": [
+    {
+      "id": "monthly-social",
+      "name": "Monthly Social Media Management",
+      "tagline": "Ongoing posts, reels, and strategy for the full month.",
+      "price": "6,000",
+      "currency": "MVR",
+      "featured": true,
+      "iconKey": "social",
+      "deliverables": [
+        {
+          "text": "20 custom posts for the month",
+          "iconKey": "post"
+        },
+        {
+          "text": "Engaging reels for the month",
+          "iconKey": "reel"
+        },
+        {
+          "text": "Detailed strategy plan for the month",
+          "iconKey": "strategy"
+        }
+      ],
+      "whatsappText": "Monthly Social Media Management",
+      "order": 0
+    },
+    {
+      "id": "starter",
+      "name": "Starter Package",
+      "tagline": "Perfect for businesses just starting out.",
+      "price": "2,000",
+      "currency": "MVR",
+      "featured": false,
+      "iconKey": "logo",
+      "deliverables": [
+        {
+          "text": "Logo design (3 concepts)",
+          "iconKey": "logo"
+        },
+        {
+          "text": "Letterhead design",
+          "iconKey": "file"
+        },
+        {
+          "text": "2 social media posts per week",
+          "iconKey": "post"
+        },
+        {
+          "text": "1 reel per week",
+          "iconKey": "reel"
+        }
+      ],
+      "whatsappText": "Starter Package",
+      "order": 1
+    },
+    {
+      "id": "business-booster",
+      "name": "Business Booster Package",
+      "tagline": "Ideal for small businesses looking to grow their brand.",
+      "price": "5,000",
+      "currency": "MVR",
+      "featured": false,
+      "iconKey": "rocket",
+      "deliverables": [
+        {
+          "text": "Logo design (3 revisions)",
+          "iconKey": "logo"
+        },
+        {
+          "text": "Letterhead design",
+          "iconKey": "file"
+        },
+        {
+          "text": "Jersey design (customized)",
+          "iconKey": "jersey"
+        },
+        {
+          "text": "4 social media posts per week",
+          "iconKey": "post"
+        },
+        {
+          "text": "2 reels per week",
+          "iconKey": "reel"
+        }
+      ],
+      "whatsappText": "Business Booster Package",
+      "order": 2
+    },
+    {
+      "id": "complete-branding",
+      "name": "Complete Branding Package",
+      "tagline": "For businesses that want a full branding experience.",
+      "price": "8,000",
+      "currency": "MVR",
+      "featured": false,
+      "iconKey": "palette",
+      "deliverables": [
+        {
+          "text": "Logo design (unlimited concepts + revisions)",
+          "iconKey": "logo"
+        },
+        {
+          "text": "Letterhead design",
+          "iconKey": "file"
+        },
+        {
+          "text": "Jersey design",
+          "iconKey": "jersey"
+        },
+        {
+          "text": "Banner / poster designs (2)",
+          "iconKey": "image"
+        },
+        {
+          "text": "6 social media posts per week",
+          "iconKey": "post"
+        },
+        {
+          "text": "4 reels per week",
+          "iconKey": "reel"
+        },
+        {
+          "text": "Strategy for a whole month's posts and reels",
+          "iconKey": "strategy"
+        }
+      ],
+      "whatsappText": "Complete Branding Package",
+      "order": 3
+    },
+    {
+      "id": "event-marketing",
+      "name": "Event Marketing Package",
+      "tagline": "Best for one-time campaigns or events.",
+      "price": "3,500",
+      "currency": "MVR",
+      "featured": false,
+      "iconKey": "calendar",
+      "deliverables": [
+        {
+          "text": "Banner design (1 piece)",
+          "iconKey": "image"
+        },
+        {
+          "text": "Poster design (1 piece)",
+          "iconKey": "image"
+        },
+        {
+          "text": "5 custom social media posts",
+          "iconKey": "post"
+        },
+        {
+          "text": "2 reels",
+          "iconKey": "reel"
+        }
+      ],
+      "whatsappText": "Event Marketing Package",
+      "order": 4
+    }
+  ],
+  "pricingNote": "All-in-one solutions with creativity, efficiency, and care. Prices are negotiable based on design or post type.",
+  "whyUs": [
+    {
+      "id": "affordable",
+      "title": "Affordable",
+      "body": "High-quality designs at budget-friendly rates.",
+      "iconKey": "affordable"
+    },
+    {
+      "id": "fast",
+      "title": "Fast & direct",
+      "body": "No middlemen — quick, clear communication.",
+      "iconKey": "fast"
+    },
+    {
+      "id": "tailored",
+      "title": "Tailored for you",
+      "body": "Unique designs that match your brand perfectly.",
+      "iconKey": "tailored"
+    }
+  ],
+  "featuredWork": [
+    {
+      "slug": "kora",
+      "title": "Kora",
+      "mod": "feat--kora",
+      "category": "Product",
+      "tagline": "Your bookshelf, narrator, and morning paper.",
+      "href": "https://kora.chaoticstudio.workers.dev",
+      "layout": "dual",
+      "desktop": "/assets/work/kora/cover.png",
+      "mobile": "/assets/work/kora/cover.png",
+      "url": "kora.chaoticstudio.workers.dev",
+      "order": 0
+    },
+    {
+      "slug": "faisa",
+      "title": "FaisaMobileXYZ",
+      "mod": "feat--faisa",
+      "category": "Product",
+      "tagline": "MIB banking app design concept.",
+      "href": "https://xd.adobe.com/view/b36c0490-3f96-4e44-b508-e7eec72ac2f4-e63f/screen/ff1f537b-4355-4368-a948-171625c7b7dc/?fullscreen&hints=off",
+      "layout": "phone-hero",
+      "mobile": "/images/projects/frames/faisa/02-home.webp",
+      "desktop": "/images/projects/frames/faisa/06-transfer.webp",
+      "url": "FaisaMobileXYZ prototype",
+      "order": 1
+    },
+    {
+      "slug": "forge",
+      "title": "Forge",
+      "mod": "feat--forge",
+      "category": "Product",
+      "tagline": "Content scheduler & idea creator.",
+      "href": "https://forge.app",
+      "layout": "dual",
+      "desktop": "/images/projects/frames/forge/desktop/02-dashboard.webp",
+      "mobile": "/images/projects/frames/forge/mobile/02-dashboard.webp",
+      "url": "forge.chaoticstudio.workers.dev",
+      "order": 2
+    },
+    {
+      "slug": "GexTag",
+      "title": "UtilityBox",
+      "mod": "feat--utility",
+      "category": "Product",
+      "tagline": "Bulk geotagging utility.",
+      "href": "https://gextag.chaoticstudio.workers.dev/",
+      "layout": "solo",
+      "desktop": "/assets/work/gextag/cover.webp",
+      "url": "gextag.chaoticstudio.workers.dev",
+      "order": 3
+    },
+    {
+      "slug": "QuePulse",
+      "title": "QuePulse",
+      "mod": "feat--quepulse",
+      "category": "Product",
+      "tagline": "Live hospital queue tracking.",
+      "href": "https://quepulse.chaoticstudio.workers.dev/",
+      "layout": "dual",
+      "desktop": "/assets/work/quepulse/cover.webp",
+      "mobile": "/assets/work/quepulse/cover.webp",
+      "url": "quepulse.chaoticstudio.workers.dev",
+      "order": 4
+    }
+  ],
+  "showcaseHeadline": "Five featured builds — product shots in device frames.",
+  "footer": {
+    "line": "@chaosstudio.mv · Chaos Studio — Malé, MV · © 2026"
+  },
+  "about": {
+    "title": "a <span class=\"hl hl-ink\">collective,</span> not a factory.",
+    "copy": "Chaos Studio is a creative agency built on the vision of a community-run collective. We are assembling a curated network of designers, strategists, and marketers to work under one name. We believe in direct accountability, not overpromising. For every project, we hand-pick the right specialists to work together from brief to delivery.",
+    "bullets": [
+      "Brand identity & social kits for local clients",
+      "Product design: CookXpert, Forge, FaisaMobileXYZ",
+      "Campaign art direction & motion-ready assets",
+      "Teaching design fundamentals alongside client work"
+    ]
+  },
+  "finale": {
+    "tag": "009 — Contact · Malé, MV",
+    "headline": "let's create some <span class=\"glitch lime-t\" data-text=\"chaos.\">chaos.</span>",
+    "brace": "{DM us to start your brand}",
+    "links": [
+      {
+        "label": "Telegram",
+        "href": "https://t.me/+9609401011"
+      },
+      {
+        "label": "@chaosstudio.mv",
+        "href": "https://instagram.com/chaosstudio.mv"
+      },
+      {
+        "label": "chaos.studio.mv@gmail.com",
+        "href": "mailto:chaos.studio.mv@gmail.com"
+      },
+      {
+        "label": "Full gallery",
+        "href": "https://portfolio.chaoticstudio.workers.dev/gallery/"
+      }
+    ]
+  }
+}

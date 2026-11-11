@@ -1,0 +1,196 @@
+.contact-glyph {
+  width: 1.15em;
+  height: 1.15em;
+  flex: 0 0 auto;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.contact-chrome--header {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contact-chrome--header .contact-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  gap: 8px;
+  border: 1px solid rgba(214, 144, 232, 0.45);
+  background: rgba(26, 26, 27, 0.72);
+  color: var(--white);
+  text-decoration: none;
+  font: 400 13px/1 "DM Sans", sans-serif;
+  letter-spacing: 0.02em;
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.contact-chrome--header .contact-btn--label {
+  padding: 0 14px;
+}
+
+.contact-chrome--header .contact-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 40%, rgba(214, 144, 232, 0.25) 50%, transparent 60%);
+  transform: translateX(-120%);
+  transition: transform 0.45s ease;
+  pointer-events: none;
+}
+
+.contact-chrome--header .contact-btn:hover::before,
+.contact-chrome--header .contact-btn:focus-visible::before {
+  transform: translateX(120%);
+}
+
+.contact-chrome--header .contact-btn:hover,
+.contact-chrome--header .contact-btn:focus-visible {
+  border-color: var(--lilac);
+  background: rgba(88, 44, 110, 0.55);
+  color: var(--white);
+  box-shadow: 0 0 0 1px rgba(214, 144, 232, 0.35);
+}
+
+.contact-chrome--header .contact-btn:hover .contact-glyph,
+.contact-chrome--header .contact-btn:focus-visible .contact-glyph {
+  transform: translateY(-1px) scale(1.06);
+}
+
+.contact-chrome--header .contact-btn:focus-visible {
+  outline: 2px solid var(--lilac);
+  outline-offset: 2px;
+}
+
+.contact-chrome--header .contact-btn--wa {
+  color: #dfffe8;
+}
+
+.contact-chrome--header .contact-btn--tg {
+  color: #d4ecff;
+}
+
+@media (max-width: 600px) {
+  .contact-chrome--header {
+    display: none;
+  }
+}
+
+.contact-chrome--hero {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  width: 100%;
+}
+
+.contact-chrome--hero .contact-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 22px;
+  border-radius: 999px;
+  text-decoration: none;
+  font: 500 15px/1.1 "DM Sans", sans-serif;
+  letter-spacing: 0.01em;
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.18s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.contact-chrome--hero .contact-cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 35%, rgba(255, 255, 255, 0.18) 50%, transparent 65%);
+  transform: translateX(-130%);
+  transition: transform 0.5s ease;
+  pointer-events: none;
+}
+
+.contact-chrome--hero .contact-cta:hover::before,
+.contact-chrome--hero .contact-cta:focus-visible::before {
+  transform: translateX(130%);
+}
+
+.contact-chrome--hero .contact-cta--primary {
+  background: var(--shock);
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: none;
+}
+
+.contact-chrome--hero .contact-cta--primary:hover,
+.contact-chrome--hero .contact-cta--primary:focus-visible {
+  background: #9bff4a;
+  color: var(--ink);
+}
+
+.contact-chrome--hero .contact-cta--ghost {
+  background: transparent;
+  color: var(--white);
+  border: 1px solid rgba(214, 144, 232, 0.55);
+}
+
+.contact-chrome--hero .contact-cta--ghost:hover,
+.contact-chrome--hero .contact-cta--ghost:focus-visible {
+  background: rgba(214, 144, 232, 0.12);
+  border-color: var(--lilac);
+  color: var(--white);
+}
+
+.contact-chrome--hero .contact-cta:hover .contact-glyph,
+.contact-chrome--hero .contact-cta:focus-visible .contact-glyph {
+  transform: translateX(2px) scale(1.05);
+}
+
+.contact-chrome--hero .contact-cta:focus-visible {
+  outline: 2px solid var(--lilac);
+  outline-offset: 2px;
+}
+
+@media (min-width: 521px) {
+  .contact-chrome--hero {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    width: auto;
+    max-width: none;
+  }
+
+  .contact-chrome--hero .contact-cta {
+    width: auto;
+  }
+}
+
+.page-studio .hero .contact-chrome--hero {
+  margin-top: var(--sp-1);
+}
+
+.menu .contact-chrome--mobile-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.menu .contact-chrome--mobile-menu .contact-cta {
+  width: 100%;
+}

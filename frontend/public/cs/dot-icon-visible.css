@@ -1,0 +1,49 @@
+/* Ensure halftone dot icons read on void/plum (mobile + desktop). */
+
+.page-studio .dot-icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 56px;
+  max-height: 56px;
+  object-fit: contain;
+  image-rendering: auto;
+  transform: scale(2.35);
+  transform-origin: center center;
+}
+
+.page-studio .svc-ico,
+.page-studio .why-dot-ico,
+.page-studio .pk-dot-icon,
+.page-studio .deliverable-ico {
+  overflow: visible;
+  color: #d690e8;
+}
+
+.page-studio .svc-ico .dot-icon {
+  width: 44px;
+  height: 44px;
+}
+
+.page-studio .why-dot-ico .dot-icon {
+  width: clamp(48px, 12vw, 56px);
+  height: clamp(48px, 12vw, 56px);
+}
+
+.page-studio .pk-dot-icon .dot-icon {
+  width: 56px;
+  height: 56px;
+}
+
+.page-studio .deliverable-ico .dot-icon {
+  width: 32px;
+  height: 32px;
+}
+
+/* Icons paint immediately; motion only nudges. */
+.page-studio .svc-tile,
+.page-studio .whys .why .why-dot-ico,
+.page-studio .whys .why .num {
+  opacity: 1 !important;
+  visibility: visible !important;
+}

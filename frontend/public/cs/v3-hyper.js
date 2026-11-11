@@ -534,6 +534,11 @@
       if (cfg.letterbox) sec.classList.add("cine-shot__letterbox");
       const inner = sec.querySelector(".wrap") || sec.querySelector(".studio-finale__inner") || sec;
       inner.classList.add("cine-title");
+      gsap.set(inner, { opacity: 1, y: 0, scale: 1, filter: "none" });
+      if (coarse || narrow) {
+        cineLetterboxPulse(sec);
+        return;
+      }
       const enter = { y: narrow ? 22 : 40, opacity: 0, scale: 0.98, force3D: true };
       let enterScale = 1;
       if (cfg.type === "establishing") enter.scale = narrow ? 1.03 : 1.05;
@@ -557,6 +562,7 @@
           filter: narrow ? undefined : "blur(0px)",
           ease: "power2.out",
           duration: narrow ? 0.5 : 0.72,
+          immediateRender: false,
           scrollTrigger: {
             trigger: sec,
             start: "top 88%",
@@ -576,6 +582,7 @@
   function scrollTextMotion() {
     if (RM) return;
     document.querySelectorAll(".about-h, .work-h, .svc-title, .pk-head h2, .imp-h, .t-h").forEach((el) => {
+      if (coarse || narrow) return;
       el.querySelectorAll(".hl").forEach((hl) => hl.classList.add("v3-hl-wipe"));
       const rich = el.querySelector(".glitch, .dot-display, .hl");
       if (rich) {
@@ -626,12 +633,13 @@
   function servicesBentoMotion() {
     const tiles = document.querySelectorAll(".svc-tile");
     if (!tiles.length || RM) return;
+    gsap.set(tiles, { opacity: 1, y: 0 });
+    if (coarse || narrow) return;
     ST.batch(tiles, {
-      start: "top 92%",
+      start: "top 94%",
       onEnter: (batch) =>
-        gsap.fromTo(batch, { opacity: 0, y: 28 }, { opacity: 1, y: 0, stagger: 0.05, duration: 0.45, ease: "power2.out" }),
+        gsap.fromTo(batch, { y: 16 }, { y: 0, stagger: 0.04, duration: 0.35, ease: "power2.out", overwrite: true }),
     });
-    gsap.set(tiles, { opacity: 0, y: 28 });
   }
 
   function featuredBentoMotion() {
@@ -774,15 +782,21 @@
         gsap.fromTo(rule, { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 0.55, ease: "power2.out", scrollTrigger: st });
       }
       if (num) {
-        gsap.fromTo(num, { scale: 0.72, opacity: 0, y: coarse ? 12 : 18 }, {
-          scale: 1,
-          opacity: 1,
-          y: 0,
-          duration: 0.55,
-          delay: 0.08,
-          ease: "back.out(1.4)",
-          scrollTrigger: st,
-        });
+        gsap.set(num, { opacity: 1, scale: 1, y: 0 });
+        if (!coarse && !narrow) {
+          gsap.fromTo(
+            num,
+            { scale: 0.88, y: 10 },
+            {
+              scale: 1,
+              y: 0,
+              duration: 0.45,
+              delay: 0.04,
+              ease: "back.out(1.35)",
+              scrollTrigger: st,
+            },
+          );
+        }
       }
       if (h3 || body) {
         gsap.fromTo([h3, body].filter(Boolean), { y: coarse ? 16 : 22, opacity: 0 }, {
@@ -897,6 +911,11 @@
   } else {
     init();
   }
+
+  document.addEventListener("cms-content-ready", () => {
+    marqueeBand();
+    ST.refresh();
+  });
 
   document.addEventListener("cs-showcase-ready", () => {
     featuredBentoMotion();

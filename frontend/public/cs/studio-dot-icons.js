@@ -41,7 +41,13 @@
 
   function img(file, className, size) {
     const s = size || 48;
-    return `<img class="dot-icon${className ? ` ${className}` : ""}" src="${BASE}${file}" alt="" width="${s}" height="${s}" loading="lazy" decoding="async">`;
+    return `<img class="dot-icon${className ? ` ${className}` : ""}" src="${BASE}${file}" alt="" width="${s}" height="${s}" loading="eager" decoding="sync" fetchpriority="low">`;
+  }
+
+  function paintAll() {
+    document.querySelectorAll(".svc-ico img.dot-icon, .why-dot-ico img.dot-icon, .pk-dot-icon img.dot-icon, .deliverable-ico img.dot-icon").forEach((img) => {
+      img.loading = "eager";
+    });
   }
 
   function featureIconFor(text) {
@@ -63,5 +69,14 @@
     PACKAGE,
     WHY,
     featureIconFor,
+    paintAll,
   };
+
+  function bootPaint() {
+    paintAll();
+  }
+
+  document.addEventListener("cms-content-ready", bootPaint);
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bootPaint);
+  else bootPaint();
 })();
