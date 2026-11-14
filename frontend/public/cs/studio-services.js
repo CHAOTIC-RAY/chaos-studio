@@ -19,8 +19,8 @@
       : [...list.querySelectorAll("li")].map((li, i) => ({
           title: li.querySelector(".cond")?.textContent.trim() || "",
           description: "",
-          iconKey: ["interior", "architecture", "app", "web", "brand", "jersey", "video", "social", "print"][i],
-          wide: i === 0 || i === 7,
+          iconKey: ["brand", "jersey", "social", "web", "automation", "print"][i],
+          wide: i === 0 || i === 2,
         }));
 
     const bento = document.createElement("div");

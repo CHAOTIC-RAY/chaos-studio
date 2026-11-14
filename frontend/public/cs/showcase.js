@@ -121,7 +121,7 @@
     const title = item.title || item.slug;
     const href = item.href || "#";
     const tag = item.tagline || item.category || "";
-    return `<li class="feat ${item.mod || ""}" data-reveal style="--d:${i * 55}ms">
+    return `<li class="feat ${item.mod || ""} in" style="--d:${i * 55}ms">
       <a class="feat-link" href="${esc(href)}" target="_blank" rel="noopener noreferrer">
         ${devicesHtml(item, title)}
         <span class="feat-meta">

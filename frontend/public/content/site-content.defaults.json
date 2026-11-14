@@ -9,8 +9,8 @@
   "hero": {
     "wordmarkLine1": "chaos",
     "wordmarkLine2": "studio",
-    "headline": "Your brand, <span class=\"hl hl-lime\">unleashed.</span> Your impact, amplified.",
-    "pitch": "Your brand deserves more than just design — it deserves visual dominance. At Chaos Studio, we don't just create graphics; we craft experiences that grab attention, spark engagement, and leave a lasting impact.",
+    "headline": "Maldivian brands, <span class=\"hl hl-lime\">built right.</span>",
+    "pitch": "Brands, jerseys, apps and content for Maldivian businesses. One studio, no middlemen.",
     "primaryCta": {
       "label": "WhatsApp us",
       "shortLabel": "WhatsApp us"
@@ -36,65 +36,44 @@
   },
   "services": [
     {
-      "id": "svc-1",
-      "title": "Interior designing",
-      "description": "Spatial concepts, mood boards, and finish packages for homes and retail.",
-      "iconKey": "interior",
+      "id": "svc-brand",
+      "title": "Brand identity",
+      "description": "Logos, visual systems, and brand kits ready for print and social.",
+      "iconKey": "brand",
       "wide": true
     },
     {
-      "id": "svc-2",
-      "title": "Architecture",
-      "description": "Concept visuals and presentation-ready elevation studies.",
-      "iconKey": "architecture",
-      "wide": false
-    },
-    {
-      "id": "svc-3",
-      "title": "App designing",
-      "description": "Native-feel UI flows, component libraries, and handoff specs.",
-      "iconKey": "app",
-      "wide": false
-    },
-    {
-      "id": "svc-4",
-      "title": "Website designing",
-      "description": "Marketing sites and product pages — fast, responsive, on-brand.",
-      "iconKey": "web",
-      "wide": false
-    },
-    {
-      "id": "svc-5",
-      "title": "Branding & logo design",
-      "description": "Logos, kits, and guidelines that travel across print and social.",
-      "iconKey": "brand",
-      "wide": false
-    },
-    {
-      "id": "svc-6",
-      "title": "Jersey design",
-      "description": "Team kits and event jerseys with print-ready separations.",
+      "id": "svc-jersey",
+      "title": "Custom jersey design",
+      "description": "Team and event jerseys with print-ready artwork and mockups.",
       "iconKey": "jersey",
       "wide": false
     },
     {
-      "id": "svc-7",
-      "title": "Marketing videos",
-      "description": "Reels, promos, and motion-ready cuts for campaigns.",
-      "iconKey": "video",
-      "wide": false
-    },
-    {
-      "id": "svc-8",
-      "title": "Social media management & ads",
-      "description": "Content calendars, paid creative, and channel-specific formats.",
+      "id": "svc-social",
+      "title": "Social & content",
+      "description": "Posts, reels, calendars, and channel-ready creative.",
       "iconKey": "social",
       "wide": true
     },
     {
-      "id": "svc-9",
-      "title": "Graphic design: posters & flyers",
-      "description": "Posters, flyers, and print collateral with bold type systems.",
+      "id": "svc-web",
+      "title": "Web & product",
+      "description": "Marketing sites, apps, and product UI you can ship.",
+      "iconKey": "web",
+      "wide": false
+    },
+    {
+      "id": "svc-automation",
+      "title": "Automation",
+      "description": "Workflows, integrations, and lightweight tools that save time.",
+      "iconKey": "automation",
+      "wide": false
+    },
+    {
+      "id": "svc-print",
+      "title": "Print & promo",
+      "description": "Posters, flyers, banners, and promo packs for events.",
       "iconKey": "print",
       "wide": false
     }
@@ -336,7 +315,7 @@
     },
     {
       "slug": "GexTag",
-      "title": "UtilityBox",
+      "title": "GexTag",
       "mod": "feat--utility",
       "category": "Product",
       "tagline": "Bulk geotagging utility.",
@@ -367,7 +346,7 @@
       "order": 4
     }
   ],
-  "showcaseHeadline": "Five featured builds — product shots in device frames.",
+  "showcaseHeadline": "Apps and tools we designed and shipped.",
   "footer": {
     "line": "@chaosstudio.mv · Chaos Studio — Malé, MV · © 2026"
   },

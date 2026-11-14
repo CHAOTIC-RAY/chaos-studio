@@ -124,6 +124,7 @@
       const chunk = c.services.map((s) => s.title.toUpperCase()).join(" ✶ ");
       strip.textContent = `${chunk} ✶ `.repeat(2);
     }
+    unveilReveals(list.closest(".svc") || document);
   }
 
   function hydrateWhy(c) {
@@ -152,30 +153,49 @@
     }
   }
 
+  function unveilReveals(scope) {
+    const root = scope && scope.querySelectorAll ? scope : document;
+    root.querySelectorAll("[data-reveal]").forEach((n) => n.classList.add("in"));
+    if (window.ScrollTrigger) window.ScrollTrigger.refresh();
+    if (window.gsap && window.gsap.core) {
+      root.querySelectorAll("[data-reveal]").forEach((n) => {
+        window.gsap.set(n, { opacity: 1, y: 0, skewX: 0, clearProps: "transform" });
+      });
+    }
+  }
+
   function hydratePackages(c) {
     const root = document.querySelector(".pks.pk-bento");
     const note = document.querySelector(".pk-note");
     if (note && c.pricingNote) note.textContent = c.pricingNote;
     if (!root || !Array.isArray(c.packages)) return;
+    root.setAttribute("role", "list");
     const sorted = [...c.packages].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     root.innerHTML = sorted
       .map((p, idx) => {
-        const rec = p.featured ? '<span class="tag fine pk-sticker">Recommended</span>' : `<span class="tag fine">Package ${String(idx + 1).padStart(2, "0")}</span>`;
+        const rec = p.featured
+          ? '<span class="tag fine pk-sticker">Recommended</span>'
+          : `<span class="tag fine">Package ${String(idx + 1).padStart(2, "0")}</span>`;
         const dels = (p.deliverables || [])
           .map((d, i) => `<li><span>${String(i + 1).padStart(2, "0")}</span><span>${esc(d.text)}</span></li>`)
           .join("");
         const cls = p.featured ? "pk pk--rec" : "pk";
-        return `<article class="${cls}" role="listitem" data-reveal data-pkg-id="${esc(p.id)}">
+        const toggle =
+          '<button type="button" class="pk-toggle" aria-expanded="false">What\'s included</button>';
+        return `<article class="${cls}" data-pkg-id="${esc(p.id)}">
           ${rec}
           <h3>${esc(p.name)}</h3>
           <p class="tl">${esc(p.tagline)}</p>
           <p class="fine">${(p.deliverables || []).length} deliverables included</p>
+          ${toggle}
           <ul>${dels}</ul>
-          <div class="price"><span class="fine">Starting at</span><span class="amt">${esc(p.price)}<small>${esc(p.currency || "MVR")}</small></span></div>
+          <div class="price"><span class="fine">Starting at</span><span class="amt dot-type" data-dots="${String(p.price).replace(/\D/g, "") || idx}" data-dot-variant="lilac">${esc(p.price)}<small>${esc(p.currency || "MVR")}</small></span></div>
           <a class="btn pill" href="${esc(waLink(c.contact.whatsappUrl, p.whatsappText || p.name))}" target="_blank" rel="noopener noreferrer">Enquire on WhatsApp</a>
         </article>`;
       })
       .join("");
+    unveilReveals(root);
+    document.dispatchEvent(new CustomEvent("cs-packages-ready"));
   }
 
   function hydrateWork(c) {
@@ -249,6 +269,7 @@
     if (!content) return;
     window.__SITE_CONTENT__ = content;
     hydrateAll(content);
+    unveilReveals(document);
     document.dispatchEvent(new CustomEvent("cms-content-ready", { detail: content }));
   }
 

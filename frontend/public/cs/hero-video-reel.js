@@ -344,7 +344,7 @@ window.HeroVideoReel = (function () {
         }
         for (let i = 0; i < img.data.length / 4; i++) prev[i] = img.data[i * 4];
         const merge = [];
-        found.slice(0, mobile ? 5 : 9).forEach((b, i) => {
+        found.slice(0, 4).forEach((b, i) => {
           const old = tracks[i];
           if (old) merge.push({ ...b, x: old.x * 0.72 + b.x * 0.28, y: old.y * 0.72 + b.y * 0.28 });
           else merge.push(b);
@@ -470,9 +470,10 @@ window.HeroVideoReel = (function () {
         ctx.stroke();
         ctx.globalAlpha = 1;
 
-        tracks.forEach((b, i) => {
+        const sorted = [...tracks].sort((a, b) => a.y - b.y || a.x - b.x).slice(0, 4);
+        sorted.forEach((b, i) => {
           const rx = b.x * w;
-          const ry = b.y * h;
+          const ry = Math.min(h * 0.72, Math.max(h * 0.12, b.y * h + i * (mobile ? 6 : 4)));
           const bw = Math.max(28, b.w * w * 0.92);
           const bh = Math.max(24, b.h * h * 0.92);
           const p = 3;
@@ -481,9 +482,9 @@ window.HeroVideoReel = (function () {
           ctx.globalAlpha = 0.92;
           ctx.font = mono;
           const id = 100 + i;
-          ctx.fillText(`OBJ-${id} ${b.conf}%`, rx + 6, ry + bh - 5);
-          ctx.globalAlpha = 0.65;
-          ctx.fillText(`${b.vx}, ${b.vy}`, rx + 6, ry + 12);
+          const labelY = Math.max(mobile ? 28 : 26, ry + bh - 5);
+          if (labelY < h * 0.2) return;
+          ctx.fillText(`OBJ-${id} ${b.conf}%`, rx + 6, labelY);
           ctx.globalAlpha = 1;
         });
 

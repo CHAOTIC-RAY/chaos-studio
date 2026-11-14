@@ -6,7 +6,6 @@
   --purple: #c16be0;
   --lilac: #d690e8;
   --shock: #ff4444;
-  --lime: var(--shock);
   --kraft: #a79a89;
   --paper: #ede6da;
   --white: #fff;
@@ -19,7 +18,7 @@
   --fs-label: 14px;
   --lh-hero: 0.88;
   --lh-display: 0.92;
-  --track-hero: -0.04em;
+  --track-hero: -0.02em;
   --hdr-h: 64px;
   --grain-tex: url("/assets/motifs/noise-tile.png");
 }
@@ -81,7 +80,7 @@ body::after {
 .seg [aria-current="page"],
 .seg [aria-pressed="true"] {
   background: var(--shock);
-  color: var(--white);
+  color: var(--ink);
   border-radius: 0;
   box-shadow: 4px 4px 0 var(--purple);
 }
@@ -164,8 +163,9 @@ body::after {
 
 .finale .cta {
   background: var(--shock) !important;
-  color: var(--white) !important;
-  border-radius: 0;
+  color: var(--ink) !important;
+  border-radius: 999px;
+  margin-top: 32px;
 }
 
 .frame .tape.fine {
@@ -204,10 +204,18 @@ body::after {
 }
 
 /* ----- Sections: dark grounds + motif accents ----- */
-.sec[data-ground="void"],
-.sec[data-ground="ink"],
-.sec[data-ground="plum"] {
+.sec[data-ground="void"] {
   background-color: var(--void);
+}
+
+.sec.g-plum,
+.sec[data-ground="plum"] {
+  background-color: var(--plum);
+}
+
+.sec.g-ink,
+.sec[data-ground="ink"] {
+  background-color: var(--ink);
 }
 
 .g-paper {
@@ -262,12 +270,13 @@ body::after {
 
 .pk--rec .tag {
   background: var(--shock) !important;
-  color: var(--white) !important;
+  color: var(--ink) !important;
+  font-size: 14px;
 }
 
 .pk--rec .btn {
   background: var(--shock) !important;
-  color: var(--white) !important;
+  color: var(--ink) !important;
 }
 
 .pk .btn {

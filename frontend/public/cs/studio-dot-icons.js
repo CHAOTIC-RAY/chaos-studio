@@ -3,15 +3,16 @@
   const BASE = "/assets/motifs/dot-icons/";
 
   const SERVICE = {
+    brand: "dot-logo.svg",
+    jersey: "dot-star.svg",
+    social: "dot-megaphone.svg",
+    web: "dot-monitor.svg",
+    automation: "dot-bolt.svg",
+    print: "dot-brush.svg",
     interior: "dot-home.svg",
     architecture: "dot-layers.svg",
     app: "dot-phone.svg",
-    web: "dot-monitor.svg",
-    brand: "dot-logo.svg",
-    jersey: "dot-star.svg",
     video: "dot-play.svg",
-    social: "dot-megaphone.svg",
-    print: "dot-brush.svg",
   };
 
   const FEATURE = {

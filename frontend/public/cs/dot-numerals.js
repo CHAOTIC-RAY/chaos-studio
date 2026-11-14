@@ -1,12 +1,17 @@
 /** Brand dot-matrix numerals — SVG dot grids at readable scale (not shrunk to blobs). */
 (function () {
+  const BASE_ORIG = "/assets/motifs/dot-numerals-original/dot-numeral-";
   const BASE = "/assets/motifs/dot-numerals/dot-numeral-";
   const cache = new Map();
 
   function digitImg(d) {
     if (cache.has(d)) return cache.get(d).cloneNode(true);
     const img = document.createElement("img");
-    img.src = `${BASE}${d}.svg`;
+    img.src = `${BASE_ORIG}${d}.svg`;
+    img.onerror = () => {
+      img.onerror = null;
+      img.src = `${BASE}${d}.svg`;
+    };
     img.alt = d;
     img.decoding = "async";
     img.loading = "lazy";

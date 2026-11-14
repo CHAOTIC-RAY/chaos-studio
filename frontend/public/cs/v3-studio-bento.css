@@ -219,16 +219,14 @@
 }
 
 .featured-bento .feat {
-  opacity: 0;
-  transform: translateY(20px);
-  transition:
-    opacity 0.55s var(--ease, ease),
-    transform 0.55s var(--ease, ease);
+  opacity: 1;
+  transform: none;
+  transition: transform 0.55s var(--ease, ease);
 }
 
 .featured-bento .feat.in {
   opacity: 1;
-  transform: translateY(0);
+  transform: none;
 }
 
 .featured-bento .feat-link {
@@ -358,6 +356,12 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+}
+
+@media (min-width: 900px) {
+  .svc-bento {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 .svc-tile {

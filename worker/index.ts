@@ -66,8 +66,23 @@ export default {
       return env.ASSETS.fetch(new Request(new URL("/gallery/", url.origin).toString(), request));
     }
 
-    if (url.pathname === "/" && request.method === "GET") {
-      return Response.redirect(`${url.origin}/studio/`, 302);
+    if (url.pathname === "/" && (request.method === "GET" || request.method === "HEAD")) {
+      const studioUrl = new URL("/studio/", url.origin);
+      studioUrl.search = url.search;
+      return env.ASSETS.fetch(new Request(studioUrl.toString(), request));
+    }
+
+    if (
+      url.pathname.startsWith("/assets/hero-clips/") &&
+      (url.search.includes("v=") || /\.(?:webm|mp4|jpg|jpeg)$/i.test(url.pathname))
+    ) {
+      const asset = await env.ASSETS.fetch(request);
+      if (asset.ok) {
+        const headers = new Headers(asset.headers);
+        headers.set("Cache-Control", "public, max-age=31536000, immutable");
+        return new Response(asset.body, { status: asset.status, statusText: asset.statusText, headers });
+      }
+      return asset;
     }
 
     return env.ASSETS.fetch(request);

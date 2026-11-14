@@ -662,7 +662,14 @@
     ST.batch(pk, {
       start: "top 93%",
       onEnter: (batch) =>
-        gsap.fromTo(batch, { opacity: 0, scale: 0.97, y: 20 }, { opacity: 1, scale: 1, y: 0, stagger: 0.07, duration: 0.45 }),
+        gsap.from(batch, {
+          scale: 0.98,
+          y: 16,
+          stagger: 0.07,
+          duration: 0.45,
+          ease: "power2.out",
+          immediateRender: false,
+        }),
     });
   }
 
@@ -695,26 +702,21 @@
   function revealBatch() {
     const nodes = document.querySelectorAll("[data-reveal]");
     if (!nodes.length) return;
-    if (RM) {
-      nodes.forEach((n) => n.classList.add("in"));
-      return;
-    }
+    nodes.forEach((n) => n.classList.add("in"));
+    if (RM) return;
     ST.batch(nodes, {
       start: "top 92%",
       onEnter: (batch) =>
-        gsap.to(batch, {
-          opacity: 1,
-          y: 0,
-          skewX: 0,
+        gsap.from(batch, {
+          y: 28,
+          skewX: -3,
           stagger: 0.06,
           duration: 0.55,
           ease: "power3.out",
           overwrite: true,
+          immediateRender: false,
         }),
-      onLeaveBack: (batch) =>
-        gsap.set(batch, { opacity: 0, y: 32, skewX: -4 }),
     });
-    gsap.set(nodes, { opacity: 0, y: 32, skewX: -4 });
   }
 
   function whySectionMotion() {
@@ -914,6 +916,18 @@
 
   document.addEventListener("cms-content-ready", () => {
     marqueeBand();
+    revealBatch();
+    pricingBentoMotion();
+    servicesBentoMotion();
+    ST.refresh();
+  });
+
+  document.addEventListener("cs-packages-ready", () => {
+    pricingBentoMotion();
+    window.ChaosDotNumerals && window.ChaosDotNumerals.boot();
+    if (window.ChaosStudioPackages && window.ChaosStudioPackages.wireToggles) {
+      window.ChaosStudioPackages.wireToggles();
+    }
     ST.refresh();
   });
 

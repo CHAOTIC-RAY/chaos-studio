@@ -1,5 +1,5 @@
 /* Chaos Studio — shared tokens, type, header, footer, motifs (Lu direction v3). Restyle here first. */
-:root{--void:#0E0E0F;--ink:#1A1A1B;--plum:#28122C;--purple:#C16BE0;--lilac:#D690E8;--shock:#FF4444;--lime:var(--shock);--kraft:#A79A89;--paper:#EDE6DA;--white:#fff;
+:root{--void:#0E0E0F;--ink:#1A1A1B;--plum:#28122C;--purple:#C16BE0;--lilac:#D690E8;--shock:#FF4444;--kraft:#A79A89;--paper:#EDE6DA;--white:#fff;
 --u:8px;--m:clamp(24px,5vw,72px);--gut:clamp(16px,1.67vw,24px);
 --fs-hero:clamp(56px,9vw,120px);--fs-h1:clamp(40px,6vw,96px);--fs-h2:clamp(32px,4.5vw,72px);--fs-h3:clamp(24px,3vw,40px);
 --fs-brace:clamp(24px,2.4vw,32px);--fs-body:clamp(16px,1.35vw,20px);--fs-mono:14px;--fs-fine:14px;--track-fine:.04em;
@@ -13,8 +13,8 @@ body{background:var(--void);color:var(--white);font:400 var(--fs-body)/1.5 'DM S
 a{color:inherit}
 img,svg{display:block}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
-:focus-visible{outline:3px solid var(--lime);outline-offset:3px}
-.skip{position:absolute;left:-999px;top:8px;background:var(--lime);color:var(--ink);padding:8px 16px;z-index:100;font-family:'Space Mono';font-size:14px}
+:focus-visible{outline:3px solid var(--lilac);outline-offset:3px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--shock);color:var(--ink);padding:8px 16px;z-index:100;font-family:'Space Mono';font-size:14px}
 .skip:focus{left:8px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 /* type */
@@ -73,7 +73,7 @@ main,header,footer{position:relative;z-index:1}
 .ftr{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;padding:32px var(--m);background:var(--ink);color:var(--lilac);align-items:center;position:relative;z-index:1}
 .ftr svg{height:48px;width:auto;color:var(--lilac)}
 /* reveal */
-[data-reveal]{opacity:0;transform:translateY(16px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
+[data-reveal]{opacity:1;transform:none}
 [data-reveal].in{opacity:1;transform:none}
 @media (max-width:900px){.wrap{grid-template-columns:repeat(6,minmax(0,1fr));column-gap:16px}}
 @media (max-width:520px){.sec{padding:96px 24px}.wrap{grid-template-columns:repeat(4,minmax(0,1fr))}.frame .fine:last-child{display:none}.frame .fine:first-child::after{content:attr(data-n)}}
