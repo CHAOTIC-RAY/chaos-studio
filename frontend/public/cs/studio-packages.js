@@ -1,12 +1,17 @@
 (function () {
   function wireToggles() {
-    document.querySelectorAll(".pk-bento .pk").forEach((pk) => {
-      const btn = pk.querySelector(".pk-toggle");
-      if (!btn || btn.dataset.wired) return;
+    document.querySelectorAll(".pk-bento .pk-more").forEach((btn) => {
+      if (btn.dataset.wired) return;
       btn.dataset.wired = "1";
+      const pk = btn.closest(".pk");
+      const extra = Number(btn.getAttribute("data-extra") || 0);
       btn.addEventListener("click", () => {
-        const open = pk.classList.toggle("is-open");
+        const open = pk.classList.toggle("pk-deliverables--open");
         btn.setAttribute("aria-expanded", open ? "true" : "false");
+        pk.querySelectorAll(".pk-deliverable--extra").forEach((li) => {
+          li.hidden = !open;
+        });
+        btn.textContent = open ? "Show less" : `+${extra} more`;
       });
     });
   }

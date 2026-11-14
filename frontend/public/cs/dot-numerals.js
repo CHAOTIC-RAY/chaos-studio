@@ -23,6 +23,7 @@
   }
 
   function renderDots(el) {
+    if (el.closest(".price, .amt")) return;
     const raw = el.getAttribute("data-dots") || el.textContent.trim();
     const digits = String(raw).replace(/\D/g, "");
     if (!digits) return;

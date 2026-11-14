@@ -234,7 +234,6 @@ body::after {
   position: relative;
 }
 
-.pk-head::after,
 .g-hero .wrap::after {
   content: "";
   position: absolute;
@@ -246,6 +245,10 @@ body::after {
   opacity: 0.35;
   pointer-events: none;
   color: var(--lilac);
+}
+
+.pks-sec .pk-head::after {
+  display: none;
 }
 
 .imp::before {

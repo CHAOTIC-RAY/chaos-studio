@@ -1640,6 +1640,11 @@ opacity:calc(1 - var(--studio-logo-reveal,0)*.92);transform:scale(calc(1 - var(-
   z-index: 1;
 }
 
+.why-brace__inner {
+  opacity: 1;
+  color: var(--lilac);
+}
+
 .whys .why-title {
   grid-column: 1 / -1;
   font-family: Syne, sans-serif;

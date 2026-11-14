@@ -28,7 +28,9 @@
   }
 
   function screenImg(src, alt, eager) {
-    return `<img class="device__media" src="${esc(src || PLACEHOLDER)}" alt="${esc(alt)}" loading="${eager ? "eager" : "lazy"}" decoding="async" width="${mobile() ? 390 : 800}" height="${mobile() ? 844 : 500}" onerror="this.onerror=null;this.src='${PLACEHOLDER}'">`;
+    const lazy = eager ? "eager" : "lazy";
+    const fetch = eager ? "high" : "low";
+    return `<img class="device__media" src="${esc(src || PLACEHOLDER)}" alt="${esc(alt)}" loading="${lazy}" fetchpriority="${fetch}" decoding="async" width="${mobile() ? 390 : 800}" height="${mobile() ? 844 : 500}" onerror="this.onerror=null;this.src='${PLACEHOLDER}'">`;
   }
 
   function browserFrame(src, alt, url) {

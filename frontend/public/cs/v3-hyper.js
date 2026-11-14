@@ -748,13 +748,16 @@
       gsap.set(brace.parentElement, { overflow: "hidden" });
       gsap.fromTo(
         brace,
-        { xPercent: -108, opacity: 0.2 },
+        { xPercent: -108, opacity: 0.72 },
         {
           xPercent: 0,
           opacity: 1,
           duration: 0.65,
           ease: "power3.out",
           scrollTrigger: { trigger: brace, start: "top 90%", once: true },
+          onComplete: () => {
+            gsap.set(brace, { opacity: 1 });
+          },
         },
       );
     }

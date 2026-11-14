@@ -40,14 +40,87 @@ li,
 .btn.cta,
 .finale .cta,
 .studio-finale .btn.cta,
-.pk .btn,
-.pk .btn.pill,
+.studio-finale a.btn.pill.cta,
 .pk-sticker,
 .pks-sec .pk--rec .tag,
 .pks-sec .pk--rec .btn,
 .hpill,
 .btn-lime {
   color: var(--ink) !important;
+}
+
+.studio-finale a.btn.pill.cta,
+.finale .cta {
+  background: var(--shock) !important;
+}
+
+/* Package prices — Anton + lilac/paper, not dot numerals */
+.pk-bento .price .amt {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35em;
+  font-family: Anton, sans-serif;
+  font-size: clamp(36px, 3.2vw, 52px);
+  line-height: 1;
+  color: var(--lilac);
+}
+
+.pk-bento .pk--rec .price .amt {
+  color: var(--paper);
+}
+
+.pk-bento .price .amt-curr {
+  font-family: "Space Mono", monospace;
+  font-size: 0.46em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lilac);
+  opacity: 1;
+}
+
+.pk-bento .pk--rec .price .amt-curr {
+  color: var(--paper);
+}
+
+/* Package CTAs — shock pill on ink cards */
+.pk-bento .pk:not(.pk--rec) .pk-cta {
+  background: var(--shock) !important;
+  color: var(--ink) !important;
+  border: 0;
+  border-radius: 999px !important;
+  box-shadow: 3px 3px 0 var(--purple);
+  min-height: 44px;
+  padding: 12px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+}
+
+.pk-bento .pk--rec .pk-cta {
+  background: var(--ink) !important;
+  color: var(--paper) !important;
+  border-radius: 999px !important;
+  min-height: 44px;
+  box-shadow: 3px 3px 0 var(--shock);
+}
+
+/* Packages header — no floating mark into nav */
+.pks-sec .pk-head::after,
+.pks-sec .wrap::after {
+  display: none !important;
+}
+
+.pks-sec .frame {
+  position: relative;
+  z-index: 0;
+}
+
+.pks-sec .pk-head {
+  isolation: isolate;
 }
 
 .sticker,
@@ -179,7 +252,7 @@ li,
   transform: none;
 }
 
-/* Packages — comparison row desktop, shorter section */
+/* Packages — comparison row desktop */
 @media (min-width: 900px) {
   .pk-bento {
     display: grid;
@@ -192,12 +265,6 @@ li,
     min-height: 0;
   }
 
-  .pk-bento .pk ul {
-    max-height: 9.5rem;
-    overflow: hidden;
-    mask-image: linear-gradient(#000 75%, transparent);
-  }
-
   .pk-bento .pk h3 {
     font-size: clamp(15px, 1.4vw, 18px);
   }
@@ -208,45 +275,47 @@ li,
   }
 }
 
-@media (max-width: 899px) {
-  .pk-bento .pk ul {
-    max-height: 0;
-    overflow: hidden;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    transition: max-height 0.35s ease;
-  }
-
-  .pk-bento .pk.is-open ul {
-    max-height: 28rem;
-  }
-
-  .pk-bento .pk .pk-toggle {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    margin-top: 8px;
-    font-family: "Space Mono", monospace;
-    font-size: 13px;
-    text-transform: uppercase;
-    color: var(--lilac);
-    background: none;
-    border: 0;
-    cursor: pointer;
-    padding: 8px 0;
-  }
-
-  .pk-bento .pk .pk-toggle:focus-visible {
-    outline: 2px solid var(--lilac);
-    outline-offset: 2px;
-  }
+.pk-bento .pk-deliverables {
+  margin: 0;
+  max-height: none;
+  overflow: visible;
+  mask-image: none;
 }
 
-@media (min-width: 900px) {
-  .pk-bento .pk .pk-toggle {
-    display: none;
-  }
+.pk-bento .pk-deliverable--extra[hidden] {
+  display: none;
+}
+
+.pk-bento .pk-deliverables--open .pk-deliverable--extra {
+  display: list-item;
+}
+
+.pk-bento .pk-more {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin: 4px 0 8px;
+  font-family: "Space Mono", monospace;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--lilac);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 8px 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.pk-bento .pk-more:focus-visible {
+  outline: 2px solid var(--lilac);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.pk-bento .pk li span:last-child {
+  line-height: 1.4;
 }
 
 /* Focus + tap targets */

@@ -13,6 +13,7 @@ mkdirSync(distDir, { recursive: true });
 cpSync(publicDir, distDir, { recursive: true });
 
 spawnSync("node", ["scripts/concat-studio-css.mjs"], { stdio: "inherit", cwd: root });
+spawnSync("node", ["scripts/minify-studio-assets.mjs"], { stdio: "inherit", cwd: root });
 
 const snapshot = buildGallerySnapshot(root);
 writeFileSync(join(distDir, "gallery-snapshot.json"), `${JSON.stringify(snapshot)}\n`);

@@ -169,28 +169,35 @@
     const note = document.querySelector(".pk-note");
     if (note && c.pricingNote) note.textContent = c.pricingNote;
     if (!root || !Array.isArray(c.packages)) return;
-    root.setAttribute("role", "list");
     const sorted = [...c.packages].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    const preview = 3;
     root.innerHTML = sorted
       .map((p, idx) => {
         const rec = p.featured
           ? '<span class="tag fine pk-sticker">Recommended</span>'
           : `<span class="tag fine">Package ${String(idx + 1).padStart(2, "0")}</span>`;
-        const dels = (p.deliverables || [])
-          .map((d, i) => `<li><span>${String(i + 1).padStart(2, "0")}</span><span>${esc(d.text)}</span></li>`)
+        const delsAll = p.deliverables || [];
+        const extra = Math.max(0, delsAll.length - preview);
+        const dels = delsAll
+          .map((d, i) => {
+            const hidden = i >= preview;
+            return `<li class="pk-deliverable${hidden ? " pk-deliverable--extra" : ""}"${hidden ? " hidden" : ""}><span>${String(i + 1).padStart(2, "0")}</span><span>${esc(d.text)}</span></li>`;
+          })
           .join("");
+        const moreBtn =
+          extra > 0
+            ? `<button type="button" class="pk-more" aria-expanded="false" data-extra="${extra}">+${extra} more</button>`
+            : "";
         const cls = p.featured ? "pk pk--rec" : "pk";
-        const toggle =
-          '<button type="button" class="pk-toggle" aria-expanded="false">What\'s included</button>';
         return `<article class="${cls}" data-pkg-id="${esc(p.id)}">
           ${rec}
           <h3>${esc(p.name)}</h3>
           <p class="tl">${esc(p.tagline)}</p>
-          <p class="fine">${(p.deliverables || []).length} deliverables included</p>
-          ${toggle}
-          <ul>${dels}</ul>
-          <div class="price"><span class="fine">Starting at</span><span class="amt dot-type" data-dots="${String(p.price).replace(/\D/g, "") || idx}" data-dot-variant="lilac">${esc(p.price)}<small>${esc(p.currency || "MVR")}</small></span></div>
-          <a class="btn pill" href="${esc(waLink(c.contact.whatsappUrl, p.whatsappText || p.name))}" target="_blank" rel="noopener noreferrer">Enquire on WhatsApp</a>
+          <p class="fine">${delsAll.length} deliverables included</p>
+          <ul class="pk-deliverables">${dels}</ul>
+          ${moreBtn}
+          <div class="price"><span class="fine">Starting at</span><span class="amt"><span class="amt-val">${esc(p.price)}</span><span class="amt-curr">${esc(p.currency || "MVR")}</span></span></div>
+          <a class="btn pill pk-cta" href="${esc(waLink(c.contact.whatsappUrl, p.whatsappText || p.name))}" target="_blank" rel="noopener noreferrer">Enquire on WhatsApp</a>
         </article>`;
       })
       .join("");
