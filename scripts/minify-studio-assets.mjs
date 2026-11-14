@@ -7,7 +7,13 @@ import CleanCSS from "clean-css";
 const root = process.cwd();
 const cs = join(root, "frontend", "public", "cs");
 
-const cssParts = ["chaos-tokens.css", "chaos-components.css", "chaos-sections.css", "studio-audit.css"];
+const cssParts = [
+  "chaos-tokens.css",
+  "chaos-components.css",
+  "chaos-sections.css",
+  "studio-audit.css",
+  "studio-mobile-native.css",
+];
 const combined = cssParts.map((f) => readFileSync(join(cs, f), "utf8")).join("\n");
 const minified = new CleanCSS({ level: 2 }).minify(combined);
 if (minified.errors.length) {
