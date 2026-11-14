@@ -103,9 +103,9 @@
     if (copy && c.about.copy) copy.textContent = c.about.copy;
     const list = document.querySelector(".about-list");
     if (list && Array.isArray(c.about.bullets)) {
-      const tilts = ["-2deg", "1.5deg", "-1deg", "2deg"];
+      const tilts = ["-1.5deg", "1.25deg", "-0.75deg", "1deg"];
       list.innerHTML = c.about.bullets
-        .map((text, i) => `<li style="--tilt:${tilts[i % tilts.length]}">${esc(text)}</li>`)
+        .map((text, i) => `<li class="about-in" style="--tilt:${tilts[i % tilts.length]}">${esc(text)}</li>`)
         .join("");
     }
   }

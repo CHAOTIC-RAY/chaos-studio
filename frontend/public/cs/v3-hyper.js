@@ -228,181 +228,139 @@
     });
   }
 
-  function aboutPatternMatter() {
+  const ABOUT_MARKS = ["/assets/motifs/marks/chaos-mark-a.svg", "/assets/motifs/marks/chaos-mark-c.svg"];
+
+  let aboutBgReady = false;
+  let aboutEnterDone = false;
+
+  function aboutBgMarquee() {
     const about = document.querySelector(".about");
-    const legacy = about && about.querySelector(".pattern.rgb");
     if (!about) return;
-    let matter = about.querySelector(".pattern-matter");
-    if (!matter) {
-      matter = document.createElement("div");
-      matter.className = "pattern-matter";
-      matter.setAttribute("aria-hidden", "true");
-      about.insertBefore(matter, about.firstChild);
+    about.querySelectorAll(".pattern-matter, .about-veil, .about-shards, .pattern.rgb").forEach((el) => el.remove());
+    about.classList.remove("cine-shot", "cine-shot--reveal", "cine-shot__letterbox", "is-exploding", "is-framed");
+
+    let bg = about.querySelector(".about-bg");
+    if (!bg) {
+      bg = document.createElement("div");
+      bg.className = "about-bg";
+      bg.setAttribute("aria-hidden", "true");
+      about.insertBefore(bg, about.firstChild);
     }
-    if (legacy) legacy.remove();
-    const piece = csWordmark(" ✶ ");
-    const rowText = piece.repeat(14);
-    matter.innerHTML = "";
-    const rowCount = narrow ? 4 : 6;
+    if (aboutBgReady) return;
+    aboutBgReady = true;
+
+    const chunk = () => {
+      const marks = ABOUT_MARKS.map(
+        (src) => `<span class="about-bg-motif"><img src="${src}" alt="" width="48" height="48" decoding="async"></span>`,
+      ).join("");
+      return `<span class="about-bg-word">CHAOS</span><span class="about-bg-word about-bg-word--studio">STUDIO</span>${marks}<span class="about-bg-word">CHAOS</span><span class="about-bg-word about-bg-word--studio">STUDIO</span>${marks}`;
+    };
+    const rowCount = narrow ? 3 : 5;
+    const rows = [];
     for (let i = 0; i < rowCount; i++) {
-      const row = document.createElement("div");
-      row.className = `pattern-row pattern-row--${i % 2 ? "rev" : "fwd"}`;
-      row.innerHTML = `<div class="pattern-track"><span>${rowText}</span></div>`;
-      matter.appendChild(row);
-    }
-    if (RM) return;
-    const rows = matter.querySelectorAll(".pattern-track");
-    const rowTweens = [];
-    rows.forEach((track, i) => {
-      const dir = i % 2 ? 1 : -1;
-      rowTweens.push(
-        gsap.to(track, {
-          xPercent: dir * 12,
-          ease: "none",
-          duration: 22 + i * 2,
-          repeat: -1,
-        }),
+      const dir = i % 2 ? "rtl" : "ltr";
+      rows.push(
+        `<div class="about-bg-row about-bg-row--${dir}"><div class="about-bg-track">${chunk()}${chunk()}</div></div>`,
       );
-    });
+    }
+    bg.innerHTML = `<div class="about-bg-marquee">${rows.join("")}</div>`;
+
+    const tracks = bg.querySelectorAll(".about-bg-track");
+    const setPaused = (paused) => tracks.forEach((t) => t.classList.toggle("is-paused", paused));
+    if (RM) {
+      setPaused(true);
+      return;
+    }
     ST.create({
       trigger: about,
       start: "top bottom",
       end: "bottom top",
-      onLeave: () => rowTweens.forEach((t) => t.timeScale(0)),
-      onEnterBack: () => rowTweens.forEach((t) => t.timeScale(1)),
-      onEnter: () => rowTweens.forEach((t) => t.timeScale(1)),
-      onLeaveBack: () => rowTweens.forEach((t) => t.timeScale(0)),
+      onEnter: () => setPaused(false),
+      onLeave: () => setPaused(true),
+      onEnterBack: () => setPaused(false),
+      onLeaveBack: () => setPaused(true),
     });
-    if (!narrow && !RM) {
-      let skewRaf = 0;
-      ST.create({
-        trigger: about,
-        start: "top bottom",
-        end: "bottom top",
-        onUpdate: (self) => {
-          if (skewRaf) return;
-          skewRaf = requestAnimationFrame(() => {
-            skewRaf = 0;
-            const skew = Math.max(-3, Math.min(3, self.getVelocity() / 400));
-            matter.style.transform = `translate3d(0,0,0) skewX(${skew}deg)`;
+    setPaused(false);
+
+    if (!coarse) {
+      gsap.to(bg, {
+        y: narrow ? 24 : 48,
+        ease: "none",
+        scrollTrigger: { trigger: about, start: "top bottom", end: "bottom top", scrub: 0.6 },
+      });
+    }
+  }
+
+  function aboutSectionEnter() {
+    const about = document.querySelector(".about");
+    if (!about || aboutEnterDone) return;
+    aboutEnterDone = true;
+
+    const title = about.querySelector(".about-h");
+    const hl = about.querySelector(".about-hl");
+    const panel = about.querySelector(".about-panel");
+    const cards = [...about.querySelectorAll(".about-list li")];
+    const tilts = [-6, 5, -4, 6];
+
+    if (RM) {
+      title?.classList.add("about-in");
+      panel?.classList.add("about-in");
+      cards.forEach((c) => c.classList.add("about-in"));
+      return;
+    }
+
+    if (title) {
+      gsap.from(title, {
+        y: 52,
+        opacity: 0,
+        duration: 0.75,
+        ease: "power3.out",
+        scrollTrigger: { trigger: title, start: "top 88%", once: true },
+      });
+    }
+    if (hl) {
+      gsap.fromTo(
+        hl,
+        { scaleX: 0, transformOrigin: "left center" },
+        {
+          scaleX: 1,
+          duration: 0.55,
+          ease: "power3.out",
+          delay: 0.12,
+          scrollTrigger: { trigger: title || about, start: "top 88%", once: true },
+        },
+      );
+    }
+    if (panel) {
+      gsap.from(panel, {
+        y: 36,
+        opacity: 0,
+        duration: 0.6,
+        ease: "power3.out",
+        delay: 0.08,
+        scrollTrigger: { trigger: panel, start: "top 90%", once: true },
+      });
+    }
+    if (cards.length) {
+      gsap.set(cards, { transformOrigin: "50% 80%" });
+      gsap.from(cards, {
+        y: 48,
+        opacity: 0,
+        rotation: (i) => tilts[i % tilts.length] || 0,
+        stagger: 0.09,
+        duration: 0.52,
+        ease: "back.out(1.35)",
+        scrollTrigger: { trigger: about.querySelector(".about-list") || about, start: "top 91%", once: true },
+        onComplete: () => {
+          cards.forEach((c) => {
+            const tilt = c.style.getPropertyValue("--tilt").trim() || "0deg";
+            const deg = parseFloat(tilt) || 0;
+            gsap.set(c, { rotation: deg, y: 0, opacity: 1, clearProps: "transform" });
+            c.style.transform = `rotate(${tilt})`;
           });
         },
       });
     }
-    window.ChaosDotMatrixText && window.ChaosDotMatrixText.boot();
-  }
-
-  function aboutChaosReveal() {
-    const about = document.querySelector(".about");
-    if (!about) return;
-    about.classList.add("cine-shot", "cine-shot--reveal", "cine-shot__letterbox");
-
-    let veil = about.querySelector(".about-veil");
-    let shards = about.querySelector(".about-shards");
-    if (!veil) {
-      veil = document.createElement("div");
-      veil.className = "about-veil";
-      veil.setAttribute("aria-hidden", "true");
-      about.appendChild(veil);
-    }
-    if (!shards) {
-      shards = document.createElement("div");
-      shards.className = "about-shards";
-      shards.setAttribute("aria-hidden", "true");
-      about.appendChild(shards);
-    }
-    shards.innerHTML = "<i></i><i></i><i></i><i></i><i></i>";
-
-    const matter = about.querySelector(".pattern-matter");
-    if (matter) matter.classList.add("cine-focus-layer", "cine-depth");
-
-    if (RM) {
-      gsap.set(veil, { opacity: 0, pointerEvents: "none" });
-      return;
-    }
-
-    const shardEls = shards.querySelectorAll("i");
-    const shardMotion = narrow
-      ? [
-          { x: -58, y: -118, r: -20, peak: 0.96 },
-          { x: 62, y: -72, r: 22, peak: 0.94 },
-          { x: -42, y: 98, r: 14, peak: 0.92 },
-          { x: -78, y: 38, r: -10, peak: 0.9 },
-          { x: 70, y: 115, r: 16, peak: 0.88 },
-        ]
-      : [
-          { x: -110, y: -62, r: -16, peak: 0.85 },
-          { x: 120, y: -48, r: 20, peak: 0.82 },
-          { x: -55, y: 95, r: 10, peak: 0.8 },
-          { x: -105, y: 55, r: -8, peak: 0.78 },
-          { x: 95, y: 108, r: 14, peak: 0.76 },
-        ];
-    shardEls.forEach((el, i) => {
-      gsap.set(el, { opacity: 0, scale: 0.88, x: 0, y: 0, rotate: 0, force3D: true, transformOrigin: "50% 50%" });
-    });
-
-    gsap.set(veil, {
-      opacity: 1,
-      scale: 1,
-      transformOrigin: "50% 35%",
-      force3D: true,
-      webkitClipPath: "inset(0% 0% 0% 0%)",
-      clipPath: "inset(0% 0% 0% 0%)",
-    });
-
-    const stOpts = {
-      trigger: about,
-      start: narrow ? "top 82%" : "top 75%",
-      end: narrow ? "top 8%" : "top 5%",
-      scrub: narrow ? 0.5 : 0.72,
-      invalidateOnRefresh: true,
-      onUpdate: (self) => {
-        about.classList.toggle("is-exploding", self.progress > 0.08 && self.progress < 0.92);
-        about.classList.toggle("is-framed", self.progress > 0.05 && self.progress < 0.98);
-        if (matter) matter.classList.toggle("cine-focus-out", self.progress < 0.45);
-      },
-      onLeave: () => {
-        about.classList.remove("is-framed", "is-exploding");
-        gsap.set(veil, { opacity: 0 });
-      },
-      onLeaveBack: () => {
-        about.classList.remove("is-framed", "is-exploding");
-        gsap.set(veil, { opacity: 1, scale: 1, clipPath: "inset(0% 0% 0% 0%)", webkitClipPath: "inset(0% 0% 0% 0%)" });
-        gsap.set(shardEls, { opacity: 0, x: 0, y: 0, scale: 0.88 });
-      },
-    };
-
-    const tl = gsap.timeline({ scrollTrigger: stOpts });
-
-    tl.to(
-      veil,
-      {
-        scale: narrow ? 1.72 : 1.9,
-        opacity: 0,
-        duration: 1,
-        ease: "power3.in",
-        webkitClipPath: "inset(0% 0% 102% 0%)",
-        clipPath: "inset(0% 0% 102% 0%)",
-      },
-      0,
-    );
-
-    shardEls.forEach((el, i) => {
-      const m = shardMotion[i] || shardMotion[0];
-      tl.to(
-        el,
-        {
-          opacity: m.peak,
-          x: m.x,
-          y: m.y,
-          rotate: m.r,
-          scale: narrow ? 1.18 : 1.12,
-          duration: 0.32,
-          ease: "power2.out",
-        },
-        0.08 + i * 0.05,
-      ).to(el, { opacity: 0, scale: narrow ? 1.28 : 1.22, duration: 0.38, ease: "power2.in" }, 0.48);
-    });
   }
 
   const CINE_SHOTS = [
@@ -937,8 +895,8 @@
     spawnMotifs();
     marqueeBand();
     heroTypeMotion();
-    aboutPatternMatter();
-    aboutChaosReveal();
+    aboutBgMarquee();
+    aboutSectionEnter();
     cinemaDirecting();
     scrollTextMotion();
     servicesBentoMotion();

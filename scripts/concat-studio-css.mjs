@@ -21,6 +21,7 @@ const sections = [
   "v3-studio-bento.css",
   "v3-cinema.css",
   "why-section.css",
+  "about-section.css",
   "showcase.css",
   "showcase-devices.css",
   "gallery.css",
