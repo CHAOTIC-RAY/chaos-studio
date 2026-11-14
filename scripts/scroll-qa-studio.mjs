@@ -6,6 +6,7 @@ const views = [
   { name: "1024", width: 1024, height: 640 },
   { name: "1440", width: 1440, height: 900 },
   { name: "390", ...devices["iPhone 12"].viewport, height: 844 },
+  { name: "360", width: 360, height: 740 },
 ];
 
 const browser = await chromium.launch({ headless: true });
@@ -19,7 +20,7 @@ for (const v of views) {
   let y = 0;
   let wheelMoved = false;
 
-  if (v.name === "390") {
+  if (v.name === "390" || v.name === "360") {
     const start = await page.evaluate(() => window.scrollY);
     await page.evaluate(() => window.scrollBy(0, 400));
     await page.waitForTimeout(200);
@@ -55,7 +56,7 @@ for (const v of views) {
   }
 
   let reachedFooter = false;
-  if (v.name === "390") {
+  if (v.name === "390" || v.name === "360") {
     await page.locator("#studio-contact").scrollIntoViewIfNeeded();
     await page.waitForTimeout(400);
     reachedFooter = await page.evaluate(() => {
@@ -66,7 +67,7 @@ for (const v of views) {
     });
     y = await page.evaluate(() => window.scrollY);
   }
-  const ok = v.name === "390" ? reachedFooter : y >= maxY - 120;
+  const ok = v.name === "390" || v.name === "360" ? reachedFooter : y >= maxY - 120;
   results.push({ view: v.name, scrollY: y, maxY, wheelMoved, ok });
   await page.close();
 }

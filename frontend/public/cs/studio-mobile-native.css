@@ -1,0 +1,297 @@
+/* Studio — mobile / PWA native feel (safe areas, tab bar, touch, carousels) */
+
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --tab-h: 52px;
+  --studio-mobile-max: 720px;
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body.route-studio {
+  min-height: 100dvh;
+  min-height: 100svh;
+  touch-action: manipulation;
+  overscroll-behavior-y: none;
+}
+
+body.route-studio main {
+  overflow-x: clip;
+}
+
+body.route-studio .sec {
+  scroll-margin-top: calc(var(--hdr-h) + var(--safe-top) + 12px);
+}
+
+body.route-studio .hero {
+  min-height: calc(100dvh - var(--hdr-h) - var(--safe-top));
+  min-height: calc(100svh - var(--hdr-h) - var(--safe-top));
+}
+
+body.route-studio .hdr {
+  padding-left: max(var(--m), var(--safe-left));
+  padding-right: max(var(--safe-right), var(--m));
+  padding-top: var(--safe-top);
+  min-height: calc(var(--hdr-h) + var(--safe-top));
+  height: auto;
+}
+
+body.route-studio .ftr {
+  padding-bottom: calc(24px + var(--safe-bottom));
+}
+
+body.route-studio a,
+body.route-studio button,
+body.route-studio .btn,
+body.route-studio .pill,
+body.route-studio .studio-tab,
+body.route-studio .pk-more {
+  touch-action: manipulation;
+}
+
+@media (hover: none), (pointer: coarse) {
+  body.route-studio .btn:hover,
+  body.route-studio .pill:hover,
+  body.route-studio .showcase-grid .fr:hover,
+  body.route-studio .about-list li:hover {
+    transform: none;
+    box-shadow: inherit;
+  }
+
+  body.route-studio .btn:active,
+  body.route-studio .pill:active,
+  body.route-studio .studio-tab:active:not(.is-active) {
+    transform: scale(0.97);
+    opacity: 0.92;
+  }
+
+  body.route-studio .about-list li:active {
+    transform: rotate(var(--tilt, 0deg)) scale(0.98);
+  }
+}
+
+/* ----- Bottom tab bar (thumb zone) ----- */
+.studio-tabbar {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  body.route-studio {
+    padding-bottom: calc(var(--tab-h) + var(--safe-bottom) + 8px);
+  }
+
+  .studio-tabbar {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) repeat(3, 44px);
+    align-items: stretch;
+    gap: 2px;
+    position: fixed;
+    left: max(8px, var(--safe-left));
+    right: max(8px, var(--safe-right));
+    bottom: calc(6px + var(--safe-bottom));
+    z-index: 55;
+    min-height: var(--tab-h);
+    padding: 6px 8px;
+    background: rgba(26, 26, 27, 0.94);
+    border: 1px solid rgba(214, 144, 232, 0.35);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(12px);
+  }
+
+  .studio-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-height: 44px;
+    min-width: 44px;
+    padding: 4px 2px;
+    font-family: Anton, sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: rgba(237, 230, 218, 0.82);
+    border-radius: 10px;
+    transition: background 0.15s var(--ease), color 0.15s var(--ease);
+  }
+
+  .studio-tab.is-active {
+    color: var(--shock);
+    background: rgba(193, 107, 224, 0.18);
+  }
+
+  .studio-tab--glyph {
+    font-size: 11px;
+    color: var(--lilac);
+    min-width: 44px;
+    padding-inline: 6px;
+  }
+
+  .studio-tab--glyph .contact-glyph {
+    width: 22px;
+    height: 22px;
+  }
+
+  .studio-tab--menu {
+    border: 1px solid rgba(214, 144, 232, 0.4);
+    background: rgba(40, 18, 44, 0.65);
+  }
+
+  body.route-studio .hdr .nav .nl {
+    display: none !important;
+  }
+
+  body.route-studio #header-contact {
+    display: none !important;
+  }
+
+  body.route-studio .hdr .nav {
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  body.route-studio .hdr .menu-btn {
+    display: none !important;
+  }
+
+  .studio-tab--menu {
+    font: inherit;
+    cursor: pointer;
+    border: 1px solid rgba(214, 144, 232, 0.35);
+    background: rgba(40, 18, 44, 0.72);
+    color: var(--paper);
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  body.route-studio .brand span,
+  body.route-studio .wordmark-pair {
+    font-size: clamp(16px, 4.2vw, 18px);
+  }
+
+  body.route-studio .brand svg {
+    height: 28px;
+  }
+
+  body.route-studio {
+    --fs-body: clamp(16px, 4.1vw, 18px);
+    --fs-hero: clamp(48px, 13vw, 72px);
+    --fs-h1: clamp(32px, 9vw, 56px);
+    --fs-h2: clamp(28px, 7.5vw, 40px);
+    --m: max(16px, var(--safe-left));
+  }
+
+  body.route-studio .sec {
+    padding-left: max(16px, var(--safe-left));
+    padding-right: max(16px, var(--safe-right));
+    padding-top: clamp(64px, 18vw, 96px);
+    padding-bottom: clamp(64px, 18vw, 96px);
+  }
+
+  body.route-studio .showcase-strip .showcase-headline {
+    font-size: var(--fs-body);
+    line-height: 1.5;
+  }
+
+  body.route-studio .menu {
+    padding-top: calc(20px + var(--safe-top));
+    padding-bottom: calc(var(--tab-h) + var(--safe-bottom) + 24px);
+  }
+
+  /* Packages — horizontal snap carousel */
+  body.route-studio .pks-sec .wrap {
+    overflow: visible;
+  }
+
+  body.route-studio .pk-bento {
+    display: flex !important;
+    flex-wrap: nowrap;
+    gap: 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    padding: 4px 2px 12px;
+    margin: 0 calc(-1 * max(16px, var(--safe-left)));
+    padding-left: max(16px, var(--safe-left));
+    padding-right: max(16px, var(--safe-right));
+    grid-template-columns: unset !important;
+  }
+
+  body.route-studio .pk-bento .pk,
+  body.route-studio .pk-bento .pk--rec,
+  body.route-studio .pk-bento .pk-note-tile {
+    flex: 0 0 min(88vw, 340px);
+    scroll-snap-align: center;
+    min-height: auto;
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+
+  body.route-studio .pk-bento .price .amt {
+    font-size: clamp(2rem, 9vw, 2.75rem);
+  }
+
+  body.route-studio .pk-bento .price .amt-curr {
+    font-size: clamp(1rem, 4vw, 1.25rem);
+  }
+
+  /* Work — horizontal snap strip */
+  body.route-studio #showcase-grid.featured-bento {
+    display: flex !important;
+    flex-wrap: nowrap;
+    gap: 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    padding-bottom: 8px;
+    grid-template-columns: unset !important;
+  }
+
+  body.route-studio .featured-bento .feat {
+    flex: 0 0 min(86vw, 320px);
+    scroll-snap-align: center;
+    grid-column: auto !important;
+    grid-row: auto !important;
+    opacity: 1;
+    transform: none;
+  }
+
+  body.route-studio .v3-hscroll__viewport {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  body.route-studio .v3-hscroll__track .svc-card {
+    scroll-snap-align: start;
+  }
+}
+
+@media (min-width: 721px) {
+  .studio-tabbar {
+    display: none !important;
+  }
+
+  body.route-studio {
+    padding-bottom: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .studio-tab {
+    transition: none;
+  }
+}

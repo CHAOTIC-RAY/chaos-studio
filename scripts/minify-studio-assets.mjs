@@ -34,6 +34,7 @@ const jsMinify = [
   "studio-packages.js",
   "showcase.js",
   "v3-hyper.js",
+  "studio-mobile.js",
 ];
 
 for (const file of jsMinify) {

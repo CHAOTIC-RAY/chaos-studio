@@ -638,7 +638,7 @@
 
   function featuredBentoMotion() {
     const feats = document.querySelectorAll(".featured-bento .feat:not(.in)");
-    if (!feats.length || RM) return;
+    if (!feats.length || RM || narrow) return;
     ST.batch(feats, {
       start: "top 93%",
       onEnter: (batch) =>
@@ -652,7 +652,7 @@
 
   function pricingBentoMotion() {
     const pk = [...document.querySelectorAll(".pk-bento .pk")].filter((el) => !el.dataset.pkMotion);
-    if (!pk.length || RM) return;
+    if (!pk.length || RM || narrow) return;
     pk.forEach((el) => {
       el.dataset.pkMotion = "1";
     });

@@ -26,7 +26,7 @@ const sections = [
   "showcase-devices.css",
   "gallery.css",
 ];
-const tail = ["studio-audit.css"];
+const tail = ["studio-audit.css", "studio-mobile-native.css"];
 
 function read(name) {
   return `/* === ${name} === */\n${readFileSync(join(cs, name), "utf8")}\n`;

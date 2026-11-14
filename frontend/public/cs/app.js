@@ -72,7 +72,7 @@ function cursorAuto(n,e){if(e){const r=n*4e-4;return{x:.5+Math.sin(r)*.08,y:.38+
 function focus(n){if(coarse())return cursorAuto(n,true);const e=Ki();return{x:.5+(e.x-.5)*.62,y:.38+(e.y-.5)*.55}}
 
 /* ---------- canvas loop (Eu, studio branch) ---------- */
-function canvasLoop(){const n=document.getElementById("bg-canvas");if(!n)return;const RM=reduced();const e=n.getContext("2d",{alpha:true});const t=document.createElement("canvas"),r=t.getContext("2d",{alpha:true,willReadFrequently:true});
+function canvasLoop(){const n=document.getElementById("bg-canvas");if(!n)return;const RM=reduced();if(coarse())n.style.opacity="0.68";const e=n.getContext("2d",{alpha:true});const t=document.createElement("canvas"),r=t.getContext("2d",{alpha:true,willReadFrequently:true});
   let a=0,l=0,c=0,u=0,p=0,d="",_=false;
   const g=()=>{const $=Math.min(devicePixelRatio||1,1.5);a=innerWidth;l=innerHeight;n.width=a*$;n.height=l*$;n.style.width=a+"px";n.style.height=l+"px";e.setTransform($,0,0,$,0,0);c=Math.max(1,Math.floor(a*.2));u=Math.max(1,Math.floor(l*.2));t.width=c;t.height=u};
   const due=(b,k,y)=>document.hidden||!(b-p>=y)&&k===d?false:(p=b,d=k,true);

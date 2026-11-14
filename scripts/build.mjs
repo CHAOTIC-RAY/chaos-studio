@@ -28,6 +28,7 @@ for (const file of [
   "studio-icons.min.js",
   "dot-numerals.min.js",
   "dot-matrix-text.min.js",
+  "studio-mobile.min.js",
 ]) {
   cpSync(join(publicDir, "cs", file), join(csDist, file));
 }
