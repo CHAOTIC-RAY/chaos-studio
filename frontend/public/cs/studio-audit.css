@@ -50,8 +50,13 @@ li,
 }
 
 .studio-finale a.btn.pill.cta,
-.finale .cta {
-  background: var(--shock) !important;
+.studio-finale .btn.pill.cta,
+#studio-contact a.btn.pill.cta,
+.finale .cta,
+.finale a.btn.pill.cta {
+  background-color: var(--shock) !important;
+  color: var(--ink) !important;
+  border: 2px solid var(--ink);
 }
 
 /* Package prices — Anton + lilac/paper, not dot numerals */
