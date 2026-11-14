@@ -25,20 +25,31 @@
   ];
 
   function lenisSetup() {
-    if (RM || coarse || !window.Lenis) return null;
+    if (RM || coarse || !window.Lenis || document.body.classList.contains("route-studio")) return null;
     const lenis = new Lenis({
       duration: 1.05,
-      smoothWheel: true,
+      smoothWheel: false,
       syncTouch: false,
       touchMultiplier: 1.15,
     });
     lenis.on("scroll", ST.update);
     gsap.ticker.add((time) => lenis.raf(time * 1000));
     gsap.ticker.lagSmoothing(0);
+    window.__lenis = lenis;
+    let resizeT;
+    addEventListener(
+      "resize",
+      () => {
+        clearTimeout(resizeT);
+        resizeT = setTimeout(() => lenis.resize(), 150);
+      },
+      { passive: true },
+    );
     return lenis;
   }
 
   const lenis = lenisSetup();
+  let marqueeTweenRef = null;
 
   function csWordmark(extra = "") {
     return `<span class="wordmark-pair"><span class="wordmark-chaos">CHAOS</span> <span class="wordmark-studio wordmark-studio--solid">STUDIO</span>${extra}</span>`;
@@ -107,7 +118,14 @@
     document.body.prepend(layer);
   }
 
-  function marqueeBand() {
+  const MARQUEE_SPEED = 0.4;
+
+  function fillMarqueeTrack(track) {
+    const chunk = marqueeServiceChunk();
+    track.innerHTML = chunk.repeat(coarse ? 8 : 10);
+  }
+
+  function marqueeBand(forceRefresh) {
     let band = document.querySelector(".v3-marquee");
     if (!band) {
       const svc = document.querySelector(".svc");
@@ -119,43 +137,61 @@
       svc.parentElement.insertBefore(band, svc);
     }
     const track = band.querySelector("[data-marquee]");
-    if (!track || track.dataset.ready) return;
+    if (!track) return;
+    if (track.dataset.ready && !forceRefresh) return;
     track.dataset.ready = "1";
-    const chunk = marqueeServiceChunk();
-    track.innerHTML = chunk.repeat(coarse ? 8 : 10);
+    fillMarqueeTrack(track);
     if (RM) {
       track.style.transform = "translateX(-8%)";
       return;
     }
+    if (marqueeTweenRef) {
+      marqueeTweenRef.kill();
+      marqueeTweenRef = null;
+    }
+    const baseDuration = coarse ? 42 : 36;
     const marqueeTween = gsap.to(track, {
       xPercent: -50,
       ease: "none",
-      duration: coarse ? 42 : 36,
+      duration: baseDuration / MARQUEE_SPEED,
       repeat: -1,
       paused: true,
     });
-    ST.create({
-      trigger: band,
-      start: "top bottom",
-      end: "bottom top",
-      onEnter: () => marqueeTween.play(),
-      onLeave: () => marqueeTween.pause(),
-      onEnterBack: () => marqueeTween.play(),
-      onLeaveBack: () => marqueeTween.pause(),
-      onUpdate: (self) => {
-        const v = self.getVelocity() / 800;
-        marqueeTween.timeScale(1 + Math.min(2.2, Math.abs(v)) * (v < 0 ? -1 : 1));
-      },
-    });
-    const vis = new IntersectionObserver(
-      (entries) => {
-        const on = entries.some((e) => e.isIntersecting);
-        if (on) marqueeTween.play();
-        else marqueeTween.pause();
-      },
-      { threshold: 0.05, rootMargin: "40px" },
-    );
-    vis.observe(band);
+    marqueeTweenRef = marqueeTween;
+    if (!band.dataset.marqueeHooks) {
+      band.dataset.marqueeHooks = "1";
+      band.addEventListener("mouseenter", () => marqueeTween.pause());
+      band.addEventListener("mouseleave", () => {
+        if (band.dataset.marqueeVisible === "1") marqueeTween.play();
+      });
+      ST.create({
+        trigger: band,
+        start: "top bottom",
+        end: "bottom top",
+        onEnter: () => {
+          band.dataset.marqueeVisible = "1";
+          if (!band.matches(":hover")) marqueeTween.play();
+        },
+        onLeave: () => {
+          band.dataset.marqueeVisible = "0";
+          marqueeTween.pause();
+        },
+        onEnterBack: () => {
+          band.dataset.marqueeVisible = "1";
+          if (!band.matches(":hover")) marqueeTween.play();
+        },
+        onLeaveBack: () => {
+          band.dataset.marqueeVisible = "0";
+          marqueeTween.pause();
+        },
+        onUpdate: (self) => {
+          const v = self.getVelocity() / 800;
+          marqueeTween.timeScale(
+            (1 + Math.min(1.2, Math.abs(v)) * (v < 0 ? -1 : 1)) * MARQUEE_SPEED,
+          );
+        },
+      });
+    }
   }
 
   function heroTypeMotion() {
@@ -657,8 +693,11 @@
   }
 
   function pricingBentoMotion() {
-    const pk = document.querySelectorAll(".pk-bento .pk");
+    const pk = [...document.querySelectorAll(".pk-bento .pk")].filter((el) => !el.dataset.pkMotion);
     if (!pk.length || RM) return;
+    pk.forEach((el) => {
+      el.dataset.pkMotion = "1";
+    });
     ST.batch(pk, {
       start: "top 93%",
       onEnter: (batch) =>
@@ -699,11 +738,14 @@
     });
   }
 
+  let revealMotionDone = false;
+
   function revealBatch() {
     const nodes = document.querySelectorAll("[data-reveal]");
     if (!nodes.length) return;
     nodes.forEach((n) => n.classList.add("in"));
-    if (RM) return;
+    if (RM || revealMotionDone) return;
+    revealMotionDone = true;
     ST.batch(nodes, {
       start: "top 92%",
       onEnter: (batch) =>
@@ -884,7 +926,7 @@
         scale: 0.6,
         skewX: -12,
         opacity: 0.2,
-        scrollTrigger: { trigger: el, start: "top 90%", toggleActions: "play none none reverse" },
+        scrollTrigger: { trigger: el, start: "top 90%", toggleActions: "play none none none" },
         duration: 0.8,
         ease: "power4.out",
       });
@@ -918,10 +960,8 @@
   }
 
   document.addEventListener("cms-content-ready", () => {
-    marqueeBand();
-    revealBatch();
+    marqueeBand(true);
     pricingBentoMotion();
-    servicesBentoMotion();
     ST.refresh();
   });
 

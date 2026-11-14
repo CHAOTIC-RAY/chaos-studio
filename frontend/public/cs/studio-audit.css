@@ -37,10 +37,7 @@ li,
 
 /* CTA / pills: ink on shock (5.10:1) and ink on purple (5.34:1) */
 .contact-cta--primary,
-.btn.cta,
-.finale .cta,
-.studio-finale .btn.cta,
-.studio-finale a.btn.pill.cta,
+.btn.cta:not(.pill),
 .pk-sticker,
 .pks-sec .pk--rec .tag,
 .pks-sec .pk--rec .btn,
@@ -52,11 +49,11 @@ li,
 .studio-finale a.btn.pill.cta,
 .studio-finale .btn.pill.cta,
 #studio-contact a.btn.pill.cta,
-.finale .cta,
-.finale a.btn.pill.cta {
+.finale.studio-finale .cta,
+.finale.studio-finale a.btn.pill.cta {
   background-color: var(--shock) !important;
-  color: var(--ink) !important;
-  border: 2px solid var(--ink);
+  color: var(--paper) !important;
+  border: 2px solid var(--paper);
 }
 
 /* Package prices — Anton + lilac/paper, not dot numerals */
@@ -90,9 +87,10 @@ li,
 }
 
 /* Package CTAs — shock pill on ink cards */
-.pk-bento .pk:not(.pk--rec) .pk-cta {
+.pk-bento .pk:not(.pk--rec) .pk-cta,
+.pk-bento .pk:not(.pk--rec) a.btn.pill.pk-cta {
   background: var(--shock) !important;
-  color: var(--ink) !important;
+  color: var(--paper) !important;
   border: 0;
   border-radius: 999px !important;
   box-shadow: 3px 3px 0 var(--purple);

@@ -156,7 +156,9 @@
   function unveilReveals(scope) {
     const root = scope && scope.querySelectorAll ? scope : document;
     root.querySelectorAll("[data-reveal]").forEach((n) => n.classList.add("in"));
-    if (window.ScrollTrigger) window.ScrollTrigger.refresh();
+    if (window.ScrollTrigger) {
+      requestAnimationFrame(() => window.ScrollTrigger.refresh());
+    }
     if (window.gsap && window.gsap.core) {
       root.querySelectorAll("[data-reveal]").forEach((n) => {
         window.gsap.set(n, { opacity: 1, y: 0, skewX: 0, clearProps: "transform" });
@@ -234,6 +236,24 @@
     if (brace && c.finale?.brace) brace.textContent = c.finale.brace;
   }
 
+  function hydrateTestimonials(c) {
+    const root = document.querySelector(".kw .memos");
+    if (!root || !Array.isArray(c.testimonials) || !c.testimonials.length) return;
+    root.innerHTML = c.testimonials
+      .map((t) => {
+        const tilt = t.tilt || "0deg";
+        const excerpt = t.quote.split(" ").slice(0, 14).join(" ") + " …";
+        return `<figure class="memo" style="--rz:${esc(tilt)}" data-reveal>
+          <i class="tape" aria-hidden="true"></i>
+          <p class="memo-dup mono" aria-hidden="true">${esc(excerpt)}</p>
+          <blockquote>${esc(t.quote)}</blockquote>
+          <figcaption class="who"><span class="pill">${esc(t.author)}</span><span class="fine">${esc(t.role)}</span></figcaption>
+        </figure>`;
+      })
+      .join("");
+    unveilReveals(root);
+  }
+
   function hydrateFooter(c) {
     const line = document.querySelector(".ftr .fine");
     if (line && c.footer?.line) line.textContent = c.footer.line;
@@ -263,6 +283,7 @@
     hydratePackages(c);
     hydrateWork(c);
     hydrateFinale(c);
+    hydrateTestimonials(c);
     hydrateFooter(c);
   }
 

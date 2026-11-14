@@ -3,14 +3,14 @@
   "updatedAt": "2026-11-11T11:48:57.557Z",
   "seo": {
     "title": "Chaos Studio · Independent creative studio · Malé, Maldives",
-    "description": "Chaos Studio — independent creative studio in Malé, Maldives. Branding, social media, web & app design, jerseys, marketing videos.",
+    "description": "Chaos Studio — independent creative studio. Branding, social media, web & app design, jerseys, and marketing video.",
     "themeColor": "#1A1A1B"
   },
   "hero": {
     "wordmarkLine1": "chaos",
     "wordmarkLine2": "studio",
-    "headline": "Maldivian brands, <span class=\"hl hl-lime\">built right.</span>",
-    "pitch": "Brands, jerseys, apps and content for Maldivian businesses. One studio, no middlemen.",
+    "headline": "Independent <span class=\"hl hl-lime\">creative studio.</span>",
+    "pitch": "Brands, jerseys, apps and content, made by one small studio with no middlemen.",
     "primaryCta": {
       "label": "WhatsApp us",
       "shortLabel": "WhatsApp us"
@@ -268,7 +268,7 @@
       "tagline": "Your bookshelf, narrator, and morning paper.",
       "href": "https://kora.chaoticstudio.workers.dev",
       "deviceLayout": "dual",
-      "appIconUrl": "/assets/work/app-icons/kora.png",
+      "appIconUrl": "/assets/work/app-icons/kora.svg",
       "screenshots": {
         "laptop": "/assets/work/kora/desktop-ui.webp",
         "phone": "/assets/work/kora/mobile-ui.webp"
@@ -347,6 +347,29 @@
     }
   ],
   "showcaseHeadline": "Apps and tools we designed and shipped.",
+  "testimonials": [
+    {
+      "id": "tq-ayha",
+      "quote": "I recommend Chaos Studio as a talented, skilled creative partner. The team delivers high-quality, visually appealing design work. Their creativity and ability to bring clients' visions to life make them an asset to us. I am confident they will exceed expectations and bring a fresh perspective to any project they take on.",
+      "author": "Fathmath Laena",
+      "role": "Ayha Boss",
+      "tilt": "-1.5deg"
+    },
+    {
+      "id": "tq-poly",
+      "quote": "From the very first day I saw real enthusiasm and creativity blending hand sketches with polished digital design. The work is fast, thoughtful, and the execution is exceptional. Chaos Studio shows dedication to graphic art and design—I wish them the best ahead in the field.",
+      "author": "Saudulla Rasheed",
+      "role": "Asset lecturer, Maldives Polytechnic",
+      "tilt": "1.2deg"
+    },
+    {
+      "id": "tq-rioga",
+      "quote": "Working with Chaos Studio was an absolute pleasure. Their creativity helped us achieve our vision of being a marketing partner to many big clients we handle. From the initial concept, the team demonstrated exceptional skill and professionalism. We highly recommend Chaos Studio to anyone looking for innovative, high-quality design work.",
+      "author": "Mariyam Shukaina",
+      "role": "Rioga Boss",
+      "tilt": "-0.8deg"
+    }
+  ],
   "footer": {
     "line": "@chaosstudio.mv · Chaos Studio — Malé, MV · © 2026"
   },
