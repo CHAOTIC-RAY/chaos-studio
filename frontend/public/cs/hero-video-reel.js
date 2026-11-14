@@ -74,7 +74,7 @@ window.HeroVideoReel = (function () {
       let hudT = 0;
 
       function srcFor(clip) {
-        const path = useWebm ? clip.webm : clip.mp4;
+        const path = mobile ? clip.mp4 || clip.webm : useWebm ? clip.webm : clip.mp4;
         return clip.version ? `${path}${path.includes("?") ? "&" : "?"}v=${clip.version}` : path;
       }
 

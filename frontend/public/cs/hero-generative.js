@@ -7,7 +7,7 @@
   const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const mobile = matchMedia("(max-width: 520px), (hover: none)").matches;
   const saveData = !!(navigator.connection && navigator.connection.saveData);
-  const liteHero = mobile || saveData;
+  const staticHero = RM || saveData;
   const LOGO = window.__LOGO_PATH__;
 
   const MARKS = [
@@ -122,7 +122,7 @@
 
   function resize() {
     const rect = hero.getBoundingClientRect();
-    const dpr = Math.min(Math.max(1, devicePixelRatio || 1), mobile ? 2 : 2.25);
+    const dpr = Math.min(Math.max(1, devicePixelRatio || 1), mobile ? 1.5 : 2.25);
     size.w = Math.max(1, Math.floor(rect.width));
     size.h = Math.max(1, Math.floor(rect.height));
     size.dpr = dpr;
@@ -442,7 +442,7 @@
     ctx.drawImage(work, 0, 0, size.w, size.h);
     ctx.imageSmoothingEnabled = true;
 
-    if (videoReel && !liteHero) {
+    if (videoReel) {
       videoReel.drawHud(ctx, size.w, size.h, palette);
     }
 
@@ -531,20 +531,15 @@
       try {
         const manifest = await window.HeroVideoReel.loadManifest();
         const clips = manifest.clips || [];
-        if (liteHero && clips[0]) {
-          videoReel = window.HeroVideoReel.createState({ hero, mobile: true, reduced: true });
-          await videoReel.prepareFirst([clips[0]]);
-          videoReel.pauseAll();
-        } else if (!liteHero) {
-          videoReel = window.HeroVideoReel.createState({ hero, mobile, reduced: RM });
-          await videoReel.prepareFirst(clips);
-        }
+        videoReel = window.HeroVideoReel.createState({ hero, mobile, reduced: RM });
+        await videoReel.prepareFirst(staticHero ? clips.slice(0, 1) : clips);
+        if (staticHero) videoReel.pauseAll();
       } catch {
         videoReel = null;
       }
     }
     palette = PALETTES[0];
-    if ((RM || liteHero) && videoReel && videoReel.clips[0]) {
+    if (staticHero && videoReel && videoReel.clips[0]) {
       const clip = videoReel.clips[0];
       videoReel.stillFrame(wctx, size.sw, size.sh, palette, clip);
       applyBrandGradientMap();
