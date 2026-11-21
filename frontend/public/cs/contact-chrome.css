@@ -19,7 +19,7 @@
   min-height: 44px;
   padding: 0 12px;
   gap: 8px;
-  border: 1px solid rgba(214, 144, 232, 0.45);
+  border: 1px solid rgba(185, 159, 218, 0.45);
   background: rgba(26, 26, 27, 0.72);
   color: var(--white);
   text-decoration: none;
@@ -43,7 +43,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(120deg, transparent 40%, rgba(214, 144, 232, 0.25) 50%, transparent 60%);
+  background: linear-gradient(120deg, transparent 40%, rgba(185, 159, 218, 0.25) 50%, transparent 60%);
   transform: translateX(-120%);
   transition: transform 0.45s ease;
   pointer-events: none;
@@ -59,7 +59,7 @@
   border-color: var(--lilac);
   background: rgba(88, 44, 110, 0.55);
   color: var(--white);
-  box-shadow: 0 0 0 1px rgba(214, 144, 232, 0.35);
+  box-shadow: 0 0 0 1px rgba(185, 159, 218, 0.35);
 }
 
 .contact-chrome--header .contact-btn:hover .contact-glyph,
@@ -103,7 +103,7 @@
   padding: 0 22px;
   border-radius: 999px;
   text-decoration: none;
-  font: 500 15px/1.1 "DM Sans", sans-serif;
+  font: 700 19px/1.1 "DM Sans", sans-serif;
   letter-spacing: 0.01em;
   position: relative;
   overflow: hidden;
@@ -130,7 +130,7 @@
 }
 
 .contact-chrome--hero .contact-cta--primary {
-  background: var(--shock);
+  background: var(--cherry);
   color: var(--ink);
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: none;
@@ -138,19 +138,19 @@
 
 .contact-chrome--hero .contact-cta--primary:hover,
 .contact-chrome--hero .contact-cta--primary:focus-visible {
-  background: #9bff4a;
+  background: var(--vanilla-cream);
   color: var(--ink);
 }
 
 .contact-chrome--hero .contact-cta--ghost {
   background: transparent;
   color: var(--white);
-  border: 1px solid rgba(214, 144, 232, 0.55);
+  border: 1px solid rgba(185, 159, 218, 0.55);
 }
 
 .contact-chrome--hero .contact-cta--ghost:hover,
 .contact-chrome--hero .contact-cta--ghost:focus-visible {
-  background: rgba(214, 144, 232, 0.12);
+  background: rgba(185, 159, 218, 0.12);
   border-color: var(--lilac);
   color: var(--white);
 }

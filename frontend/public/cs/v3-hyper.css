@@ -60,7 +60,7 @@
   z-index: 2;
   overflow: hidden;
   background: var(--plum);
-  border-block: 1px solid rgba(214, 144, 232, 0.35);
+  border-block: 1px solid rgba(185, 159, 218, 0.35);
   padding: 18px 0;
 }
 
@@ -135,7 +135,7 @@
 .v3-hscroll__track .svc-card {
   flex: 0 0 min(72vw, 420px);
   background: var(--ink);
-  border: 1px solid rgba(214, 144, 232, 0.3);
+  border: 1px solid rgba(185, 159, 218, 0.3);
   padding: 24px 28px;
   display: grid;
   gap: 12px;

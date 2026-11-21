@@ -8,7 +8,7 @@ let P2D=null;const logoPath=()=>P2D||(P2D=new Path2D(LOGO_PATH));
 const reduced=()=>window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const coarse=()=>window.matchMedia("(hover: none), (pointer: coarse)").matches;
 // palette (was rgba(213,119,237,*) purples / radial gradients)
-const C={purple:"193,107,224",lilac:"214,144,232",plum:"40,18,44"};
+const C={purple:"148,112,219",lilac:"185,159,218",plum:"63,52,85"};
 
 /* ---------- scroll state (pu) ---------- */
 const Pr={reveal:0,scale:.48,fill:0,finale:0};

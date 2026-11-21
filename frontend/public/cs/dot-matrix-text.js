@@ -22,7 +22,7 @@
     const family = el.getAttribute("data-dot-font") || "Syne, sans-serif";
     const lowercase = el.classList.contains("dot-display") || el.getAttribute("data-dot-case") === "lower";
     const display = lowercase ? text.toLowerCase() : text.toUpperCase();
-    const color = parseColor(el, "#d690e8");
+    const color = parseColor(el, "#B99FDA");
     const cell = mobile ? 2.75 : 2.35;
     const dotR = mobile ? 0.95 : 1.05;
 

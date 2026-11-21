@@ -33,20 +33,20 @@
   const B4 = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
   const BRAND_GRAD = [
     { t: 0, c: [14, 14, 15] },
-    { t: 0.28, c: [40, 18, 44] },
+    { t: 0.28, c: [63, 52, 85] },
     { t: 0.52, c: [93, 37, 128] },
-    { t: 0.74, c: [193, 107, 224] },
-    { t: 1, c: [214, 144, 232] },
+    { t: 0.74, c: [148, 112, 219] },
+    { t: 1, c: [185, 159, 218] },
   ];
 
   const PALETTES = [
-    { id: "void", bg: "#0e0e0f", fg: "#ffffff", accent: "#ff4444", mid: "#c16be0" },
-    { id: "ink", bg: "#1a1a1b", fg: "#ede6da", accent: "#ff4444", mid: "#28122c" },
-    { id: "plum", bg: "#28122c", fg: "#ffffff", accent: "#ff4444", mid: "#d690e8" },
-    { id: "purple", bg: "#0e0e0f", fg: "#c16be0", accent: "#ff4444", mid: "#1a1a1b" },
-    { id: "paper", bg: "#ede6da", fg: "#1a1a1b", accent: "#ff4444", mid: "#a79a89" },
-    { id: "lilac", bg: "#1a1a1b", fg: "#d690e8", accent: "#ffffff", mid: "#c16be0" },
-    { id: "red", bg: "#1a1a1b", fg: "#ff4444", accent: "#ffffff", mid: "#c16be0" },
+    { id: "void", bg: "#0e0e0f", fg: "#ffffff", accent: "#E72D49", mid: "#9470DB" },
+    { id: "ink", bg: "#1a1a1b", fg: "#fff5d9", accent: "#E72D49", mid: "#3F3455" },
+    { id: "plum", bg: "#3F3455", fg: "#ffffff", accent: "#E72D49", mid: "#B99FDA" },
+    { id: "purple", bg: "#0e0e0f", fg: "#9470DB", accent: "#E72D49", mid: "#1a1a1b" },
+    { id: "paper", bg: "#fff5d9", fg: "#1a1a1b", accent: "#E72D49", mid: "#FFF5D9" },
+    { id: "lilac", bg: "#1a1a1b", fg: "#B99FDA", accent: "#ffffff", mid: "#9470DB" },
+    { id: "red", bg: "#1a1a1b", fg: "#E72D49", accent: "#ffffff", mid: "#9470DB" },
   ];
 
   const ctx = canvas.getContext("2d", { alpha: false, desynchronized: true });
@@ -452,7 +452,7 @@
       if (shift) {
         ctx.save();
         ctx.globalCompositeOperation = "lighter";
-        ctx.fillStyle = "rgba(193,107,224,0.07)";
+        ctx.fillStyle = "rgba(148,112,219,0.07)";
         ctx.fillRect(shift, 0, size.w, size.h);
         ctx.restore();
       }

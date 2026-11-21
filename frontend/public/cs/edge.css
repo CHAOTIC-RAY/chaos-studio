@@ -13,7 +13,7 @@ body::after{opacity:var(--grain);animation:grain-jit 600ms steps(3) infinite;ins
 .g-plum{background:var(--plum)}
 .sec[data-ground=ink],.sec[data-ground=plum],.sec[data-ground=void]{background-image:radial-gradient(ellipse at 50% 40%,transparent 55%,var(--void) 100%),repeating-linear-gradient(0deg,transparent 0 2px,rgba(0,0,0,.06) 2px 3px)}
 .scanlines::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:3;opacity:var(--scan-op);background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(0,0,0,.35) 2px 3px);mix-blend-mode:multiply}
-.hdr{background:var(--void);border-bottom:1px solid rgba(214,144,232,.35)}
+.hdr{background:var(--void);border-bottom:1px solid rgba(185,159,218,.35)}
 /* type utilities */
 .crush{font-family:Syne,sans-serif;font-weight:800;line-height:var(--lh-crush);letter-spacing:var(--track-crush);text-transform:lowercase}
 .outline{-webkit-text-stroke:0 transparent}
@@ -38,7 +38,7 @@ body::after{opacity:var(--grain);animation:grain-jit 600ms steps(3) infinite;ins
 @keyframes reveal{0%{clip-path:inset(0 0 100% 0);translate:-6px 0}33%{translate:4px 0}66%{translate:-2px 0}100%{clip-path:inset(0 0 0 0);translate:0 0}}
 /* tape, stickers, marks, redaction */
 .tape{position:absolute;width:112px;height:32px;top:-14px;left:calc(50% - 56px);z-index:4;background:rgba(237,230,218,.82);transform:rotate(var(--tilt,-4deg));clip-path:polygon(2% 8%,98% 0,100% 92%,0 100%,3% 50%)}
-.tape--lime{background:rgba(212,245,74,.85)}.tape--purple{background:rgba(193,107,224,.85)}
+.tape--lime{background:rgba(231,45,73,.85)}.tape--purple{background:rgba(148,112,219,.85)}
 .frame .tape{position:static;width:auto;height:auto;clip-path:polygon(2% 8%,98% 0,100% 92%,0 100%,1% 50%);background:var(--lime);color:var(--ink);font:400 16px/1 Anton,sans-serif;letter-spacing:.06em;padding:8px 16px;display:inline-block}
 .g-plum .frame .tape{background:var(--lilac)}.g-purple .frame .tape{background:var(--ink);color:var(--lime)}
 .frame .crop{display:none}

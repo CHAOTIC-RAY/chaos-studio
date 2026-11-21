@@ -9,7 +9,7 @@
   min-height: clamp(140px, 38vw, 220px);
   width: 100%;
   overflow: hidden;
-  background: radial-gradient(ellipse 80% 70% at 50% 40%, rgba(193, 107, 224, 0.12), transparent 70%);
+  background: radial-gradient(ellipse 80% 70% at 50% 40%, rgba(148, 112, 219, 0.12), transparent 70%);
 }
 
 .feat-devices--dual .feat-devices__composition {
@@ -34,7 +34,7 @@
   max-width: 100%;
   border-radius: 10px;
   overflow: hidden;
-  border: 1px solid rgba(214, 144, 232, 0.25);
+  border: 1px solid rgba(185, 159, 218, 0.25);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
   background: #1c1c22;
 }
@@ -222,7 +222,7 @@
   background: var(--ink);
   display: block;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(214, 144, 232, 0.35);
+  border: 1px solid rgba(185, 159, 218, 0.35);
 }
 
 .feat-devices--phone-hero .device--browser {

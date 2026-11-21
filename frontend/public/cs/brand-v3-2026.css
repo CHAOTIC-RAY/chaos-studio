@@ -2,13 +2,21 @@
 :root {
   --void: #0e0e0f;
   --ink: #1a1a1b;
-  --plum: #28122c;
-  --purple: #c16be0;
-  --lilac: #d690e8;
-  --shock: #ff4444;
-  --kraft: #a79a89;
-  --paper: #ede6da;
+  --violet-deep: #3f3455;
+  --sugar-violet: #9470db;
+  --violet-soft: #b99fda;
+  --cherry: #e72d49;
+  --vanilla-cream: #fff5d9;
   --white: #fff;
+  --plum: var(--violet-deep);
+  --purple: var(--sugar-violet);
+  --lilac: var(--violet-soft);
+  --shock: var(--cherry);
+  --lime: var(--cherry);
+  --kraft: var(--vanilla-cream);
+  --paper: var(--vanilla-cream);
+  --cream: var(--vanilla-cream);
+  --red: var(--cherry);
   /* Type scale — site px column */
   --fs-hero: clamp(56px, 9vw, 120px);
   --fs-h1: clamp(40px, 6vw, 96px);
@@ -49,7 +57,7 @@ body::after {
   margin: 0;
   border-radius: 0;
   border: 0;
-  border-bottom: 1px solid rgba(214, 144, 232, 0.28);
+  border-bottom: 1px solid rgba(185, 159, 218, 0.28);
   background: var(--void);
   backdrop-filter: none;
   box-shadow: none;
@@ -175,7 +183,7 @@ body::after {
   color: var(--lilac);
   transform: none;
   padding: 6px 12px;
-  border: 1px solid rgba(214, 144, 232, 0.35);
+  border: 1px solid rgba(185, 159, 218, 0.35);
 }
 
 .print {

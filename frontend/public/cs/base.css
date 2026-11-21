@@ -1,5 +1,5 @@
 /* Chaos Studio — shared tokens, type, header, footer, motifs (Lu direction v3). Restyle here first. */
-:root{--void:#0E0E0F;--ink:#1A1A1B;--plum:#28122C;--purple:#C16BE0;--lilac:#D690E8;--shock:#FF4444;--kraft:#A79A89;--paper:#EDE6DA;--white:#fff;
+:root{--void:#0E0E0F;--ink:#1A1A1B;--violet-deep:#3F3455;--sugar-violet:#9470DB;--violet-soft:#B99FDA;--cherry:#E72D49;--vanilla-cream:#FFF5D9;--white:#fff;--plum:var(--violet-deep);--purple:var(--sugar-violet);--lilac:var(--violet-soft);--shock:var(--cherry);--lime:var(--cherry);--kraft:var(--vanilla-cream);--paper:var(--vanilla-cream);--cream:var(--vanilla-cream);--red:var(--cherry);
 --u:8px;--m:clamp(24px,5vw,72px);--gut:clamp(16px,1.67vw,24px);
 --fs-hero:clamp(56px,9vw,120px);--fs-h1:clamp(40px,6vw,96px);--fs-h2:clamp(32px,4.5vw,72px);--fs-h3:clamp(24px,3vw,40px);
 --fs-brace:clamp(24px,2.4vw,32px);--fs-body:clamp(16px,1.35vw,20px);--fs-mono:14px;--fs-fine:14px;--track-fine:.04em;
@@ -14,7 +14,7 @@ a{color:inherit}
 img,svg{display:block}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 :focus-visible{outline:3px solid var(--lilac);outline-offset:3px}
-.skip{position:absolute;left:-999px;top:8px;background:var(--shock);color:var(--ink);padding:8px 16px;z-index:100;font-family:'Space Mono';font-size:14px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--vanilla-cream);color:var(--ink);padding:8px 16px;z-index:100;font-family:'Space Mono';font-size:14px}
 .skip:focus{left:8px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 /* type */
@@ -33,7 +33,7 @@ body::after{content:"";position:fixed;inset:0;z-index:70;pointer-events:none;opa
 background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
 main,header,footer{position:relative;z-index:1}
 /* header */
-.hdr{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:16px;height:var(--hdr-h);padding:0 var(--m);background:var(--void);border-bottom:1px solid rgba(214,144,232,.28)}
+.hdr{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:16px;height:var(--hdr-h);padding:0 var(--m);background:var(--void);border-bottom:1px solid rgba(185,159,218,.28)}
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--white)}
 .brand svg{height:32px;width:auto;color:var(--lilac)}
 .brand span{font-family:Syne;font-weight:800;font-size:20px;letter-spacing:-.02em;white-space:nowrap}
@@ -41,7 +41,7 @@ main,header,footer{position:relative;z-index:1}
 .nav .nl{font-family:'Space Mono';text-transform:uppercase;font-size:14px;letter-spacing:.04em;text-decoration:none;min-height:48px;display:inline-flex;align-items:center}
 .nav .nl:hover,.nav .nl[aria-current=page]{color:var(--lime)}
 .nav .nl[aria-current=page]{text-decoration:underline;text-underline-offset:6px}
-.hpill{background:var(--lime);color:var(--ink);font-family:Anton;text-transform:uppercase;font-size:16px;letter-spacing:.04em;min-height:40px;padding:0 20px}
+.hpill{background:var(--cherry);color:var(--ink);font-family:Anton;text-transform:uppercase;font-size:24px;letter-spacing:.04em;min-height:44px;padding:0 22px}
 .hpill:hover{background:var(--white)}
 .menu-btn{display:none;background:var(--ink);color:var(--white);border:1px solid rgba(255,255,255,.6);font-family:Anton;text-transform:uppercase;letter-spacing:.04em;font-size:16px}
 .menu{position:fixed;inset:0;z-index:90;background:var(--ink);padding:24px;display:flex;flex-direction:column;gap:32px}

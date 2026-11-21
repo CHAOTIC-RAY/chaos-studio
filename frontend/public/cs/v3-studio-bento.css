@@ -238,7 +238,7 @@
   text-decoration: none;
   color: inherit;
   background: var(--ink);
-  border: 1px solid rgba(214, 144, 232, 0.35);
+  border: 1px solid rgba(185, 159, 218, 0.35);
   box-shadow: 5px 5px 0 var(--purple);
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -366,7 +366,7 @@
 
 .svc-tile {
   background: var(--void);
-  border: 1px solid rgba(214, 144, 232, 0.28);
+  border: 1px solid rgba(185, 159, 218, 0.28);
   box-shadow: 4px 4px 0 var(--purple);
   overflow: hidden;
 }
@@ -618,7 +618,7 @@
 
 .pk-bento .pk-note-tile {
   background: var(--plum);
-  border: 1px dashed rgba(214, 144, 232, 0.45);
+  border: 1px dashed rgba(185, 159, 218, 0.45);
   padding: 18px;
   display: flex;
   flex-direction: column;

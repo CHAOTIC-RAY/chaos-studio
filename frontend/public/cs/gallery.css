@@ -162,7 +162,7 @@ body[data-view=grid] .fbtn{display:none}
 .pt-in{position:relative;flex:1;min-height:0;display:block;transform-style:preserve-3d;transition:transform 200ms var(--out,ease);filter:brightness(var(--fog))}
 .pt[data-kind=print] .pt-in{background:var(--paper);padding:8px;box-shadow:6px 6px 0 rgba(0,0,0,.55)}
 .pt[data-kind=film] .pt-in{background:#050505;padding:10px 22px 26px;box-shadow:6px 6px 0 rgba(0,0,0,.55);
- background-image:repeating-linear-gradient(180deg,transparent 0 6px,#EDE6DA 6px 14px,transparent 14px 22px),repeating-linear-gradient(180deg,transparent 0 6px,#EDE6DA 6px 14px,transparent 14px 22px);
+ background-image:repeating-linear-gradient(180deg,transparent 0 6px,#FFF5D9 6px 14px,transparent 14px 22px),repeating-linear-gradient(180deg,transparent 0 6px,#FFF5D9 6px 14px,transparent 14px 22px);
  background-size:8px 100%,8px 100%;background-position:6px 0,calc(100% - 6px) 0;background-repeat:no-repeat}
 .pt .media{position:absolute;inset:8px;background:#ffffff10}
 .pt[data-kind=film] .media{inset:10px 22px 26px}
@@ -187,7 +187,7 @@ body[data-view=grid] .fbtn{display:none}
 @keyframes pt-gl{0%{clip-path:inset(10% 0 70% 0);transform:translateX(-6px)}25%{clip-path:inset(60% 0 15% 0);transform:translateX(5px)}50%{clip-path:inset(35% 0 45% 0);transform:translateX(-3px)}75%{clip-path:inset(80% 0 2% 0);transform:translateX(4px)}100%{clip-path:inset(0 0 100% 0)}}
 .pt.is-centre .sticker.hov{opacity:1}
 @media (hover:hover){.pt.is-centre:not(:hover) .sticker.hov{opacity:0}}
-.pano-fx{background:radial-gradient(ellipse at 50% 45%,transparent 30%,rgba(40,18,44,.55) 70%,rgba(14,14,15,.95) 100%),repeating-linear-gradient(0deg,rgba(0,0,0,.14) 0 1px,transparent 1px 3px)}
+.pano-fx{background:radial-gradient(ellipse at 50% 45%,transparent 30%,rgba(63,52,85,.55) 70%,rgba(14,14,15,.95) 100%),repeating-linear-gradient(0deg,rgba(0,0,0,.14) 0 1px,transparent 1px 3px)}
 .pano-hint{top:auto;bottom:96px;left:50%;transform:translateX(-50%) rotate(-3deg);font-size:18px;padding:12px 18px;border-radius:999px}
 .hud{position:absolute;right:var(--m);top:24px;z-index:3;color:var(--lime);font-size:14px;background:rgba(14,14,15,.85);padding:6px 10px;pointer-events:none}
 .pano-cursor{position:fixed;left:0;top:0;z-index:60;pointer-events:none}
